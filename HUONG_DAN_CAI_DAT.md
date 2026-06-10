@@ -43,7 +43,7 @@ Trước khi chạy dự án, máy tính của bạn cần cài đặt các ph�
 
 ## 2. Các Bước Cài Đặt (Installation)
 
-Sau khi giải nén file ZIP, bạn hãy mở **Terminal** (hoặc Command Prompt / PowerShell) và điều hướng (`cd`) vào thư mục chứa mã nguồn (thư mục `event-page-maker`). Sau đó thực hiện lần lượt các bước sau:
+Sau khi tải mã nguồn từ GitHub và giải nén file ZIP, Windows thường sẽ tạo một thư mục lồng nhau tên là `ThucTap-main/ThucTap-main`. Bạn hãy mở **Terminal** (hoặc Command Prompt / PowerShell) và điều hướng (`cd`) vào thư mục dự án `event-page-maker` nằm bên trong nó (ví dụ: `cd ThucTap-main/ThucTap-main/event-page-maker`). Sau đó thực hiện lần lượt các bước sau:
 
 
 **Bước 1: Cài đặt các thư viện PHP**

@@ -117,9 +117,9 @@
                     <div class="space-y-2">
                         <label class="font-label-lg text-label-lg text-on-surface-variant" for="status">Publication Status <span class="text-red-500">*</span></label>
                         <select class="w-full px-4 py-3 bg-white border border-outline-variant rounded-lg font-body-md text-body-md focus:ring-2 focus:ring-fpt-orange transition-all" id="status" name="status" required>
-                            <option value="draft" {{ old('status', $event->status) == 'draft' ? 'selected' : '' }}>Draft (Hidden)</option>
-                            <option value="published" {{ old('status', $event->status) == 'published' ? 'selected' : '' }}>Published (Visible to public)</option>
-                            <option value="archived" {{ old('status', $event->status) == 'archived' ? 'selected' : '' }}>Archived</option>
+                            <option value="draft" {{ old('status', $event->is_published ? 'published' : 'draft') == 'draft' ? 'selected' : '' }}>Draft (Hidden)</option>
+                            <option value="published" {{ old('status', $event->is_published ? 'published' : 'draft') == 'published' ? 'selected' : '' }}>Published (Visible to public)</option>
+                            <option value="archived" {{ old('status', $event->is_published ? 'published' : 'draft') == 'archived' ? 'selected' : '' }}>Archived</option>
                         </select>
                         @error('status') <p class="text-red-500 text-xs">{{ $message }}</p> @enderror
                     </div>

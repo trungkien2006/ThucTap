@@ -31,17 +31,18 @@ class EventController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
+            'slug' => 'required|string|unique:events,slug',
             'description' => 'required|string',
             'event_date' => 'required|date',
             'location' => 'required|string|max:255',
             'event_type' => 'required|in:conference,workshop,seminar,cultural,sports,orientation,other',
-            'academic_year' => 'nullable|string|max:20',
-            'semester' => 'nullable|integer|in:1,2',
             'max_attendees' => 'nullable|integer|min:1',
             'banner_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
         $event = new Event($validated);
+        $event->registration_open = $request->has('registration_open');
+        $event->is_published = false;
 
         if ($request->hasFile('banner_image')) {
             $path = $request->file('banner_image')->store('events/banners', 'public');
@@ -62,25 +63,26 @@ class EventController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
+            'slug' => 'required|string|unique:events,slug,' . $event->id,
             'description' => 'required|string',
             'event_date' => 'required|date',
             'location' => 'required|string|max:255',
             'event_type' => 'required|in:conference,workshop,seminar,cultural,sports,orientation,other',
-            'academic_year' => 'nullable|string|max:20',
-            'semester' => 'nullable|integer|in:1,2',
             'max_attendees' => 'nullable|integer|min:1',
             'banner_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'is_published' => 'nullable',
-            'registration_open' => 'nullable',
+            'status' => 'required|in:draft,published,archived',
         ]);
 
-        $event->fill($validated);
+        $status = $validated['status'];
+        unset($validated['status']);
 
-        $event->is_published = $request->has('is_published');
+        $event->fill($validated);
+        
+        $event->is_published = ($status === 'published');
         $event->registration_open = $request->has('registration_open');
 
         if ($request->hasFile('banner_image')) {
-            if ($event->banner_image) {
+            if ($event->banner_image && Storage::disk('public')->exists($event->banner_image)) {
                 Storage::disk('public')->delete($event->banner_image);
             }
             $path = $request->file('banner_image')->store('events/banners', 'public');
@@ -94,7 +96,7 @@ class EventController extends Controller
 
     public function destroy(Event $event)
     {
-        if ($event->banner_image) {
+        if ($event->banner_image && Storage::disk('public')->exists($event->banner_image)) {
             Storage::disk('public')->delete($event->banner_image);
         }
         $event->delete();

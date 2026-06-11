@@ -10,7 +10,8 @@ Trước khi chạy dự án, máy tính của bạn cần cài đặt các ph�
 
 ### 1.1. Cài đặt PHP qua Laragon
 
-- Tải và cài đặt **Laragon Full** tại [https://laragon.org/download/](https://laragon.org/download/). 
+- Tải và cài đặt **Laragon phiên bản 6.0.0 (Full)** tại trang GitHub Releases:
+   * Truy cập danh sách các phiên bản tại [https://github.com/leokhoa/laragon/releases](https://github.com/leokhoa/laragon/releases) và chọn bản `6.0.0`).
 - Laragon đã tích hợp sẵn PHP, Terminal và quản lý môi trường rất dễ dàng. Cài đặt theo các bước mặc định (cứ bấm Next).
 
 ### 1.2. Cài đặt Composer (Quản lý thư viện PHP)

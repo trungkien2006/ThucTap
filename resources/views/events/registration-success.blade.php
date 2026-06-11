@@ -40,7 +40,7 @@
                     <div class="border-t border-dashed border-outline-variant pt-6 flex flex-col items-center">
                         <p class="font-label-sm text-label-sm text-text-muted uppercase tracking-wider mb-4">Your Event QR Code</p>
                         <div class="p-4 bg-white rounded-xl shadow-sm border border-outline-variant/30 inline-block mb-2">
-                            {!! SimpleSoftwareIO\QrCode\Facades\QrCode::size(200)->generate($registration->qr_code) !!}
+                            {!! SimpleSoftwareIO\QrCode\Facades\QrCode::size(200)->generate(route('admin.checkin', $registration->confirmation_token)) !!}
                         </div>
                         <p class="font-body-sm text-body-sm text-text-muted max-w-[250px]">
                             Please save this QR code or check your email. You will need it to check-in at the event.

@@ -15,23 +15,21 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->string('slug')->unique();
-            $table->text('description');
-            $table->string('banner_image')->nullable();
+            $table->longText('description')->nullable();
             $table->datetime('event_date');
+            $table->datetime('end_date')->nullable();
             $table->string('location');
-            $table->enum('event_type', ['conference', 'workshop', 'seminar', 'cultural', 'sports', 'orientation', 'other']);
             $table->string('academic_year')->nullable(); // e.g. 2025-2026
             $table->tinyInteger('semester')->nullable(); // 1 or 2
-            $table->json('schedule')->nullable();
-            $table->json('guest_speakers')->nullable();
-            $table->json('photo_gallery')->nullable();
-            $table->string('video_link')->nullable();
-            $table->json('documents')->nullable();
-            $table->string('qr_code_path')->nullable();
+            $table->foreignId('category_id')->nullable()->constrained('categories')->nullOnDelete();
+            $table->foreignId('department_id')->nullable()->constrained('categories')->nullOnDelete();
             $table->boolean('registration_open')->default(true);
             $table->integer('max_attendees')->nullable();
             $table->integer('views_count')->default(0);
             $table->boolean('is_published')->default(false);
+            $table->string('page_template')->nullable();
+            $table->string('qr_code_path')->nullable();
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
         });
     }

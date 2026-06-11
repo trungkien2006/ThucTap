@@ -16,10 +16,7 @@ class Event extends Model
     {
         return [
             'event_date' => 'datetime',
-            'schedule' => 'array',
-            'guest_speakers' => 'array',
-            'photo_gallery' => 'array',
-            'documents' => 'array',
+            'end_date' => 'datetime',
             'registration_open' => 'boolean',
             'is_published' => 'boolean',
         ];
@@ -34,7 +31,7 @@ class Event extends Model
                 $event->slug = Str::slug($event->title);
             }
         });
-        
+
         static::updating(function ($event) {
             if ($event->isDirty('title') && empty($event->slug)) {
                 $event->slug = Str::slug($event->title);
@@ -42,10 +39,87 @@ class Event extends Model
         });
     }
 
+    // ── Accessors ──────────────────────────────────────
+
+    /**
+     * Computed status attribute used by views.
+     */
+    public function getStatusAttribute(): string
+    {
+        return $this->is_published ? 'published' : 'draft';
+    }
+
+    // ── Core Relationships ─────────────────────────────
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Category::class, 'department_id');
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
     public function registrations()
     {
         return $this->hasMany(Registration::class);
     }
+
+    // ── Media Relationships ────────────────────────────
+
+    public function images()
+    {
+        return $this->hasMany(EventImage::class)->orderBy('sort_order');
+    }
+
+    public function bannerImage()
+    {
+        return $this->hasOne(EventImage::class)->where('is_banner', true);
+    }
+
+    public function galleryImages()
+    {
+        return $this->hasMany(EventImage::class)->where('is_banner', false)->orderBy('sort_order');
+    }
+
+    public function videos()
+    {
+        return $this->hasMany(EventVideo::class)->orderBy('sort_order');
+    }
+
+    public function documents()
+    {
+        return $this->hasMany(EventDocument::class);
+    }
+
+    // ── Schedule & Speakers ────────────────────────────
+
+    public function scheduleItems()
+    {
+        return $this->hasMany(EventSchedule::class)->orderBy('sort_order');
+    }
+
+    public function speakers()
+    {
+        return $this->belongsToMany(Speaker::class, 'event_speakers')
+                    ->using(EventSpeaker::class)
+                    ->withPivot('role');
+    }
+
+    // ── Posts ───────────────────────────────────────────
+
+    public function posts()
+    {
+        return $this->hasMany(EventPost::class);
+    }
+
+    // ── Scopes ─────────────────────────────────────────
 
     public function scopePublished($query)
     {

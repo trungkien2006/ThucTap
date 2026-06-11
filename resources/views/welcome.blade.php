@@ -19,8 +19,8 @@
         @php $featured = $events->first(); @endphp
         <div class="col-span-12 lg:col-span-8 bg-pure-white rounded-[24px] border border-outline-variant overflow-hidden event-card-hover group flex flex-col md:flex-row">
             <div class="md:w-1/2 relative h-64 md:h-auto overflow-hidden">
-                @if($featured->banner_image)
-                    <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="{{ Storage::url($featured->banner_image) }}" alt="{{ $featured->title }}"/>
+                @if($featured->bannerImage)
+                    <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="{{ Storage::url($featured->bannerImage->image_path) }}" alt="{{ $featured->title }}"/>
                 @else
                     <div class="w-full h-full flex items-center justify-center bg-deep-navy group-hover:scale-105 transition-transform duration-700">
                         <span class="text-white opacity-50">No Image</span>
@@ -39,7 +39,7 @@
                     <div class="flex items-center gap-6 mb-8">
                         <div class="flex items-center gap-2">
                             <span class="material-symbols-outlined text-text-muted">group</span>
-                            <span class="font-label-lg text-label-lg font-bold">{{ $featured->registrations()->count() }} Registered</span>
+                            <span class="font-label-lg text-label-lg font-bold">{{ $featured->registrations->count() }} Registered</span>
                         </div>
                         <div class="flex items-center gap-2">
                             <span class="material-symbols-outlined text-text-muted">location_on</span>
@@ -76,8 +76,8 @@
         @foreach($events->skip(1) as $event)
         <div class="col-span-12 md:col-span-6 lg:col-span-4 bg-pure-white rounded-[24px] border border-outline-variant overflow-hidden event-card-hover group flex flex-col">
             <div class="h-48 overflow-hidden relative">
-                @if($event->banner_image)
-                    <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 {{ $event->event_date < now() ? 'opacity-80 grayscale-[0.3]' : '' }}" src="{{ Storage::url($event->banner_image) }}" alt="{{ $event->title }}"/>
+                @if($event->bannerImage)
+                    <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 {{ $event->event_date < now() ? 'opacity-80 grayscale-[0.3]' : '' }}" src="{{ Storage::url($event->bannerImage->image_path) }}" alt="{{ $event->title }}"/>
                 @else
                     <div class="w-full h-full flex items-center justify-center bg-surface-container-high group-hover:scale-110 transition-transform duration-500">
                         <span class="text-outline opacity-50">No Image</span>
@@ -97,7 +97,7 @@
                 <div class="flex items-center justify-between pt-6 border-t border-outline-variant">
                     <div class="flex items-center gap-2">
                         <span class="material-symbols-outlined text-fpt-orange">group</span>
-                        <span class="font-label-lg text-label-lg font-bold text-deep-navy">{{ $event->registrations()->count() }}</span>
+                        <span class="font-label-lg text-label-lg font-bold text-deep-navy">{{ $event->registrations->count() }}</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <a href="{{ route('events.show', $event->slug) }}" class="p-2 hover:bg-surface-container rounded-full text-text-muted transition-colors flex items-center justify-center" title="Preview"><span class="material-symbols-outlined">visibility</span></a>

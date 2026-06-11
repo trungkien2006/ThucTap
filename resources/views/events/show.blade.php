@@ -28,14 +28,16 @@
 <!-- Hero Section -->
 <section class="relative h-[600px] min-h-[500px] flex items-center justify-center overflow-hidden rounded-[24px] mb-12 mt-4">
     <div class="absolute inset-0 z-0">
-        @if($event->banner_image)
-            <img class="w-full h-full object-cover brightness-[0.4]" src="{{ Storage::url($event->banner_image) }}" alt="{{ $event->title }}"/>
+        @if($event->bannerImage)
+            <img class="w-full h-full object-cover brightness-[0.4]" src="{{ Storage::url($event->bannerImage->image_path) }}" alt="{{ $event->title }}"/>
         @else
             <div class="w-full h-full bg-deep-navy brightness-[0.8]"></div>
         @endif
     </div>
     <div class="relative z-10 w-full max-w-container-max px-margin-desktop text-center text-pure-white mt-16">
-        <span class="inline-block px-4 py-1.5 rounded-full bg-fpt-orange text-pure-white font-label-lg mb-6 tracking-wider uppercase">{{ $event->event_type }}</span>
+        @if($event->category)
+            <span class="inline-block px-4 py-1.5 rounded-full bg-fpt-orange text-pure-white font-label-lg mb-6 tracking-wider uppercase">{{ $event->category->name }}</span>
+        @endif
         <h1 class="font-display-lg text-display-lg mb-6 leading-tight max-w-4xl mx-auto">{{ $event->title }}</h1>
         
         <!-- Countdown Timer -->
@@ -135,18 +137,21 @@
         </div>
 
         <!-- Agenda Timeline -->
-        @if($event->schedule && is_array($event->schedule) && count($event->schedule) > 0)
+        @if($event->scheduleItems->count() > 0)
         <div class="md:col-span-12 bg-pure-white p-8 md:p-12 rounded-2xl border border-outline-variant shadow-sm mt-8">
             <div class="text-center mb-16">
                 <h2 class="font-headline-lg text-headline-lg text-deep-navy mb-4">Event Agenda</h2>
                 <p class="text-text-muted max-w-2xl mx-auto">A comprehensive breakdown of the day's activities.</p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-                @foreach($event->schedule as $index => $item)
+                @foreach($event->scheduleItems as $index => $item)
                 <div class="relative timeline-item">
                     <div class="timeline-dot w-8 h-8 rounded-full bg-fpt-orange text-white flex items-center justify-center font-bold mb-6 relative z-10">{{ $index + 1 }}</div>
-                    <div class="font-label-lg text-fpt-orange mb-2 uppercase tracking-wide">{{ $item['time'] ?? '' }}</div>
-                    <h4 class="font-headline-md text-headline-md text-deep-navy mb-3">{{ $item['activity'] ?? '' }}</h4>
+                    <div class="font-label-lg text-fpt-orange mb-2 uppercase tracking-wide">{{ $item->start_time->format('H:i') }}</div>
+                    <h4 class="font-headline-md text-headline-md text-deep-navy mb-3">{{ $item->title }}</h4>
+                    @if($item->speaker)
+                        <p class="text-text-muted font-body-sm">{{ $item->speaker->name }}</p>
+                    @endif
                 </div>
                 @endforeach
             </div>
@@ -220,9 +225,15 @@
                                 class="w-full border-outline-variant rounded-lg px-4 py-3 focus:ring-2 focus:ring-fpt-orange focus:border-fpt-orange transition-all bg-surface-container-lowest">
                         </div>
                         <div>
-                            <label for="department" class="block font-label-lg text-deep-navy mb-2">Khoa / Ngành</label>
-                            <input type="text" name="department" id="department" value="{{ old('department') }}"
+                            <label for="department_id" class="block font-label-lg text-deep-navy mb-2">Khoa / Ngành</label>
+                            <select name="department_id" id="department_id"
                                 class="w-full border-outline-variant rounded-lg px-4 py-3 focus:ring-2 focus:ring-fpt-orange focus:border-fpt-orange transition-all bg-surface-container-lowest">
+                                <option value="">-- Chọn khoa --</option>
+                                @foreach(\App\Models\Category::departments()->get() as $dept)
+                                    <option value="{{ $dept->id }}" {{ old('department_id') == $dept->id ? 'selected' : '' }}>{{ $dept->name }}</option>
+                                @endforeach
+                            </select>
+                            @error('department_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
                     </div>
                     

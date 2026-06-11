@@ -29,9 +29,9 @@
             </div>
         </div>
 
-        @if($event->banner_image)
+        @if($event->bannerImage)
         <div class="relative overflow-hidden rounded-xl h-64 border border-outline-variant/30 shadow-sm">
-            <img src="{{ Storage::url($event->banner_image) }}" alt="Banner" class="w-full h-full object-cover">
+            <img src="{{ Storage::url($event->bannerImage->image_path) }}" alt="Banner" class="w-full h-full object-cover">
             <div class="absolute inset-0 bg-gradient-to-t from-deep-navy/80 to-transparent flex items-end p-6">
                 <span class="font-label-lg text-pure-white">Current Banner Image</span>
             </div>
@@ -53,19 +53,17 @@
                     @error('title') <p class="text-red-500 text-xs">{{ $message }}</p> @enderror
                 </div>
 
-                <!-- Type & Slug -->
+                <!-- Category & Slug -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
                     <div class="space-y-2">
-                        <label class="font-label-lg text-label-lg text-on-surface-variant" for="event_type">Event Type <span class="text-red-500">*</span></label>
-                        <select class="w-full px-4 py-3 bg-white border border-outline-variant rounded-lg font-body-md text-body-md focus:ring-2 focus:ring-fpt-orange transition-all" id="event_type" name="event_type" required>
-                            <option value="workshop" {{ old('event_type', $event->event_type) == 'workshop' ? 'selected' : '' }}>Workshop</option>
-                            <option value="seminar" {{ old('event_type', $event->event_type) == 'seminar' ? 'selected' : '' }}>Seminar</option>
-                            <option value="conference" {{ old('event_type', $event->event_type) == 'conference' ? 'selected' : '' }}>Conference</option>
-                            <option value="cultural" {{ old('event_type', $event->event_type) == 'cultural' ? 'selected' : '' }}>Cultural Event</option>
-                            <option value="sports" {{ old('event_type', $event->event_type) == 'sports' ? 'selected' : '' }}>Sports Event</option>
-                            <option value="other" {{ old('event_type', $event->event_type) == 'other' ? 'selected' : '' }}>Other</option>
+                        <label class="font-label-lg text-label-lg text-on-surface-variant" for="category_id">Event Type <span class="text-red-500">*</span></label>
+                        <select class="w-full px-4 py-3 bg-white border border-outline-variant rounded-lg font-body-md text-body-md focus:ring-2 focus:ring-fpt-orange transition-all" id="category_id" name="category_id" required>
+                            <option value="">-- Select type --</option>
+                            @foreach($categories as $cat)
+                                <option value="{{ $cat->id }}" {{ old('category_id', $event->category_id) == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
+                            @endforeach
                         </select>
-                        @error('event_type') <p class="text-red-500 text-xs">{{ $message }}</p> @enderror
+                        @error('category_id') <p class="text-red-500 text-xs">{{ $message }}</p> @enderror
                     </div>
                     <div class="space-y-2">
                         <label class="font-label-lg text-label-lg text-on-surface-variant" for="slug">URL Slug <span class="text-red-500">*</span></label>
@@ -89,6 +87,18 @@
                         </div>
                         @error('location') <p class="text-red-500 text-xs">{{ $message }}</p> @enderror
                     </div>
+                </div>
+
+                <!-- Department -->
+                <div class="space-y-2">
+                    <label class="font-label-lg text-label-lg text-on-surface-variant" for="department_id">Department (Optional)</label>
+                    <select class="w-full px-4 py-3 bg-white border border-outline-variant rounded-lg font-body-md text-body-md focus:ring-2 focus:ring-fpt-orange transition-all" id="department_id" name="department_id">
+                        <option value="">-- Select department --</option>
+                        @foreach($departments as $dept)
+                            <option value="{{ $dept->id }}" {{ old('department_id', $event->department_id) == $dept->id ? 'selected' : '' }}>{{ $dept->name }}</option>
+                        @endforeach
+                    </select>
+                    @error('department_id') <p class="text-red-500 text-xs">{{ $message }}</p> @enderror
                 </div>
 
                 <!-- Description -->

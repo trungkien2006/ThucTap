@@ -63,7 +63,7 @@
         </div>
         <div class="mt-4">
             <h3 class="font-label-lg text-label-lg text-text-muted uppercase tracking-wider">Checked In</h3>
-            <p class="font-display-lg text-display-lg text-deep-navy mt-2 group-hover:scale-105 origin-left transition-transform">{{ $event->registrations->where('checked_in', true)->count() }}</p>
+            <p class="font-display-lg text-display-lg text-deep-navy mt-2 group-hover:scale-105 origin-left transition-transform">{{ $event->registrations->filter(function($reg) { return $reg->checkin !== null; })->count() }}</p>
         </div>
     </div>
     
@@ -98,7 +98,7 @@
                 </div>
                 <div class="space-y-1">
                     <p class="font-label-sm text-label-sm text-text-muted uppercase">Event Type</p>
-                    <p class="font-body-md text-body-md text-deep-navy font-semibold capitalize">{{ $event->event_type }}</p>
+                    <p class="font-body-md text-body-md text-deep-navy font-semibold capitalize">{{ $event->category?->name ?? 'N/A' }}</p>
                 </div>
                 <div class="space-y-1">
                     <p class="font-label-sm text-label-sm text-text-muted uppercase">Capacity</p>
@@ -183,7 +183,7 @@
                     <td class="px-6 py-4 text-body-md text-deep-navy">
                         {{ $reg->student_id ?? '-' }}
                         @if($reg->department)
-                            <span class="block text-xs text-text-muted">{{ $reg->department }}</span>
+                            <span class="block text-xs text-text-muted">{{ $reg->department->name }}</span>
                         @endif
                     </td>
                     <td class="px-6 py-4">
@@ -198,11 +198,11 @@
                         @endif
                     </td>
                     <td class="px-6 py-4">
-                        @if($reg->checked_in)
+                        @if($reg->checkin)
                             <span class="flex items-center gap-1 text-fpt-orange bg-primary-fixed/30 px-2 py-1 rounded w-fit text-xs font-bold">
                                 <span class="material-symbols-outlined text-sm">how_to_reg</span> Checked in
                             </span>
-                            <span class="block text-xs text-text-muted mt-1">{{ $reg->checked_in_at?->format('H:i, M d') }}</span>
+                            <span class="block text-xs text-text-muted mt-1">{{ $reg->checkin->checked_in_at?->format('H:i, M d') }}</span>
                         @else
                             <span class="flex items-center gap-1 text-gray-500 bg-gray-100 px-2 py-1 rounded w-fit text-xs font-bold">
                                 <span class="material-symbols-outlined text-sm">cancel</span> No

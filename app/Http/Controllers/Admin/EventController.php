@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Event;
+use App\Models\EventImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
@@ -12,19 +14,24 @@ class EventController extends Controller
 {
     public function index()
     {
-        $events = Event::orderBy('event_date', 'desc')->paginate(10);
+        $events = Event::with('bannerImage', 'category')
+            ->orderBy('event_date', 'desc')
+            ->paginate(10);
+
         return view('admin.events.index', compact('events'));
     }
 
     public function show(Event $event)
     {
-        $event->load('registrations');
+        $event->load('registrations', 'bannerImage', 'category', 'scheduleItems.speaker', 'speakers');
         return view('admin.events.show', compact('event'));
     }
 
     public function create()
     {
-        return view('admin.events.create');
+        $categories = Category::eventTypes()->get();
+        $departments = Category::departments()->get();
+        return view('admin.events.create', compact('categories', 'departments'));
     }
 
     public function store(Request $request)
@@ -35,28 +42,39 @@ class EventController extends Controller
             'description' => 'required|string',
             'event_date' => 'required|date',
             'location' => 'required|string|max:255',
-            'event_type' => 'required|in:conference,workshop,seminar,cultural,sports,orientation,other',
+            'category_id' => 'nullable|exists:categories,id',
+            'department_id' => 'nullable|exists:categories,id',
             'max_attendees' => 'nullable|integer|min:1',
             'banner_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
+        // Remove banner_image from validated data — it goes to event_images
+        unset($validated['banner_image']);
+
         $event = new Event($validated);
         $event->registration_open = $request->has('registration_open');
         $event->is_published = false;
+        $event->created_by = auth()->id();
+        $event->save();
 
+        // Handle banner image upload
         if ($request->hasFile('banner_image')) {
             $path = $request->file('banner_image')->store('events/banners', 'public');
-            $event->banner_image = $path;
+            $event->images()->create([
+                'image_path' => $path,
+                'is_banner' => true,
+            ]);
         }
-
-        $event->save();
 
         return redirect()->route('admin.events.index')->with('success', 'Event created successfully.');
     }
 
     public function edit(Event $event)
     {
-        return view('admin.events.edit', compact('event'));
+        $event->load('bannerImage');
+        $categories = Category::eventTypes()->get();
+        $departments = Category::departments()->get();
+        return view('admin.events.edit', compact('event', 'categories', 'departments'));
     }
 
     public function update(Request $request, Event $event)
@@ -67,26 +85,35 @@ class EventController extends Controller
             'description' => 'required|string',
             'event_date' => 'required|date',
             'location' => 'required|string|max:255',
-            'event_type' => 'required|in:conference,workshop,seminar,cultural,sports,orientation,other',
+            'category_id' => 'nullable|exists:categories,id',
+            'department_id' => 'nullable|exists:categories,id',
             'max_attendees' => 'nullable|integer|min:1',
             'banner_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'status' => 'required|in:draft,published,archived',
         ]);
 
         $status = $validated['status'];
-        unset($validated['status']);
+        unset($validated['status'], $validated['banner_image']);
 
         $event->fill($validated);
-        
+
         $event->is_published = ($status === 'published');
         $event->registration_open = $request->has('registration_open');
 
+        // Handle banner image upload
         if ($request->hasFile('banner_image')) {
-            if ($event->banner_image && Storage::disk('public')->exists($event->banner_image)) {
-                Storage::disk('public')->delete($event->banner_image);
+            // Delete old banner if exists
+            $oldBanner = $event->bannerImage;
+            if ($oldBanner && Storage::disk('public')->exists($oldBanner->image_path)) {
+                Storage::disk('public')->delete($oldBanner->image_path);
+                $oldBanner->delete();
             }
+
             $path = $request->file('banner_image')->store('events/banners', 'public');
-            $event->banner_image = $path;
+            $event->images()->create([
+                'image_path' => $path,
+                'is_banner' => true,
+            ]);
         }
 
         $event->save();
@@ -96,9 +123,13 @@ class EventController extends Controller
 
     public function destroy(Event $event)
     {
-        if ($event->banner_image && Storage::disk('public')->exists($event->banner_image)) {
-            Storage::disk('public')->delete($event->banner_image);
+        // Delete all associated image files from storage
+        foreach ($event->images as $image) {
+            if (Storage::disk('public')->exists($image->image_path)) {
+                Storage::disk('public')->delete($image->image_path);
+            }
         }
+
         $event->delete();
         return redirect()->route('admin.events.index')->with('success', 'Event deleted successfully.');
     }

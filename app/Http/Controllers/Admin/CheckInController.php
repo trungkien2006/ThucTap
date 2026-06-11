@@ -12,11 +12,11 @@ class CheckInController extends Controller
     {
         $registration = Registration::where('confirmation_token', $token)->firstOrFail();
 
-        if ($registration->checked_in) {
+        if ($registration->checkin) {
             return view('admin.checkin.success', [
                 'registration' => $registration,
                 'status' => 'already_checked_in',
-                'message' => 'Sinh viên này ĐÃ ĐIỂM DANH TRƯỚC ĐÓ vào lúc ' . $registration->checked_in_at->format('H:i d/m/Y')
+                'message' => 'Sinh viên này ĐÃ ĐIỂM DANH TRƯỚC ĐÓ vào lúc ' . $registration->checkin->checked_in_at->format('H:i d/m/Y')
             ]);
         }
 
@@ -29,9 +29,9 @@ class CheckInController extends Controller
         }
 
         // Proceed to check in
-        $registration->checked_in = true;
-        $registration->checked_in_at = now();
-        $registration->save();
+        $registration->checkin()->create([
+            'checked_in_at' => now(),
+        ]);
 
         return view('admin.checkin.success', [
             'registration' => $registration,

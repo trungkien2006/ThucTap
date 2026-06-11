@@ -26,7 +26,7 @@ class PublicRegistrationController extends Controller
             'email' => 'required|email|max:255',
             'phone' => 'nullable|string|max:20',
             'student_id' => 'nullable|string|max:50',
-            'department' => 'nullable|string|max:100',
+            'department_id' => 'nullable|exists:categories,id',
         ]);
 
         // Check if email already registered for this event

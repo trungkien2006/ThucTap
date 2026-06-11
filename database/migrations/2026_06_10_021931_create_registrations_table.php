@@ -18,13 +18,12 @@ return new class extends Migration
             $table->string('email');
             $table->string('phone')->nullable();
             $table->string('student_id')->nullable();
-            $table->string('department')->nullable();
-            $table->string('qr_code_path')->nullable();
-            $table->boolean('checked_in')->default(false);
-            $table->timestamp('checked_in_at')->nullable();
+            $table->foreignId('department_id')->nullable()->constrained('categories')->nullOnDelete();
             $table->string('confirmation_token')->unique();
             $table->boolean('email_confirmed')->default(false);
             $table->timestamps();
+
+            $table->unique(['event_id', 'email']);
         });
     }
 

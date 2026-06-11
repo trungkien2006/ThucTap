@@ -2,36 +2,33 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Registration extends Model
+class EventSchedule extends Model
 {
-    use HasFactory;
+    public $timestamps = false;
+
+    protected $table = 'event_schedule';
 
     protected $guarded = [];
 
     protected function casts(): array
     {
         return [
-            'email_confirmed' => 'boolean',
+            'start_time' => 'datetime',
+            'end_time' => 'datetime',
         ];
     }
 
     // ── Relationships ──────────────────────────────────
-
-    public function checkin()
-    {
-        return $this->hasOne(RegistrationCheckin::class);
-    }
 
     public function event()
     {
         return $this->belongsTo(Event::class);
     }
 
-    public function department()
+    public function speaker()
     {
-        return $this->belongsTo(Category::class, 'department_id');
+        return $this->belongsTo(Speaker::class);
     }
 }

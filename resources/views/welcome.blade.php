@@ -20,7 +20,7 @@
         <div class="col-span-12 lg:col-span-8 bg-pure-white rounded-[24px] border border-outline-variant overflow-hidden event-card-hover group flex flex-col md:flex-row">
             <div class="md:w-1/2 relative h-64 md:h-auto overflow-hidden">
                 @if($featured->bannerImage)
-                    <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="{{ Storage::url($featured->bannerImage->image_path) }}" alt="{{ $featured->title }}"/>
+                    <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="{{ Storage::url($featured->bannerImage->url) }}" alt="{{ $featured->title }}"/>
                 @else
                     <div class="w-full h-full flex items-center justify-center bg-deep-navy group-hover:scale-105 transition-transform duration-700">
                         <span class="text-white opacity-50">No Image</span>
@@ -77,7 +77,7 @@
         <div class="col-span-12 md:col-span-6 lg:col-span-4 bg-pure-white rounded-[24px] border border-outline-variant overflow-hidden event-card-hover group flex flex-col">
             <div class="h-48 overflow-hidden relative">
                 @if($event->bannerImage)
-                    <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 {{ $event->event_date < now() ? 'opacity-80 grayscale-[0.3]' : '' }}" src="{{ Storage::url($event->bannerImage->image_path) }}" alt="{{ $event->title }}"/>
+                    <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 {{ $event->event_date < now() ? 'opacity-80 grayscale-[0.3]' : '' }}" src="{{ Storage::url($event->bannerImage->url) }}" alt="{{ $event->title }}"/>
                 @else
                     <div class="w-full h-full flex items-center justify-center bg-surface-container-high group-hover:scale-110 transition-transform duration-500">
                         <span class="text-outline opacity-50">No Image</span>

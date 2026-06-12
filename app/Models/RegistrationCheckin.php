@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class RegistrationCheckin extends Model
 {
     public $timestamps = false;
-
     protected $guarded = [];
 
     protected function casts(): array

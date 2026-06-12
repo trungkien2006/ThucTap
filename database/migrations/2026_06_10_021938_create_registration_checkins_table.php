@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('registration_id')->constrained()->cascadeOnDelete();
             $table->timestamp('checked_in_at')->useCurrent();
-            $table->string('qr_code_path')->nullable(); // If needed for legacy
+            $table->string('qr_code_path')->nullable();
         });
     }
 

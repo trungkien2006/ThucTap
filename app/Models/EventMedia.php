@@ -4,9 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class EventImage extends Model
+class EventMedia extends Model
 {
     public $timestamps = false;
+
+    // Explicitly define the table name to match our migration
+    protected $table = 'event_medias';
 
     protected $guarded = [];
 
@@ -14,6 +17,7 @@ class EventImage extends Model
     {
         return [
             'is_banner' => 'boolean',
+            'is_recap' => 'boolean',
             'created_at' => 'datetime',
         ];
     }
@@ -23,17 +27,5 @@ class EventImage extends Model
     public function event()
     {
         return $this->belongsTo(Event::class);
-    }
-
-    // ── Scopes ─────────────────────────────────────────
-
-    public function scopeBanners($query)
-    {
-        return $query->where('is_banner', true);
-    }
-
-    public function scopeGallery($query)
-    {
-        return $query->where('is_banner', false);
     }
 }

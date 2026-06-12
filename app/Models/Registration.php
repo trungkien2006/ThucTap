@@ -20,10 +20,12 @@ class Registration extends Model
 
     // ── Relationships ──────────────────────────────────
 
-    public function checkin()
+    public function checkins()
     {
-        return $this->hasOne(RegistrationCheckin::class);
+        return $this->hasMany(RegistrationCheckin::class);
     }
+
+
 
     public function event()
     {

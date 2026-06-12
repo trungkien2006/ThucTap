@@ -31,7 +31,7 @@
 
         @if($event->bannerImage)
         <div class="relative overflow-hidden rounded-xl h-64 border border-outline-variant/30 shadow-sm">
-            <img src="{{ Storage::url($event->bannerImage->image_path) }}" alt="Banner" class="w-full h-full object-cover">
+            <img src="{{ Storage::url($event->bannerImage->url) }}" alt="Banner" class="w-full h-full object-cover">
             <div class="absolute inset-0 bg-gradient-to-t from-deep-navy/80 to-transparent flex items-end p-6">
                 <span class="font-label-lg text-pure-white">Current Banner Image</span>
             </div>

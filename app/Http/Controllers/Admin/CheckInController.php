@@ -12,11 +12,14 @@ class CheckInController extends Controller
     {
         $registration = Registration::where('confirmation_token', $token)->firstOrFail();
 
-        if ($registration->checkin) {
+        $latestCheckin = $registration->checkins()->latest('checked_in_at')->first();
+
+        if ($latestCheckin && $latestCheckin->checked_in_at->diffInMinutes(now()) < 5) {
             return view('admin.checkin.success', [
                 'registration' => $registration,
-                'status' => 'already_checked_in',
-                'message' => 'Sinh viên này ĐÃ ĐIỂM DANH TRƯỚC ĐÓ vào lúc ' . $registration->checkin->checked_in_at->format('H:i d/m/Y')
+                'status' => 'warning',
+                'title' => 'Thao Tác Quá Nhanh',
+                'message' => 'Sinh viên này vừa điểm danh cách đây ít phút vào lúc ' . $latestCheckin->checked_in_at->format('H:i d/m/Y') . '. Vui lòng thử lại sau.'
             ]);
         }
 
@@ -29,14 +32,16 @@ class CheckInController extends Controller
         }
 
         // Proceed to check in
-        $registration->checkin()->create([
+        $registration->checkins()->create([
             'checked_in_at' => now(),
         ]);
+
+        $count = $registration->checkins()->count();
 
         return view('admin.checkin.success', [
             'registration' => $registration,
             'status' => 'success',
-            'message' => 'ĐIỂM DANH THÀNH CÔNG!'
+            'message' => $count > 1 ? "ĐIỂM DANH THÀNH CÔNG (Lần $count)!" : 'ĐIỂM DANH THÀNH CÔNG!'
         ]);
     }
 }

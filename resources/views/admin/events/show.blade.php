@@ -63,7 +63,7 @@
         </div>
         <div class="mt-4">
             <h3 class="font-label-lg text-label-lg text-text-muted uppercase tracking-wider">Checked In</h3>
-            <p class="font-display-lg text-display-lg text-deep-navy mt-2 group-hover:scale-105 origin-left transition-transform">{{ $event->registrations->filter(function($reg) { return $reg->checkin !== null; })->count() }}</p>
+            <p class="font-display-lg text-display-lg text-deep-navy mt-2 group-hover:scale-105 origin-left transition-transform">{{ $event->registrations->filter(function($reg) { return $reg->checkins->count() > 0; })->count() }}</p>
         </div>
     </div>
     
@@ -198,11 +198,11 @@
                         @endif
                     </td>
                     <td class="px-6 py-4">
-                        @if($reg->checkin)
+                        @if($reg->checkins->count() > 0)
                             <span class="flex items-center gap-1 text-fpt-orange bg-primary-fixed/30 px-2 py-1 rounded w-fit text-xs font-bold">
-                                <span class="material-symbols-outlined text-sm">how_to_reg</span> Checked in
+                                <span class="material-symbols-outlined text-sm">how_to_reg</span> Checked in ({{ $reg->checkins->count() }})
                             </span>
-                            <span class="block text-xs text-text-muted mt-1">{{ $reg->checkin->checked_in_at?->format('H:i, M d') }}</span>
+                            <span class="block text-xs text-text-muted mt-1">{{ $reg->checkins->sortByDesc('checked_in_at')->first()->checked_in_at->format('H:i, M d') }}</span>
                         @else
                             <span class="flex items-center gap-1 text-gray-500 bg-gray-100 px-2 py-1 rounded w-fit text-xs font-bold">
                                 <span class="material-symbols-outlined text-sm">cancel</span> No

@@ -73,25 +73,27 @@ class Event extends Model
 
     // ── Media Relationships ────────────────────────────
 
-    public function images()
+    public function media()
     {
-        return $this->hasMany(EventImage::class)->orderBy('sort_order');
+        return $this->hasMany(EventMedia::class)->orderBy('sort_order');
     }
 
     public function bannerImage()
     {
-        return $this->hasOne(EventImage::class)->where('is_banner', true);
+        return $this->hasOne(EventMedia::class)->where('type', 'image')->where('is_banner', true);
     }
 
     public function galleryImages()
     {
-        return $this->hasMany(EventImage::class)->where('is_banner', false)->orderBy('sort_order');
+        return $this->hasMany(EventMedia::class)->where('type', 'image')->where('is_banner', false)->orderBy('sort_order');
     }
 
     public function videos()
     {
-        return $this->hasMany(EventVideo::class)->orderBy('sort_order');
+        return $this->hasMany(EventMedia::class)->where('type', 'video')->orderBy('sort_order');
     }
+
+
 
     public function documents()
     {
@@ -112,12 +114,7 @@ class Event extends Model
                     ->withPivot('role');
     }
 
-    // ── Posts ───────────────────────────────────────────
 
-    public function posts()
-    {
-        return $this->hasMany(EventPost::class);
-    }
 
     // ── Scopes ─────────────────────────────────────────
 

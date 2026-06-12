@@ -98,7 +98,7 @@
                         <div class="flex items-center gap-4">
                             <div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center overflow-hidden shrink-0">
                                 @if($event->bannerImage)
-                                    <img src="{{ Storage::url($event->bannerImage->image_path) }}" alt="{{ $event->title }}" class="w-full h-full object-cover">
+                                    <img src="{{ Storage::url($event->bannerImage->url) }}" alt="{{ $event->title }}" class="w-full h-full object-cover">
                                 @else
                                     <span class="material-symbols-outlined text-outline">image</span>
                                 @endif

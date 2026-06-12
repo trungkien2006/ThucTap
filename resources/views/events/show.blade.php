@@ -29,7 +29,7 @@
 <section class="relative h-[600px] min-h-[500px] flex items-center justify-center overflow-hidden rounded-[24px] mb-12 mt-4">
     <div class="absolute inset-0 z-0">
         @if($event->bannerImage)
-            <img class="w-full h-full object-cover brightness-[0.4]" src="{{ Storage::url($event->bannerImage->image_path) }}" alt="{{ $event->title }}"/>
+            <img class="w-full h-full object-cover brightness-[0.4]" src="{{ Storage::url($event->bannerImage->url) }}" alt="{{ $event->title }}"/>
         @else
             <div class="w-full h-full bg-deep-navy brightness-[0.8]"></div>
         @endif

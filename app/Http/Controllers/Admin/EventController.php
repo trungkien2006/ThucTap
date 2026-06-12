@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Event;
-use App\Models\EventImage;
+use App\Models\EventMedia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
@@ -60,8 +60,9 @@ class EventController extends Controller
         // Handle banner image upload
         if ($request->hasFile('banner_image')) {
             $path = $request->file('banner_image')->store('events/banners', 'public');
-            $event->images()->create([
-                'image_path' => $path,
+            $event->media()->create([
+                'type' => 'image',
+                'url' => $path,
                 'is_banner' => true,
             ]);
         }
@@ -104,14 +105,15 @@ class EventController extends Controller
         if ($request->hasFile('banner_image')) {
             // Delete old banner if exists
             $oldBanner = $event->bannerImage;
-            if ($oldBanner && Storage::disk('public')->exists($oldBanner->image_path)) {
-                Storage::disk('public')->delete($oldBanner->image_path);
+            if ($oldBanner && Storage::disk('public')->exists($oldBanner->url)) {
+                Storage::disk('public')->delete($oldBanner->url);
                 $oldBanner->delete();
             }
 
             $path = $request->file('banner_image')->store('events/banners', 'public');
-            $event->images()->create([
-                'image_path' => $path,
+            $event->media()->create([
+                'type' => 'image',
+                'url' => $path,
                 'is_banner' => true,
             ]);
         }
@@ -124,9 +126,9 @@ class EventController extends Controller
     public function destroy(Event $event)
     {
         // Delete all associated image files from storage
-        foreach ($event->images as $image) {
-            if (Storage::disk('public')->exists($image->image_path)) {
-                Storage::disk('public')->delete($image->image_path);
+        foreach ($event->media()->where('type', 'image')->get() as $image) {
+            if (Storage::disk('public')->exists($image->url)) {
+                Storage::disk('public')->delete($image->url);
             }
         }
 

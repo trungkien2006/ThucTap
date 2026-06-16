@@ -75,7 +75,7 @@ class Event extends Model
 
     public function media()
     {
-        return $this->hasMany(EventMedia::class)->orderBy('sort_order');
+        return $this->hasMany(EventMedia::class);
     }
 
     public function bannerImage()
@@ -85,12 +85,12 @@ class Event extends Model
 
     public function galleryImages()
     {
-        return $this->hasMany(EventMedia::class)->where('type', 'image')->where('is_banner', false)->orderBy('sort_order');
+        return $this->hasMany(EventMedia::class)->where('type', 'image')->where('is_banner', false);
     }
 
     public function videos()
     {
-        return $this->hasMany(EventMedia::class)->where('type', 'video')->orderBy('sort_order');
+        return $this->hasMany(EventMedia::class)->where('type', 'video');
     }
 
 

@@ -1,0 +1,744 @@
+<!doctype html>
+<html class="light" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>UniEvent Admin - Create Event</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-container-low": "#f2f4f6",
+              "on-tertiary-fixed": "#0b1c30",
+              "tertiary-container": "#27374b",
+              "on-secondary-container": "#00616d",
+              "on-primary-container": "#86a0cd",
+              "tertiary-fixed-dim": "#b7c8e1",
+              "inverse-on-surface": "#eff1f3",
+              outline: "#74777f",
+              "secondary-fixed": "#9cf0ff",
+              "secondary-fixed-dim": "#00daf3",
+              "on-secondary": "#ffffff",
+              "inverse-primary": "#adc7f7",
+              "on-tertiary": "#ffffff",
+              "on-secondary-fixed-variant": "#004f58",
+              "on-primary": "#ffffff",
+              "surface-bright": "#f7f9fb",
+              "surface-variant": "#e0e3e5",
+              "on-secondary-fixed": "#001f24",
+              "primary-fixed": "#d6e3ff",
+              "surface-dim": "#d8dadc",
+              "on-tertiary-container": "#90a0b9",
+              "on-surface-variant": "#43474e",
+              primary: "#002045",
+              "error-container": "#ffdad6",
+              "on-tertiary-fixed-variant": "#38485d",
+              "surface-tint": "#455f88",
+              error: "#ba1a1a",
+              "on-primary-fixed-variant": "#2d476f",
+              "inverse-surface": "#2d3133",
+              "on-error": "#ffffff",
+              "on-background": "#191c1e",
+              "tertiary-fixed": "#d3e4fe",
+              secondary: "#006875",
+              tertiary: "#112235",
+              "surface-container-high": "#e6e8ea",
+              "on-surface": "#191c1e",
+              background: "#f7f9fb",
+              "primary-fixed-dim": "#adc7f7",
+              "outline-variant": "#c4c6cf",
+              "surface-container-highest": "#e0e3e5",
+              surface: "#f7f9fb",
+              "surface-container-lowest": "#ffffff",
+              "surface-container": "#eceef0",
+              "primary-container": "#1a365d",
+              "on-primary-fixed": "#001b3c",
+              "on-error-container": "#93000a",
+              "secondary-container": "#00e3fd",
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+            spacing: {
+              gutter: "24px",
+              "margin-mobile": "16px",
+              "max-width": "1280px",
+              xl: "3rem",
+              xs: "0.5rem",
+              "margin-desktop": "48px",
+              sm: "1rem",
+              lg: "2rem",
+              base: "4px",
+              md: "1.5rem",
+            },
+            fontFamily: {
+              "headline-md": ["Inter"],
+              "body-md": ["Inter"],
+              "label-sm": ["Inter"],
+              "headline-lg": ["Inter"],
+              "headline-sm": ["Inter"],
+              "label-md": ["Inter"],
+              display: ["Inter"],
+              "headline-lg-mobile": ["Inter"],
+              "body-sm": ["Inter"],
+              "body-lg": ["Inter"],
+            },
+            fontSize: {
+              "headline-md": ["24px", { lineHeight: "1.3", fontWeight: "600" }],
+              "body-md": ["16px", { lineHeight: "1.5", fontWeight: "400" }],
+              "label-sm": ["12px", { lineHeight: "1", fontWeight: "500" }],
+              "headline-lg": [
+                "32px",
+                {
+                  lineHeight: "1.2",
+                  letterSpacing: "-0.01em",
+                  fontWeight: "700",
+                },
+              ],
+              "headline-sm": ["20px", { lineHeight: "1.4", fontWeight: "600" }],
+              "label-md": [
+                "14px",
+                { lineHeight: "1", letterSpacing: "0.05em", fontWeight: "600" },
+              ],
+              display: [
+                "48px",
+                {
+                  lineHeight: "1.1",
+                  letterSpacing: "-0.02em",
+                  fontWeight: "800",
+                },
+              ],
+              "headline-lg-mobile": [
+                "24px",
+                { lineHeight: "1.2", fontWeight: "700" },
+              ],
+              "body-sm": ["14px", { lineHeight: "1.5", fontWeight: "400" }],
+              "body-lg": ["18px", { lineHeight: "1.6", fontWeight: "400" }],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings:
+          "FILL" 0,
+          "wght" 400,
+          "GRAD" 0,
+          "opsz" 24;
+      }
+      .step-active::after {
+        content: "";
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background-color: #006875;
+      }
+      body {
+        background-color: #f8fafc;
+      }
+    </style>
+  </head>
+  <body class="font-body-md text-on-surface">
+    <!-- Navigation Shell (SideNavBar) -->
+    <aside
+      class="fixed left-0 top-0 h-full z-40 p-sm bg-surface-container-low border-r border-outline-variant h-screen w-64 flex flex-col"
+    >
+      <div class="mb-lg px-xs">
+        <h1 class="font-headline-sm text-headline-sm font-bold text-primary">
+          UniEvent
+        </h1>
+        <div class="mt-md flex items-center gap-xs">
+          <div
+            class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center overflow-hidden"
+          >
+            <img
+              alt="Admin Avatar"
+              class="w-full h-full object-cover"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFtvNin43TjGXKBMegO0CAHeU_1LfM-vhObveR0rRsyLL29gHBvmLOmBk_hycpg8zLeoDVIWL9GRNgP4qli23GlfTaw95ttBX3qXgd8nZ8-16iLoXoPEu_5WlkhNpgbsr6ONDUJtCG0bD_OblpfuZzDVXUywCqLrpSJ4NRcS0W0hWAdz2abjbLHbb1AhkFMZBJNHdIN4NpfUZowuDXwAD90oMGV8IGD81rAMHIePBDAFn0SHPQx4AomdmizPbQM2hvWy3CITde4w"
+            />
+          </div>
+          <div>
+            <p class="font-label-md text-label-md text-primary">Admin Portal</p>
+            <p
+              class="text-[10px] text-on-surface-variant uppercase tracking-wider"
+            >
+              University Central
+            </p>
+          </div>
+        </div>
+      </div>
+      <nav class="flex-1 space-y-xs overflow-y-auto">
+        <a
+          class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container-highest transition-all rounded-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined" data-icon="dashboard"
+            >dashboard</span
+          >
+          <span class="font-label-md text-label-md">Dashboard</span>
+        </a>
+        <!-- Active State: Manage Events -->
+        <a
+          class="flex items-center gap-sm px-sm py-xs bg-secondary-container text-on-secondary-container rounded-lg font-bold"
+          href="#"
+        >
+          <span class="material-symbols-outlined" data-icon="event">event</span>
+          <span class="font-label-md text-label-md">Manage Events</span>
+        </a>
+        <a
+          class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container-highest transition-all rounded-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined" data-icon="qr_code_2"
+            >qr_code_2</span
+          >
+          <span class="font-label-md text-label-md">Registrations</span>
+        </a>
+        <a
+          class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container-highest transition-all rounded-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined" data-icon="analytics"
+            >analytics</span
+          >
+          <span class="font-label-md text-label-md">Faculty Analytics</span>
+        </a>
+        <a
+          class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container-highest transition-all rounded-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined" data-icon="settings"
+            >settings</span
+          >
+          <span class="font-label-md text-label-md">Settings</span>
+        </a>
+      </nav>
+      <div class="pt-md border-t border-outline-variant space-y-xs">
+        <button
+          class="w-full bg-primary text-on-primary py-sm rounded-lg font-label-md text-label-md hover:bg-opacity-90 active:scale-95 duration-150 mb-md"
+        >
+          Create New Event
+        </button>
+        <a
+          class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container-highest transition-all rounded-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined" data-icon="help">help</span>
+          <span class="font-label-md text-label-md">Help Center</span>
+        </a>
+        <a
+          class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container-highest transition-all rounded-lg"
+          href="#"
+        >
+          <span class="material-symbols-outlined" data-icon="logout"
+            >logout</span
+          >
+          <span class="font-label-md text-label-md">Logout</span>
+        </a>
+      </div>
+    </aside>
+    <!-- Main Content Canvas -->
+    <main class="ml-64 p-margin-desktop min-h-screen">
+      <div class="max-w-[1000px] mx-auto">
+        <!-- Header Section -->
+        <div class="mb-xl">
+          <h2 class="font-headline-lg text-headline-lg text-primary mb-xs">
+            Create New Event
+          </h2>
+          <p class="font-body-md text-on-surface-variant">
+            Configure the core details of your campus event to begin the
+            registration workflow.
+          </p>
+        </div>
+        <!-- Progress Indicator -->
+        <div
+          class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md mb-lg"
+        >
+          <div class="flex items-center justify-between relative">
+            <!-- Progress Line -->
+            <div
+              class="absolute top-1/2 left-0 w-full h-[2px] bg-surface-container-highest -translate-y-1/2 z-0"
+            ></div>
+            <div
+              class="absolute top-1/2 left-0 w-1/3 h-[2px] bg-secondary -translate-y-1/2 z-0"
+            ></div>
+            <!-- Step 1: Details (Active) -->
+            <div class="relative z-10 flex flex-col items-center gap-xs">
+              <div
+                class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center font-bold"
+              >
+                1
+              </div>
+              <span class="font-label-md text-label-md text-secondary"
+                >Details</span
+              >
+            </div>
+            <!-- Step 2: Design -->
+            <div class="relative z-10 flex flex-col items-center gap-xs">
+              <div
+                class="w-10 h-10 rounded-full bg-surface-container-highest text-on-surface-variant flex items-center justify-center font-bold"
+              >
+                2
+              </div>
+              <span class="font-label-md text-label-md text-on-surface-variant"
+                >Design</span
+              >
+            </div>
+            <!-- Step 3: Publish -->
+            <div class="relative z-10 flex flex-col items-center gap-xs">
+              <div
+                class="w-10 h-10 rounded-full bg-surface-container-highest text-on-surface-variant flex items-center justify-center font-bold"
+              >
+                3
+              </div>
+              <span class="font-label-md text-label-md text-on-surface-variant"
+                >Publish</span
+              >
+            </div>
+          </div>
+        </div>
+        <!-- Event Details Form -->
+        <form class="space-y-lg">
+          <!-- Section 1: Basic Info -->
+          <section
+            class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md space-y-md"
+          >
+            <div
+              class="flex items-center gap-xs border-b border-outline-variant pb-xs"
+            >
+              <span
+                class="material-symbols-outlined text-primary"
+                data-icon="info"
+                >info</span
+              >
+              <h3 class="font-headline-sm text-headline-sm text-primary">
+                Basic Information
+              </h3>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+              <div class="flex flex-col gap-xs">
+                <label
+                  class="font-label-md text-label-md text-on-surface-variant"
+                  >Event Title</label
+                >
+                <input
+                  class="w-full px-sm py-xs bg-surface-bright border border-outline-variant rounded-lg focus:ring-2 focus:ring-secondary-container focus:border-secondary outline-none transition-all"
+                  placeholder="e.g. Annual Tech Symposium 2024"
+                  type="text"
+                />
+              </div>
+              <div class="flex flex-col gap-xs">
+                <label
+                  class="font-label-md text-label-md text-on-surface-variant"
+                  >Public Link</label
+                >
+                <div class="flex">
+                  <span
+                    class="bg-surface-container-high px-sm py-xs border border-r-0 border-outline-variant rounded-l-lg text-on-surface-variant font-body-sm flex items-center"
+                    >unievent.edu/e/</span
+                  >
+                  <input
+                    class="w-full px-sm py-xs bg-surface-bright border border-outline-variant rounded-r-lg focus:ring-2 focus:ring-secondary-container focus:border-secondary outline-none transition-all"
+                    placeholder="tech-symposium-24"
+                    type="text"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="flex flex-col gap-xs">
+              <label class="font-label-md text-label-md text-on-surface-variant"
+                >Description</label
+              >
+              <div
+                class="border border-outline-variant rounded-lg overflow-hidden"
+              >
+                <div
+                  class="bg-surface-container-low p-xs flex gap-xs border-b border-outline-variant"
+                >
+                  <button
+                    class="p-xs hover:bg-surface-container-high rounded transition-colors"
+                    type="button"
+                  >
+                    <span
+                      class="material-symbols-outlined text-[20px]"
+                      data-icon="format_bold"
+                      >format_bold</span
+                    >
+                  </button>
+                  <button
+                    class="p-xs hover:bg-surface-container-high rounded transition-colors"
+                    type="button"
+                  >
+                    <span
+                      class="material-symbols-outlined text-[20px]"
+                      data-icon="format_italic"
+                      >format_italic</span
+                    >
+                  </button>
+                  <button
+                    class="p-xs hover:bg-surface-container-high rounded transition-colors"
+                    type="button"
+                  >
+                    <span
+                      class="material-symbols-outlined text-[20px]"
+                      data-icon="format_list_bulleted"
+                      >format_list_bulleted</span
+                    >
+                  </button>
+                  <button
+                    class="p-xs hover:bg-surface-container-high rounded transition-colors"
+                    type="button"
+                  >
+                    <span
+                      class="material-symbols-outlined text-[20px]"
+                      data-icon="link"
+                      >link</span
+                    >
+                  </button>
+                </div>
+                <textarea
+                  class="w-full p-sm bg-surface-bright outline-none resize-none font-body-md"
+                  placeholder="Share a detailed overview of the event, keynote speakers, and learning outcomes..."
+                  rows="5"
+                ></textarea>
+              </div>
+            </div>
+          </section>
+          <!-- Section 2: Logistics -->
+          <section
+            class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md space-y-md"
+          >
+            <div
+              class="flex items-center gap-xs border-b border-outline-variant pb-xs"
+            >
+              <span
+                class="material-symbols-outlined text-primary"
+                data-icon="schedule"
+                >schedule</span
+              >
+              <h3 class="font-headline-sm text-headline-sm text-primary">
+                Time &amp; Location
+              </h3>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+              <div class="flex flex-col gap-xs">
+                <label
+                  class="font-label-md text-label-md text-on-surface-variant"
+                  >Start Date &amp; Time</label
+                >
+                <input
+                  class="w-full px-sm py-xs bg-surface-bright border border-outline-variant rounded-lg focus:ring-2 focus:ring-secondary-container focus:border-secondary outline-none transition-all"
+                  type="datetime-local"
+                />
+              </div>
+              <div class="flex flex-col gap-xs">
+                <label
+                  class="font-label-md text-label-md text-on-surface-variant"
+                  >End Date &amp; Time</label
+                >
+                <input
+                  class="w-full px-sm py-xs bg-surface-bright border border-outline-variant rounded-lg focus:ring-2 focus:ring-secondary-container focus:border-secondary outline-none transition-all"
+                  type="datetime-local"
+                />
+              </div>
+            </div>
+            <div class="flex flex-col gap-xs">
+              <label class="font-label-md text-label-md text-on-surface-variant"
+                >Location</label
+              >
+              <div class="relative">
+                <span
+                  class="absolute left-sm top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant"
+                  data-icon="location_on"
+                  >location_on</span
+                >
+                <input
+                  class="w-full pl-lg pr-sm py-xs bg-surface-bright border border-outline-variant rounded-lg focus:ring-2 focus:ring-secondary-container focus:border-secondary outline-none transition-all"
+                  placeholder="Search for a campus building, room, or enter a virtual link"
+                  type="text"
+                />
+              </div>
+            </div>
+          </section>
+          <!-- Section 3: Classification & Capacity -->
+          <section
+            class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md space-y-md"
+          >
+            <div
+              class="flex items-center gap-xs border-b border-outline-variant pb-xs"
+            >
+              <span
+                class="material-symbols-outlined text-primary"
+                data-icon="category"
+                >category</span
+              >
+              <h3 class="font-headline-sm text-headline-sm text-primary">
+                Classification
+              </h3>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-md">
+              <div class="flex flex-col gap-xs">
+                <label
+                  class="font-label-md text-label-md text-on-surface-variant"
+                  >Academic Term</label
+                >
+                <select
+                  class="w-full px-sm py-xs bg-surface-bright border border-outline-variant rounded-lg focus:ring-2 focus:ring-secondary-container focus:border-secondary outline-none transition-all appearance-none"
+                >
+                  <option>Fall 2024</option>
+                  <option>Spring 2025</option>
+                  <option>Summer 2024</option>
+                </select>
+              </div>
+              <div class="flex flex-col gap-xs">
+                <label
+                  class="font-label-md text-label-md text-on-surface-variant"
+                  >Category</label
+                >
+                <select
+                  class="w-full px-sm py-xs bg-surface-bright border border-outline-variant rounded-lg focus:ring-2 focus:ring-secondary-container focus:border-secondary outline-none transition-all appearance-none"
+                >
+                  <option>Academic Symposium</option>
+                  <option>Student Workshop</option>
+                  <option>Career Fair</option>
+                  <option>Guest Lecture</option>
+                </select>
+              </div>
+              <div class="flex flex-col gap-xs">
+                <label
+                  class="font-label-md text-label-md text-on-surface-variant"
+                  >Max Attendees</label
+                >
+                <input
+                  class="w-full px-sm py-xs bg-surface-bright border border-outline-variant rounded-lg focus:ring-2 focus:ring-secondary-container focus:border-secondary outline-none transition-all"
+                  placeholder="0 = Unlimited"
+                  type="number"
+                />
+              </div>
+            </div>
+          </section>
+          <section
+            class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md space-y-md"
+          >
+            <div
+              class="flex items-center gap-xs border-b border-outline-variant pb-xs"
+            >
+              <span
+                class="material-symbols-outlined text-primary"
+                data-icon="groups"
+                >groups</span
+              >
+              <h3 class="font-headline-sm text-headline-sm text-primary">
+                Speakers
+              </h3>
+            </div>
+            <div class="space-y-md">
+              <div class="flex flex-col gap-xs">
+                <label
+                  class="font-label-md text-label-md text-on-surface-variant"
+                  >Search Speakers</label
+                >
+                <div class="relative">
+                  <span
+                    class="absolute left-sm top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant"
+                    data-icon="search"
+                    >search</span
+                  >
+                  <input
+                    class="w-full pl-lg pr-sm py-xs bg-surface-bright border border-outline-variant rounded-lg focus:ring-2 focus:ring-secondary-container focus:border-secondary outline-none transition-all"
+                    placeholder="Search speakers by name..."
+                    type="text"
+                  />
+                </div>
+              </div>
+              <div
+                class="border border-dashed border-outline-variant rounded-lg p-lg text-center bg-surface-container-low"
+              >
+                <p class="font-body-sm text-on-surface-variant">
+                  No speakers added yet. Search for existing speakers or add a
+                  new one below.
+                </p>
+              </div>
+              <div class="pt-sm">
+                <button
+                  class="flex items-center gap-xs text-secondary font-label-md text-label-md hover:underline"
+                  type="button"
+                >
+                  <span
+                    class="material-symbols-outlined text-[20px]"
+                    data-icon="add_circle"
+                    >add_circle</span
+                  >
+                  Add New Speaker
+                </button>
+              </div>
+              <div
+                class="mt-md p-md border border-outline-variant rounded-lg bg-surface-bright space-y-md"
+              >
+                <h4
+                  class="font-label-md text-label-md text-primary uppercase tracking-wider"
+                >
+                  New Speaker Details
+                </h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+                  <div class="flex flex-col gap-md">
+                    <div class="flex flex-col gap-xs">
+                      <label
+                        class="font-label-md text-label-md text-on-surface-variant"
+                        >Full Name</label
+                      >
+                      <input
+                        class="w-full px-sm py-xs bg-surface-bright border border-outline-variant rounded-lg focus:ring-2 focus:ring-secondary-container focus:border-secondary outline-none transition-all"
+                        placeholder="e.g. Dr. Jane Smith"
+                        type="text"
+                      />
+                    </div>
+                    <div class="flex flex-col gap-xs">
+                      <label
+                        class="font-label-md text-label-md text-on-surface-variant"
+                        >Speaker Bio/Information</label
+                      >
+                      <textarea
+                        class="w-full p-sm bg-surface-bright border border-outline-variant rounded-lg outline-none resize-none font-body-md focus:ring-2 focus:ring-secondary-container focus:border-secondary"
+                        placeholder="Brief biography and expertise..."
+                        rows="3"
+                      ></textarea>
+                    </div>
+                  </div>
+                  <div class="flex flex-col gap-xs">
+                    <label
+                      class="font-label-md text-label-md text-on-surface-variant"
+                      >Photo Upload</label
+                    >
+                    <div
+                      class="border-2 border-dashed border-outline-variant rounded-lg p-md flex flex-col items-center justify-center gap-xs bg-surface-container-low hover:bg-surface-container-high transition-colors cursor-pointer h-full min-h-[160px]"
+                    >
+                      <span
+                        class="material-symbols-outlined text-secondary text-[32px]"
+                        data-icon="add_a_photo"
+                        >add_a_photo</span
+                      >
+                      <p class="font-label-md text-label-md text-primary">
+                        Upload Photo
+                      </p>
+                      <p class="text-[10px] text-on-surface-variant">
+                        Square (1:1) recommended
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+          <!-- Section 4: Visuals -->
+          <section
+            class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md space-y-md"
+          >
+            <div
+              class="flex items-center gap-xs border-b border-outline-variant pb-xs"
+            >
+              <span
+                class="material-symbols-outlined text-primary"
+                data-icon="image"
+                >image</span
+              >
+              <h3 class="font-headline-sm text-headline-sm text-primary">
+                Event Banner
+              </h3>
+            </div>
+            <div
+              class="border-2 border-dashed border-outline-variant rounded-xl p-xl flex flex-col items-center justify-center gap-sm bg-surface-bright hover:bg-surface-container-low transition-colors cursor-pointer group relative overflow-hidden h-64"
+            >
+              <img
+                class="absolute inset-0 w-full h-full object-cover opacity-10 group-hover:opacity-20 transition-opacity"
+                data-alt="A wide-angle professional photograph of a modern university auditorium during a tech conference. The stage is lit with cool blue and white spotlights, showing a high-tech screen displaying code and abstract data visualizations. The atmosphere is academic yet technologically advanced, fitting a high-end university admin portal aesthetic with deep blues and crisp whites."
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJjeVIkfrqItpXbeVA8AYH-ac1anMVQlhtABGx4Tk0gnJLbol6nEqJPVMA8dtJISE2YhYoR6440zmVbBkh_qnd9hC_iEdLRuG7feVQz-UqFG0SO_2gEAZdTV3TnhYkvta5Gjr-M0JogqUlF35rFXus5c8Hf-GEwx0SExiU31jENBu0CDChESoS6Weg3etuL53c7WbVOdOu1L8CMZo0kg8FqKTFg5iU_-riKQGXYlnOVURPJtxy5amCOTK4y3kk80OCxG12peMFtg"
+              />
+              <div class="relative z-10 flex flex-col items-center text-center">
+                <div
+                  class="w-12 h-12 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center mb-xs"
+                >
+                  <span
+                    class="material-symbols-outlined text-[28px]"
+                    data-icon="cloud_upload"
+                    >cloud_upload</span
+                  >
+                </div>
+                <p class="font-label-md text-label-md text-primary">
+                  Click to upload banner
+                </p>
+                <p class="font-body-sm text-body-sm text-on-surface-variant">
+                  Recommended: 1200 x 480 pixels (PNG, JPG)
+                </p>
+              </div>
+            </div>
+          </section>
+          <!-- Form Actions -->
+          <div
+            class="flex items-center justify-end gap-md pt-md border-t border-outline-variant"
+          >
+            <button
+              class="px-lg py-sm font-label-md text-label-md text-primary hover:bg-surface-container-high rounded-lg transition-all"
+              type="button"
+            >
+              Save as Draft
+            </button>
+            <button
+              class="px-xl py-sm bg-primary text-on-primary font-label-md text-label-md rounded-lg flex items-center gap-xs hover:bg-opacity-90 active:scale-95 duration-150"
+              type="submit"
+            >
+              Continue to Design
+              <span
+                class="material-symbols-outlined text-[18px]"
+                data-icon="arrow_forward"
+                >arrow_forward</span
+              >
+            </button>
+          </div>
+        </form>
+      </div>
+    </main>
+    <script>
+      // Micro-interaction for form inputs focus states
+      document.querySelectorAll("input, select, textarea").forEach((el) => {
+        el.addEventListener("focus", () => {
+          el.parentElement
+            .querySelector("label")
+            ?.classList.add("text-secondary");
+        });
+        el.addEventListener("blur", () => {
+          el.parentElement
+            .querySelector("label")
+            ?.classList.remove("text-secondary");
+        });
+      });
+
+      // Simple mock for "Next Step" button
+      document.querySelector("form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        console.log("Moving to Step 2: Design");
+      });
+    </script>
+  </body>
+</html>

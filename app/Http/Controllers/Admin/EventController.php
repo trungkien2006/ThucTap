@@ -67,7 +67,26 @@ class EventController extends Controller
             ]);
         }
 
-        return redirect()->route('admin.events.index')->with('success', 'Event created successfully.');
+        // Redirect to design step (Step 2)
+        return redirect()->route('admin.events.design', $event)->with('success', 'Sự kiện đã được tạo. Hãy thiết kế giao diện!');
+    }
+
+    /**
+     * Step 2: Design Studio
+     */
+    public function design(Event $event)
+    {
+        $event->load('bannerImage', 'media', 'category', 'scheduleItems', 'speakers');
+        return view('admin.events.design', compact('event'));
+    }
+
+    /**
+     * Step 3: Preview before publish
+     */
+    public function preview(Event $event)
+    {
+        $event->load('bannerImage', 'media', 'category', 'scheduleItems', 'speakers');
+        return view('admin.events.preview', compact('event'));
     }
 
     public function edit(Event $event)
@@ -120,7 +139,7 @@ class EventController extends Controller
 
         $event->save();
 
-        return redirect()->route('admin.events.index')->with('success', 'Event updated successfully.');
+        return redirect()->route('admin.events.index')->with('success', 'Cập nhật sự kiện thành công.');
     }
 
     public function destroy(Event $event)
@@ -133,6 +152,6 @@ class EventController extends Controller
         }
 
         $event->delete();
-        return redirect()->route('admin.events.index')->with('success', 'Event deleted successfully.');
+        return redirect()->route('admin.events.index')->with('success', 'Đã xóa sự kiện thành công.');
     }
 }

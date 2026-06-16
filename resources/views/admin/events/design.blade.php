@@ -15,9 +15,59 @@
 
     <style>
         body { background-color: #0f172a; }
+
+        /* Active slot highlight */
+        .media-slot.slot-active {
+            border-color: #f97316 !important;
+            box-shadow: 0 0 0 3px rgba(249,115,22,0.25);
+        }
+        .media-slot.slot-filled {
+            border-style: solid !important;
+            border-color: #e2e8f0 !important;
+        }
+
+        /* Media library item */
+        .lib-item { transition: all 0.15s; cursor: pointer; }
+        .lib-item.selected { border-color: #f97316 !important; box-shadow: 0 0 0 2px rgba(249,115,22,0.4); }
+
+        /* Tab active */
+        .tab-btn.active {
+            background: #f97316;
+            color: white;
+        }
+
+        /* Upload drop zone */
+        .drop-zone.dragging {
+            border-color: #f97316;
+            background-color: #fff7ed;
+        }
+
+        /* Spinner overlay */
+        #uploadSpinner {
+            display: none;
+            position: absolute; inset: 0;
+            background: rgba(255,255,255,0.75);
+            border-radius: 12px;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+        #uploadSpinner.show { display: flex; }
+
+        /* Tooltip on slot click */
+        .slot-label { font-size: 11px; color: #94a3b8; margin-top: 4px; text-align:center; }
+
+        /* Ensure main canvas is always clickable even if drawer is open */
+        body.drawer-open .main-content-canvas {
+            pointer-events: auto !important;
+            opacity: 1 !important;
+        }
+        body.drawer-open::before {
+            display: none !important;
+        }
     </style>
 </head>
-<body class="overflow-x-hidden pt-[64px]">
+<body class="overflow-x-clip pt-[64px]">
     <div class="app-layout">
         <!-- ─── Control Drawer (Left Panel) ─── -->
         <aside class="control-drawer overflow-y-auto p-6 shadow-drawer">
@@ -110,38 +160,97 @@
                     </div>
                 </div>
 
-                <!-- 5. Media -->
+                <!-- 5. Media Library (Tabbed) -->
                 <div id="sec-media" class="space-y-3 pt-2 border-t border-slate-100 transition-all rounded-lg p-2 -m-2">
                     <h4 class="uni-section-title">5. Thư viện Media</h4>
-                    <p class="text-[11px] text-slate-400 mb-2">Chọn ảnh từ thư viện hoặc tải ảnh mới lên.</p>
 
-                    <!-- Media Library Grid -->
-                    <div id="mediaLibrary" class="grid grid-cols-3 gap-2 max-h-[200px] overflow-y-auto">
-                        @foreach($event->media as $media)
-                        <div class="media-select-item relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-brand-orange cursor-pointer transition-all" onclick="selectMedia(this, '{{ Storage::url($media->url) }}')" data-url="{{ Storage::url($media->url) }}">
-                            <img src="{{ Storage::url($media->url) }}" class="w-full h-full object-cover" alt="">
-                            <div class="absolute inset-0 bg-black/0 hover:bg-black/20 transition-all flex items-center justify-center">
-                                <span class="material-symbols-outlined text-white opacity-0 hover:opacity-100 text-[20px]">check_circle</span>
-                            </div>
-                        </div>
-                        @endforeach
+                    {{-- Active slot indicator --}}
+                    <div id="activeSlotIndicator" class="hidden items-center gap-2 px-3 py-2 bg-orange-50 border border-orange-200 rounded-xl">
+                        <span class="material-symbols-outlined text-brand-orange text-[16px]">touch_app</span>
+                        <p class="text-[12px] text-brand-orange font-medium" id="activeSlotLabel">Đang chọn ảnh cho Ô 1</p>
+                        <button onclick="clearActiveSlot()" class="ml-auto text-slate-400 hover:text-slate-600">
+                            <span class="material-symbols-outlined text-[16px]">close</span>
+                        </button>
                     </div>
 
-                    <div class="space-y-1">
-                        <label class="uni-label">Tải ảnh mới (Bôi đen nhiều file)</label>
-                        <input type="file" id="inHeroBg" accept="image/*" multiple onchange="handleFileSelect(this)" class="w-full text-[12px] text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-[12px] file:font-semibold file:bg-slate-100 file:text-primary hover:file:bg-slate-200 transition-all cursor-pointer border border-slate-200 rounded-xl p-1"/>
+                    {{-- Tabs --}}
+                    <div class="flex gap-1.5 bg-slate-100 p-1 rounded-xl">
+                        <button onclick="switchTab('library')" id="tabLibrary" class="tab-btn active flex-1 py-1.5 text-[12px] font-semibold rounded-lg transition-all">
+                            Kho Media ({{ count($mediaLibrary) }})
+                        </button>
+                        <button onclick="switchTab('upload')" id="tabUpload" class="tab-btn flex-1 py-1.5 text-[12px] font-semibold rounded-lg transition-all text-slate-500 hover:text-primary">
+                            Tải file mới
+                        </button>
+                    </div>
+
+                    {{-- Tab: Library --}}
+                    <div id="tabPanelLibrary">
+                        @if(count($mediaLibrary) > 0)
+                        <div id="mediaLibraryGrid" class="grid grid-cols-3 gap-2 max-h-[220px] overflow-y-auto pr-1">
+                            @foreach($mediaLibrary as $media)
+                            <div class="lib-item relative aspect-square rounded-xl overflow-hidden border-2 border-transparent bg-slate-900"
+                                 onclick="applyLibraryItem('{{ Storage::url($media->url) }}', '{{ $media->type }}')"
+                                 title="{{ $media->caption ?? basename($media->url) }}">
+                                @if($media->type === 'video')
+                                    <video src="{{ Storage::url($media->url) }}" class="w-full h-full object-cover"></video>
+                                    <div class="absolute inset-0 bg-black/30 flex items-center justify-center">
+                                        <span class="material-symbols-outlined text-white text-[24px]">play_circle</span>
+                                    </div>
+                                @else
+                                    <img src="{{ Storage::url($media->url) }}" class="w-full h-full object-cover" alt="">
+                                @endif
+                                <div class="absolute inset-0 bg-black/0 hover:bg-black/30 transition-all flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-white opacity-0 group-hover:opacity-100 text-[20px]">add_photo_alternate</span>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                        @else
+                        <div class="text-center py-6 text-slate-400">
+                            <span class="material-symbols-outlined text-[36px] block mb-1 text-slate-200">photo_library</span>
+                            <p class="text-[12px]">Kho ảnh trống. Hãy tải ảnh mới lên.</p>
+                        </div>
+                        @endif
+                    </div>
+
+                    {{-- Tab: Upload --}}
+                    <div id="tabPanelUpload" class="hidden">
+                        <div class="relative">
+                            <label class="drop-zone block border-2 border-dashed border-slate-300 hover:border-brand-orange rounded-xl p-5 text-center cursor-pointer transition-all hover:bg-slate-50/50"
+                                   id="dropZoneLabel">
+                                <input type="file" id="inHeroBg" accept="image/*,video/*" multiple class="sr-only" onchange="handleFileSelect(this)"/>
+                                <span class="material-symbols-outlined text-[32px] text-brand-orange mb-1 block">cloud_upload</span>
+                                <p class="text-[13px] font-semibold text-primary">Nhấn hoặc kéo file vào đây</p>
+                                <p class="text-[11px] text-slate-400 mt-0.5">JPG, PNG, GIF, SVG, BMP, MP4, AVI, MOV, WEBM (Tối đa 50MB)</p>
+                            </label>
+                            <div id="uploadSpinner">
+                                <div class="flex flex-col items-center gap-2">
+                                    <div class="w-8 h-8 border-4 border-brand-orange border-t-transparent rounded-full animate-spin"></div>
+                                    <p class="text-[12px] text-slate-500" id="uploadProgressText">Đang tải lên...</p>
+                                </div>
+                            </div>
+                        </div>
+                        {{-- Upload progress list --}}
+                        <div id="uploadProgressList" class="mt-2 space-y-1.5 max-h-[100px] overflow-y-auto"></div>
                     </div>
                 </div>
 
                 <!-- 6. Speaker -->
                 <div id="sec-speaker" class="space-y-3 pt-2 border-t border-slate-100 mb-4 transition-all rounded-lg p-2 -m-2">
                     <h4 class="uni-section-title">6. Nhân sự đại diện</h4>
-                    <input type="text" id="inTenDienGia" value="{{ $event->speakers->first()?->name ?? 'Chuyên gia Creative Director' }}" oninput="syncData()" class="uni-input"/>
+                    <select id="inTenDienGia" onchange="syncData()" class="uni-input">
+                        <option value="" data-name="Chuyên gia Creative Director" data-photo="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80">-- Chọn diễn giả (Mặc định) --</option>
+                        @foreach($allSpeakers as $speaker)
+                            <option value="{{ $speaker->id }}" data-name="{{ $speaker->name }}" data-photo="{{ $speaker->photo_url ? asset($speaker->photo_url) : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80' }}" {{ $event->speakers->contains('id', $speaker->id) ? 'selected' : '' }}>
+                                {{ $speaker->name }} - {{ Str::limit($speaker->bio, 30) }}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
             </div>
 
             <div class="mt-4 pt-4 border-t border-slate-100 space-y-2">
-                <button onclick="closeEditor()" class="w-full py-2.5 bg-primary hover:bg-slate-800 text-white font-semibold rounded-xl text-[13px] shadow transition-all">
+                <button onclick="saveDesignThen(closeEditor)" class="w-full py-2.5 bg-primary hover:bg-slate-800 text-white font-semibold rounded-xl text-[13px] shadow transition-all">
                     Hoàn tất & Đóng
                 </button>
             </div>
@@ -174,10 +283,10 @@
                         <span class="material-symbols-outlined text-[18px]">tune</span>
                         Cấu hình sự kiện
                     </button>
-                    <a href="{{ route('admin.events.preview', $event) }}" class="flex items-center gap-2 px-4 py-2 bg-brand-orange hover:bg-orange-600 text-white rounded-xl text-[13px] font-medium transition-all shadow-sm">
+                    <button onclick="saveDesignThen(() => { window.location.href = '{{ route('admin.events.preview', $event) }}' })" class="flex items-center gap-2 px-4 py-2 bg-brand-orange hover:bg-orange-600 text-white rounded-xl text-[13px] font-medium transition-all shadow-sm">
                         <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
                         Xem trước
-                    </a>
+                    </button>
                 </div>
             </header>
 
@@ -196,9 +305,6 @@
                     <h1 id="viewTieuDe" onclick="openEditor('sec-info')" class="text-[28px] md:text-[36px] font-bold text-white mb-2 font-heading leading-tight cursor-pointer hover:text-slate-200">
                         {{ $event->title }}
                     </h1>
-                    <p id="viewMoTa" onclick="openEditor('sec-info')" class="text-slate-200/90 text-[14px] max-w-2xl font-light leading-relaxed cursor-pointer hover:text-white">
-                        {{ Str::limit($event->description, 150) }}
-                    </p>
                 </div>
             </section>
 
@@ -207,11 +313,11 @@
                 <!-- Left Column -->
                 <div class="lg:col-span-8 space-y-8">
                     <!-- Intro Card -->
-                    <div class="uni-card p-6">
+                    <div class="uni-card p-6" onclick="openEditor('sec-info')" style="cursor: pointer;">
                         <h3 class="text-[18px] font-bold text-primary mb-3 font-heading flex items-center gap-2">
                             <span class="w-1 h-5 bg-primary rounded-full"></span>Giới thiệu sự kiện
                         </h3>
-                        <p class="text-slate-600 text-[14px] leading-relaxed">
+                        <p id="viewMoTa" class="text-slate-600 text-[14px] leading-relaxed whitespace-pre-line">
                             {{ $event->description }}
                         </p>
                     </div>
@@ -220,41 +326,58 @@
                     <div class="uni-card p-6">
                         <div class="flex items-center justify-between mb-5 border-b border-slate-100 pb-3">
                             <h3 class="text-[18px] font-bold text-primary font-heading flex items-center gap-2">
-                                <span class="w-1 h-5 bg-primary rounded-full"></span>Bộ sưu tập khoảnh khắc
+                                <span class="w-1 h-5 bg-primary rounded-full"></span>Nội dung chính
                             </h3>
-                            <span class="text-[11px] text-slate-400">Nhấn để chọn Media</span>
+                            <span class="text-[11px] text-slate-400">Nhập nội dung sự kiện và chọn ảnh minh hoạ</span>
                         </div>
 
                         <div class="space-y-6" id="mediaSlots">
+                            @php $galleryMedia = $event->galleryImages->take(4)->values(); @endphp
                             @for($i = 1; $i <= 4; $i++)
-                            <div class="flex flex-col gap-3 bg-slate-50/50 p-4 rounded-xl border border-slate-100">
-                                <div onclick="openEditor('sec-media')" class="media-slot w-full h-24 bg-white hover:bg-slate-100 border border-dashed border-slate-300 hover:border-brand-orange rounded-xl flex items-center justify-center gap-2 cursor-pointer text-slate-500 hover:text-brand-orange transition-all" data-slot="{{ $i }}">
-                                    <span class="material-symbols-outlined text-[22px]">add</span>
-                                    <span class="text-[13px] font-medium">Thêm hình ảnh số {{ $i }}</span>
+                            @php 
+                                $media = $galleryMedia->get($i - 1); 
+                                $hasMedia = $media ? true : false;
+                            @endphp
+                            <div class="flex flex-col gap-3 bg-slate-50/50 p-4 rounded-xl border border-slate-100" data-slot-wrap="{{ $i }}">
+                                {{-- Content --}}
+                                <textarea id="content{{ $i }}" rows="3" placeholder="Nhập nội dung sự kiện cho đoạn này..."
+                                       class="w-full text-[14px] px-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all resize-y">{{ $media ? $media->content : '' }}</textarea>
+                                       
+                                {{-- Image slot --}}
+                                <div class="relative">
+                                    <div onclick="activateSlot({{ $i }})"
+                                         class="media-slot w-full h-32 bg-white hover:bg-slate-50 border-2 {{ $hasMedia ? '' : 'border-dashed' }} border-slate-300 hover:border-brand-orange rounded-xl flex items-center justify-center gap-2 cursor-pointer text-slate-500 hover:text-brand-orange transition-all {{ $hasMedia ? 'slot-filled' : '' }}"
+                                         data-slot="{{ $i }}" id="slot{{ $i }}">
+                                        @if($hasMedia)
+                                            @if($media->type === 'video')
+                                                <video src="{{ Storage::url($media->url) }}" class="w-full h-full object-cover rounded-xl" autoplay loop muted playsinline></video>
+                                            @else
+                                                <img src="{{ Storage::url($media->url) }}" class="w-full h-full object-cover rounded-xl" alt=""/>
+                                            @endif
+                                        @else
+                                            <span class="material-symbols-outlined text-[22px]">add_photo_alternate</span>
+                                            <span class="text-[13px] font-medium">Thêm hình ảnh {{ $i }}</span>
+                                        @endif
+                                    </div>
+                                    {{-- Remove button (hidden until filled) --}}
+                                    <button onclick="removeSlot({{ $i }})" id="removeBtn{{ $i }}"
+                                            class="{{ $hasMedia ? 'flex' : 'hidden' }} absolute top-2 right-2 w-7 h-7 bg-white/90 hover:bg-red-500 hover:text-white text-slate-600 rounded-lg shadow items-center justify-center transition-all z-10"
+                                            title="Gỡ ảnh">
+                                        <span class="material-symbols-outlined text-[16px]">delete</span>
+                                    </button>
                                 </div>
-                                <input type="text" placeholder="Nhập ghi chú mô tả nội dung cho ảnh {{ $i }}..." class="w-full text-[13px] px-3 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all"/>
+                                {{-- Caption --}}
+                                <input type="text" id="caption{{ $i }}" placeholder="Nhập ghi chú / mô tả cho ảnh {{ $i }}..."
+                                       class="w-full text-[13px] px-3 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all"
+                                       value="{{ $media ? $media->caption : '' }}" />
                             </div>
                             @endfor
-                        </div>
-                    </div>
-
-                    <!-- Speaker Card -->
-                    <div onclick="openEditor('sec-speaker')" class="bg-gradient-to-r from-slate-900 to-slate-800 text-white p-5 rounded-2xl flex gap-5 items-center cursor-pointer hover:shadow-lg transition-all border border-slate-800">
-                        <div class="w-16 h-16 rounded-xl overflow-hidden shrink-0 border border-white/10 shadow-inner">
-                            <img id="viewAnhDienGia" class="w-full h-full object-cover" src="{{ $event->speakers->first()?->photo_url ?? 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80' }}"/>
-                        </div>
-                        <div>
-                            <span class="text-brand-orange text-[10px] font-bold uppercase tracking-widest block mb-0.5">Keynote Speaker</span>
-                            <h3 id="viewTenDienGia" class="text-[16px] font-bold font-heading">
-                                {{ $event->speakers->first()?->name ?? 'Chuyên gia Creative Director' }}
-                            </h3>
-                            <p class="text-[12px] text-slate-400 font-light">Nhấn để cấu hình nhân sự đại diện chương trình</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Right Column -->
-                <div class="lg:col-span-4 space-y-6">
+                <div class="lg:col-span-4 space-y-6" style="position: sticky; top: 88px; align-self: start; height: max-content;">
                     <!-- Registration Card -->
                     <div class="uni-card p-5">
                         <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
@@ -310,6 +433,26 @@
                             {{ $event->scheduleItems->map(fn($s) => $s->start_time . ' - ' . $s->title)->implode("\n") ?: "Chưa có lịch hoạt động" }}
                         </div>
                     </div>
+
+                    <!-- Speaker Card -->
+                    <div onclick="openEditor('sec-info')" class="uni-card p-6 cursor-pointer hover:border-slate-300 transition-all group">
+                        <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
+                            <span class="text-[13px] text-slate-500 font-medium">Diễn giả chính</span>
+                            <span class="material-symbols-outlined text-slate-400 group-hover:text-brand-orange transition-colors text-[18px]">edit</span>
+                        </div>
+                        <div class="flex gap-4 items-center">
+                            <div class="w-16 h-16 rounded-xl overflow-hidden shrink-0 border border-slate-200 shadow-inner bg-slate-50">
+                                <img id="viewAnhDienGia" class="w-full h-full object-cover" src="{{ $event->speakers->first()?->photo_url ?? 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80' }}"/>
+                            </div>
+                            <div>
+                                <span class="text-brand-orange text-[10px] font-bold uppercase tracking-widest block mb-0.5">Keynote Speaker</span>
+                                <h3 id="viewTenDienGia" class="text-[16px] font-bold font-heading text-primary">
+                                    {{ $event->speakers->first()?->name ?? 'Chuyên gia Creative Director' }}
+                                </h3>
+                                <p class="text-[12px] text-slate-400 font-light">Nhấn để cấu hình nhân sự</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>
@@ -323,10 +466,8 @@
                 <h3 class="text-[18px] font-bold text-primary font-heading">Đã phát hiện file tương đồng</h3>
             </div>
             <p class="text-[14px] text-slate-600 mb-4">Hệ thống phát hiện một số file có tên trùng lặp với các file đã tải lên trước đó. Vẫn tiếp tục tải ảnh lên?</p>
-            
-            <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 mb-6 max-h-[150px] overflow-y-auto space-y-1" id="duplicateFilesList">
-                <!-- List of duplicated files injected here -->
-            </div>
+
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 mb-6 max-h-[150px] overflow-y-auto space-y-1" id="duplicateFilesList"></div>
 
             <div class="flex flex-col gap-2 sm:flex-row sm:justify-end">
                 <button onclick="cancelUpload()" class="px-4 py-2 text-[13px] font-semibold text-slate-500 hover:bg-slate-100 rounded-xl transition-all">Dừng tải file</button>
@@ -337,7 +478,11 @@
     </div>
 
     <script>
-        // Open control drawer
+        const EVENT_ID = {{ $event->id }};
+        const CSRF_TOKEN = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        const MEDIA_STORE_URL = '{{ route("admin.media.store") }}';
+
+        // ── Drawer ──────────────────────────────────────────────
         function openEditor(sectionId = null) {
             document.body.classList.add('drawer-open');
             if (sectionId) {
@@ -351,34 +496,118 @@
                 }, 200);
             }
         }
+        function closeEditor() { document.body.classList.remove('drawer-open'); }
 
-        // Close control drawer
-        function closeEditor() {
-            document.body.classList.remove('drawer-open');
+        // ── Tabs ─────────────────────────────────────────────────
+        function switchTab(tab) {
+            const isLib = (tab === 'library');
+            document.getElementById('tabLibrary').classList.toggle('active', isLib);
+            document.getElementById('tabUpload').classList.toggle('active', !isLib);
+            document.getElementById('tabLibrary').classList.toggle('text-slate-500', !isLib);
+            document.getElementById('tabUpload').classList.toggle('text-slate-500', isLib);
+            document.getElementById('tabPanelLibrary').classList.toggle('hidden', !isLib);
+            document.getElementById('tabPanelUpload').classList.toggle('hidden', isLib);
         }
 
-        // File upload handler & Duplicate checking
-        let uploadedImageBase64 = '';
+        // ── Slot Management ───────────────────────────────────────
+        let activeSlotId = null;
+
+        function activateSlot(slotNum) {
+            // Deactivate previous
+            document.querySelectorAll('.media-slot').forEach(s => s.classList.remove('slot-active'));
+            activeSlotId = slotNum;
+            const slot = document.getElementById('slot' + slotNum);
+            slot.classList.add('slot-active');
+
+            // Show indicator
+            const indicator = document.getElementById('activeSlotIndicator');
+            indicator.classList.remove('hidden');
+            indicator.classList.add('flex');
+            document.getElementById('activeSlotLabel').textContent = `Đang chọn ảnh cho Ô số ${slotNum}`;
+
+            // Open drawer to media section
+            openEditor('sec-media');
+        }
+
+        function clearActiveSlot() {
+            activeSlotId = null;
+            document.querySelectorAll('.media-slot').forEach(s => s.classList.remove('slot-active'));
+            const indicator = document.getElementById('activeSlotIndicator');
+            indicator.classList.add('hidden');
+            indicator.classList.remove('flex');
+        }
+
+        function removeSlot(slotNum) {
+            const slot = document.getElementById('slot' + slotNum);
+            slot.innerHTML = `
+                <span class="material-symbols-outlined text-[22px]">add_photo_alternate</span>
+                <span class="text-[13px] font-medium">Thêm hình ảnh ${slotNum}</span>
+            `;
+            slot.classList.remove('slot-filled');
+            slot.classList.add('border-dashed', 'border-slate-300');
+            document.getElementById('removeBtn' + slotNum).classList.add('hidden');
+        }
+
+        function applyMediaToSlot(url, type) {
+            if (!activeSlotId) return false;
+            const slot = document.getElementById('slot' + activeSlotId);
+            if (type === 'video') {
+                slot.innerHTML = `<video src="${url}" class="w-full h-full object-cover rounded-xl" autoplay loop muted></video>`;
+            } else {
+                slot.innerHTML = `<img src="${url}" class="w-full h-full object-cover rounded-xl" alt=""/>`;
+            }
+            slot.classList.add('slot-filled');
+            slot.classList.remove('border-dashed', 'border-slate-300', 'slot-active');
+
+            // Show remove button
+            document.getElementById('removeBtn' + activeSlotId).classList.remove('hidden');
+            document.getElementById('removeBtn' + activeSlotId).classList.add('flex');
+
+            clearActiveSlot();
+            return true;
+        }
+
+        // ── Library pick ─────────────────────────────────────────
+        function applyLibraryItem(url, type = 'image') {
+            if (!activeSlotId) {
+                // Flash indicator to tell user to pick a slot
+                const indicator = document.getElementById('activeSlotIndicator');
+                indicator.classList.remove('hidden');
+                indicator.classList.add('flex');
+                document.getElementById('activeSlotLabel').textContent = '⚠ Hãy nhấn vào một ô ảnh trước!';
+                indicator.classList.add('border-red-200', 'bg-red-50');
+                document.getElementById('activeSlotLabel').classList.add('text-red-500');
+                setTimeout(() => {
+                    indicator.classList.add('hidden');
+                    indicator.classList.remove('flex', 'border-red-200', 'bg-red-50');
+                    document.getElementById('activeSlotLabel').classList.remove('text-red-500');
+                }, 2000);
+                return;
+            }
+            // Highlight selected lib item
+            document.querySelectorAll('.lib-item').forEach(i => i.classList.remove('selected'));
+            event.currentTarget && event.currentTarget.classList.add('selected');
+            applyMediaToSlot(url, type);
+        }
+
+        // ── File Upload (AJAX) ────────────────────────────────────
         let pendingFiles = [];
         let newFiles = [];
         let duplicatedFiles = [];
-        
-        // Mock existing media filenames from database (in reality, you'd check content hashes on server)
+
         const existingMediaFilenames = [
-            @foreach($event->media as $media)
+            @foreach($mediaLibrary as $media)
                 "{{ basename($media->url) }}",
             @endforeach
         ];
 
         function handleFileSelect(input) {
             if (!input.files || input.files.length === 0) return;
-            
             pendingFiles = Array.from(input.files);
             newFiles = [];
             duplicatedFiles = [];
 
             pendingFiles.forEach(file => {
-                // Simple duplicate check by filename
                 if (existingMediaFilenames.includes(file.name)) {
                     duplicatedFiles.push(file);
                 } else {
@@ -387,7 +616,6 @@
             });
 
             if (duplicatedFiles.length > 0) {
-                // Show modal
                 const listEl = document.getElementById('duplicateFilesList');
                 listEl.innerHTML = duplicatedFiles.map(f => `
                     <div class="flex items-center gap-2 py-1.5 border-b border-slate-100 last:border-0 text-[13px]">
@@ -409,108 +637,146 @@
             document.getElementById('duplicateModal').classList.add('hidden');
             document.getElementById('duplicateModal').classList.remove('flex');
             document.getElementById('duplicateModalContent').classList.add('scale-95');
-            document.getElementById('inHeroBg').value = ''; // Reset input
+            document.getElementById('inHeroBg').value = '';
             pendingFiles = [];
         }
-
         function uploadNewOnly() {
             document.getElementById('duplicateModal').classList.add('hidden');
             document.getElementById('duplicateModal').classList.remove('flex');
             document.getElementById('duplicateModalContent').classList.add('scale-95');
             processUploads(newFiles);
         }
-
         function uploadAll() {
             document.getElementById('duplicateModal').classList.add('hidden');
             document.getElementById('duplicateModal').classList.remove('flex');
             document.getElementById('duplicateModalContent').classList.add('scale-95');
-            processUploads(pendingFiles);
+            processUploads(pendingFiles, true);
         }
 
-        function processUploads(filesToUpload) {
+        async function processUploads(filesToUpload, force = false) {
             if (filesToUpload.length === 0) return;
-            
-            // Set the first image as Hero Background
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                uploadedImageBase64 = e.target.result;
-                syncData();
-            };
-            reader.readAsDataURL(filesToUpload[0]);
 
-            // Add all files to the media library grid visually
-            const library = document.getElementById('mediaLibrary');
-            filesToUpload.forEach(f => {
-                const tempReader = new FileReader();
-                tempReader.onload = function(event) {
-                    const url = event.target.result;
-                    const html = `
-                        <div class="media-select-item relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-brand-orange cursor-pointer transition-all animate-fade-in" onclick="selectMedia(this, '${url}')">
-                            <img src="${url}" class="w-full h-full object-cover" alt="">
-                            <div class="absolute inset-0 bg-black/0 hover:bg-black/20 transition-all flex items-center justify-center">
-                                <span class="material-symbols-outlined text-white opacity-0 hover:opacity-100 text-[20px]">check_circle</span>
-                            </div>
-                        </div>
-                    `;
-                    library.insertAdjacentHTML('afterbegin', html);
-                    existingMediaFilenames.push(f.name); // Add to existing so next upload catches it
-                };
-                tempReader.readAsDataURL(f);
-            });
-            
-            // Note: In a real environment, you would use FormData and fetch() to actually upload these to the server here.
-        }
+            // Show spinner
+            document.getElementById('uploadSpinner').classList.add('show');
+            document.getElementById('uploadProgressText').textContent = `Đang tải lên ${filesToUpload.length} file...`;
+            const progressList = document.getElementById('uploadProgressList');
+            progressList.innerHTML = '';
 
-        // Media library selection
-        let selectedMediaUrl = '';
-        let activeSlot = null;
-        function selectMedia(el, url) {
-            // Remove previous selection
-            document.querySelectorAll('.media-select-item').forEach(item => {
-                item.classList.remove('border-brand-orange');
-                item.classList.add('border-transparent');
-            });
-            // Highlight selected
-            el.classList.remove('border-transparent');
-            el.classList.add('border-brand-orange');
-            selectedMediaUrl = url;
+            const formData = new FormData();
+            formData.append('event_id', EVENT_ID);
+            if (force) formData.append('force_upload', 1);
+            filesToUpload.forEach(f => formData.append('files[]', f));
 
-            // Find an active slot if none is explicitly clicked
-            if (!activeSlot) {
-                const slots = document.querySelectorAll('.media-slot');
-                for (let i = 0; i < slots.length; i++) {
-                    if (!slots[i].querySelector('img')) {
-                        activeSlot = slots[i];
-                        break;
+            try {
+                const resp = await fetch(MEDIA_STORE_URL, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': CSRF_TOKEN,
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                    },
+                    body: formData,
+                });
+
+                if (!resp.ok) {
+                    const errorData = await resp.json().catch(() => null);
+                    let errMsg = 'Lỗi máy chủ hoặc định dạng file không được hỗ trợ.';
+                    if (resp.status === 422 && errorData && errorData.errors) {
+                        errMsg = Object.values(errorData.errors).flat().join(' ');
+                    } else if (errorData && errorData.message) {
+                        errMsg = errorData.message;
+                    }
+                    throw new Error(errMsg);
+                }
+
+                const data = await resp.json();
+
+                if (data.success) {
+                    // Add uploaded items to library grid
+                    const grid = document.getElementById('mediaLibraryGrid');
+                    if (!grid) {
+                        // If grid doesn't exist (was empty), recreate the panel
+                        document.getElementById('tabPanelLibrary').innerHTML = `<div id="mediaLibraryGrid" class="grid grid-cols-3 gap-2 max-h-[220px] overflow-y-auto pr-1"></div>`;
+                    }
+                    const libGrid = document.getElementById('mediaLibraryGrid');
+
+                    data.files.forEach(file => {
+                        if (file.type === 'image' || file.type === 'video') {
+                            const div = document.createElement('div');
+                            div.className = 'lib-item relative aspect-square rounded-xl overflow-hidden border-2 border-transparent bg-slate-900';
+                            div.title = file.caption;
+                            div.onclick = () => applyLibraryItem(file.url, file.type);
+                            
+                            let mediaHtml = '';
+                            if (file.type === 'video') {
+                                mediaHtml = `<video src="${file.url}" class="w-full h-full object-cover"></video>
+                                             <div class="absolute inset-0 bg-black/30 flex items-center justify-center">
+                                                 <span class="material-symbols-outlined text-white text-[24px]">play_circle</span>
+                                             </div>`;
+                            } else {
+                                mediaHtml = `<img src="${file.url}" class="w-full h-full object-cover" alt="">`;
+                            }
+
+                            div.innerHTML = `${mediaHtml}
+                                <div class="absolute inset-0 bg-black/0 hover:bg-black/30 transition-all flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-white opacity-0 hover:opacity-100 text-[20px]">add_photo_alternate</span>
+                                </div>`;
+                            libGrid.insertAdjacentElement('afterbegin', div);
+                            existingMediaFilenames.push(file.caption);
+                        }
+
+                        // Show progress row
+                        const row = document.createElement('div');
+                        row.className = 'flex items-center gap-2 text-[12px] text-emerald-600 bg-emerald-50 rounded-lg px-2 py-1.5';
+                        row.innerHTML = `<span class="material-symbols-outlined text-[14px]">check_circle</span><span class="truncate">Đã thêm: ${file.caption}</span>`;
+                        progressList.appendChild(row);
+                    });
+
+                    // Update tab button count
+                    const currentCount = document.querySelectorAll('.lib-item').length;
+                    document.getElementById('tabLibrary').textContent = `Kho Media (${currentCount})`;
+
+                    // Switch to library tab to show results
+                    switchTab('library');
+
+                    // Auto-apply first image to active slot if any
+                    if (activeSlotId && data.files.length > 0 && (data.files[0].type === 'image' || data.files[0].type === 'video')) {
+                        applyMediaToSlot(data.files[0].url, data.files[0].type);
                     }
                 }
-            }
-
-            // If there's an active slot, fill it
-            if (activeSlot) {
-                activeSlot.innerHTML = `<img src="${url}" class="w-full h-full object-cover rounded-xl"/>`;
-                activeSlot.classList.remove('border-dashed');
-                
-                // Automatically set the next empty slot as active for continuous selection
-                activeSlot = null;
-                const slots = document.querySelectorAll('.media-slot');
-                for (let i = 0; i < slots.length; i++) {
-                    if (!slots[i].querySelector('img')) {
-                        activeSlot = slots[i];
-                        break;
-                    }
-                }
+            } catch (err) {
+                console.error('Upload error:', err);
+                const row = document.createElement('div');
+                row.className = 'flex items-center gap-2 text-[12px] text-red-500 bg-red-50 border border-red-100 rounded-lg px-2 py-2 mb-2';
+                row.innerHTML = `<span class="material-symbols-outlined text-[16px] shrink-0">error</span><span class="font-medium flex-1">${err.message || 'Lỗi tải lên. Vui lòng thử lại.'}</span>`;
+                progressList.appendChild(row);
+            } finally {
+                document.getElementById('uploadSpinner').classList.remove('show');
+                document.getElementById('inHeroBg').value = '';
             }
         }
 
-        // Track which media slot was clicked
-        document.querySelectorAll('.media-slot').forEach(slot => {
-            slot.addEventListener('click', function() {
-                activeSlot = this;
+        // ── Drag & Drop on drop zone ──────────────────────────────
+        const dropLabel = document.getElementById('dropZoneLabel');
+        if (dropLabel) {
+            ['dragenter', 'dragover'].forEach(e => dropLabel.addEventListener(e, ev => {
+                ev.preventDefault();
+                dropLabel.classList.add('dragging');
+            }));
+            ['dragleave', 'drop'].forEach(e => dropLabel.addEventListener(e, ev => {
+                ev.preventDefault();
+                dropLabel.classList.remove('dragging');
+            }));
+            dropLabel.addEventListener('drop', ev => {
+                const files = Array.from(ev.dataTransfer.files);
+                if (files.length) {
+                    pendingFiles = files;
+                    processUploads(files);
+                }
             });
-        });
+        }
 
-        // Date formatter
+        // ── Date formatter ────────────────────────────────────────
         function formatDisplayDate(dateString) {
             if (!dateString) return 'Chưa chọn';
             const parts = dateString.split('-');
@@ -518,27 +784,81 @@
             return dateString;
         }
 
-        // Real-time sync
+        // ── Real-time sync ────────────────────────────────────────
         function syncData() {
             document.getElementById('viewTieuDe').innerText = document.getElementById('inTieuDe').value;
             document.getElementById('viewMoTa').innerText = document.getElementById('inMoTa').value;
-
             const rawDate = document.getElementById('inNgay').value;
             document.getElementById('viewNgay').innerText = formatDisplayDate(rawDate);
-
             const startTime = document.getElementById('inGioBatDau').value || '--:--';
             const endTime = document.getElementById('inGioKetThuc').value || '--:--';
             document.getElementById('viewGio').innerText = `${startTime} - ${endTime}`;
-
             document.getElementById('viewLichHoatDong').innerText = document.getElementById('inLichHoatDong').value;
             document.getElementById('viewDiaDiem').innerText = document.getElementById('inDiaDiem').value;
             document.getElementById('viewHocKy').innerText = document.getElementById('inHocKy').value;
             document.getElementById('viewNganh').innerText = document.getElementById('inNganh').value;
             document.getElementById('viewToiDa').innerText = document.getElementById('inToiDa').value;
-            document.getElementById('viewTenDienGia').innerText = document.getElementById('inTenDienGia').value;
+            
+            // Speaker
+            const spkSelect = document.getElementById('inTenDienGia');
+            if(spkSelect) {
+                const opt = spkSelect.options[spkSelect.selectedIndex];
+                document.getElementById('viewTenDienGia').innerText = opt.getAttribute('data-name');
+                const photoUrl = opt.getAttribute('data-photo');
+                if(photoUrl) document.getElementById('viewAnhDienGia').src = photoUrl;
+            }
+        }
 
-            if (uploadedImageBase64) {
-                document.getElementById('viewHeroBg').style.backgroundImage = `url('${uploadedImageBase64}')`;
+        async function saveDesignThen(callback) {
+            const formData = {
+                title: document.getElementById('inTieuDe').value,
+                description: document.getElementById('inMoTa').value,
+                event_date: document.getElementById('inNgay').value,
+                start_time: document.getElementById('inGioBatDau').value,
+                end_date: document.getElementById('inGioKetThuc').value,
+                location: document.getElementById('inDiaDiem').value,
+                academic_year: document.getElementById('inHocKy').value,
+                department_id: document.getElementById('inNganh').selectedIndex > 0 ? 1 : null,
+                max_attendees: document.getElementById('inToiDa').value,
+                speaker_id: document.getElementById('inTenDienGia').value,
+                schedule_text: document.getElementById('inLichHoatDong').value,
+                media_slots: []
+            };
+
+            for (let i = 1; i <= 4; i++) {
+                const slot = document.getElementById('slot' + i);
+                const captionEl = document.getElementById('caption' + i);
+                const contentEl = document.getElementById('content' + i);
+                const mediaEl = slot.querySelector('img, video');
+                
+                if ((mediaEl && mediaEl.src) || (contentEl && contentEl.value.trim() !== '')) {
+                    formData.media_slots.push({
+                        url: mediaEl && mediaEl.src ? mediaEl.src : '',
+                        caption: captionEl ? captionEl.value : '',
+                        content: contentEl ? contentEl.value : ''
+                    });
+                }
+            }
+
+            try {
+                const resp = await fetch("{{ route('admin.events.save_design', $event) }}", {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                if (resp.ok) {
+                    if (callback) callback();
+                } else {
+                    alert('Lỗi lưu cấu hình!');
+                }
+            } catch (e) {
+                console.error(e);
+                alert('Lỗi lưu cấu hình!');
             }
         }
 

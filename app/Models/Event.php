@@ -85,7 +85,7 @@ class Event extends Model
 
     public function galleryImages()
     {
-        return $this->hasMany(EventMedia::class)->where('type', 'image')->where('is_banner', false);
+        return $this->hasMany(EventMedia::class)->where('is_banner', false);
     }
 
     public function videos()

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('type'); // 'image' or 'video'
             $table->string('url');
             $table->string('title')->nullable();
+            $table->string('caption')->nullable();
             $table->boolean('is_banner')->default(false);
             $table->boolean('is_recap')->default(false);
             $table->timestamp('created_at')->nullable();

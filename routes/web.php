@@ -20,6 +20,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     // Events
     Route::resource('events', App\Http\Controllers\Admin\EventController::class);
     Route::get('events/{event}/design', [App\Http\Controllers\Admin\EventController::class, 'design'])->name('events.design');
+    Route::post('events/{event}/save-design', [App\Http\Controllers\Admin\EventController::class, 'saveDesign'])->name('events.save_design');
     Route::get('events/{event}/preview', [App\Http\Controllers\Admin\EventController::class, 'preview'])->name('events.preview');
 
     // Check-in

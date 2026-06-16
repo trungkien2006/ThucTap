@@ -49,8 +49,11 @@
                     <img src="{{ Storage::url($item->url) }}" alt="{{ $item->caption }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"/>
                 </a>
             @elseif($item->type == 'video')
-                <a href="{{ Storage::url($item->url) }}" target="_blank" class="w-full h-full flex items-center justify-center bg-slate-800 hover:bg-slate-700 transition-colors">
-                    <span class="material-symbols-outlined text-[32px] text-white/80 group-hover:scale-110 transition-transform">play_circle</span>
+                <a href="{{ Storage::url($item->url) }}" target="_blank" class="block w-full h-full relative group bg-slate-900">
+                    <video src="{{ Storage::url($item->url) }}#t=0.1" preload="metadata" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"></video>
+                    <div class="absolute inset-0 bg-black/30 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-[32px] text-white/90 group-hover:scale-110 transition-transform">play_circle</span>
+                    </div>
                 </a>
             @else
                 <a href="{{ Storage::url($item->url) }}" target="_blank" class="w-full h-full flex flex-col items-center justify-center bg-slate-50 gap-1 hover:bg-slate-100 transition-colors">
@@ -105,10 +108,17 @@
                                     <a href="{{ Storage::url($item->url) }}" target="_blank" class="block w-full h-full">
                                         <img src="{{ Storage::url($item->url) }}" class="w-full h-full object-cover hover:opacity-80 transition-opacity"/>
                                     </a>
-                                @else
-                                    <a href="{{ Storage::url($item->url) }}" target="_blank" class="w-full h-full flex items-center justify-center hover:bg-slate-200 transition-colors">
-                                        <span class="material-symbols-outlined text-slate-300 text-[18px]">{{ $item->type == 'video' ? 'videocam' : 'description' }}</span>
+                                @elseif($item->type == 'video')
+                                    <a href="{{ Storage::url($item->url) }}" target="_blank" class="block w-full h-full relative bg-slate-900">
+                                        <video src="{{ Storage::url($item->url) }}#t=0.1" preload="metadata" class="w-full h-full object-cover hover:opacity-80 transition-opacity"></video>
+                                        <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                            <span class="material-symbols-outlined text-white/90 text-[18px] drop-shadow-md">play_circle</span>
+                                        </div>
                                     </a>
+                                @else
+                                    <div class="w-full h-full flex items-center justify-center bg-slate-100 text-slate-400">
+                                        <span class="material-symbols-outlined">description</span>
+                                    </div>
                                 @endif
                             </div>
                             <a href="{{ Storage::url($item->url) }}" target="_blank" class="text-[13px] font-medium text-primary hover:text-brand-orange hover:underline truncate max-w-[200px]" title="{{ $item->caption ?? basename($item->url) }}">{{ $item->caption ?? basename($item->url) }}</a>
@@ -165,7 +175,7 @@
                 <input type="file" name="files[]" multiple accept="image/*,video/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"/>
                 <span class="material-symbols-outlined text-[36px] text-brand-orange mb-2">cloud_upload</span>
                 <p class="text-[13px] font-semibold text-primary">Nhấn hoặc kéo thả tệp vào đây</p>
-                <p class="text-[11px] text-slate-400 mt-1">Hỗ trợ: JPG, PNG, WebP, GIF, MP4 (tối đa 10MB/tệp)</p>
+                <p class="text-[11px] text-slate-400 mt-1">Hỗ trợ: JPG, PNG, GIF, SVG, BMP, MP4, AVI, MOV, WEBM (tối đa 50MB/tệp)</p>
             </div>
 
             <div class="flex justify-end gap-3">

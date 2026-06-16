@@ -57,11 +57,11 @@
                             $ext = $doc->file_type ?? pathinfo($doc->url, PATHINFO_EXTENSION);
                             $icon = $iconMap[$ext] ?? ['draft', 'text-slate-400 bg-slate-50'];
                         @endphp
-                        <div class="w-10 h-10 rounded-xl {{ $icon[1] }} flex items-center justify-center shrink-0">
+                        <a href="{{ Storage::url($doc->url) }}" target="_blank" class="w-10 h-10 rounded-xl {{ $icon[1] }} flex items-center justify-center shrink-0 hover:opacity-80 transition-opacity">
                             <span class="material-symbols-outlined text-[20px]">{{ $icon[0] }}</span>
-                        </div>
+                        </a>
                         <div>
-                            <p class="text-[13px] font-medium text-primary">{{ $doc->title ?? basename($doc->url) }}</p>
+                            <a href="{{ Storage::url($doc->url) }}" target="_blank" class="text-[13px] font-medium text-primary hover:text-brand-orange hover:underline block">{{ $doc->title ?? basename($doc->url) }}</a>
                             <p class="text-[11px] text-slate-400 uppercase">.{{ $ext }}</p>
                         </div>
                     </div>

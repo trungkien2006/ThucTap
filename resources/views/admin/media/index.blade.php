@@ -43,18 +43,20 @@
 <div id="mediaGridView" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
     @foreach($media as $item)
     <div class="media-grid-item">
-        <div class="aspect-square bg-slate-100">
+        <div class="aspect-square bg-slate-100 relative group overflow-hidden">
             @if($item->type == 'image')
-                <img src="{{ Storage::url($item->url) }}" alt="{{ $item->caption }}" class="w-full h-full object-cover"/>
+                <a href="{{ Storage::url($item->url) }}" target="_blank" class="block w-full h-full">
+                    <img src="{{ Storage::url($item->url) }}" alt="{{ $item->caption }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"/>
+                </a>
             @elseif($item->type == 'video')
-                <div class="w-full h-full flex items-center justify-center bg-slate-800">
-                    <span class="material-symbols-outlined text-[32px] text-white/80">play_circle</span>
-                </div>
+                <a href="{{ Storage::url($item->url) }}" target="_blank" class="w-full h-full flex items-center justify-center bg-slate-800 hover:bg-slate-700 transition-colors">
+                    <span class="material-symbols-outlined text-[32px] text-white/80 group-hover:scale-110 transition-transform">play_circle</span>
+                </a>
             @else
-                <div class="w-full h-full flex flex-col items-center justify-center bg-slate-50 gap-1">
-                    <span class="material-symbols-outlined text-[28px] text-slate-300">description</span>
+                <a href="{{ Storage::url($item->url) }}" target="_blank" class="w-full h-full flex flex-col items-center justify-center bg-slate-50 gap-1 hover:bg-slate-100 transition-colors">
+                    <span class="material-symbols-outlined text-[28px] text-slate-300 group-hover:scale-110 transition-transform">description</span>
                     <span class="text-[10px] text-slate-400 uppercase font-bold">{{ pathinfo($item->url, PATHINFO_EXTENSION) }}</span>
-                </div>
+                </a>
             @endif
         </div>
         <div class="p-2.5">
@@ -100,14 +102,16 @@
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-lg overflow-hidden bg-slate-100 shrink-0">
                                 @if($item->type == 'image')
-                                    <img src="{{ Storage::url($item->url) }}" class="w-full h-full object-cover"/>
+                                    <a href="{{ Storage::url($item->url) }}" target="_blank" class="block w-full h-full">
+                                        <img src="{{ Storage::url($item->url) }}" class="w-full h-full object-cover hover:opacity-80 transition-opacity"/>
+                                    </a>
                                 @else
-                                    <div class="w-full h-full flex items-center justify-center">
+                                    <a href="{{ Storage::url($item->url) }}" target="_blank" class="w-full h-full flex items-center justify-center hover:bg-slate-200 transition-colors">
                                         <span class="material-symbols-outlined text-slate-300 text-[18px]">{{ $item->type == 'video' ? 'videocam' : 'description' }}</span>
-                                    </div>
+                                    </a>
                                 @endif
                             </div>
-                            <span class="text-[13px] font-medium text-primary">{{ $item->caption ?? basename($item->url) }}</span>
+                            <a href="{{ Storage::url($item->url) }}" target="_blank" class="text-[13px] font-medium text-primary hover:text-brand-orange hover:underline truncate max-w-[200px]" title="{{ $item->caption ?? basename($item->url) }}">{{ $item->caption ?? basename($item->url) }}</a>
                         </div>
                     </td>
                     <td><span class="badge-info">{{ ucfirst($item->type) }}</span></td>

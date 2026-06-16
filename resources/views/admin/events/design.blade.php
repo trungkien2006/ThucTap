@@ -475,11 +475,31 @@
             el.classList.add('border-brand-orange');
             selectedMediaUrl = url;
 
+            // Find an active slot if none is explicitly clicked
+            if (!activeSlot) {
+                const slots = document.querySelectorAll('.media-slot');
+                for (let i = 0; i < slots.length; i++) {
+                    if (!slots[i].querySelector('img')) {
+                        activeSlot = slots[i];
+                        break;
+                    }
+                }
+            }
+
             // If there's an active slot, fill it
             if (activeSlot) {
                 activeSlot.innerHTML = `<img src="${url}" class="w-full h-full object-cover rounded-xl"/>`;
                 activeSlot.classList.remove('border-dashed');
+                
+                // Automatically set the next empty slot as active for continuous selection
                 activeSlot = null;
+                const slots = document.querySelectorAll('.media-slot');
+                for (let i = 0; i < slots.length; i++) {
+                    if (!slots[i].querySelector('img')) {
+                        activeSlot = slots[i];
+                        break;
+                    }
+                }
             }
         }
 

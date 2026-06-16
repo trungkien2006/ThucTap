@@ -31,7 +31,8 @@ class EventController extends Controller
     {
         $categories = Category::eventTypes()->get();
         $departments = Category::departments()->get();
-        return view('admin.events.create', compact('categories', 'departments'));
+        $speakers = \App\Models\Speaker::all();
+        return view('admin.events.create', compact('categories', 'departments', 'speakers'));
     }
 
     public function store(Request $request)
@@ -45,17 +46,23 @@ class EventController extends Controller
             'category_id' => 'nullable|exists:categories,id',
             'department_id' => 'nullable|exists:categories,id',
             'max_attendees' => 'nullable|integer|min:1',
-            'banner_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'banner_image' => 'nullable|image|mimes:jpg,jpeg,png,webp',
+            'speaker_ids' => 'nullable|array',
+            'speaker_ids.*' => 'exists:speakers,id',
         ]);
 
-        // Remove banner_image from validated data — it goes to event_images
-        unset($validated['banner_image']);
+        // Remove banner_image and speaker_ids from validated data
+        unset($validated['banner_image'], $validated['speaker_ids']);
 
         $event = new Event($validated);
         $event->registration_open = $request->has('registration_open');
         $event->is_published = false;
         $event->created_by = auth()->id();
         $event->save();
+
+        if ($request->has('speaker_ids')) {
+            $event->speakers()->sync($request->input('speaker_ids'));
+        }
 
         // Handle banner image upload
         if ($request->hasFile('banner_image')) {
@@ -91,10 +98,11 @@ class EventController extends Controller
 
     public function edit(Event $event)
     {
-        $event->load('bannerImage');
+        $event->load('bannerImage', 'speakers');
         $categories = Category::eventTypes()->get();
         $departments = Category::departments()->get();
-        return view('admin.events.edit', compact('event', 'categories', 'departments'));
+        $speakers = \App\Models\Speaker::all();
+        return view('admin.events.edit', compact('event', 'categories', 'departments', 'speakers'));
     }
 
     public function update(Request $request, Event $event)
@@ -108,12 +116,14 @@ class EventController extends Controller
             'category_id' => 'nullable|exists:categories,id',
             'department_id' => 'nullable|exists:categories,id',
             'max_attendees' => 'nullable|integer|min:1',
-            'banner_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'banner_image' => 'nullable|image|mimes:jpg,jpeg,png,webp',
+            'speaker_ids' => 'nullable|array',
+            'speaker_ids.*' => 'exists:speakers,id',
             'status' => 'required|in:draft,published,archived',
         ]);
 
         $status = $validated['status'];
-        unset($validated['status'], $validated['banner_image']);
+        unset($validated['status'], $validated['banner_image'], $validated['speaker_ids']);
 
         $event->fill($validated);
 
@@ -138,6 +148,8 @@ class EventController extends Controller
         }
 
         $event->save();
+
+        $event->speakers()->sync($request->input('speaker_ids', []));
 
         return redirect()->route('admin.events.index')->with('success', 'Cập nhật sự kiện thành công.');
     }

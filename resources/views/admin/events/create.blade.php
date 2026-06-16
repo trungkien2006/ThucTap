@@ -130,20 +130,31 @@
                 <h3 class="text-[16px] font-bold text-primary font-heading">Diễn giả</h3>
             </div>
             <div>
-                <label class="uni-label">Tìm kiếm diễn giả</label>
-                <div class="relative">
-                    <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-[18px]">search</span>
-                    <input class="uni-input pl-10" type="text" placeholder="Tìm theo tên diễn giả..." id="speakerSearch"/>
+                <label class="uni-label">Chọn diễn giả (Có thể chọn nhiều)</label>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[240px] overflow-y-auto p-2 border border-slate-200 rounded-xl bg-slate-50/50">
+                    @forelse($speakers as $speaker)
+                        <label class="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-lg cursor-pointer hover:border-brand-orange transition-all">
+                            <input type="checkbox" name="speaker_ids[]" value="{{ $speaker->id }}" {{ is_array(old('speaker_ids')) && in_array($speaker->id, old('speaker_ids')) ? 'checked' : '' }} class="rounded border-slate-300 text-brand-orange focus:ring-brand-orange w-4 h-4">
+                            <div class="flex items-center gap-3">
+                                <img src="{{ $speaker->photo_url ? Storage::url($speaker->photo_url) : 'https://ui-avatars.com/api/?name='.urlencode($speaker->name).'&background=random' }}" class="w-8 h-8 rounded-full object-cover">
+                                <div>
+                                    <p class="text-[13px] font-semibold text-primary">{{ $speaker->name }}</p>
+                                    <p class="text-[11px] text-slate-400">{{ $speaker->title ?? 'Diễn giả' }}</p>
+                                </div>
+                            </div>
+                        </label>
+                    @empty
+                        <div class="col-span-full py-6 text-center">
+                            <p class="text-[13px] text-slate-400">Chưa có diễn giả nào trong hệ thống.</p>
+                            <a href="{{ route('admin.speakers.create') ?? '#' }}" class="inline-flex items-center gap-1.5 text-brand-orange text-[12px] font-semibold hover:underline mt-2">
+                                <span class="material-symbols-outlined text-[16px]">add_circle</span>
+                                Thêm diễn giả mới
+                            </a>
+                        </div>
+                    @endforelse
                 </div>
+                @error('speaker_ids') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
             </div>
-            <div class="border border-dashed border-slate-200 rounded-xl p-8 text-center bg-slate-50/50">
-                <span class="material-symbols-outlined text-slate-300 text-[32px] mb-2">person_add</span>
-                <p class="text-[13px] text-slate-400">Chưa có diễn giả nào. Tìm kiếm hoặc thêm mới bên dưới.</p>
-            </div>
-            <button type="button" class="flex items-center gap-1.5 text-brand-orange text-[13px] font-semibold hover:underline">
-                <span class="material-symbols-outlined text-[18px]">add_circle</span>
-                Thêm diễn giả mới
-            </button>
         </section>
 
         <!-- Section 5: Banner -->

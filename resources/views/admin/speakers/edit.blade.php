@@ -22,16 +22,17 @@
                 <!-- Photo -->
                 <div>
                     <label class="uni-label">Ảnh đại diện</label>
-                    @if($speaker->photo_url)
-                    <div class="mb-3 w-32 h-32 rounded-xl overflow-hidden border border-slate-200">
-                        <img src="{{ $speaker->photo_url }}" class="w-full h-full object-cover" alt="{{ $speaker->name }}">
-                    </div>
-                    @endif
-                    <div class="border-2 border-dashed border-slate-200 rounded-xl p-4 flex flex-col items-center justify-center gap-2 bg-slate-50/30 hover:bg-slate-50 hover:border-brand-orange transition-all cursor-pointer relative">
-                        <input type="file" name="photo" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"/>
-                        <span class="material-symbols-outlined text-[24px] text-brand-orange">add_a_photo</span>
-                        <p class="text-[11px] text-slate-400">Chọn ảnh mới (tùy chọn)</p>
-                    </div>
+                    <label class="border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center justify-center gap-2 bg-slate-50/30 hover:bg-slate-50 hover:border-brand-orange transition-all cursor-pointer relative h-[180px] overflow-hidden w-full block">
+                        <input type="file" name="photo" id="photoInput" accept="image/*" class="hidden"/>
+                        
+                        <div id="photoPlaceholder" class="flex flex-col items-center justify-center gap-2 relative z-10 pointer-events-none {{ $speaker->photo_url ? 'hidden' : '' }}">
+                            <span class="material-symbols-outlined text-[24px] text-brand-orange">add_a_photo</span>
+                            <p class="text-[11px] font-semibold text-primary">Tải ảnh mới lên</p>
+                            <p class="text-[10px] text-slate-400">Tỷ lệ 1:1 khuyến nghị</p>
+                        </div>
+
+                        <img id="photoPreview" class="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none {{ $speaker->photo_url ? '' : 'hidden' }}" src="{{ $speaker->photo_url ?? '#' }}" alt="Preview" />
+                    </label>
                     @error('photo') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
                 </div>
 
@@ -61,3 +62,20 @@
     </form>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.getElementById('photoInput').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                document.getElementById('photoPreview').src = event.target.result;
+                document.getElementById('photoPreview').classList.remove('hidden');
+                document.getElementById('photoPlaceholder').classList.add('hidden');
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
+@endpush

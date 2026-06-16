@@ -97,7 +97,41 @@
             </div>
         </section>
 
-        <!-- Section 4: Banner -->
+        <!-- Section 4: Speakers -->
+        <section class="uni-card p-6 space-y-5">
+            <div class="flex items-center gap-2.5 border-b border-slate-100 pb-3">
+                <span class="material-symbols-outlined text-primary text-[20px]">groups</span>
+                <h3 class="text-[16px] font-bold text-primary font-heading">Diễn giả</h3>
+            </div>
+            <div>
+                <label class="uni-label">Chọn diễn giả (Có thể chọn nhiều)</label>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[240px] overflow-y-auto p-2 border border-slate-200 rounded-xl bg-slate-50/50">
+                    @forelse($speakers as $speaker)
+                        <label class="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-lg cursor-pointer hover:border-brand-orange transition-all">
+                            <input type="checkbox" name="speaker_ids[]" value="{{ $speaker->id }}" {{ (is_array(old('speaker_ids')) && in_array($speaker->id, old('speaker_ids'))) || (!old('speaker_ids') && $event->speakers->contains($speaker->id)) ? 'checked' : '' }} class="rounded border-slate-300 text-brand-orange focus:ring-brand-orange w-4 h-4">
+                            <div class="flex items-center gap-3">
+                                <img src="{{ $speaker->photo_url ? Storage::url($speaker->photo_url) : 'https://ui-avatars.com/api/?name='.urlencode($speaker->name).'&background=random' }}" class="w-8 h-8 rounded-full object-cover">
+                                <div>
+                                    <p class="text-[13px] font-semibold text-primary">{{ $speaker->name }}</p>
+                                    <p class="text-[11px] text-slate-400">{{ $speaker->title ?? 'Diễn giả' }}</p>
+                                </div>
+                            </div>
+                        </label>
+                    @empty
+                        <div class="col-span-full py-6 text-center">
+                            <p class="text-[13px] text-slate-400">Chưa có diễn giả nào trong hệ thống.</p>
+                            <a href="{{ route('admin.speakers.create') ?? '#' }}" class="inline-flex items-center gap-1.5 text-brand-orange text-[12px] font-semibold hover:underline mt-2">
+                                <span class="material-symbols-outlined text-[16px]">add_circle</span>
+                                Thêm diễn giả mới
+                            </a>
+                        </div>
+                    @endforelse
+                </div>
+                @error('speaker_ids') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
+            </div>
+        </section>
+
+        <!-- Section 5: Banner -->
         <section class="uni-card p-6 space-y-5">
             <div class="flex items-center gap-2.5 border-b border-slate-100 pb-3">
                 <span class="material-symbols-outlined text-primary text-[20px]">image</span>

@@ -21,12 +21,17 @@
                 <!-- Photo Upload -->
                 <div>
                     <label class="uni-label">Ảnh đại diện</label>
-                    <div class="border-2 border-dashed border-slate-200 rounded-xl p-6 flex flex-col items-center justify-center gap-2 bg-slate-50/30 hover:bg-slate-50 hover:border-brand-orange transition-all cursor-pointer relative h-[180px]">
-                        <input type="file" name="photo" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"/>
-                        <span class="material-symbols-outlined text-[32px] text-brand-orange">add_a_photo</span>
-                        <p class="text-[12px] font-semibold text-primary">Tải ảnh lên</p>
-                        <p class="text-[10px] text-slate-400">Tỷ lệ 1:1 khuyến nghị</p>
-                    </div>
+                    <label class="border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center justify-center gap-2 bg-slate-50/30 hover:bg-slate-50 hover:border-brand-orange transition-all cursor-pointer relative h-[180px] overflow-hidden w-full">
+                        <input type="file" name="photo" id="photoInput" accept="image/*" class="hidden"/>
+                        
+                        <div id="photoPlaceholder" class="flex flex-col items-center justify-center gap-2 relative z-10 pointer-events-none">
+                            <span class="material-symbols-outlined text-[32px] text-brand-orange">add_a_photo</span>
+                            <p class="text-[12px] font-semibold text-primary">Tải ảnh lên</p>
+                            <p class="text-[10px] text-slate-400">Tỷ lệ 1:1 khuyến nghị</p>
+                        </div>
+
+                        <img id="photoPreview" class="absolute inset-0 w-full h-full object-cover hidden z-0 pointer-events-none" src="#" alt="Preview" />
+                    </label>
                     @error('photo') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
                 </div>
 
@@ -56,3 +61,20 @@
     </form>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.getElementById('photoInput').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                document.getElementById('photoPreview').src = event.target.result;
+                document.getElementById('photoPreview').classList.remove('hidden');
+                document.getElementById('photoPlaceholder').classList.add('hidden');
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
+@endpush

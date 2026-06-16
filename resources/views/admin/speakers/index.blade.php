@@ -31,11 +31,13 @@
     <div class="uni-card-hover overflow-hidden">
         <div class="h-48 bg-slate-100 overflow-hidden">
             @if($speaker->photo_url)
-                <img src="{{ $speaker->photo_url }}" alt="{{ $speaker->name }}" class="w-full h-full object-cover">
+                <a href="{{ route('admin.speakers.edit', $speaker) }}" class="block w-full h-full">
+                    <img src="{{ $speaker->photo_url }}" alt="{{ $speaker->name }}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300">
+                </a>
             @else
-                <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200">
+                <a href="{{ route('admin.speakers.edit', $speaker) }}" class="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 hover:opacity-80 transition-opacity">
                     <span class="material-symbols-outlined text-[48px] text-slate-300">person</span>
-                </div>
+                </a>
             @endif
         </div>
         <div class="p-4">

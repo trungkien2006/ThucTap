@@ -24,7 +24,7 @@ class EventController extends Controller
 
     public function show(Event $event)
     {
-        $event->load('registrations', 'bannerImage', 'category', 'scheduleItems.speaker', 'speakers');
+        $event->load('bannerImage', 'category', 'scheduleItems.speaker', 'speakers');
         return view('admin.events.show', compact('event'));
     }
 
@@ -46,7 +46,6 @@ class EventController extends Controller
             'location' => 'required|string|max:255',
             'category_id' => 'nullable|exists:categories,id',
             'department_id' => 'nullable|exists:categories,id',
-            'max_attendees' => 'nullable|integer|min:1',
             'banner_image' => 'nullable|image|mimes:jpg,jpeg,png,webp',
             'speaker_ids' => 'nullable|array',
             'speaker_ids.*' => 'exists:speakers,id',
@@ -56,7 +55,6 @@ class EventController extends Controller
         unset($validated['banner_image'], $validated['speaker_ids']);
 
         $event = new Event($validated);
-        $event->registration_open = $request->has('registration_open');
         $event->is_published = false;
         $event->created_by = auth()->id();
         $event->save();
@@ -103,7 +101,6 @@ class EventController extends Controller
             'location' => 'nullable|string',
             'academic_year' => 'nullable|string',
             'department_id' => 'nullable|exists:categories,id',
-            'max_attendees' => 'nullable|integer',
             'speaker_id' => 'nullable|exists:speakers,id',
             'schedule_text' => 'nullable|string',
             'media_slots' => 'nullable|array', // array of URLs
@@ -130,7 +127,6 @@ class EventController extends Controller
         if ($request->has('location')) $event->location = $request->location;
         if ($request->has('academic_year')) $event->academic_year = $request->academic_year;
         if ($request->has('department_id')) $event->department_id = $request->department_id;
-        if ($request->has('max_attendees')) $event->max_attendees = $request->max_attendees;
 
         $event->save();
 
@@ -217,7 +213,6 @@ class EventController extends Controller
             'location' => 'required|string|max:255',
             'category_id' => 'nullable|exists:categories,id',
             'department_id' => 'nullable|exists:categories,id',
-            'max_attendees' => 'nullable|integer|min:1',
             'banner_image' => 'nullable|image|mimes:jpg,jpeg,png,webp',
             'speaker_ids' => 'nullable|array',
             'speaker_ids.*' => 'exists:speakers,id',
@@ -230,7 +225,6 @@ class EventController extends Controller
         $event->fill($validated);
 
         $event->is_published = ($status === 'published');
-        $event->registration_open = $request->has('registration_open');
 
         // Handle banner image upload
         if ($request->hasFile('banner_image')) {

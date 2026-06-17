@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\PublicEventController;
-use App\Http\Controllers\PublicRegistrationController;
 use App\Http\Controllers\Admin\CheckInController;
 use App\Http\Controllers\Admin\SpeakerController;
 use App\Http\Controllers\Admin\MediaController;
@@ -11,8 +10,6 @@ use App\Http\Controllers\FrontendController;
 
 Route::get('/', [FrontendController::class, 'home'])->name('home');
 Route::get('/events/{slug}', [PublicEventController::class, 'show'])->name('events.show');
-Route::post('/events/{event}/register', [PublicRegistrationController::class, 'store'])->name('events.register');
-Route::get('/register/confirm/{token}', [PublicRegistrationController::class, 'confirm'])->name('register.confirm');
 
 Route::get('/dashboard', function () {
     return redirect()->route('admin.events.index');

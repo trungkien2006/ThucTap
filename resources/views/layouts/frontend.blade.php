@@ -92,7 +92,7 @@
                 <a href="#events"
                    class="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold text-[#1C1410] shadow-md transition-all hover:shadow-lg hover:scale-105"
                    style="background:#FFE381;">
-                    Đăng ký sự kiện
+                    Khám phá sự kiện
                     <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
                 </a>
             </div>

@@ -90,10 +90,6 @@
                         @endforeach
                     </select>
                 </div>
-                <div>
-                    <label class="uni-label" for="max_attendees">Số lượng tối đa</label>
-                    <input class="uni-input" id="max_attendees" name="max_attendees" value="{{ old('max_attendees', $event->max_attendees) }}" type="number" min="1"/>
-                </div>
             </div>
         </section>
 
@@ -155,7 +151,7 @@
                 <span class="material-symbols-outlined text-primary text-[20px]">tune</span>
                 <h3 class="text-[16px] font-bold text-primary font-heading">Trạng thái & Tùy chọn</h3>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div class="grid grid-cols-1 md:grid-cols-1 gap-5">
                 <div>
                     <label class="uni-label" for="status">Trạng thái <span class="text-red-400">*</span></label>
                     <select class="uni-input" id="status" name="status" required>
@@ -163,12 +159,6 @@
                         <option value="published" {{ $event->status == 'published' ? 'selected' : '' }}>Đã xuất bản</option>
                         <option value="archived">Lưu trữ</option>
                     </select>
-                </div>
-                <div class="flex items-end">
-                    <label class="flex items-center gap-3 cursor-pointer pb-2">
-                        <input type="checkbox" name="registration_open" value="1" {{ old('registration_open', $event->registration_open) ? 'checked' : '' }} class="rounded border-slate-300 text-brand-orange focus:ring-brand-orange w-4 h-4">
-                        <span class="text-[13px] font-medium text-primary">Mở đăng ký</span>
-                    </label>
                 </div>
             </div>
         </section>

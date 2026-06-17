@@ -115,11 +115,6 @@
                     </select>
                     @error('department_id') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
                 </div>
-                <div>
-                    <label class="uni-label" for="max_attendees">Số lượng tối đa</label>
-                    <input class="uni-input" id="max_attendees" name="max_attendees" value="{{ old('max_attendees') }}" type="number" min="1" placeholder="0 = Không giới hạn"/>
-                    @error('max_attendees') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
-                </div>
             </div>
         </section>
 
@@ -173,14 +168,6 @@
                 @error('banner_image') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
             </div>
         </section>
-
-        <!-- Options -->
-        <div class="uni-card p-6">
-            <label class="flex items-center gap-3 cursor-pointer">
-                <input type="checkbox" name="registration_open" value="1" {{ old('registration_open', true) ? 'checked' : '' }} class="rounded border-slate-300 text-brand-orange focus:ring-brand-orange w-4 h-4">
-                <span class="text-[13px] font-medium text-primary">Mở đăng ký ngay sau khi tạo</span>
-            </label>
-        </div>
 
         <!-- Form Actions -->
         <div class="flex items-center justify-between pt-4">

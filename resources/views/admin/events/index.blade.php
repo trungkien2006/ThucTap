@@ -2,12 +2,8 @@
 
 @section('content')
 @php
-    $totalRegistrations = 0;
-    $totalCheckins = 0;
-    foreach($events as $e) {
-        $totalRegistrations += $e->registrations()->count();
-        $totalCheckins += $e->registrations()->whereHas('checkins')->count();
-    }
+    $totalViews = \App\Models\Event::sum('views_count') ?? 0;
+    $totalLikes = \App\Models\Event::sum('likes_count') ?? 0;
     $totalEvents = \App\Models\Event::count();
     $activeEvents = \App\Models\Event::where('event_date', '>=', now())->count();
     $livePages = \App\Models\Event::where('is_published', true)->count();
@@ -33,16 +29,16 @@
 
 <!-- Primary Stats -->
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-    <!-- Total Registrations -->
+    <!-- Total Views -->
     <div class="stat-card border-l-4 border-brand-orange">
         <div class="flex justify-between items-start">
             <div class="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center text-brand-orange">
-                <span class="material-symbols-outlined text-[22px]">groups</span>
+                <span class="material-symbols-outlined text-[22px]">visibility</span>
             </div>
         </div>
         <div class="mt-5">
-            <p class="stat-label">Tổng đăng ký</p>
-            <p class="stat-value">{{ $totalRegistrations }}</p>
+            <p class="stat-label">Tổng lượt xem</p>
+            <p class="stat-value">{{ number_format($totalViews) }}</p>
         </div>
     </div>
 
@@ -80,12 +76,12 @@
     <div class="stat-card border-l-4 border-purple-400">
         <div class="flex justify-between items-start">
             <div class="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center text-purple-500">
-                <span class="material-symbols-outlined text-[22px]">how_to_reg</span>
+                <span class="material-symbols-outlined text-[22px]">favorite</span>
             </div>
         </div>
         <div class="mt-5">
-            <p class="stat-label">Đã check-in</p>
-            <p class="stat-value">{{ $totalCheckins }}</p>
+            <p class="stat-label">Tổng lượt thích</p>
+            <p class="stat-value">{{ number_format($totalLikes) }}</p>
         </div>
     </div>
 </div>
@@ -166,7 +162,7 @@
                     <th>Sự kiện</th>
                     <th>Ngày</th>
                     <th>Trạng thái</th>
-                    <th>Đăng ký</th>
+                    <th>Tương tác</th>
                     <th class="text-right">Thao tác</th>
                 </tr>
             </thead>
@@ -203,21 +199,15 @@
                         @endif
                     </td>
                     <td>
-                        @php
-                            $regs = $event->registrations()->count();
-                            $max = $event->max_attendees ?: 1;
-                            $percent = $event->max_attendees ? min(100, round(($regs / $max) * 100)) : 100;
-                        @endphp
-                        <div class="flex items-center gap-2">
-                            @if($event->max_attendees)
-                                <div class="w-20 bg-slate-100 h-1.5 rounded-full overflow-hidden">
-                                    <div class="bg-brand-orange h-full rounded-full" style="width: {{ $percent }}%"></div>
-                                </div>
-                                <span class="text-[12px] font-semibold text-slate-600">{{ $regs }}/{{ $event->max_attendees }}</span>
-                            @else
-                                <span class="text-[12px] font-semibold text-slate-600">{{ $regs }}</span>
-                                <span class="text-[10px] text-slate-400">(Không giới hạn)</span>
-                            @endif
+                        <div class="flex items-center gap-3">
+                            <span class="flex items-center gap-1 text-[12px] font-semibold text-slate-600">
+                                <span class="material-symbols-outlined text-[14px]">visibility</span>
+                                {{ number_format($event->views_count ?? 0) }}
+                            </span>
+                            <span class="flex items-center gap-1 text-[12px] font-semibold text-slate-600">
+                                <span class="material-symbols-outlined text-[14px]">favorite</span>
+                                {{ number_format($event->likes_count ?? 0) }}
+                            </span>
                         </div>
                     </td>
                     <td>

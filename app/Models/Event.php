@@ -17,7 +17,6 @@ class Event extends Model
         return [
             'event_date' => 'datetime',
             'end_date' => 'datetime',
-            'registration_open' => 'boolean',
             'is_published' => 'boolean',
         ];
     }
@@ -64,11 +63,6 @@ class Event extends Model
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
-    }
-
-    public function registrations()
-    {
-        return $this->hasMany(Registration::class);
     }
 
     // ── Media Relationships ────────────────────────────

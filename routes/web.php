@@ -7,7 +7,9 @@ use App\Http\Controllers\Admin\SpeakerController;
 use App\Http\Controllers\Admin\MediaController;
 use App\Http\Controllers\Admin\DocumentController;
 
-Route::get('/', [PublicEventController::class, 'index'])->name('home');
+use App\Http\Controllers\FrontendController;
+
+Route::get('/', [FrontendController::class, 'home'])->name('home');
 Route::get('/events/{slug}', [PublicEventController::class, 'show'])->name('events.show');
 Route::post('/events/{event}/register', [PublicRegistrationController::class, 'store'])->name('events.register');
 Route::get('/register/confirm/{token}', [PublicRegistrationController::class, 'confirm'])->name('register.confirm');

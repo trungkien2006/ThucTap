@@ -49,6 +49,14 @@ export default {
                 "pure-white": "#ffffff",
                 "text-muted": "#64748b",
                 "text-main": "#0f172a",
+
+                // Frontend Theme (Cinematic blue & white)
+                "paper": "oklch(0.985 0.005 240)",
+                "ink": "oklch(0.18 0.045 255)",
+                "ink-soft": "oklch(0.42 0.04 255)",
+                "azure": "oklch(0.58 0.18 255)",
+                "azure-deep": "oklch(0.32 0.14 260)",
+                "azure-glow": "oklch(0.75 0.14 245)",
             },
             borderRadius: {
                 DEFAULT: "0.5rem",

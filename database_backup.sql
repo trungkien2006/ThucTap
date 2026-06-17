@@ -142,7 +142,7 @@ CREATE TABLE `event_medias` (
   `content` text COLLATE utf8mb4_unicode_ci,
   `is_banner` tinyint(1) NOT NULL DEFAULT '0',
   `is_recap` tinyint(1) NOT NULL DEFAULT '0',
-  `sort_order` int NOT NULL DEFAULT '0',
+
   `created_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `event_medias_event_id_foreign` (`event_id`),
@@ -174,7 +174,7 @@ CREATE TABLE `event_schedule` (
   `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `description` text COLLATE utf8mb4_unicode_ci,
   `speaker_id` bigint unsigned DEFAULT NULL,
-  `sort_order` int NOT NULL DEFAULT '0',
+
   PRIMARY KEY (`id`),
   KEY `event_schedule_event_id_foreign` (`event_id`),
   KEY `event_schedule_speaker_id_foreign` (`speaker_id`),
@@ -518,3 +518,4 @@ UNLOCK TABLES;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2026-06-12 16:04:57
+

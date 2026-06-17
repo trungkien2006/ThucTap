@@ -104,7 +104,7 @@ class Event extends Model
 
     public function scheduleItems()
     {
-        return $this->hasMany(EventSchedule::class)->orderBy('sort_order');
+        return $this->hasMany(EventSchedule::class)->orderBy('start_time');
     }
 
     public function speakers()

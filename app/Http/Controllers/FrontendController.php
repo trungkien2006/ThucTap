@@ -109,6 +109,59 @@ class FrontendController extends Controller
             ['value' => 12, 'label' => 'Năm lưu trữ', 'suffix' => '', 'decimals' => 0],
         ];
 
-        return view('frontend.home', compact('categories', 'featuredEvents', 'upcoming', 'archive', 'media', 'stats'));
+        $slides = [
+            [
+                'id'          => 1,
+                'eyebrow'     => 'Hội trường A — Cơ sở chính',
+                'title'       => 'Lễ Khai Giảng Năm Học 2026',
+                'description' => 'Sự kiện khai mạc năm học mới, chào đón toàn thể sinh viên khoá K2026 cùng quý thầy cô và đại biểu khách mời.',
+                'image'       => 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1600&q=80',
+                'tag'         => 'Lễ khai giảng',
+                'cta_label'   => 'Xem chi tiết',
+                'cta_url'     => '#',
+            ],
+            [
+                'id'          => 2,
+                'eyebrow'     => 'Khoa Công nghệ Thông tin',
+                'title'       => 'Workshop AI & Machine Learning',
+                'description' => 'Buổi thực hành chuyên sâu về trí tuệ nhân tạo với các chuyên gia, dành cho sinh viên năm 3 & 4.',
+                'image'       => 'https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=1600&q=80',
+                'tag'         => 'Workshop',
+                'cta_label'   => 'Đăng ký ngay',
+                'cta_url'     => '#',
+            ],
+            [
+                'id'          => 3,
+                'eyebrow'     => 'Sân khấu ngoài trời — Khu B',
+                'title'       => 'Talkshow Khởi Nghiệp Sinh Viên',
+                'description' => 'Gặp gỡ và lắng nghe hành trình của các founder startup từ 22 tuổi đã gọi vốn thành công.',
+                'image'       => 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80',
+                'tag'         => 'Talkshow',
+                'cta_label'   => 'Xem lịch trình',
+                'cta_url'     => '#',
+            ],
+            [
+                'id'          => 4,
+                'eyebrow'     => 'Phòng hội thảo B2.01',
+                'title'       => 'Seminar Nghiên Cứu Khoa Học',
+                'description' => 'Hội thảo nghiên cứu khoa học sinh viên cấp trường — nơi các đề tài xuất sắc được trình bày.',
+                'image'       => 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=1600&q=80',
+                'tag'         => 'Seminar',
+                'cta_label'   => 'Nộp bài tham dự',
+                'cta_url'     => '#',
+            ],
+            [
+                'id'          => 5,
+                'eyebrow'     => 'Toàn trường — Tất cả cơ sở',
+                'title'       => 'Cuộc Thi Lập Trình 24H',
+                'description' => 'Hackathon xuyên đêm với chủ đề "EdTech for Tomorrow" — giải thưởng tổng lên đến 50 triệu đồng.',
+                'image'       => 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1600&q=80',
+                'tag'         => 'Cuộc thi',
+                'cta_label'   => 'Đăng ký đội',
+                'cta_url'     => '#',
+            ],
+        ];
+
+        return view('frontend.home', compact('categories', 'featuredEvents', 'upcoming', 'archive', 'media', 'stats', 'slides'));
     }
 }

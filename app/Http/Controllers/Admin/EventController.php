@@ -143,7 +143,6 @@ class EventController extends Controller
         if ($request->has('schedule_text')) {
             $event->scheduleItems()->delete();
             $lines = explode("\n", $request->schedule_text);
-            $order = 0;
             foreach ($lines as $line) {
                 $line = trim($line);
                 if (empty($line)) continue;
@@ -152,7 +151,6 @@ class EventController extends Controller
                     $event->scheduleItems()->create([
                         'start_time' => trim($parts[0]),
                         'title' => trim($parts[1]),
-                        'sort_order' => $order++,
                     ]);
                 }
             }

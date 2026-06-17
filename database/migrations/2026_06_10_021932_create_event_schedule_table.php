@@ -18,8 +18,8 @@ return new class extends Migration
             $table->datetime('end_time')->nullable();
             $table->string('title');
             $table->text('description')->nullable();
-            $table->foreignId('speaker_id')->nullable()->constrained('speakers')->nullOnDelete();
-            $table->integer('sort_order')->default(0);
+            $table->foreignId('speaker_id')->nullable()->constrained()->nullOnDelete();
+            $table->timestamps();
         });
     }
 

@@ -57,11 +57,6 @@
                         </div>
                         <div class="w-px bg-white/10"></div>
                         <div>
-                            <div class="text-fpt-orange font-extrabold text-2xl">{{ \App\Models\Registration::count() }}</div>
-                            <div class="text-white/50 text-sm mt-0.5">Lượt đăng ký</div>
-                        </div>
-                        <div class="w-px bg-white/10"></div>
-                        <div>
                             <div class="text-fpt-orange font-extrabold text-2xl">{{ \App\Models\Event::published()->upcoming()->count() }}</div>
                             <div class="text-white/50 text-sm mt-0.5">Sắp diễn ra</div>
                         </div>

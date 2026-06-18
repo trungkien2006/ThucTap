@@ -96,7 +96,38 @@ npm run build
 
 ---
 
-## 3. Khởi Chạy Website
+## 3. Cập Nhật Code Mới Từ Nhánh `tuan` (Dành cho người đã cài đặt)
+
+Nếu bạn đã từng cài đặt dự án này trước đó (đã có thư mục `vendor`, `node_modules`, file `.env`...) và bây giờ bạn chỉ kéo (pull) code mới về từ nhánh `tuan`, bạn **KHÔNG CẦN** phải làm lại tất cả các bước ở mục 1 và 2. 
+
+Hãy mở Terminal tại thư mục dự án và chạy các lệnh sau để hệ thống cập nhật những thay đổi mới nhất:
+
+1. **Cập nhật thư viện PHP (nếu có thêm mới):**
+   ```bash
+   composer install
+   ```
+
+2. **Cập nhật thư viện Frontend:**
+   ```bash
+   npm install
+   ```
+
+3. **Cập nhật Cơ sở dữ liệu (BẮT BUỘC):**
+   Nhánh `tuan` có sự thay đổi lớn về cơ sở dữ liệu (thêm tính năng đếm lượt xem, lượt thích, xóa bảng không dùng). Bạn phải chạy lệnh sau để áp dụng các thay đổi này:
+   ```bash
+   php artisan migrate
+   ```
+
+4. **Build lại giao diện mới nhất:**
+   ```bash
+   npm run build
+   ```
+
+Sau khi chạy xong 4 lệnh trên, bạn có thể khởi chạy website như bình thường ở mục 4 dưới đây.
+
+---
+
+## 4. Khởi Chạy Website
 
 Sau khi đã hoàn tất các bước cài đặt trên, khởi động server nội bộ bằng lệnh:
 
@@ -108,7 +139,7 @@ Màn hình sẽ hiển thị đường link `http://127.0.0.1:8000`. Hãy copy �
 
 ---
 
-## 4. Hướng Dẫn Kiểm Tra (Testing)
+## 5. Hướng Dẫn Kiểm Tra (Testing)
 
 Để đảm bảo website hoạt động hoàn hảo, hãy thực hiện bài kiểm tra nhỏ sau:
 

@@ -96,34 +96,23 @@ npm run build
 
 ---
 
-## 3. Cập Nhật Code Mới Từ Nhánh `tuan` (Dành cho người đã cài đặt)
+## 3. Nếu Bạn Xóa Thư Mục Cũ Và Tải File ZIP Mới (Từ nhánh `tuan`)
 
-Nếu bạn đã từng cài đặt dự án này trước đó (đã có thư mục `vendor`, `node_modules`, file `.env`...) và bây giờ bạn chỉ kéo (pull) code mới về từ nhánh `tuan`, bạn **KHÔNG CẦN** phải làm lại tất cả các bước ở mục 1 và 2. 
+Trong trường hợp bạn không dùng Git để pull code mà **xóa hẳn folder cũ đi và giải nén file ZIP mới tải về**, hãy lưu ý:
 
-Hãy mở Terminal tại thư mục dự án và chạy các lệnh sau để hệ thống cập nhật những thay đổi mới nhất:
+1. Bạn **KHÔNG CẦN** cài đặt lại các phần mềm ở **Mục 1** (PHP, Composer, Node.js) vì máy tính của bạn đã có sẵn.
+2. Nhưng do đây là một thư mục mới hoàn toàn, bạn **BẮT BUỘC PHẢI THỰC HIỆN LẠI TOÀN BỘ Các Bước ở Mục 2**, bao gồm:
 
-1. **Cập nhật thư viện PHP (nếu có thêm mới):**
-   ```bash
-   composer install
-   ```
+Mở Terminal tại thư mục mã nguồn mới giải nén và chạy tuần tự:
+- `composer install`
+- `npm install`
+- `copy .env.example .env`
+- `php artisan key:generate`
+- `php artisan migrate --seed` (Nhấn `yes` để tạo lại CSDL sqlite mới với các cấu trúc bảng đã được cập nhật)
+- `php artisan storage:link`
+- `npm run build`
 
-2. **Cập nhật thư viện Frontend:**
-   ```bash
-   npm install
-   ```
-
-3. **Cập nhật Cơ sở dữ liệu (BẮT BUỘC):**
-   Nhánh `tuan` có sự thay đổi lớn về cơ sở dữ liệu (thêm tính năng đếm lượt xem, lượt thích, xóa bảng không dùng). Bạn phải chạy lệnh sau để áp dụng các thay đổi này:
-   ```bash
-   php artisan migrate
-   ```
-
-4. **Build lại giao diện mới nhất:**
-   ```bash
-   npm run build
-   ```
-
-Sau khi chạy xong 4 lệnh trên, bạn có thể khởi chạy website như bình thường ở mục 4 dưới đây.
+Sau khi chạy xong, hãy chạy `php artisan serve` như ở **Mục 4**.
 
 ---
 

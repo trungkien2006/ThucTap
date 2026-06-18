@@ -111,26 +111,6 @@ class FrontendController extends Controller
 
         $slides = [
             [
-                'id'          => 1,
-                'eyebrow'     => 'Hội trường A — Cơ sở chính',
-                'title'       => 'Lễ Khai Giảng Năm Học 2026',
-                'description' => 'Sự kiện khai mạc năm học mới, chào đón toàn thể sinh viên khoá K2026 cùng quý thầy cô và đại biểu khách mời.',
-                'image'       => 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1600&q=80',
-                'tag'         => 'Lễ khai giảng',
-                'cta_label'   => 'Xem chi tiết',
-                'cta_url'     => '#',
-            ],
-            [
-                'id'          => 2,
-                'eyebrow'     => 'Khoa Công nghệ Thông tin',
-                'title'       => 'Workshop AI & Machine Learning',
-                'description' => 'Buổi thực hành chuyên sâu về trí tuệ nhân tạo với các chuyên gia, dành cho sinh viên năm 3 & 4.',
-                'image'       => 'https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=1600&q=80',
-                'tag'         => 'Workshop',
-                'cta_label'   => 'Đăng ký ngay',
-                'cta_url'     => '#',
-            ],
-            [
                 'id'          => 3,
                 'eyebrow'     => 'Sân khấu ngoài trời — Khu B',
                 'title'       => 'Talkshow Khởi Nghiệp Sinh Viên',
@@ -160,7 +140,38 @@ class FrontendController extends Controller
                 'cta_label'   => 'Đăng ký đội',
                 'cta_url'     => '#',
             ],
+            [
+                'id'          => 6,
+                'eyebrow'     => 'Nhà văn hóa sinh viên',
+                'title'       => 'UniFest — Đêm Hội Âm Nhạc',
+                'description' => 'Lễ hội âm nhạc ngoài trời lớn nhất năm với 9 nghệ sĩ biểu diễn, sân khấu hoành tráng và ánh đèn rực rỡ.',
+                'image'       => 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=1600&q=80',
+                'tag'         => 'Lễ hội',
+                'cta_label'   => 'Mua vé ngay',
+                'cta_url'     => '#',
+            ],
+            [
+                'id'          => 7,
+                'eyebrow'     => 'Trung tâm Thể thao Đại học',
+                'title'       => 'Ngày Hội Thể Thao Sinh Viên',
+                'description' => 'Giải thể thao liên khoa hàng năm với 15 bộ môn — nơi rèn luyện thể chất gặp tinh thần đồng đội.',
+                'image'       => 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=1600&q=80',
+                'tag'         => 'Thể thao',
+                'cta_label'   => 'Xem lịch thi đấu',
+                'cta_url'     => '#',
+            ],
+            [
+                'id'          => 8,
+                'eyebrow'     => 'Hội trường Lớn — Cơ sở B',
+                'title'       => 'Triển Lãm Đồ Án Tốt Nghiệp 2026',
+                'description' => 'Trưng bày hơn 200 đồ án xuất sắc từ các sinh viên cuối khóa — cơ hội kết nối với doanh nghiệp và nhà tuyển dụng.',
+                'image'       => 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&q=80',
+                'tag'         => 'Triển lãm',
+                'cta_label'   => 'Tham quan miễn phí',
+                'cta_url'     => '#',
+            ],
         ];
+
 
         return view('frontend.home', compact('categories', 'featuredEvents', 'upcoming', 'archive', 'media', 'stats', 'slides'));
     }

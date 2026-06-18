@@ -10,6 +10,7 @@ use App\Http\Controllers\FrontendController;
 
 Route::get('/', [FrontendController::class, 'home'])->name('home');
 Route::get('/events/{slug}', [PublicEventController::class, 'show'])->name('events.show');
+Route::post('/events/{id}/like', [PublicEventController::class, 'like'])->name('events.like');
 
 Route::get('/dashboard', function () {
     return redirect()->route('admin.events.index');

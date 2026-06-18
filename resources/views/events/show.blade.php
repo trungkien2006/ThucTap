@@ -62,8 +62,15 @@
         </div>
         @endif
 
-        <div class="flex flex-col md:flex-row justify-center gap-4">
-            
+        <div class="flex flex-col md:flex-row justify-center gap-4 mt-8">
+            <button id="like-btn" data-event-id="{{ $event->id }}" class="bg-surface-container/20 hover:bg-surface-container/40 backdrop-blur-md border border-white/20 text-pure-white px-8 py-3 rounded-full font-headline-md transition-all active:scale-95 shadow-lg flex items-center gap-2 {{ session()->has('liked_events.' . $event->id) ? 'text-red-400 border-red-400/50' : '' }}">
+                <span class="material-symbols-outlined {{ session()->has('liked_events.' . $event->id) ? 'text-red-400' : '' }} font-fill">favorite</span>
+                <span id="likes-count">{{ $event->likes_count }}</span> Lượt thích
+            </button>
+            <div class="bg-surface-container/20 backdrop-blur-md border border-white/20 text-pure-white px-8 py-3 rounded-full font-headline-md shadow-lg flex items-center gap-2">
+                <span class="material-symbols-outlined">visibility</span>
+                <span>{{ $event->views_count }}</span> Lượt xem
+            </div>
         </div>
     </div>
 </section>
@@ -162,36 +169,61 @@
 
 @push('scripts')
 <script>
-    const dateStr = document.getElementById('countdown')?.getAttribute('data-date');
-    if (dateStr) {
-        function updateCountdown() {
-            const target = new Date(dateStr).getTime();
-            
-            function update() {
-                const now = new Date().getTime();
-                const diff = target - now;
+    const dateStr = document.getElementById('countdown-wrapper')?.getAttribute('data-date');
+    const eventDate = new Date(dateStr).getTime();
 
-                if (diff <= 0) {
-                    document.getElementById('countdown').style.display = 'none';
-                    return;
-                }
+    function updateCountdown() {
+        const now = new Date().getTime();
+        const distance = eventDate - now;
 
-                const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-                const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                const s = Math.floor((diff % (1000 * 60)) / 1000);
-
-                document.getElementById('days').innerText = d.toString().padStart(2, '0');
-                document.getElementById('hours').innerText = h.toString().padStart(2, '0');
-                document.getElementById('minutes').innerText = m.toString().padStart(2, '0');
-                document.getElementById('seconds').innerText = s.toString().padStart(2, '0');
-            }
-
-            setInterval(update, 1000);
-            update();
+        if (distance < 0) {
+            document.getElementById('countdown-wrapper').style.display = 'none';
+            return;
         }
+
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        document.getElementById('days').innerText = days.toString().padStart(2, '0');
+        document.getElementById('hours').innerText = hours.toString().padStart(2, '0');
+        document.getElementById('minutes').innerText = minutes.toString().padStart(2, '0');
+        document.getElementById('seconds').innerText = seconds.toString().padStart(2, '0');
+    }
+
+    if (document.getElementById('countdown-wrapper')) {
+        setInterval(updateCountdown, 1000);
         updateCountdown();
     }
+
+    // Like logic
+    document.getElementById('like-btn').addEventListener('click', function() {
+        const eventId = this.dataset.eventId;
+        const btn = this;
+        const countSpan = document.getElementById('likes-count');
+
+        fetch(`/events/${eventId}/like`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                countSpan.innerText = data.likes_count;
+                btn.classList.add('text-red-400', 'border-red-400/50');
+                btn.querySelector('.material-symbols-outlined').classList.add('text-red-400');
+                btn.style.animation = 'pulse 0.5s ease-in-out';
+                setTimeout(() => btn.style.animation = '', 500);
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
 </script>
 @endpush
 @endsection

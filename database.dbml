@@ -1,0 +1,308 @@
+Enum "users_role_enum" {
+  "admin"
+  "user"
+}
+
+Table "cache" {
+  "key" varchar(255) [pk, not null]
+  "value" mediumtext [not null]
+  "expiration" bigint [not null]
+
+  Indexes {
+    expiration [name: "cache_expiration_index"]
+  }
+}
+
+Table "cache_locks" {
+  "key" varchar(255) [pk, not null]
+  "owner" varchar(255) [not null]
+  "expiration" bigint [not null]
+
+  Indexes {
+    expiration [name: "cache_locks_expiration_index"]
+  }
+}
+
+Table "categories" {
+  "id" bigint [pk, not null, increment]
+  "name" varchar(255) [not null]
+  "slug" varchar(255) [not null]
+  "parent_id" bigint
+  "type" varchar(255) [note: '''enum: \'\'event_type\'\', \'\'department\'\'''']
+
+  Indexes {
+    slug [unique, name: "categories_slug_unique"]
+    parent_id [name: "categories_parent_id_foreign"]
+  }
+}
+
+Table "event_documents" {
+  "id" bigint [pk, not null, increment]
+  "event_id" bigint
+  "title" varchar(255) [not null]
+  "url" varchar(255) [not null]
+  "file_size" bigint [note: 'bytes']
+  "file_type" varchar(255)
+  "created_at" timestamp
+
+  Indexes {
+    event_id [name: "event_documents_event_id_foreign"]
+  }
+}
+
+Table "event_medias" {
+  "id" bigint [pk, not null, increment]
+  "event_id" bigint
+  "type" varchar(255) [not null]
+  "url" varchar(255) [not null]
+  "title" varchar(255)
+  "caption" text
+  "content" text
+  "is_banner" tinyint(1) [not null, default: '0']
+  "is_recap" tinyint(1) [not null, default: '0']
+  "sort_order" int [not null, default: '0']
+  "created_at" timestamp
+
+  Indexes {
+    event_id [name: "event_medias_event_id_foreign"]
+  }
+}
+
+Table "event_schedule" {
+  "id" bigint [pk, not null, increment]
+  "event_id" bigint [not null]
+  "start_time" datetime [not null]
+  "end_time" datetime
+  "title" varchar(255) [not null]
+  "description" text
+  "speaker_id" bigint
+  "sort_order" int [not null, default: '0']
+
+  Indexes {
+    event_id [name: "event_schedule_event_id_foreign"]
+    speaker_id [name: "event_schedule_speaker_id_foreign"]
+  }
+}
+
+Table "event_speakers" {
+  "id" bigint [pk, not null, increment]
+  "event_id" bigint [not null]
+  "speaker_id" bigint [not null]
+  "role" varchar(255) [note: '''enum: \'\'speaker\'\',\'\'guest\'\',\'\'mc\'\',\'\'moderator\'\'''']
+
+  Indexes {
+    (event_id, speaker_id) [unique, name: "event_speakers_event_id_speaker_id_unique"]
+    speaker_id [name: "event_speakers_speaker_id_foreign"]
+  }
+}
+
+Table "events" {
+  "id" bigint [pk, not null, increment]
+  "title" varchar(255) [not null]
+  "slug" varchar(255) [not null]
+  "description" longtext
+  "event_date" datetime [not null]
+  "end_date" datetime
+  "location" varchar(255) [not null]
+  "academic_year" varchar(255)
+  "semester" tinyint
+  "category_id" bigint
+  "department_id" bigint
+  "views_count" int [not null, default: '0']
+  "likes_count" int [not null, default: '0']
+  "is_published" tinyint(1) [not null, default: '0']
+  "page_template" varchar(255)
+  "qr_code_path" varchar(255)
+  "created_by" bigint
+  "created_at" timestamp
+  "updated_at" timestamp
+
+  Indexes {
+    slug [unique, name: "events_slug_unique"]
+    category_id [name: "events_category_id_foreign"]
+    department_id [name: "events_department_id_foreign"]
+    created_by [name: "events_created_by_foreign"]
+  }
+}
+
+Table "failed_jobs" {
+  "id" bigint [pk, not null, increment]
+  "uuid" varchar(255) [not null]
+  "connection" varchar(255) [not null]
+  "queue" varchar(255) [not null]
+  "payload" longtext [not null]
+  "exception" longtext [not null]
+  "failed_at" timestamp [not null, default: `CURRENT_TIMESTAMP`]
+
+  Indexes {
+    uuid [unique, name: "failed_jobs_uuid_unique"]
+    (connection, queue, failed_at) [name: "failed_jobs_connection_queue_failed_at_index"]
+  }
+}
+
+Table "job_batches" {
+  "id" varchar(255) [pk, not null]
+  "name" varchar(255) [not null]
+  "total_jobs" int [not null]
+  "pending_jobs" int [not null]
+  "failed_jobs" int [not null]
+  "failed_job_ids" longtext [not null]
+  "options" mediumtext
+  "cancelled_at" int
+  "created_at" int [not null]
+  "finished_at" int
+}
+
+Table "jobs" {
+  "id" bigint [pk, not null, increment]
+  "queue" varchar(255) [not null]
+  "payload" longtext [not null]
+  "attempts" smallint [not null]
+  "reserved_at" int
+  "available_at" int [not null]
+  "created_at" int [not null]
+
+  Indexes {
+    queue [name: "jobs_queue_index"]
+  }
+}
+
+Table "migrations" {
+  "id" int [pk, not null, increment]
+  "migration" varchar(255) [not null]
+  "batch" int [not null]
+}
+
+Table "speakers" {
+  "id" bigint [pk, not null, increment]
+  "name" varchar(255) [not null]
+  "title" varchar(255)
+  "photo_url" varchar(255)
+  "bio" text
+}
+
+Table "users" {
+  "id" bigint [pk, not null, increment]
+  "name" varchar(255) [not null]
+  "email" varchar(255) [not null]
+  "email_verified_at" timestamp
+  "password" varchar(255) [not null]
+  "role" users_role_enum [not null, default: 'admin']
+  "remember_token" varchar(100)
+  "created_at" timestamp
+  "updated_at" timestamp
+
+  Indexes {
+    email [unique, name: "users_email_unique"]
+  }
+}
+
+Ref "categories_parent_id_foreign":"categories"."id" < "categories"."parent_id" [delete: set null]
+
+Ref "event_documents_event_id_foreign":"events"."id" < "event_documents"."event_id" [delete: cascade]
+
+Ref "event_medias_event_id_foreign":"events"."id" < "event_medias"."event_id" [delete: cascade]
+
+Ref "event_schedule_event_id_foreign":"events"."id" < "event_schedule"."event_id" [delete: cascade]
+
+Ref "event_schedule_speaker_id_foreign":"speakers"."id" < "event_schedule"."speaker_id" [delete: set null]
+
+Ref "event_speakers_event_id_foreign":"events"."id" < "event_speakers"."event_id" [delete: cascade]
+
+Ref "event_speakers_speaker_id_foreign":"speakers"."id" < "event_speakers"."speaker_id" [delete: cascade]
+
+Ref "events_category_id_foreign":"categories"."id" < "events"."category_id" [delete: set null]
+
+Ref "events_created_by_foreign":"users"."id" < "events"."created_by" [delete: set null]
+
+Ref "events_department_id_foreign":"categories"."id" < "events"."department_id" [delete: set null]
+
+Records categories(id, name, slug, parent_id, type) {
+  1, 'Conference', 'conference', null, 'event_type'
+  2, 'Workshop', 'workshop', null, 'event_type'
+  3, 'Seminar', 'seminar', null, 'event_type'
+  4, 'Cultural', 'cultural', null, 'event_type'
+  5, 'Sports', 'sports', null, 'event_type'
+  6, 'Orientation', 'orientation', null, 'event_type'
+  7, 'Other', 'other', null, 'event_type'
+  8, 'Công nghệ thông tin', 'cong-nghe-thong-tin', null, 'department'
+  9, 'Quản trị kinh doanh', 'quan-tri-kinh-doanh', null, 'department'
+  10, 'Thiết kế đồ hoạ', 'thiet-ke-do-hoa', null, 'department'
+  11, 'Ngôn ngữ Anh', 'ngon-ngu-anh', null, 'department'
+  12, 'Ngôn ngữ Nhật', 'ngon-ngu-nhat', null, 'department'
+  13, 'Ngôn ngữ Hàn', 'ngon-ngu-han', null, 'department'
+  14, 'Truyền thông đa phương tiện', 'truyen-thong-da-phuong-tien', null, 'department'
+}
+
+Records event_documents(id, event_id, title, url, file_size, file_type, created_at) {
+  1, null, 'SYB3013 - Assignment_SP2026.doc.pdf', 'documents/aXazOCl0zfPwAIJhR8nb9hiVE0vCCS0SF5PJ7JKH.pdf', 926763, 'pdf', null
+}
+
+Records event_medias(id, event_id, type, url, title, caption, content, is_banner, is_recap, sort_order, created_at) {
+  24, 1, 'image', 'events/banners/GrHoiMwMYDqDzlFb3LU4JmKdvzYnFLjVTDpPS9Cn.png', null, null, null, 1, 0, 0, null
+  77, null, 'image', 'media/BsAM7N5Piq6JuGfvBlLMRlwZpc5uUD7PEIEvSP7P.jpg', null, '616CBsWQSQL._AC_SL1000_.jpg', null, 0, 0, 0, null
+  78, null, 'image', 'media/WpbXiSl9tZlSvVLxuk71qqqzv9wK0mdr1cphvmTf.jpg', null, '61R-mK3oTyL._AC_SL1000_.jpg', null, 0, 0, 0, null
+  79, null, 'image', 'media/0wKdga6H6AjF0sKrXvJH0mijZdiVXIyhEFxAxG2A.jpg', null, '61HkBdxrxOL._AC_SL1000_.jpg', null, 0, 0, 0, null
+  80, null, 'image', 'media/ySQeAum35znhDfuR9rydRhzQI8qzW8wQ1NsGu3EA.jpg', null, '61hUT-D0uXL._AC_SL1000_.jpg', null, 0, 0, 0, null
+  81, null, 'image', 'media/5TFxXyYKSw7Vr2miHzZhlPq6gKdFsyIALkfMzvhi.jpg', null, '61JoL0JYDTL._AC_SL1000_.jpg', null, 0, 0, 0, null
+  82, null, 'image', 'media/nUIKhyiJP25gcVCiOT0eSeOsmLrt8MNNN4Gvkp9M.jpg', null, '41nCEJKs2KS._AC_.jpg', null, 0, 0, 0, null
+  83, null, 'image', 'media/mEysUYWVBZytH5OCKPhI0XwgItRELol4LJa5iln6.jpg', null, '41GanKr-ABS._AC_.jpg', null, 0, 0, 0, null
+  84, null, 'image', 'media/YRUAs465BLj4jXTEke6Faml9B8swWNz70fGhmbp5.jpg', null, '41a7fyWxPzS._AC_.jpg', null, 0, 0, 0, null
+  85, null, 'image', 'media/h0WHXz12eKUIxadLJJr8W7jsDHSmWz1DLQ3TbVLN.jpg', null, '71LdmT-ONXL._AC_SL1200_.jpg', null, 0, 0, 0, null
+  86, null, 'image', 'media/hdSKejnG7Y6dc4H0ddtjTXYzFQOVUd1fLH9QpEhH.jpg', null, '71gYCACh8lL._AC_SL1200_.jpg', null, 0, 0, 0, null
+  87, null, 'image', 'media/8rzvVVtaks1QRVHHs1SqgJWmKarR4PxujDWKEmUA.jpg', null, '81Bz2I74sVL._AC_SL1500_.jpg', null, 0, 0, 0, null
+  88, null, 'image', 'media/q3aKFbWfX7UW2O1AhgZOVo75H7FGGBDIkS4EN5ks.jpg', null, '71P-w9lyM0L._AC_SL1500_.jpg', null, 0, 0, 0, null
+  89, null, 'image', 'media/8DL5U19xhrBbx8o6rkOjWOgL4VCIJrAeOxSFGGrx.jpg', null, '81IBMCOJZoL._AC_SL1500_.jpg', null, 0, 0, 0, null
+  90, null, 'image', 'media/PmzHWxwlfh3SvLvJPEfB9SVRufg6lK4Qv6FJFvQb.jpg', null, '61iq18pSZ1L._AC_SL1200_.jpg', null, 0, 0, 0, null
+  91, null, 'image', 'media/aJbU7jSmoMSzibpm2AsOTAfhv2hyCPYsr4BxALP3.jpg', null, '61X3Lxfy-YL._AC_SL1200_.jpg', null, 0, 0, 0, null
+  92, null, 'video', 'media/S4f4nLEG2UVoGAhSt0zbPSQGURytB2tDprYcqfjd.mp4', null, 'Endfield.mp4', null, 0, 0, 0, null
+  93, 4, 'image', 'events/banners/OQ1S0cbkDcEGgrksth0E4HbNDTd53kNroJNzlvBB.png', null, null, null, 1, 0, 0, null
+  94, 6, 'image', 'events/banners/DegiTolX4bOwyJiAoOkYYRH1ReGp8yJf9ukhzJSD.png', null, null, null, 1, 0, 0, null
+  134, 6, 'image', 'media/aVorxB2AUaK3VEPd3BNIklERzNvXpA4UiuhzCvJv.jpg', null, 'Điểm thi của cá nhân được nói đến', '‼️GIA TIÊN QUÁ MẠNH: TỔNG 3 MÔN 9Đ VẪN ĐỖ TRƯỜNG TOP CỦA TỈNH BẮC NINH 😀\\nMới đây một trường hợp hi hữu tại Bắc Ninh, khi 1 ông cháu thi vào lớp 10 được 9.38đ 3 môn vẫn đậu trường THPT Ngô Sĩ Liên (Trường này năm 2025 có điểm chuẩn cao nhất tỉnh Bắc Giang Cũ với 23.8đ) \\nLí do vì năm ngoái điểm chuẩn quá cao và các thí sinh được nộp 2 nguyện vọng, nên em nào điểm thấp thì sẽ không dám nộp trường này. Tuy nhiên việc thiếu vài chỉ tiêu, dẫn đến trường lấy xuống một số em dưới 20đ trong đó có ông cháu 9.38đ này\\nMặc dù không làm gì sai, nhưng em học sinh này đang bị nhiều học sinh khác trong tỉnh spam vì điểm thấp mà vẫn lọt vào trường Top, nghĩ cũng tội 🥹', 0, 0, 0, null
+  135, 6, 'image', 'media/VJRTGLY12YhcxJpt6GAiZbYI07KGHGFBTbd4cs0E.jpg', null, 'TOP 10 THÍ SINH CÓ ĐIỂM CAO NHẤT KỲ THI TUYỂN SINH VÀO LỚP 10', '🎉🎉 VINH DANH TOP 10 THÍ SINH CÓ ĐIỂM CAO NHẤT KỲ THI TUYỂN SINH VÀO LỚP 10 – NĂM HỌC 2026 - 2027 🎉🎉\\n🌟 Trường THPT C Phủ Lý trân trọng chúc mừng các em học sinh đã xuất sắc đạt thành tích cao trong Kỳ thi tuyển sinh vào lớp 10 năm học 2026 - 2027.\\n📚 Với sự nỗ lực không ngừng, tinh thần học tập nghiêm túc cùng ý chí quyết tâm vượt khó, các em đã đạt được những kết quả đáng tự hào, ghi tên mình vào danh sách TOP 10 thí sinh có điểm cao nhất kỳ thi tuyển sinh năm nay.\\n🏆 Thành tích của các em không chỉ là niềm vui, niềm tự hào của gia đình, thầy cô và nhà trường mà còn là nguồn động lực, cảm hứng để các thế hệ học sinh tiếp tục phấn đấu trên con đường chinh phục tri thức.\\n💐 Chúc các em tiếp tục phát huy truyền thống hiếu học, không ngừng rèn luyện đạo đức, bồi dưỡng tri thức và gặt hái nhiều thành công hơn nữa trong hành trình học tập tại Trường THPT C Phủ Lý.\\n❤️ Chào mừng các em đến với ngôi nhà chung THPT C Phủ Lý – nơi chắp cánh những ước mơ và khát vọng vươn xa!', 0, 0, 0, null
+  136, 6, 'image', 'media/HwP3owSCDVIjW1cHITEQxthPxBE0kcNvhRwyFapo.jpg', null, '', 'ĐẢM BẢO \\\"MẶT TIỀN\\\" CÁC CHÁU CÒN NGUYÊN LUÔN 🐧 \\nÔng Ahn Min Seok, người vừa đắc cử chức Giám đốc Sở Giáo dục tỉnh Gyeonggi cho biết ông đang đề xuất tổ chức một cuộc thảo luận công khai về việc thành lập \\\"Cục Bảo vệ Hoạt động Giáo dục\\\" sau khi ông xem hết 10 tập của Teach You a Leson.\\nLý do bởi, trên thực tế, tồn tại nhiều tình trạng giáo viên sợ học sinh, BLHĐ, và chức năng của nhà trường ngày nay không được tôn trọng và đề cao như trước. Đây là thời điểm mà việc khôi phục niềm tin trong cộng đồng trường học quan trọng hơn bao giờ hết. Ông cũng nhấn mạnh, cục đề cao tính giáo dục và sẽ không sử dụng baoluc dưới mọi hình thức.\\nSau khi thông tin về đề xuất thành lập cục trên ra đời, rất nhiều giáo viên - những người từng phục vụ trong các lực lượng đặc nhiệm (thuỷ quân, lục quân, không quân) đã liên hệ để ứng cử thành thầy Na Hwa Jin. \\nHiện tại, đề xuất đang chờ quyết định của Bộ Giáo dục.', 0, 0, 0, null
+  137, 6, 'image', 'media/hdSKejnG7Y6dc4H0ddtjTXYzFQOVUd1fLH9QpEhH.jpg', null, '', 'New Acheron Figure Annouced', 0, 0, 0, null
+}
+
+Records event_speakers(id, event_id, speaker_id, role) {
+  4, 1, 1, null
+  5, 6, 1, null
+}
+
+Records events(id, title, slug, description, event_date, end_date, location, academic_year, semester, category_id, department_id, views_count, likes_count, is_published, page_template, qr_code_path, created_by, created_at, updated_at) {
+  1, 'Sự kiện test', 'workshop 2026', 'mô tả', '2026-06-17 12:30:00', '2026-06-17 17:00:00', 'Phòng Hội Trường', 'Fall 2024', null, 2, null, 4, 0, 0, null, null, 1, '2026-06-15 03:24:26', '2026-06-15 21:32:48'
+  4, 'Lễ Tôn vinh Ong Vàng Polytechnic học kỳ Fall 2024', 'le-ton-vinh-ong-vang-fall-2024', 'Lễ Tôn vinh Sinh viên Giỏi, xuất sắc học kỳ Fall 2024 nhằm tuyên dương và ghi nhận những nỗ lực học tập của sinh viên. Sự kiện là dấu mốc quan trọng, đánh dấu sự trưởng thành và nỗ lực không ngừng nghỉ của các bạn sinh viên.\\r\\n\\r\\nTham gia sự kiện, các bạn không chỉ nhận được phần thưởng xứng đáng mà còn có cơ hội giao lưu, học hỏi từ các cựu sinh viên thành đạt và đại diện các doanh nghiệp hàng đầu trong ngành.\\r\\n\\r\\nSự kiện năm nay hứa hẹn mang đến nhiều bất ngờ với sự dàn dựng công phu, âm nhạc sôi động và những câu chuyện truyền cảm hứng từ chính các bạn sinh viên vượt khó vươn lên.', '2026-07-01 18:00:00', '2026-07-01 21:30:00', 'Hội trường lớn, Tòa nhà F', 'Fall 2024', null, null, null, 0, 0, 0, null, null, null, '2026-06-16 00:46:02', '2026-06-16 01:05:44'
+  5, 'Talkshow: Hành trang GenZ - Sẵn sàng cho kỷ nguyên AI', 'talkshow-hanh-trang-genz-ai', 'Trí tuệ nhân tạo (AI) đang thay đổi mọi khía cạnh của cuộc sống và công việc. Talkshow \\\'Hành trang GenZ - Sẵn sàng cho kỷ nguyên AI\\\' mang đến cho sinh viên bức tranh toàn cảnh về tương lai của thị trường lao động dưới sự tác động của AI.\\n\\nTại buổi chia sẻ, các chuyên gia công nghệ sẽ giải đáp các thắc mắc về kỹ năng cần thiết để làm chủ công nghệ, không bị AI thay thế mà ngược lại, dùng AI như một đòn bẩy để phát triển sự nghiệp.\\n\\nBạn sẽ được hướng dẫn sử dụng các công cụ AI phổ biến hiện nay như ChatGPT, Midjourney trong quá trình học tập và làm việc nhóm hiệu quả.', '2026-06-21 14:00:00', '2026-06-21 16:30:00', 'Phòng Hội thảo số 3', '2024', null, null, null, 0, 0, 1, null, null, null, '2026-06-16 00:46:02', '2026-06-16 00:46:02'
+  6, 'Ngày hội Việc làm JobFair 2024', 'jobfair-2024', 'Ngày hội việc làm lớn nhất năm, quy tụ hơn 50 doanh nghiệp hàng đầu trong các lĩnh vực Công nghệ thông tin, Thiết kế đồ họa, Quản trị kinh doanh và Ngôn ngữ.\\n\\nĐây là cơ hội \\\'vàng\\\' để sinh viên trực tiếp nộp CV, phỏng vấn thử, và tìm kiếm cơ hội thực tập, việc làm ngay khi còn ngồi trên ghế nhà trường.\\n\\nSự kiện bao gồm các gian hàng tư vấn trực tiếp, các phiên hội thảo nhỏ giới thiệu về môi trường làm việc của từng doanh nghiệp và chương trình bốc thăm trúng thưởng hấp dẫn.', '2026-07-16 08:00:00', '2026-07-16 17:00:00', 'Sân trường chính', 'Fall 2024', null, 6, null, 0, 0, 0, null, null, null, '2026-06-16 00:46:02', '2026-06-16 03:05:27'
+}
+
+Records migrations(id, migration, batch) {
+  1, '0001_01_01_000000_create_users_table', 1
+  2, '0001_01_01_000001_create_cache_table', 1
+  3, '0001_01_01_000002_create_jobs_table', 1
+  4, '2026_06_10_021900_create_categories_table', 1
+  5, '2026_06_10_021901_create_speakers_table', 1
+  6, '2026_06_10_021931_create_events_table', 1
+  7, '2026_06_10_021931_create_registrations_table', 1
+  8, '2026_06_10_021932_create_event_schedule_table', 1
+  9, '2026_06_10_021933_create_event_speakers_table', 1
+  10, '2026_06_10_021934_create_event_images_table', 1
+  11, '2026_06_10_021935_create_event_videos_table', 1
+  12, '2026_06_10_021936_create_event_documents_table', 1
+  13, '2026_06_10_021938_create_registration_checkins_table', 1
+  14, '2026_06_12_082000_create_event_medias_table', 1
+  17, '2026_06_16_072006_change_caption_type_in_event_media_table', 2
+  18, '2026_06_16_080244_add_content_to_event_medias_table', 3
+  19, '2026_06_17_080838_drop_registration_columns_from_events', 4
+  20, '2026_06_17_081303_drop_registration_columns_from_events', 4
+  21, '2026_06_17_084549_add_likes_count_to_events', 5
+  22, '2026_06_17_094100_drop_registration_tables', 6
+}
+
+Records speakers(id, name, title, photo_url, bio) {
+  1, 'Kalt\\\'sit', null, '/storage/speakers/Fc5mMFrgGT7E6nlweRGqfpcGmp9NRG78VOwitHAm.jpg', 'Medic'
+}
+
+Records users(id, name, email, email_verified_at, password, role, remember_token, created_at, updated_at) {
+  1, 'School Admin', 'admin@school.edu', '2026-06-12 02:04:45', '$2y$12$TAFTW.yMEXDOx6XdmO7IsumdrIoSAgxiUIGggThnT9oPHBB7XYmrm', 'admin', null, '2026-06-12 02:04:46', '2026-06-12 02:04:46'
+}

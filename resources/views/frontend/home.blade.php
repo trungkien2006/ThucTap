@@ -7,6 +7,11 @@
      Overlay ấm — jasmine tint thay vì lạnh xanh
 ════════════════════════════════════════════ --}}
 <section id="top" class="relative h-[100svh] w-full overflow-hidden" style="background:#1C1410;">
+    {{-- Continuous Timer bar at the very top --}}
+    <div class="absolute top-0 left-0 w-full h-1 z-[60]" style="background: rgba(255, 255, 255, 0.2);">
+        <div id="progressBar" class="h-full bg-[#FFE381] w-0 transition-none"></div>
+    </div>
+    
     <div class="slider-wrapper" id="slider">
         <div class="bg-layers" id="bgLayers">
             @foreach($slides as $i => $slide)
@@ -14,7 +19,7 @@
                  style="background-image:url('{{ $slide['image'] }}')"></div>
             @endforeach
         </div>
-        {{-- Overlay ấm: jasmine trái, tối phải --}}
+        {{-- Overlay --}}
         <div class="slider-overlay"
              style="background:linear-gradient(110deg,rgba(255,200,60,0.50) 0%,rgba(28,20,16,0.55) 50%,rgba(7,160,195,0.15) 100%);"></div>
         <div class="slider-content">
@@ -31,84 +36,268 @@
             </div>
             <div class="card-strip" id="cardStrip">
                 <div class="card-track" id="cardTrack">
-                    @foreach($slides as $i => $slide)
-                    <div class="dest-card {{ $i === 0 ? 'active' : '' }}" data-index="{{ $i }}"
-                         onclick="goToSlide({{ $i }})" role="button" tabindex="0"
-                         aria-label="Xem sự kiện: {{ $slide['title'] }}">
-                        <img src="{{ $slide['image'] }}" alt="{{ $slide['title'] }}" loading="lazy">
-                        <div class="dest-card-overlay"></div>
-                        <div class="dest-card-info">
-                            <div class="dest-card-tag">{{ $slide['tag'] }}</div>
-                            <div class="dest-card-name">{{ $slide['title'] }}</div>
-                        </div>
-                    </div>
-                    @endforeach
+                    {{-- Rendered by JS --}}
                 </div>
             </div>
         </div>
-        <div class="slider-bottom-bar">
-            <div class="nav-arrows">
-                <button class="nav-btn" id="btnPrev" aria-label="Trước">
-                    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </button>
-                <button class="nav-btn" id="btnNext" aria-label="Tiếp theo">
-                    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </button>
-            </div>
-            <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:20%"></div></div>
-            <div class="slide-counter" id="slideCounter">01</div>
         </div>
     </div>
     <script>
     (function(){
-        const slides=@json($slides),total=slides.length;
-        if(!total)return;
-        let current=0,isAnim=false,autoTimer;
-        const bgLayers=document.querySelectorAll('.bg-layer'),cards=document.querySelectorAll('.dest-card');
-        const cardTrack=document.getElementById('cardTrack'),slideInfo=document.getElementById('slideInfo');
-        const slideEyebrow=document.getElementById('slideEyebrow'),slideTitle=document.getElementById('slideTitle');
-        const slideDesc=document.getElementById('slideDesc'),slideCta=document.getElementById('slideCta');
-        const progressFill=document.getElementById('progressFill'),slideCounter=document.getElementById('slideCounter');
-        function goToSlide(idx){
-            if(isAnim||idx===current)return;
-            isAnim=true;clearTimeout(autoTimer);
-            const prev=current;current=idx;
-            bgLayers[prev].classList.remove('active');bgLayers[prev].classList.add('leaving');
-            bgLayers[current].classList.remove('idle','leaving');bgLayers[current].classList.add('active');
-            setTimeout(()=>{bgLayers[prev].classList.remove('leaving');bgLayers[prev].classList.add('idle');},950);
-            slideInfo.classList.remove('is-active');
-            setTimeout(()=>{
-                slideEyebrow.textContent=slides[current].eyebrow;
-                slideTitle.textContent=slides[current].title;
-                slideDesc.textContent=slides[current].description;
-                slideCta.textContent=slides[current].cta_label;
-                slideCta.href=slides[current].cta_url;
-                slideInfo.classList.add('is-active');
-            },300);
-            cards.forEach((c,i)=>c.classList.toggle('active',i===current));
-            const cw=165,gw=16,sw=600,vc=Math.floor((sw-48)/(cw+gw));
-            let off=current>=vc-1?(current-vc+2)*(cw+gw):0;
-            cardTrack.style.transform=`translateX(-${off}px)`;
-            progressFill.style.width=((current+1)/total*100)+'%';
-            slideCounter.textContent=String(current+1).padStart(2,'0');
-            setTimeout(()=>{isAnim=false;},700);scheduleAuto();
+        const slides = @json($slides), total = slides.length;
+        if (!total) return;
+
+        /* ─── State ─── */
+        let current  = 0;
+        let isAnim   = false;
+        const INTERVAL = 2000; // 2 seconds
+
+        /* ─── Constants ─── */
+        const MAX_CARDS = 4;
+        const CW = 200, GAP = 16, STEP = CW + GAP;
+
+        /* ─── Circular queue of slide indices ───
+           queue[0] is always the NEXT slide (leftmost card).
+           When a card is consumed, it goes to the end. */
+        let queue = [];
+        for (let i = 1; i < total; i++) queue.push(i); // [1,2,3,...,7]
+        queue.push(0); // slide 0 at the end (it's currently the background)
+
+        /* ─── DOM ─── */
+        const bgLayers     = document.querySelectorAll('.bg-layer');
+        const cardTrack    = document.getElementById('cardTrack');
+        const slideInfo    = document.getElementById('slideInfo');
+        const slideEyebrow = document.getElementById('slideEyebrow');
+        const slideTitle   = document.getElementById('slideTitle');
+        const slideDesc    = document.getElementById('slideDesc');
+        const slideCta     = document.getElementById('slideCta');
+        const progressBar  = document.getElementById('progressBar');
+        const sliderEl     = document.getElementById('slider');
+
+        /* ─── Card helpers ─── */
+        function liveCards() { return Array.from(cardTrack.querySelectorAll('.dest-card')); }
+
+        function makeCard(slideIdx) {
+            const sl   = slides[slideIdx];
+            const card = document.createElement('div');
+            card.className     = 'dest-card';
+            card.dataset.index = slideIdx;
+            card.innerHTML =
+                `<img src="${sl.image}" alt="${sl.title}" loading="lazy">` +
+                `<div class="dest-card-overlay"></div>` +
+                `<div class="dest-card-info">` +
+                    `<div class="dest-card-tag">${sl.tag}</div>` +
+                    `<div class="dest-card-name">${sl.title}</div>` +
+                `</div>`;
+                
+            card.addEventListener('click', () => {
+                if (isAnim) return;
+                const idxInQueue = queue.indexOf(slideIdx);
+                if (idxInQueue !== -1) {
+                    advance(idxInQueue, card);
+                }
+            });
+
+            return card;
         }
-        function next(){goToSlide((current+1)%total);}
-        function prev(){goToSlide((current-1+total)%total);}
-        function scheduleAuto(){clearTimeout(autoTimer);autoTimer=setTimeout(next,5000);}
-        document.getElementById('btnNext')?.addEventListener('click',next);
-        document.getElementById('btnPrev')?.addEventListener('click',prev);
-        document.addEventListener('keydown',e=>{
-            if(e.key==='ArrowRight'||e.key==='ArrowDown')next();
-            if(e.key==='ArrowLeft'||e.key==='ArrowUp')prev();
-        });
-        cards.forEach(c=>c.addEventListener('keydown',e=>{
-            if(e.key==='Enter'||e.key===' '){e.preventDefault();goToSlide(parseInt(c.dataset.index));}
-        }));
-        const sl=document.getElementById('slider');
-        sl?.addEventListener('mouseenter',()=>clearTimeout(autoTimer));
-        sl?.addEventListener('mouseleave',scheduleAuto);
-        scheduleAuto();
+
+        function markFirstActive() {
+            liveCards().forEach((c, i) => c.classList.toggle('active', i === 0));
+        }
+
+        /* ─── Build initial strip (first MAX_CARDS from queue) ─── */
+        function initStrip() {
+            cardTrack.innerHTML = '';
+            cardOffset = 0;
+            cardTrack.style.transition = 'none';
+            cardTrack.style.transform  = 'translateX(0)';
+            const count = Math.min(MAX_CARDS, queue.length);
+            for (let i = 0; i < count; i++) {
+                cardTrack.appendChild(makeCard(queue[i]));
+            }
+            markFirstActive();
+        }
+
+        /* ─── Advance: expand leftmost card (or clicked card) → bg, recycle to queue end ─── */
+        function advance(jumpQueueIndex = 0, targetCardOverride = null) {
+            if (isAnim || queue.length === 0) return;
+            isAnim = true;
+            stopTimer();
+
+            const nextSlideIdx = queue[jumpQueueIndex];
+            const prev         = current;
+            current            = nextSlideIdx;
+
+            /* --- Expand clone in BACKGROUND (z:0 < overlay z:1 < content z:5) --- */
+            const targetCard = targetCardOverride || cardTrack.firstElementChild;
+            if (targetCard) {
+                const sRect = sliderEl.getBoundingClientRect();
+                const cRect = targetCard.getBoundingClientRect();
+
+                const clone = document.createElement('div');
+                clone.style.cssText =
+                    'position:absolute;' +
+                    `top:${cRect.top - sRect.top}px;` +
+                    `left:${cRect.left - sRect.left}px;` +
+                    `width:${cRect.width}px;height:${cRect.height}px;` +
+                    `background-image:url('${slides[nextSlideIdx].image}');` +
+                    'background-size:cover;background-position:center;' +
+                    'border-radius:20px;z-index:0;pointer-events:none;' +
+                    'transition:top 750ms cubic-bezier(0.4,0,0.2,1),' +
+                               'left 750ms cubic-bezier(0.4,0,0.2,1),' +
+                               'width 750ms cubic-bezier(0.4,0,0.2,1),' +
+                               'height 750ms cubic-bezier(0.4,0,0.2,1),' +
+                               'border-radius 750ms cubic-bezier(0.4,0,0.2,1);';
+                sliderEl.appendChild(clone);
+
+                bgLayers[prev].classList.remove('active');
+                bgLayers[prev].classList.add('leaving');
+
+                requestAnimationFrame(() => requestAnimationFrame(() => {
+                    clone.style.top = '0'; clone.style.left = '0';
+                    clone.style.width = '100%'; clone.style.height = '100%';
+                    clone.style.borderRadius = '0';
+                }));
+
+                setTimeout(() => {
+                    bgLayers[prev].classList.remove('leaving');
+                    bgLayers[prev].classList.add('idle');
+                    bgLayers[current].style.transition = 'none';
+                    bgLayers[current].classList.remove('idle', 'leaving');
+                    bgLayers[current].classList.add('active');
+                    setTimeout(() => { bgLayers[current].style.transition = ''; }, 50);
+                    clone.remove();
+                }, 770);
+            }
+
+            /* --- Card Track DOM updates with FLIP Animation --- */
+            // 1. Record original positions
+            const cards = Array.from(cardTrack.children);
+            const firstRects = new Map();
+            cards.forEach(c => firstRects.set(c.dataset.index, c.getBoundingClientRect()));
+
+            // 2. Extract the clicked card from queue, keep others intact, push to end
+            queue.splice(jumpQueueIndex, 1);
+            queue.push(nextSlideIdx);
+
+            // 3. Rebuild track completely
+            cardTrack.innerHTML = '';
+            const count = Math.min(MAX_CARDS, queue.length);
+            for (let i = 0; i < count; i++) {
+                cardTrack.appendChild(makeCard(queue[i]));
+            }
+
+            // 4. Invert and Play (FLIP) for smooth sliding
+            const newCards = Array.from(cardTrack.children);
+            newCards.forEach(c => {
+                const firstRect = firstRects.get(c.dataset.index);
+                if (firstRect) {
+                    const lastRect = c.getBoundingClientRect();
+                    const dx = firstRect.left - lastRect.left;
+                    if (dx !== 0) {
+                        c.style.transition = 'none';
+                        c.style.transform = `translateX(${dx}px)`;
+                        requestAnimationFrame(() => requestAnimationFrame(() => {
+                            c.style.transition = 'transform 550ms cubic-bezier(0.4,0,0.2,1)';
+                            c.style.transform = 'translateX(0px)';
+                        }));
+                    }
+                } else {
+                    // New card sliding in from right
+                    const dx = (jumpQueueIndex + 1) * STEP;
+                    c.style.transition = 'none';
+                    c.style.transform = `translateX(${dx}px)`;
+                    requestAnimationFrame(() => requestAnimationFrame(() => {
+                        c.style.transition = 'transform 550ms cubic-bezier(0.4,0,0.2,1)';
+                        c.style.transform = 'translateX(0px)';
+                    }));
+                }
+            });
+
+            markFirstActive();
+
+            /* --- Update text --- */
+            slideInfo.classList.remove('is-active');
+            setTimeout(() => {
+                slideEyebrow.textContent = slides[current].eyebrow;
+                slideTitle.textContent   = slides[current].title;
+                slideDesc.textContent    = slides[current].description;
+                slideCta.textContent     = slides[current].cta_label;
+                slideCta.href            = slides[current].cta_url;
+                slideInfo.classList.add('is-active');
+            }, 250);
+
+            /* --- Unlock & restart timer --- */
+            setTimeout(() => {
+                isAnim = false;
+                startTimer();
+            }, 800);
+        }
+
+        /* ─── Timer (Game Loop Pattern) ─── */
+        let isHovering = false;
+        let timerRAF = null;
+        let lastTime = 0;
+        let accumulated = 0;
+
+        function updateProgressBar(acc) {
+            const percentage = (acc / INTERVAL) * 100;
+            progressBar.style.width = `${percentage}%`;
+        }
+
+        function loop(time) {
+            if (!lastTime) lastTime = time;
+            let delta = time - lastTime;
+            lastTime = time;
+
+            // Cap delta to 100ms to prevent massive skips if tab was in background
+            if (delta > 100) delta = 100;
+
+            // Progress the timer if not animating a slide
+            if (!isAnim) {
+                // Slower progression (x3 slower) when user is hovering over the slider
+                const effectiveDelta = isHovering ? delta / 3 : delta;
+                accumulated += effectiveDelta;
+                
+                const displayAcc = Math.min(accumulated, INTERVAL);
+                updateProgressBar(displayAcc);
+
+                if (accumulated >= INTERVAL) {
+                    accumulated = 0;
+                    updateProgressBar(0); // Clear immediately
+                    advance(); // Sets isAnim = true, pausing the timer naturally
+                }
+            }
+            
+            timerRAF = requestAnimationFrame(loop);
+        }
+
+        function startTimer() {
+            stopTimer();
+            accumulated = 0;
+            lastTime = 0;
+            updateProgressBar(0);
+            
+            // Check if mouse is already inside slider when loaded
+            isHovering = sliderEl?.matches(':hover') || false;
+            
+            timerRAF = requestAnimationFrame(loop);
+        }
+
+        function stopTimer() {
+            if (timerRAF) cancelAnimationFrame(timerRAF);
+            timerRAF = null;
+            lastTime = 0;
+            // DO NOT reset accumulated here, so segments stay lit visually during the slide transition
+        }
+
+        /* ─── Pause on hover ─── */
+        sliderEl?.addEventListener('mouseenter', () => isHovering = true);
+        sliderEl?.addEventListener('mouseleave', () => isHovering = false);
+
+        /* ─── Init ─── */
+        initStrip();
+        startTimer();
     })();
     </script>
 </section>

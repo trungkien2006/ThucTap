@@ -127,10 +127,10 @@
     </main>
 
     <!-- Footer — ấm tối, Jasmine accent -->
-    <footer id="contact" class="relative text-white" style="background:#2D1F0A;">
+    <footer id="contact" class="relative text-white" style="background: linear-gradient(to top, rgba(45,31,10,0.95), rgba(45,31,10,0.85)), url('{{ asset('images/frontend/footer-bg.png') }}') bottom/cover no-repeat;">
         <!-- Top border Jasmine -->
         <div class="h-1.5" style="background:#FFE381;"></div>
-        <div class="mx-auto grid max-w-[1400px] grid-cols-1 gap-12 px-6 py-20 lg:grid-cols-4 lg:px-10">
+        <div class="mx-auto grid max-w-[1400px] grid-cols-1 gap-12 px-6 pt-32 pb-24 lg:grid-cols-4 lg:px-10">
             <div class="lg:col-span-2">
                 <div class="font-['Barlow_Condensed'] text-4xl font-black uppercase">
                     Uni<span style="color:#FFE381;">Event</span>

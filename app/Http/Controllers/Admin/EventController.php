@@ -88,7 +88,9 @@ class EventController extends Controller
             ->orderByDesc('created_at')
             ->get();
         $allSpeakers = \App\Models\Speaker::all();
-        return view('admin.events.design', compact('event', 'mediaLibrary', 'allSpeakers'));
+        $newestEvents = Event::with('bannerImage')->latest()->take(3)->get();
+        $prominentEvents = Event::with('bannerImage')->orderByRaw('views_count + likes_count DESC')->take(3)->get();
+        return view('admin.events.design', compact('event', 'mediaLibrary', 'allSpeakers', 'newestEvents', 'prominentEvents'));
     }
 
     public function saveDesign(Request $request, Event $event)
@@ -238,7 +240,9 @@ class EventController extends Controller
     public function preview(Event $event)
     {
         $event->load('bannerImage', 'media', 'category', 'scheduleItems', 'speakers');
-        return view('admin.events.preview', compact('event'));
+        $newestEvents = Event::with('bannerImage')->latest()->take(3)->get();
+        $prominentEvents = Event::with('bannerImage')->orderByRaw('views_count + likes_count DESC')->take(3)->get();
+        return view('admin.events.preview', compact('event', 'newestEvents', 'prominentEvents'));
     }
 
     public function edit(Event $event)

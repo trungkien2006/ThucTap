@@ -455,62 +455,6 @@
 
                 <!-- Right Column -->
                 <div class="lg:col-span-4 space-y-6" style="position: sticky; top: 88px; align-self: start; height: max-content;">
-                    <!-- Registration Card -->
-                    <div class="uni-card p-5">
-                        <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
-                            <span class="text-[13px] text-slate-500 font-medium">Cổng đăng ký</span>
-                            <span class="badge-success flex items-center gap-1">
-                                <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
-                                Đang mở
-                            </span>
-                        </div>
-
-                        <div class="space-y-3.5 mb-5">
-                            <div onclick="openEditor('sec-time')" class="flex items-center gap-3.5 cursor-pointer hover:bg-slate-50 p-1.5 rounded-lg transition-all">
-                                <div class="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center text-primary">
-                                    <span class="material-symbols-outlined text-[18px]">calendar_today</span>
-                                </div>
-                                <div>
-                                    <p class="text-[11px] text-slate-400 font-medium">Ngày diễn ra</p>
-                                    <p id="viewNgay" class="text-[13px] font-semibold text-primary">{{ $event->event_date->format('d/m/Y') }}</p>
-                                </div>
-                            </div>
-                            <div onclick="openEditor('sec-time')" class="flex items-center gap-3.5 cursor-pointer hover:bg-slate-50 p-1.5 rounded-lg transition-all">
-                                <div class="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center text-primary">
-                                    <span class="material-symbols-outlined text-[18px]">schedule</span>
-                                </div>
-                                <div>
-                                    <p class="text-[11px] text-slate-400 font-medium">Thời gian</p>
-                                    <p id="viewGio" class="text-[13px] font-semibold text-primary">{{ $event->event_date->format('H:i') }} - {{ $event->end_date ? $event->end_date->format('H:i') : '17:00' }}</p>
-                                </div>
-                            </div>
-                            <div onclick="openEditor('sec-time')" class="flex items-center gap-3.5 cursor-pointer hover:bg-slate-50 p-1.5 rounded-lg transition-all">
-                                <div class="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center text-primary">
-                                    <span class="material-symbols-outlined text-[18px]">location_on</span>
-                                </div>
-                                <div>
-                                    <p class="text-[11px] text-slate-400 font-medium">Địa điểm</p>
-                                    <p id="viewDiaDiem" class="text-[13px] font-semibold text-primary">{{ $event->location }}</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <button class="w-full py-2.5 bg-brand-orange hover:bg-orange-600 text-white rounded-xl text-[13px] font-bold transition-all shadow-md shadow-orange-500/10 pointer-events-none">
-                            Giữ chỗ (Giới hạn: <span id="viewToiDa">{{ $event->max_attendees ?? 50 }}</span> slot)
-                        </button>
-                    </div>
-
-                    <!-- Schedule Card -->
-                    <div onclick="openEditor('sec-timeline')" class="uni-card p-5 cursor-pointer hover:border-slate-300 transition-all">
-                        <h4 class="text-[13px] font-bold text-primary mb-3 font-heading flex items-center gap-1.5">
-                            <span class="material-symbols-outlined text-[16px] text-brand-orange">format_list_bulleted</span>
-                            Lịch hoạt động sự kiện
-                        </h4>
-                        <div id="viewLichHoatDong" class="text-[12px] text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-100 whitespace-pre-line leading-relaxed">
-                            {{ $event->scheduleItems->map(fn($s) => $s->start_time . ' - ' . $s->title)->implode("\n") ?: "Chưa có lịch hoạt động" }}
-                        </div>
-                    </div>
-
                     <!-- Speaker Card -->
                     <div onclick="openEditor('sec-info')" class="uni-card p-6 cursor-pointer hover:border-slate-300 transition-all group">
                         <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
@@ -530,6 +474,74 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Schedule Card -->
+                    <div onclick="openEditor('sec-timeline')" class="uni-card p-5 cursor-pointer hover:border-slate-300 transition-all">
+                        <h4 class="text-[13px] font-bold text-primary mb-3 font-heading flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[16px] text-brand-orange">format_list_bulleted</span>
+                            Lịch hoạt động sự kiện
+                        </h4>
+                        <div id="viewLichHoatDong" class="text-[12px] text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-100 whitespace-pre-line leading-relaxed">
+                            {{ $event->scheduleItems->map(fn($s) => $s->start_time . ' - ' . $s->title)->implode("\n") ?: "Chưa có lịch hoạt động" }}
+                        </div>
+                    </div>
+
+                    <!-- Promoted Events: Newest -->
+                    @if(isset($newestEvents) && $newestEvents->count() > 0)
+                    <div class="uni-card p-5">
+                        <h4 class="text-[13px] font-bold text-primary mb-4 font-heading flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[16px] text-emerald-500">new_releases</span>
+                            Sự kiện mới nhất
+                        </h4>
+                        <div class="space-y-4">
+                            @foreach($newestEvents as $newEv)
+                                <a href="{{ route('events.show', $newEv->slug) }}" target="_blank" class="flex gap-3 items-center group">
+                                    <div class="w-16 h-12 rounded-lg overflow-hidden shrink-0 bg-slate-100 border border-slate-200">
+                                        @if($newEv->bannerImage)
+                                            <img src="{{ Storage::url($newEv->bannerImage->url) }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform">
+                                        @else
+                                            <div class="w-full h-full bg-slate-200"></div>
+                                        @endif
+                                    </div>
+                                    <div>
+                                        <h5 class="text-[12px] font-bold text-primary group-hover:text-brand-orange transition-colors line-clamp-2 leading-snug">{{ $newEv->title }}</h5>
+                                        <p class="text-[10px] text-slate-400 mt-1">{{ $newEv->event_date->format('d/m/Y') }}</p>
+                                    </div>
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+                    @endif
+
+                    <!-- Promoted Events: Prominent -->
+                    @if(isset($prominentEvents) && $prominentEvents->count() > 0)
+                    <div class="uni-card p-5">
+                        <h4 class="text-[13px] font-bold text-primary mb-4 font-heading flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[16px] text-amber-500">local_fire_department</span>
+                            Sự kiện nổi bật
+                        </h4>
+                        <div class="space-y-4">
+                            @foreach($prominentEvents as $promEv)
+                                <a href="{{ route('events.show', $promEv->slug) }}" target="_blank" class="flex gap-3 items-center group">
+                                    <div class="w-16 h-12 rounded-lg overflow-hidden shrink-0 bg-slate-100 border border-slate-200">
+                                        @if($promEv->bannerImage)
+                                            <img src="{{ Storage::url($promEv->bannerImage->url) }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform">
+                                        @else
+                                            <div class="w-full h-full bg-slate-200"></div>
+                                        @endif
+                                    </div>
+                                    <div>
+                                        <h5 class="text-[12px] font-bold text-primary group-hover:text-brand-orange transition-colors line-clamp-2 leading-snug">{{ $promEv->title }}</h5>
+                                        <div class="flex items-center gap-2 mt-1">
+                                            <span class="text-[10px] text-slate-400 flex items-center gap-0.5"><span class="material-symbols-outlined text-[12px]">visibility</span>{{ $promEv->views_count }}</span>
+                                            <span class="text-[10px] text-slate-400 flex items-center gap-0.5"><span class="material-symbols-outlined text-[12px]">favorite</span>{{ $promEv->likes_count }}</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+                    @endif
                 </div>
             </div>
         </main>

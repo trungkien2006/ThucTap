@@ -58,11 +58,7 @@
                     @error('slug') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
                 </div>
             </div>
-            <div>
-                <label class="uni-label" for="description">Mô tả chi tiết <span class="text-red-400">*</span></label>
-                <textarea class="uni-input" id="description" name="description" rows="4" required placeholder="Mô tả nội dung, hoạt động nổi bật, lý do tham gia...">{{ old('description') }}</textarea>
-                @error('description') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
-            </div>
+
         </section>
 
         <!-- Section 2: Time & Location -->
@@ -118,56 +114,7 @@
             </div>
         </section>
 
-        <!-- Section 4: Speakers -->
-        <section class="uni-card p-6 space-y-5">
-            <div class="flex items-center gap-2.5 border-b border-slate-100 pb-3">
-                <span class="material-symbols-outlined text-primary text-[20px]">groups</span>
-                <h3 class="text-[16px] font-bold text-primary font-heading">Diễn giả</h3>
-            </div>
-            <div>
-                <label class="uni-label">Chọn diễn giả (Có thể chọn nhiều)</label>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[240px] overflow-y-auto p-2 border border-slate-200 rounded-xl bg-slate-50/50">
-                    @forelse($speakers as $speaker)
-                        <label class="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-lg cursor-pointer hover:border-brand-orange transition-all">
-                            <input type="checkbox" name="speaker_ids[]" value="{{ $speaker->id }}" {{ is_array(old('speaker_ids')) && in_array($speaker->id, old('speaker_ids')) ? 'checked' : '' }} class="rounded border-slate-300 text-brand-orange focus:ring-brand-orange w-4 h-4">
-                            <div class="flex items-center gap-3">
-                                <img src="{{ $speaker->photo_url ? Storage::url($speaker->photo_url) : 'https://ui-avatars.com/api/?name='.urlencode($speaker->name).'&background=random' }}" class="w-8 h-8 rounded-full object-cover">
-                                <div>
-                                    <p class="text-[13px] font-semibold text-primary">{{ $speaker->name }}</p>
-                                    <p class="text-[11px] text-slate-400">{{ $speaker->title ?? 'Diễn giả' }}</p>
-                                </div>
-                            </div>
-                        </label>
-                    @empty
-                        <div class="col-span-full py-6 text-center">
-                            <p class="text-[13px] text-slate-400">Chưa có diễn giả nào trong hệ thống.</p>
-                            <a href="{{ route('admin.speakers.create') ?? '#' }}" class="inline-flex items-center gap-1.5 text-brand-orange text-[12px] font-semibold hover:underline mt-2">
-                                <span class="material-symbols-outlined text-[16px]">add_circle</span>
-                                Thêm diễn giả mới
-                            </a>
-                        </div>
-                    @endforelse
-                </div>
-                @error('speaker_ids') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
-            </div>
-        </section>
 
-        <!-- Section 5: Banner -->
-        <section class="uni-card p-6 space-y-5">
-            <div class="flex items-center gap-2.5 border-b border-slate-100 pb-3">
-                <span class="material-symbols-outlined text-primary text-[20px]">image</span>
-                <h3 class="text-[16px] font-bold text-primary font-heading">Ảnh bìa sự kiện</h3>
-            </div>
-            <div class="border-2 border-dashed border-slate-200 rounded-xl p-10 flex flex-col items-center justify-center gap-3 bg-slate-50/30 hover:bg-slate-50 hover:border-brand-orange transition-all cursor-pointer relative">
-                <input type="file" id="banner_image" name="banner_image" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"/>
-                <div class="w-14 h-14 rounded-2xl bg-slate-100 flex items-center justify-center text-brand-orange">
-                    <span class="material-symbols-outlined text-[28px]">cloud_upload</span>
-                </div>
-                <p class="text-[13px] font-semibold text-primary">Nhấn để tải ảnh bìa lên</p>
-                <p class="text-[11px] text-slate-400">Khuyến nghị: 1200 x 480 pixels (PNG, JPG)</p>
-                @error('banner_image') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
-            </div>
-        </section>
 
         <!-- Form Actions -->
         <div class="flex items-center justify-between pt-4">

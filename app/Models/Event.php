@@ -12,6 +12,28 @@ class Event extends Model
 
     protected $guarded = [];
 
+    protected $appends = ['title_font_size', 'title_color', 'title_outline_color', 'title_outline_width', 'title_font_family', 'desc_font_size', 'desc_color', 'desc_font_family'];
+
+    protected $parsedDesignSettings = null;
+
+    public function getDesignSetting($key, $default = null)
+    {
+        if ($this->parsedDesignSettings === null) {
+            $media = $this->media()->where('type', 'design_settings')->first();
+            $this->parsedDesignSettings = $media && $media->content ? json_decode($media->content, true) : [];
+        }
+        return $this->parsedDesignSettings[$key] ?? $default;
+    }
+
+    public function getTitleFontSizeAttribute() { return $this->getDesignSetting('title_font_size'); }
+    public function getTitleColorAttribute() { return $this->getDesignSetting('title_color'); }
+    public function getTitleOutlineColorAttribute() { return $this->getDesignSetting('title_outline_color'); }
+    public function getTitleOutlineWidthAttribute() { return $this->getDesignSetting('title_outline_width'); }
+    public function getTitleFontFamilyAttribute() { return $this->getDesignSetting('title_font_family'); }
+    public function getDescFontSizeAttribute() { return $this->getDesignSetting('desc_font_size'); }
+    public function getDescColorAttribute() { return $this->getDesignSetting('desc_color'); }
+    public function getDescFontFamilyAttribute() { return $this->getDesignSetting('desc_font_family'); }
+
     protected function casts(): array
     {
         return [
@@ -79,7 +101,9 @@ class Event extends Model
 
     public function galleryImages()
     {
-        return $this->hasMany(EventMedia::class)->where('is_banner', false);
+        return $this->hasMany(EventMedia::class)
+            ->where('is_banner', false)
+            ->where('type', '!=', 'design_settings');
     }
 
     public function videos()

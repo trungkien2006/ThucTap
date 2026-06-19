@@ -142,14 +142,19 @@ class EventController extends Controller
         if ($request->has('department_id')) $event->department_id = $request->department_id;
 
         // Save new styling fields
-        if ($request->has('title_font_size')) $event->title_font_size = $request->title_font_size;
-        if ($request->has('title_color')) $event->title_color = $request->title_color;
-        if ($request->has('title_outline_color')) $event->title_outline_color = $request->title_outline_color;
-        if ($request->has('title_outline_width')) $event->title_outline_width = $request->title_outline_width;
-        if ($request->has('title_font_family')) $event->title_font_family = $request->title_font_family;
-        if ($request->has('desc_font_size')) $event->desc_font_size = $request->desc_font_size;
-        if ($request->has('desc_color')) $event->desc_color = $request->desc_color;
-        if ($request->has('desc_font_family')) $event->desc_font_family = $request->desc_font_family;
+        $designSettings = [];
+        $styleFields = ['title_font_size', 'title_color', 'title_outline_color', 'title_outline_width', 'title_font_family', 'desc_font_size', 'desc_color', 'desc_font_family'];
+        foreach ($styleFields as $field) {
+            if ($request->has($field)) {
+                $designSettings[$field] = $request->$field;
+            }
+        }
+        if (!empty($designSettings)) {
+            $event->media()->updateOrCreate(
+                ['type' => 'design_settings'],
+                ['content' => json_encode($designSettings)]
+            );
+        }
 
         $event->save();
 
@@ -203,14 +208,18 @@ class EventController extends Controller
                     $doc_path = str_replace(Storage::url(''), '', parse_url($doc_path, PHP_URL_PATH));
                 }
                 
+                $jsonContent = json_encode([
+                    'text' => $content,
+                    'document_url' => $doc_path,
+                    'document_name' => $document_name,
+                    'action_url' => $action_url,
+                ]);
+
                 $event->media()->create([
                     'type' => $type,
                     'url' => $path ?? '',
                     'caption' => $caption,
-                    'content' => $content,
-                    'document_url' => $doc_path,
-                    'document_name' => $document_name,
-                    'action_url' => $action_url,
+                    'content' => $jsonContent,
                     'is_banner' => false,
                 ]);
             }

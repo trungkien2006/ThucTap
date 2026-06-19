@@ -997,6 +997,22 @@
         }
 
         async function saveDesignThen(callback) {
+            // Hiển thị Overlay Loading
+            let loadingOverlay = document.getElementById('globalLoadingOverlay');
+            if (!loadingOverlay) {
+                loadingOverlay = document.createElement('div');
+                loadingOverlay.id = 'globalLoadingOverlay';
+                loadingOverlay.className = 'fixed inset-0 z-[9999] flex items-center justify-center bg-white/70 backdrop-blur-sm transition-opacity';
+                loadingOverlay.innerHTML = `
+                    <div class="bg-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 border border-slate-100">
+                        <span class="material-symbols-outlined animate-spin text-brand-orange text-[28px]">sync</span>
+                        <span class="text-[15px] font-bold text-primary font-heading">Đang lưu cấu hình...</span>
+                    </div>
+                `;
+                document.body.appendChild(loadingOverlay);
+            }
+            loadingOverlay.classList.remove('hidden');
+
             const formData = {
                 title: document.getElementById('inTieuDe').value,
                 description: document.getElementById('inMoTa').value,
@@ -1056,6 +1072,11 @@
             } catch (e) {
                 console.error(e);
                 alert('Lỗi lưu cấu hình!');
+            } finally {
+                // Ẩn Overlay Loading
+                if (loadingOverlay) {
+                    loadingOverlay.classList.add('hidden');
+                }
             }
         }
 

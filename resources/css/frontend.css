@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Alegreya+SC:wght@400;700;900&family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -23,7 +23,7 @@
   }
 
   .frontend-body h1, .frontend-body h2, .frontend-body h3, .frontend-body h4 {
-    font-family: "Alegreya SC", serif;
+    font-family: "Barlow Condensed", sans-serif;
     letter-spacing: -0.01em;
   }
 }
@@ -153,14 +153,14 @@
         flex-shrink: 0;
     }
     .slide-title {
-        font-family: 'Alegreya SC', serif;
+        font-family: 'Barlow Condensed', sans-serif;
         font-weight: 900;
         font-size: clamp(52px, 6vw, 82px);
-        line-height: 0.95;
+        line-height: 1.1;
         color: var(--white);
         text-transform: uppercase;
-        letter-spacing: -1px;
-        margin-bottom: 20px;
+        letter-spacing: 0;
+        margin-bottom: 24px;
         opacity: 0;
         transform: translateY(18px);
         transition: opacity 550ms ease 200ms, transform 550ms ease 200ms;
@@ -301,7 +301,7 @@
         font-weight: 500;
     }
     .dest-card-name {
-        font-family: 'Alegreya SC', serif;
+        font-family: 'Barlow Condensed', sans-serif;
         font-weight: 700;
         font-size: 22px;
         line-height: 1.15;

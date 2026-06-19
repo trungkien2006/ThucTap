@@ -60,6 +60,37 @@
 
         <!-- Preview Content -->
         <div class="bg-white pb-16">
+            @php
+                $titleStyles = [];
+                if (!empty($event->title_font_family)) {
+                    $titleStyles[] = "font-family: '{$event->title_font_family}', sans-serif;";
+                }
+                if (!empty($event->title_font_size)) {
+                    $titleStyles[] = "font-size: {$event->title_font_size}px;";
+                }
+                if (!empty($event->title_color)) {
+                    $titleStyles[] = "color: {$event->title_color} !important;";
+                }
+                if (!empty($event->title_outline_width) && $event->title_outline_width != '0') {
+                    $outlineColor = $event->title_outline_color ?? '#000000';
+                    $titleStyles[] = "-webkit-text-stroke: {$event->title_outline_width}px {$outlineColor};";
+                    $titleStyles[] = "text-shadow: 0px 2px 4px rgba(0,0,0,0.5);";
+                }
+                $titleStyleStr = implode(' ', $titleStyles);
+
+                $descStyles = [];
+                if (!empty($event->desc_font_family)) {
+                    $descStyles[] = "font-family: '{$event->desc_font_family}', sans-serif;";
+                }
+                if (!empty($event->desc_font_size)) {
+                    $descStyles[] = "font-size: {$event->desc_font_size}px;";
+                }
+                if (!empty($event->desc_color)) {
+                    $descStyles[] = "color: {$event->desc_color} !important;";
+                }
+                $descStyleStr = implode(' ', $descStyles);
+            @endphp
+
             <!-- Hero Section -->
             <section class="relative h-[320px] w-full overflow-hidden bg-slate-900">
                 <div class="absolute inset-0 bg-cover bg-center scale-105 transition-transform"
@@ -71,7 +102,7 @@
                     <div class="flex gap-2 mb-3">
                         <span class="px-2.5 py-1 bg-brand-orange text-white rounded-md text-[10px] uppercase font-bold tracking-wider">{{ $event->category?->name ?? 'Sự kiện' }}</span>
                     </div>
-                    <h1 class="text-[28px] md:text-[36px] font-bold text-white mb-2 font-heading leading-tight">
+                    <h1 class="text-[28px] md:text-[36px] font-bold text-white mb-2 font-heading leading-tight" style="{{ $titleStyleStr }}">
                         {{ $event->title }}
                     </h1>
                 </div>
@@ -89,7 +120,7 @@
                             <h3 class="text-[18px] font-bold text-primary mb-3 font-heading flex items-center gap-2">
                                 <span class="w-1 h-5 bg-primary rounded-full"></span>Giới thiệu sự kiện
                             </h3>
-                            <div class="text-slate-600 text-[16px] leading-[1.8] mb-8 text-justify break-words font-medium">
+                            <div class="text-slate-600 text-[16px] leading-[1.8] mb-8 text-justify break-words font-medium" style="{{ $descStyleStr }}">
                                 {!! nl2br(e($event->description)) !!}
                             </div>
                             @endif
@@ -103,7 +134,7 @@
                                 @endif
 
                                 @if($block->url)
-                                    <figure class="mb-8">
+                                    <figure class="mb-6">
                                         <div class="rounded-xl overflow-hidden bg-slate-100 shadow-sm">
                                             @if($block->type === 'video')
                                                 <video src="{{ Storage::url($block->url) }}" class="w-full h-auto object-cover max-h-[500px]" autoplay loop muted playsinline controls></video>
@@ -117,6 +148,26 @@
                                         </figcaption>
                                         @endif
                                     </figure>
+                                @endif
+
+                                {{-- Tài liệu đính kèm nếu có --}}
+                                @if($block->document_url)
+                                    <div class="mb-6">
+                                        <a href="{{ Storage::url($block->document_url) }}" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-semibold rounded-xl text-sm border border-emerald-200 transition-all">
+                                            <span class="material-symbols-outlined text-lg">download</span>
+                                            Tải tài liệu: {{ $block->document_name ?? basename($block->document_url) }}
+                                        </a>
+                                    </div>
+                                @endif
+
+                                {{-- URL liên kết ngoài nếu có --}}
+                                @if($block->action_url)
+                                    <div class="mb-6">
+                                        <a href="{{ $block->action_url }}" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold rounded-xl text-sm border border-blue-200 transition-all">
+                                            <span class="material-symbols-outlined text-lg">open_in_new</span>
+                                            Xem liên kết ngoài
+                                        </a>
+                                    </div>
                                 @endif
                             @endforeach
                         </div>

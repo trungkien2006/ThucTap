@@ -25,6 +25,37 @@
 </style>
 @endpush
 
+@php
+    $titleStyles = [];
+    if (!empty($event->title_font_family)) {
+        $titleStyles[] = "font-family: '{$event->title_font_family}', sans-serif;";
+    }
+    if (!empty($event->title_font_size)) {
+        $titleStyles[] = "font-size: {$event->title_font_size}px;";
+    }
+    if (!empty($event->title_color)) {
+        $titleStyles[] = "color: {$event->title_color} !important;";
+    }
+    if (!empty($event->title_outline_width) && $event->title_outline_width != '0') {
+        $outlineColor = $event->title_outline_color ?? '#000000';
+        $titleStyles[] = "-webkit-text-stroke: {$event->title_outline_width}px {$outlineColor};";
+        $titleStyles[] = "text-shadow: 0px 2px 4px rgba(0,0,0,0.5);";
+    }
+    $titleStyleStr = implode(' ', $titleStyles);
+
+    $descStyles = [];
+    if (!empty($event->desc_font_family)) {
+        $descStyles[] = "font-family: '{$event->desc_font_family}', sans-serif;";
+    }
+    if (!empty($event->desc_font_size)) {
+        $descStyles[] = "font-size: {$event->desc_font_size}px;";
+    }
+    if (!empty($event->desc_color)) {
+        $descStyles[] = "color: {$event->desc_color} !important;";
+    }
+    $descStyleStr = implode(' ', $descStyles);
+@endphp
+
 <!-- Hero Section -->
 <section class="relative h-[600px] min-h-[500px] flex items-center justify-center overflow-hidden rounded-[24px] mb-12 mt-4">
     <div class="absolute inset-0 z-0">
@@ -38,7 +69,7 @@
         @if($event->category)
             <span class="inline-block px-4 py-1.5 rounded-full bg-fpt-orange text-pure-white font-label-lg mb-6 tracking-wider uppercase">{{ $event->category->name }}</span>
         @endif
-        <h1 class="font-display-lg text-display-lg mb-6 leading-tight max-w-4xl mx-auto">{{ $event->title }}</h1>
+        <h1 class="font-display-lg text-display-lg mb-6 leading-tight max-w-4xl mx-auto" style="{{ $titleStyleStr }}">{{ $event->title }}</h1>
         
         <!-- Countdown Timer -->
         @if($event->event_date > now())
@@ -82,9 +113,59 @@
         <!-- About / Description -->
         <div class="md:col-span-12 bg-pure-white p-8 md:p-12 rounded-2xl border border-outline-variant shadow-sm hover:shadow-md transition-shadow mb-8">
             <h2 class="font-headline-lg text-headline-lg text-deep-navy mb-6">About This Event</h2>
-            <div class="text-on-surface-variant font-body-md leading-relaxed prose max-w-none">
+            <div class="text-on-surface-variant font-body-md leading-relaxed prose max-w-none mb-6" style="{{ $descStyleStr }}">
                 {!! nl2br(e($event->description)) !!}
             </div>
+
+            {{-- Hiển thị nội dung chi tiết (các khối thiết kế từ studio) --}}
+            @if($event->galleryImages->count() > 0)
+                <div class="mt-8 pt-8 border-t border-surface-container space-y-8">
+                    @foreach($event->galleryImages->take(4) as $block)
+                        <div class="space-y-4">
+                            @if($block->content)
+                                <div class="text-on-surface-variant font-body-md leading-relaxed text-justify break-words">
+                                    {!! nl2br(e($block->content)) !!}
+                                </div>
+                            @endif
+
+                            @if($block->url)
+                                <figure class="my-6">
+                                    <div class="rounded-xl overflow-hidden bg-slate-100 shadow-sm max-w-2xl">
+                                        @if($block->type === 'video')
+                                            <video src="{{ Storage::url($block->url) }}" class="w-full h-auto object-cover max-h-[500px]" autoplay loop muted playsinline controls></video>
+                                        @else
+                                            <img src="{{ Storage::url($block->url) }}" class="w-full h-auto object-contain max-h-[500px]" alt=""/>
+                                        @endif
+                                    </div>
+                                    @if($block->caption)
+                                    <figcaption class="mt-3 text-sm text-text-muted italic">
+                                        {{ $block->caption }}
+                                    </figcaption>
+                                    @endif
+                                </figure>
+                            @endif
+
+                            <div class="flex flex-wrap gap-3 mt-4">
+                                {{-- Tài liệu đính kèm nếu có --}}
+                                @if($block->document_url)
+                                    <a href="{{ Storage::url($block->document_url) }}" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-semibold rounded-xl text-sm border border-emerald-200 transition-all">
+                                        <span class="material-symbols-outlined text-lg">download</span>
+                                        Tải tài liệu: {{ $block->document_name ?? basename($block->document_url) }}
+                                    </a>
+                                @endif
+
+                                {{-- URL liên kết ngoài nếu có --}}
+                                @if($block->action_url)
+                                    <a href="{{ $block->action_url }}" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold rounded-xl text-sm border border-blue-200 transition-all">
+                                        <span class="material-symbols-outlined text-lg">open_in_new</span>
+                                        Xem liên kết ngoài
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
         </div>
 
         <!-- Date & Time Card -->

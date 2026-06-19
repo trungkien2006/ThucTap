@@ -93,7 +93,7 @@ class EventController extends Controller
 
     public function saveDesign(Request $request, Event $event)
     {
-        $validated = $request->validate([
+        $request->validate([
             'title' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'event_date' => 'nullable|date',
@@ -103,7 +103,18 @@ class EventController extends Controller
             'department_id' => 'nullable|exists:categories,id',
             'speaker_id' => 'nullable|exists:speakers,id',
             'schedule_text' => 'nullable|string',
-            'media_slots' => 'nullable|array', // array of URLs
+            
+            // New Styling Fields for Event Info
+            'title_font_size' => 'nullable|string',
+            'title_color' => 'nullable|string',
+            'title_outline_color' => 'nullable|string',
+            'title_outline_width' => 'nullable|string',
+            'title_font_family' => 'nullable|string',
+            'desc_font_size' => 'nullable|string',
+            'desc_color' => 'nullable|string',
+            'desc_font_family' => 'nullable|string',
+            
+            'media_slots' => 'nullable|array',
         ]);
 
         if ($request->has('event_date')) {
@@ -127,6 +138,16 @@ class EventController extends Controller
         if ($request->has('location')) $event->location = $request->location;
         if ($request->has('academic_year')) $event->academic_year = $request->academic_year;
         if ($request->has('department_id')) $event->department_id = $request->department_id;
+
+        // Save new styling fields
+        if ($request->has('title_font_size')) $event->title_font_size = $request->title_font_size;
+        if ($request->has('title_color')) $event->title_color = $request->title_color;
+        if ($request->has('title_outline_color')) $event->title_outline_color = $request->title_outline_color;
+        if ($request->has('title_outline_width')) $event->title_outline_width = $request->title_outline_width;
+        if ($request->has('title_font_family')) $event->title_font_family = $request->title_font_family;
+        if ($request->has('desc_font_size')) $event->desc_font_size = $request->desc_font_size;
+        if ($request->has('desc_color')) $event->desc_color = $request->desc_color;
+        if ($request->has('desc_font_family')) $event->desc_font_family = $request->desc_font_family;
 
         $event->save();
 
@@ -154,39 +175,65 @@ class EventController extends Controller
 
         // Process media slots
         if ($request->has('media_slots')) {
-            // First delete existing gallery images relations (not actual files)
             $event->galleryImages()->delete();
             
             foreach ($request->media_slots as $slot) {
                 $url = is_array($slot) ? ($slot['url'] ?? '') : $slot;
                 $caption = is_array($slot) ? ($slot['caption'] ?? '') : '';
                 $content = is_array($slot) ? ($slot['content'] ?? '') : '';
+                $document_url = is_array($slot) ? ($slot['document_url'] ?? '') : null;
+                $document_name = is_array($slot) ? ($slot['document_name'] ?? '') : null;
+                $action_url = is_array($slot) ? ($slot['action_url'] ?? '') : null;
 
-                if (empty($url) && empty($content)) continue;
+                if (empty($url) && empty($content) && empty($document_url) && empty($action_url)) continue;
                 
                 $path = null;
-                $type = 'text'; // Default to text if only content is provided
+                $type = 'text';
                 
                 if (!empty($url)) {
-                    // Extract local path from URL (remove /storage/ prefix)
                     $path = str_replace(Storage::url(''), '', parse_url($url, PHP_URL_PATH));
-                    
-                    // Determine type based on extension
                     $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
                     $type = in_array($ext, ['mp4', 'avi', 'mov', 'wmv', 'mkv', 'webm']) ? 'video' : 'image';
+                }
+
+                $doc_path = $document_url;
+                if (!empty($doc_path)) {
+                    $doc_path = str_replace(Storage::url(''), '', parse_url($doc_path, PHP_URL_PATH));
                 }
                 
                 $event->media()->create([
                     'type' => $type,
-                    'url' => $path,
+                    'url' => $path ?? '',
                     'caption' => $caption,
                     'content' => $content,
+                    'document_url' => $doc_path,
+                    'document_name' => $document_name,
+                    'action_url' => $action_url,
                     'is_banner' => false,
                 ]);
             }
         }
 
         return response()->json(['success' => true]);
+    }
+
+    public function uploadDocument(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,txt,zip|max:20480', // Max 20MB
+        ]);
+
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $path = $file->store('documents', 'public');
+            return response()->json([
+                'success' => true,
+                'name' => $file->getClientOriginalName(),
+                'url' => Storage::url($path)
+            ]);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Lỗi upload file'], 400);
     }
     public function preview(Event $event)
     {

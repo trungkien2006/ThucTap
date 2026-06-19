@@ -8,7 +8,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Hanken+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Hanken+Grotesk:wght@600;700&family=Be+Vietnam+Pro:wght@400;600;700&family=Charm:wght@400;700&family=Montserrat:wght@400;600;700&family=Pacifico&family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Rowdies:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0" rel="stylesheet">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -90,79 +90,110 @@
                             <label class="uni-label">Tiêu đề sự kiện</label>
                             <input type="text" id="inTieuDe" value="{{ $event->title }}" oninput="syncData()" class="uni-input"/>
                         </div>
+
+                        <!-- Cấu hình chữ Tiêu đề -->
+                        <div class="grid grid-cols-2 gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-200/60">
+                            <div class="col-span-2 text-[11px] font-bold text-slate-500 uppercase tracking-wider">Định dạng chữ Tiêu đề</div>
+                            <div class="col-span-2">
+                                <label class="uni-label text-[10px] text-slate-400">Kiểu Font chữ</label>
+                                <select id="inTieuDeFontFamily" onchange="syncData()" class="uni-input py-1 text-[12px]">
+                                    <option value="Inter" {{ ($event->title_font_family ?? 'Inter') == 'Inter' ? 'selected' : '' }}>Inter (Không chân, Hiện đại)</option>
+                                    <option value="Be Vietnam Pro" {{ ($event->title_font_family ?? 'Inter') == 'Be Vietnam Pro' ? 'selected' : '' }}>Be Vietnam Pro (Mặc định)</option>
+                                    <option value="Montserrat" {{ ($event->title_font_family ?? 'Inter') == 'Montserrat' ? 'selected' : '' }}>Montserrat (Tròn trịa, Trẻ trung)</option>
+                                    <option value="Playfair Display" {{ ($event->title_font_family ?? 'Inter') == 'Playfair Display' ? 'selected' : '' }}>Playfair Display (Có chân, Sang trọng)</option>
+                                    <option value="Rowdies" {{ ($event->title_font_family ?? 'Inter') == 'Rowdies' ? 'selected' : '' }}>Rowdies (Đậm đà, Cá tính)</option>
+                                    <option value="Pacifico" {{ ($event->title_font_family ?? 'Inter') == 'Pacifico' ? 'selected' : '' }}>Pacifico (Nghệ thuật, Viết tay)</option>
+                                    <option value="Charm" {{ ($event->title_font_family ?? 'Inter') == 'Charm' ? 'selected' : '' }}>Charm (Mềm mại, Bay bướm)</option>
+                                    <option value="Arial" {{ ($event->title_font_family ?? 'Inter') == 'Arial' ? 'selected' : '' }}>Arial (Phổ biến)</option>
+                                    <option value="Times New Roman" {{ ($event->title_font_family ?? 'Inter') == 'Times New Roman' ? 'selected' : '' }}>Times New Roman (Cổ điển)</option>
+                                    <option value="Courier New" {{ ($event->title_font_family ?? 'Inter') == 'Courier New' ? 'selected' : '' }}>Courier New (Máy đánh chữ)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="uni-label text-[10px] text-slate-400">Cỡ chữ</label>
+                                <select id="inTieuDeSize" onchange="syncData()" class="uni-input py-1 text-[12px]">
+                                    @for($size = 16; $size <= 72; $size += 2)
+                                        <option value="{{ $size }}" {{ ($event->title_font_size ?? '36') == $size ? 'selected' : '' }}>{{ $size }}px</option>
+                                    @endfor
+                                </select>
+                            </div>
+                            <div>
+                                <label class="uni-label text-[10px] text-slate-400">Màu chữ</label>
+                                <div class="flex items-center gap-1">
+                                    <input type="color" id="inTieuDeColor" value="{{ $event->title_color ?? '#ffffff' }}" oninput="document.getElementById('inTieuDeColorText').value = this.value; syncData()" class="w-8 h-8 rounded border border-slate-200 cursor-pointer p-0 bg-transparent shrink-0"/>
+                                    <input type="text" id="inTieuDeColorText" value="{{ $event->title_color ?? '#ffffff' }}" oninput="document.getElementById('inTieuDeColor').value = this.value; syncData()" class="uni-input py-1 px-1.5 text-[11px] font-mono w-full min-w-0"/>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="uni-label text-[10px] text-slate-400">Viền chữ</label>
+                                <select id="inTieuDeOutlineWidth" onchange="syncData()" class="uni-input py-1 text-[12px]">
+                                    <option value="0" {{ ($event->title_outline_width ?? '0') == '0' ? 'selected' : '' }}>Không viền</option>
+                                    <option value="1" {{ ($event->title_outline_width ?? '0') == '1' ? 'selected' : '' }}>1px</option>
+                                    <option value="2" {{ ($event->title_outline_width ?? '0') == '2' ? 'selected' : '' }}>2px</option>
+                                    <option value="3" {{ ($event->title_outline_width ?? '0') == '3' ? 'selected' : '' }}>3px</option>
+                                    <option value="4" {{ ($event->title_outline_width ?? '0') == '4' ? 'selected' : '' }}>4px</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="uni-label text-[10px] text-slate-400">Màu viền</label>
+                                <div class="flex items-center gap-1">
+                                    <input type="color" id="inTieuDeOutlineColor" value="{{ $event->title_outline_color ?? '#000000' }}" oninput="document.getElementById('inTieuDeOutlineColorText').value = this.value; syncData()" class="w-8 h-8 rounded border border-slate-200 cursor-pointer p-0 bg-transparent shrink-0"/>
+                                    <input type="text" id="inTieuDeOutlineColorText" value="{{ $event->title_outline_color ?? '#000000' }}" oninput="document.getElementById('inTieuDeOutlineColor').value = this.value; syncData()" class="uni-input py-1 px-1.5 text-[11px] font-mono w-full min-w-0"/>
+                                </div>
+                            </div>
+                        </div>
+
                         <div>
                             <label class="uni-label">Mô tả tóm tắt</label>
                             <textarea id="inMoTa" rows="2" oninput="syncData()" class="uni-input">{{ $event->description }}</textarea>
                         </div>
-                    </div>
-                </div>
 
-                <!-- 2. Time & Location -->
-                <div id="sec-time" class="space-y-3 pt-2 border-t border-slate-100 transition-all rounded-lg p-2 -m-2">
-                    <h4 class="uni-section-title">2. Thời gian & Địa điểm</h4>
-                    <div class="space-y-2.5">
-                        <div>
-                            <label class="uni-label">Ngày diễn ra</label>
-                            <input type="date" id="inNgay" value="{{ $event->event_date->format('Y-m-d') }}" onchange="syncData()" class="uni-input"/>
-                        </div>
-                        <div>
-                            <label class="uni-label">Khung giờ hoạt động</label>
-                            <div class="grid grid-cols-2 gap-2">
-                                <div class="flex items-center gap-1.5">
-                                    <span class="text-[11px] text-slate-400 shrink-0">Từ:</span>
-                                    <input type="time" id="inGioBatDau" value="{{ $event->event_date->format('H:i') }}" onchange="syncData()" class="uni-input py-1.5"/>
-                                </div>
-                                <div class="flex items-center gap-1.5">
-                                    <span class="text-[11px] text-slate-400 shrink-0">Đến:</span>
-                                    <input type="time" id="inGioKetThuc" value="{{ $event->end_date ? $event->end_date->format('H:i') : '17:00' }}" onchange="syncData()" class="uni-input py-1.5"/>
+                        <!-- Cấu hình chữ Mô tả -->
+                        <div class="grid grid-cols-2 gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-200/60">
+                            <div class="col-span-2 text-[11px] font-bold text-slate-500 uppercase tracking-wider">Định dạng chữ Mô tả</div>
+                            <div class="col-span-2">
+                                <label class="uni-label text-[10px] text-slate-400">Kiểu Font chữ</label>
+                                <select id="inMoTaFontFamily" onchange="syncData()" class="uni-input py-1 text-[12px]">
+                                    <option value="Inter" {{ ($event->desc_font_family ?? 'Inter') == 'Inter' ? 'selected' : '' }}>Inter (Không chân, Hiện đại)</option>
+                                    <option value="Be Vietnam Pro" {{ ($event->desc_font_family ?? 'Inter') == 'Be Vietnam Pro' ? 'selected' : '' }}>Be Vietnam Pro (Mặc định)</option>
+                                    <option value="Montserrat" {{ ($event->desc_font_family ?? 'Inter') == 'Montserrat' ? 'selected' : '' }}>Montserrat (Tròn trịa, Trẻ trung)</option>
+                                    <option value="Playfair Display" {{ ($event->desc_font_family ?? 'Inter') == 'Playfair Display' ? 'selected' : '' }}>Playfair Display (Có chân, Sang trọng)</option>
+                                    <option value="Arial" {{ ($event->desc_font_family ?? 'Inter') == 'Arial' ? 'selected' : '' }}>Arial (Phổ biến)</option>
+                                    <option value="Times New Roman" {{ ($event->desc_font_family ?? 'Inter') == 'Times New Roman' ? 'selected' : '' }}>Times New Roman (Cổ điển)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="uni-label text-[10px] text-slate-400">Cỡ chữ</label>
+                                <select id="inMoTaSize" onchange="syncData()" class="uni-input py-1 text-[12px]">
+                                    @for($size = 12; $size <= 32; $size += 1)
+                                        <option value="{{ $size }}" {{ ($event->desc_font_size ?? '14') == $size ? 'selected' : '' }}>{{ $size }}px</option>
+                                    @endfor
+                                </select>
+                            </div>
+                            <div>
+                                <label class="uni-label text-[10px] text-slate-400">Màu chữ</label>
+                                <div class="flex items-center gap-1">
+                                    <input type="color" id="inMoTaColor" value="{{ $event->desc_color ?? '#475569' }}" oninput="document.getElementById('inMoTaColorText').value = this.value; syncData()" class="w-8 h-8 rounded border border-slate-200 cursor-pointer p-0 bg-transparent shrink-0"/>
+                                    <input type="text" id="inMoTaColorText" value="{{ $event->desc_color ?? '#475569' }}" oninput="document.getElementById('inMoTaColor').value = this.value; syncData()" class="uni-input py-1 px-1.5 text-[11px] font-mono w-full min-w-0"/>
                                 </div>
                             </div>
                         </div>
-                        <div>
-                            <label class="uni-label">Vị trí / Địa điểm</label>
-                            <input type="text" id="inDiaDiem" value="{{ $event->location }}" oninput="syncData()" class="uni-input"/>
-                        </div>
                     </div>
                 </div>
 
-                <!-- 3. Schedule -->
+
+
+                <!-- 2. Schedule -->
                 <div id="sec-timeline" class="space-y-3 pt-2 border-t border-slate-100 transition-all rounded-lg p-2 -m-2">
-                    <h4 class="uni-section-title">3. Lịch hoạt động cụ thể</h4>
+                    <h4 class="uni-section-title">2. Lịch hoạt động cụ thể</h4>
                     <textarea id="inLichHoatDong" rows="3" oninput="syncData()" class="uni-input text-[12px] leading-relaxed" placeholder="VD: 13:30 - Đón tiếp & Check-in&#10;14:00 - Bắt đầu chương trình&#10;16:00 - Tổng kết & Trao quà">{{ $event->scheduleItems->map(fn($s) => $s->start_time . ' - ' . $s->title)->implode("\n") }}</textarea>
                 </div>
 
-                <!-- 4. Classification -->
-                <div class="space-y-3 pt-2 border-t border-slate-100">
-                    <h4 class="uni-section-title">4. Giới hạn & Phân loại</h4>
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="uni-label">Học kỳ</label>
-                            <select id="inHocKy" onchange="syncData()" class="uni-input">
-                                <option value="Spring 2024">Spring 2024</option>
-                                <option value="Summer 2024">Summer 2024</option>
-                                <option value="Fall 2024" selected>Fall 2024</option>
-                                <option value="Spring 2025">Spring 2025</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="uni-label">Khối ngành</label>
-                            <select id="inNganh" onchange="syncData()" class="uni-input">
-                                <option value="Công nghệ thông tin">Công nghệ thông tin</option>
-                                <option value="Thiết kế đồ họa" {{ $event->category?->name == 'Thiết kế đồ họa' ? 'selected' : '' }}>Thiết kế đồ họa</option>
-                                <option value="Digital Marketing">Digital Marketing</option>
-                                <option value="Quản trị khách sạn">Quản trị khách sạn</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="uni-label">Số lượng tối đa</label>
-                        <input type="number" id="inToiDa" value="{{ $event->max_attendees ?? 50 }}" oninput="syncData()" class="uni-input"/>
-                    </div>
-                </div>
 
-                <!-- 5. Media Library (Tabbed) -->
+
+                <!-- 3. Media Library (Tabbed) -->
                 <div id="sec-media" class="space-y-3 pt-2 border-t border-slate-100 transition-all rounded-lg p-2 -m-2">
-                    <h4 class="uni-section-title">5. Thư viện Media</h4>
+                    <h4 class="uni-section-title">3. Thư viện Media</h4>
 
                     {{-- Active slot indicator --}}
                     <div id="activeSlotIndicator" class="hidden items-center gap-2 px-3 py-2 bg-orange-50 border border-orange-200 rounded-xl">
@@ -235,9 +266,9 @@
                     </div>
                 </div>
 
-                <!-- 6. Speaker -->
+                <!-- 4. Speaker -->
                 <div id="sec-speaker" class="space-y-3 pt-2 border-t border-slate-100 mb-4 transition-all rounded-lg p-2 -m-2">
-                    <h4 class="uni-section-title">6. Nhân sự đại diện</h4>
+                    <h4 class="uni-section-title">4. Nhân sự đại diện</h4>
                     <select id="inTenDienGia" onchange="syncData()" class="uni-input">
                         <option value="" data-name="Chuyên gia Creative Director" data-photo="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80">-- Chọn diễn giả (Mặc định) --</option>
                         @foreach($allSpeakers as $speaker)
@@ -370,6 +401,52 @@
                                 <input type="text" id="caption{{ $i }}" placeholder="Nhập ghi chú / mô tả cho ảnh {{ $i }}..."
                                        class="w-full text-[13px] px-3 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all"
                                        value="{{ $media ? $media->caption : '' }}" />
+
+                                {{-- Tài liệu đính kèm (Word, Zip...) --}}
+                                <div class="bg-white border border-slate-200 rounded-xl p-3.5 space-y-2.5">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-[12px] font-bold text-slate-600 flex items-center gap-1">
+                                            <span class="material-symbols-outlined text-[16px] text-slate-500">attach_file</span> Tài liệu đính kèm
+                                        </span>
+                                        <input type="file" id="docFileInput{{ $i }}" class="hidden" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip" onchange="uploadDocumentFile({{ $i }})"/>
+                                        <button type="button" onclick="document.getElementById('docFileInput{{ $i }}').click()" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-[11px] font-semibold transition-all">
+                                            Tải file (Word, Zip, PDF...)
+                                        </button>
+                                    </div>
+                                    <div class="flex items-center gap-2 {{ $media && $media->document_url ? '' : 'hidden' }}" id="docInfoWrap{{ $i }}">
+                                        <span class="material-symbols-outlined text-[16px] text-emerald-600">article</span>
+                                        <a href="{{ $media && $media->document_url ? Storage::url($media->document_url) : '#' }}" id="docLink{{ $i }}" target="_blank" class="text-[12px] font-medium text-brand-orange hover:underline truncate max-w-[200px]">
+                                            {{ $media ? ($media->document_name ?? basename($media->document_url)) : '' }}
+                                        </a>
+                                        <button type="button" onclick="removeDocumentFile({{ $i }})" class="text-red-500 hover:text-red-700 ml-auto flex items-center">
+                                            <span class="material-symbols-outlined text-[16px]">close</span>
+                                        </button>
+                                    </div>
+                                    <input type="hidden" id="docFileUrl{{ $i }}" value="{{ $media ? $media->document_url : '' }}" />
+                                    <input type="hidden" id="docFileName{{ $i }}" value="{{ $media ? $media->document_name : '' }}" />
+                                </div>
+
+                                {{-- URL liên kết ngoài --}}
+                                <div class="bg-white border border-slate-200 rounded-xl p-3.5 space-y-1">
+                                    <label class="text-[12px] font-bold text-slate-600 flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-[16px] text-slate-500">link</span> Liên kết ngoài (URL)
+                                    </label>
+                                    <input type="text" id="actionUrl{{ $i }}" placeholder="Nhập link liên kết (VD: https://poly.edu.vn)..."
+                                           class="w-full text-[13px] px-3 py-1.5 bg-slate-50/50 border border-slate-200 rounded-lg focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all"
+                                           value="{{ $media ? $media->action_url : '' }}" oninput="syncData()" />
+                                </div>
+
+                                {{-- Preview tài liệu và URL ngay dưới caption --}}
+                                <div class="mt-1 flex flex-wrap gap-2">
+                                    <div id="docPreviewWrap{{ $i }}" class="flex items-center gap-1.5 bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-lg text-[12px] font-medium border border-emerald-200/50 {{ $media && $media->document_url ? '' : 'hidden' }}">
+                                        <span class="material-symbols-outlined text-[16px]">article</span>
+                                        <span id="docPreviewName{{ $i }}">{{ $media ? ($media->document_name ?? basename($media->document_url)) : '' }}</span>
+                                    </div>
+                                    <div id="urlPreviewWrap{{ $i }}" class="flex items-center gap-1.5 bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg text-[12px] font-medium border border-blue-200/50 {{ $media && $media->action_url ? '' : 'hidden' }}">
+                                        <span class="material-symbols-outlined text-[16px]">open_in_new</span>
+                                        <span class="truncate max-w-[150px]" id="urlPreviewLink{{ $i }}">{{ $media ? $media->action_url : '' }}</span>
+                                    </div>
+                                </div>
                             </div>
                             @endfor
                         </div>
@@ -786,18 +863,41 @@
 
         // ── Real-time sync ────────────────────────────────────────
         function syncData() {
-            document.getElementById('viewTieuDe').innerText = document.getElementById('inTieuDe').value;
-            document.getElementById('viewMoTa').innerText = document.getElementById('inMoTa').value;
-            const rawDate = document.getElementById('inNgay').value;
-            document.getElementById('viewNgay').innerText = formatDisplayDate(rawDate);
-            const startTime = document.getElementById('inGioBatDau').value || '--:--';
-            const endTime = document.getElementById('inGioKetThuc').value || '--:--';
-            document.getElementById('viewGio').innerText = `${startTime} - ${endTime}`;
+            const titleEl = document.getElementById('viewTieuDe');
+            titleEl.innerText = document.getElementById('inTieuDe').value;
+
+            // Apply Tiêu đề style
+            const titleSize = document.getElementById('inTieuDeSize').value;
+            const titleColor = document.getElementById('inTieuDeColor').value;
+            const titleOutlineWidth = document.getElementById('inTieuDeOutlineWidth').value;
+            const titleOutlineColor = document.getElementById('inTieuDeOutlineColor').value;
+            const titleFontFamily = document.getElementById('inTieuDeFontFamily').value;
+
+            titleEl.style.fontSize = titleSize + 'px';
+            titleEl.style.color = titleColor;
+            titleEl.style.fontFamily = `'${titleFontFamily}', sans-serif`;
+            if (titleOutlineWidth && titleOutlineWidth !== '0') {
+                titleEl.style.webkitTextStrokeWidth = titleOutlineWidth + 'px';
+                titleEl.style.webkitTextStrokeColor = titleOutlineColor;
+                titleEl.style.textShadow = `0px 2px 4px rgba(0,0,0,0.5)`;
+            } else {
+                titleEl.style.webkitTextStrokeWidth = '0px';
+                titleEl.style.textShadow = 'none';
+            }
+
+            const descEl = document.getElementById('viewMoTa');
+            descEl.innerText = document.getElementById('inMoTa').value;
+
+            // Apply Mô tả style
+            const descSize = document.getElementById('inMoTaSize').value;
+            const descColor = document.getElementById('inMoTaColor').value;
+            const descFontFamily = document.getElementById('inMoTaFontFamily').value;
+
+            descEl.style.fontSize = descSize + 'px';
+            descEl.style.color = descColor;
+            descEl.style.fontFamily = `'${descFontFamily}', sans-serif`;
+
             document.getElementById('viewLichHoatDong').innerText = document.getElementById('inLichHoatDong').value;
-            document.getElementById('viewDiaDiem').innerText = document.getElementById('inDiaDiem').value;
-            document.getElementById('viewHocKy').innerText = document.getElementById('inHocKy').value;
-            document.getElementById('viewNganh').innerText = document.getElementById('inNganh').value;
-            document.getElementById('viewToiDa').innerText = document.getElementById('inToiDa').value;
             
             // Speaker
             const spkSelect = document.getElementById('inTenDienGia');
@@ -807,21 +907,100 @@
                 const photoUrl = opt.getAttribute('data-photo');
                 if(photoUrl) document.getElementById('viewAnhDienGia').src = photoUrl;
             }
+
+            // Sync URL previews
+            for (let i = 1; i <= 4; i++) {
+                const actionUrlVal = document.getElementById('actionUrl' + i).value.trim();
+                const urlPreviewWrap = document.getElementById('urlPreviewWrap' + i);
+                const urlPreviewLink = document.getElementById('urlPreviewLink' + i);
+                
+                if (actionUrlVal) {
+                    urlPreviewWrap.classList.remove('hidden');
+                    urlPreviewLink.textContent = actionUrlVal;
+                } else {
+                    urlPreviewWrap.classList.add('hidden');
+                }
+            }
+        }
+
+        // ── Document Upload (AJAX) ────────────────────────────────
+        async function uploadDocumentFile(slotId) {
+            const fileInput = document.getElementById('docFileInput' + slotId);
+            if (!fileInput.files || fileInput.files.length === 0) return;
+            
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            // Show simple indicator
+            const linkEl = document.getElementById('docLink' + slotId);
+            linkEl.textContent = "Đang tải lên...";
+            document.getElementById('docInfoWrap' + slotId).classList.remove('hidden');
+            
+            try {
+                const resp = await fetch("{{ route('admin.events.upload_document') }}", {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    body: formData
+                });
+                
+                if (!resp.ok) {
+                    throw new Error("Lỗi tải file");
+                }
+                
+                const data = await resp.json();
+                if (data.success) {
+                    // Update values
+                    document.getElementById('docFileUrl' + slotId).value = data.url;
+                    document.getElementById('docFileName' + slotId).value = data.name;
+                    
+                    // Show file info
+                    linkEl.href = data.url;
+                    linkEl.textContent = data.name;
+                    
+                    // Update preview
+                    document.getElementById('docPreviewWrap' + slotId).classList.remove('hidden');
+                    document.getElementById('docPreviewName' + slotId).textContent = data.name;
+                } else {
+                    alert("Lỗi: " + (data.message || "Không thể tải lên file."));
+                    removeDocumentFile(slotId);
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Lỗi tải lên tài liệu.");
+                removeDocumentFile(slotId);
+            } finally {
+                fileInput.value = '';
+            }
+        }
+
+        function removeDocumentFile(slotId) {
+            document.getElementById('docFileUrl' + slotId).value = '';
+            document.getElementById('docFileName' + slotId).value = '';
+            document.getElementById('docInfoWrap' + slotId).classList.add('hidden');
+            document.getElementById('docPreviewWrap' + slotId).classList.add('hidden');
         }
 
         async function saveDesignThen(callback) {
             const formData = {
                 title: document.getElementById('inTieuDe').value,
                 description: document.getElementById('inMoTa').value,
-                event_date: document.getElementById('inNgay').value,
-                start_time: document.getElementById('inGioBatDau').value,
-                end_date: document.getElementById('inGioKetThuc').value,
-                location: document.getElementById('inDiaDiem').value,
-                academic_year: document.getElementById('inHocKy').value,
-                department_id: document.getElementById('inNganh').selectedIndex > 0 ? 1 : null,
-                max_attendees: document.getElementById('inToiDa').value,
                 speaker_id: document.getElementById('inTenDienGia').value,
                 schedule_text: document.getElementById('inLichHoatDong').value,
+                
+                // Styles
+                title_font_size: document.getElementById('inTieuDeSize').value,
+                title_color: document.getElementById('inTieuDeColor').value,
+                title_outline_color: document.getElementById('inTieuDeOutlineColor').value,
+                title_outline_width: document.getElementById('inTieuDeOutlineWidth').value,
+                title_font_family: document.getElementById('inTieuDeFontFamily').value,
+                desc_font_size: document.getElementById('inMoTaSize').value,
+                desc_color: document.getElementById('inMoTaColor').value,
+                desc_font_family: document.getElementById('inMoTaFontFamily').value,
+                
                 media_slots: []
             };
 
@@ -829,13 +1008,19 @@
                 const slot = document.getElementById('slot' + i);
                 const captionEl = document.getElementById('caption' + i);
                 const contentEl = document.getElementById('content' + i);
+                const docFileUrlVal = document.getElementById('docFileUrl' + i).value;
+                const docFileNameVal = document.getElementById('docFileName' + i).value;
+                const actionUrlVal = document.getElementById('actionUrl' + i).value;
                 const mediaEl = slot.querySelector('img, video');
                 
-                if ((mediaEl && mediaEl.src) || (contentEl && contentEl.value.trim() !== '')) {
+                if ((mediaEl && mediaEl.src) || (contentEl && contentEl.value.trim() !== '') || docFileUrlVal || actionUrlVal) {
                     formData.media_slots.push({
                         url: mediaEl && mediaEl.src ? mediaEl.src : '',
                         caption: captionEl ? captionEl.value : '',
-                        content: contentEl ? contentEl.value : ''
+                        content: contentEl ? contentEl.value : '',
+                        document_url: docFileUrlVal,
+                        document_name: docFileNameVal,
+                        action_url: actionUrlVal
                     });
                 }
             }

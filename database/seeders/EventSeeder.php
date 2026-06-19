@@ -21,8 +21,8 @@ class EventSeeder extends Seeder
                 'end_date' => now()->addDays(15)->setTime(21, 30),
                 'location' => 'Hội trường lớn, Tòa nhà F',
                 'academic_year' => '2024',
-                'registration_open' => true,
-                'max_attendees' => 500,
+
+
                 'is_published' => true,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -35,8 +35,8 @@ class EventSeeder extends Seeder
                 'end_date' => now()->addDays(5)->setTime(16, 30),
                 'location' => 'Phòng Hội thảo số 3',
                 'academic_year' => '2024',
-                'registration_open' => true,
-                'max_attendees' => 150,
+
+
                 'is_published' => true,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -49,8 +49,8 @@ class EventSeeder extends Seeder
                 'end_date' => now()->addDays(30)->setTime(17, 0),
                 'location' => 'Sân trường chính',
                 'academic_year' => '2024',
-                'registration_open' => true,
-                'max_attendees' => 2000,
+
+
                 'is_published' => false,
                 'created_at' => now(),
                 'updated_at' => now(),

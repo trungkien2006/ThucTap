@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\PublicEventController;
-use App\Http\Controllers\Admin\CheckInController;
+// use App\Http\Controllers\Admin\CheckInController;
 use App\Http\Controllers\Admin\SpeakerController;
 use App\Http\Controllers\Admin\MediaController;
 use App\Http\Controllers\Admin\DocumentController;
@@ -25,7 +25,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::get('events/{event}/preview', [App\Http\Controllers\Admin\EventController::class, 'preview'])->name('events.preview');
 
     // Check-in
-    Route::get('/checkin/{token}', [CheckInController::class, 'scan'])->name('checkin');
+    // Route::get('/checkin/{token}', [CheckInController::class, 'scan'])->name('checkin');
 
     // Speakers
     Route::resource('speakers', SpeakerController::class);

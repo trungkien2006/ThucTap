@@ -334,7 +334,7 @@
     <!-- Horizontal accent line top -->
     <div class="absolute inset-x-0 top-0 h-0.5" style="background:#FFE381;"></div>
 
-    <div class="mx-auto grid max-w-[1400px] grid-cols-1 gap-12 px-6 lg:grid-cols-[1fr_360px] lg:gap-14 lg:px-10">
+    <div class="mx-auto grid max-w-[1400px] grid-cols-1 gap-8 px-6 lg:grid-cols-[1fr_460px] lg:gap-10 lg:px-10 xl:grid-cols-[1fr_500px]">
 
         {{-- ── Featured Events ── --}}
         <div>
@@ -352,15 +352,14 @@
                 </a>
             </div>
 
-            <div class="space-y-5">
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
                 @foreach($featuredEvents as $i => $ev)
                 <article data-aos="fade-up" data-aos-delay="{{ $i * 60 }}"
                          x-data="{ animClass: '' }"
                          @mouseenter="animClass = 'hover-anim-' + (Math.floor(Math.random() * 3) + 1)"
                          @mouseleave="animClass = ''"
                          :class="animClass"
-                         class="group relative grid grid-cols-1 overflow-hidden rounded-2xl transition-all duration-500
-                                hover:-translate-y-1 sm:grid-cols-[260px_1fr]"
+                         class="group relative flex flex-col overflow-hidden rounded-2xl transition-all duration-500 hover:-translate-y-1"
                          style="background:#FFF8D0; box-shadow:0 2px 16px rgba(255,227,129,0.4);"
                          onmouseover="this.style.boxShadow='0 12px 40px rgba(7,160,195,0.18)'"
                          onmouseout="this.style.boxShadow='0 2px 16px rgba(255,227,129,0.4)'">
@@ -368,7 +367,7 @@
                     <!-- Color Sweep Layer -->
                     <div class="sweep-bg"></div>
 
-                    <div class="relative z-10 h-52 overflow-hidden sm:h-full">
+                    <div class="relative z-10 h-48 w-full shrink-0 overflow-hidden">
                         <img src="{{ $ev['img'] }}" alt="{{ $ev['title'] }}" loading="lazy"
                              class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
                         <!-- Bottom accent bar -->
@@ -379,28 +378,26 @@
                                   style="background:#FFE381;">{{ $ev['category'] }}</span>
                         </div>
                     </div>
-                    <div class="relative z-10 flex flex-col justify-between p-6">
+                    <div class="relative z-10 flex flex-1 flex-col justify-between p-5">
                         <div>
-                            <h3 class="font-['Barlow_Condensed'] text-3xl font-black uppercase leading-tight tracking-wide text-[#1C1410] transition-colors group-hover:text-[#07A0C3] lg:text-4xl">
+                            <h3 class="font-['Barlow_Condensed'] text-2xl font-black uppercase leading-tight tracking-wide text-[#1C1410] transition-colors group-hover:text-[#07A0C3]">
                                 {{ $ev['title'] }}
                             </h3>
-                            <div class="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm text-[#7A6A52]">
+                            <div class="mt-3 flex flex-col gap-1.5 text-sm text-[#7A6A52]">
                                 <span class="inline-flex items-center gap-2">
                                     <i data-lucide="calendar" class="h-4 w-4" style="color:#07A0C3;"></i> {{ $ev['date'] }}
                                 </span>
                                 <span class="inline-flex items-center gap-2">
-                                    <i data-lucide="map-pin" class="h-4 w-4" style="color:#04F06A;"></i> {{ $ev['location'] }}
+                                    <i data-lucide="map-pin" class="h-4 w-4" style="color:#04F06A;"></i> <span class="truncate">{{ $ev['location'] }}</span>
                                 </span>
                             </div>
                         </div>
                         <div class="mt-5 flex items-center gap-4">
                             <a href="#"
-                               class="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold text-white shadow transition-all hover:shadow-lg hover:scale-105"
+                               class="inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-bold text-white shadow transition-all hover:shadow-md hover:-translate-y-0.5"
                                style="background:#07A0C3;">
-                                Xem chi tiết <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
+                                Xem chi tiết <i data-lucide="arrow-up-right" class="h-3 w-3"></i>
                             </a>
-                            <span class="h-6 w-px bg-black/10"></span>
-                            <span class="text-xs font-semibold uppercase tracking-wider text-[#7A6A52]">{{ $ev['category'] }}</span>
                         </div>
                     </div>
                 </article>
@@ -427,26 +424,87 @@
                 </div>
 
                 {{-- Body --}}
-                <div class="p-6" style="background:#FFFBEA;">
-                    <ol class="relative space-y-4 border-l-2 border-[#FFE381] pl-5">
-                        @foreach($upcoming as $i => $u)
-                        <li data-aos="fade-right" data-aos-delay="{{ $i * 80 }}" class="relative group/item cursor-pointer">
-                            <span class="absolute -left-[25px] top-1.5 h-3 w-3 rounded-full border-2 border-[#FFFBEA] shadow transition-transform group-hover/item:scale-125"
-                                  style="{{ $u['open'] ? 'background:#07A0C3;' : 'background:#d1c9a8;' }}"></span>
-                            <div class="text-[11px] font-bold uppercase tracking-widest text-[#7A6A52]">{{ $u['date'] }}</div>
-                            <div class="mt-0.5 text-sm font-semibold text-[#1C1410] group-hover/item:text-[#07A0C3] transition-colors">{{ $u['name'] }}</div>
-                            <div class="mt-1 inline-flex items-center gap-1.5 text-xs font-medium {{ $u['open'] ? '' : 'text-[#7A6A52]' }}"
-                                 style="{{ $u['open'] ? 'color:#07A0C3;' : '' }}">
-                                <span class="h-1.5 w-1.5 rounded-full"
-                                      style="{{ $u['open'] ? 'background:#04F06A;' : 'background:#d1c9a8;' }}"></span>
-                                {{ $u['status'] }}
+                <div class="px-3 pt-12 pb-5" style="background:#FFFBEA;">
+                    <div class="relative py-2">
+                        <!-- Center Line -->
+                        <div class="absolute bottom-0 top-0 w-px" style="left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.12);"></div>
+
+                        <div class="-space-y-12 sm:-space-y-20">
+                            @foreach($upcoming as $i => $u)
+                            {{-- Row: full width flex, each half is exactly 50% --}}
+                            <div class="relative flex w-full items-start" style="min-height:88px;" data-aos="fade-up" data-aos-delay="{{ $i * 50 }}">
+
+                                <!-- Dot on center line -->
+                                <div class="absolute z-10 h-3.5 w-3.5 rounded-full"
+                                     style="left:50%;top:26px;transform:translate(-50%,-50%);border:3px solid #FFFBEA;{{ $u['open'] ? 'background:#07A0C3;' : 'background:#d1c9a8;' }}"></div>
+
+                                @if($i % 2 == 0)
+                                {{-- === LEFT side: text top, imgs bottom --}}
+                                <div style="width:50%;padding-right:16px;" class="flex flex-col items-end justify-start text-right">
+                                    <div class="mb-3">
+                                        <div class="text-[10px] font-bold uppercase tracking-widest text-[#7A6A52]">{{ $u['date'] }}</div>
+                                        <div class="mt-0.5 text-sm font-black uppercase text-[#1C1410] leading-snug">{{ $u['name'] }}</div>
+                                    </div>
+                                    @if(isset($u['images']) && count($u['images']) > 0)
+                                    <div class="relative shrink-0" style="width:170px;height:120px;">
+                                        @if(count($u['images']) > 1)
+                                        <div style="position:absolute;left:0;top:0;width:140px;height:100px;z-index:1;">
+                                            <img src="{{ $u['images'][0] }}" style="position:absolute;left:0;top:8px;width:100%;height:100%;border-radius:12px;object-fit:cover;filter:blur(12px) saturate(1.5);opacity:0.6;transform:scale(0.92);">
+                                            <img src="{{ $u['images'][0] }}" style="position:absolute;left:0;top:0;width:100%;height:100%;border-radius:12px;object-fit:cover;box-shadow:0 1px 3px rgba(0,0,0,0.1);">
+                                        </div>
+                                        <div style="position:absolute;right:0;bottom:0;width:100px;height:70px;z-index:2;transition:transform .2s;"
+                                             onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'">
+                                            <img src="{{ $u['images'][1] }}" style="position:absolute;left:0;top:6px;width:100%;height:100%;border-radius:8px;object-fit:cover;filter:blur(10px) saturate(1.5);opacity:0.6;transform:scale(0.92);">
+                                            <img src="{{ $u['images'][1] }}" style="position:absolute;left:0;top:0;width:100%;height:100%;border-radius:8px;object-fit:cover;box-shadow:0 1px 3px rgba(0,0,0,0.1);">
+                                        </div>
+                                        @else
+                                        <div style="position:absolute;right:0;top:0;width:170px;height:119px;z-index:1;">
+                                            <img src="{{ $u['images'][0] }}" style="position:absolute;left:0;top:10px;width:100%;height:100%;border-radius:12px;object-fit:cover;filter:blur(14px) saturate(1.5);opacity:0.6;transform:scale(0.92);">
+                                            <img src="{{ $u['images'][0] }}" style="position:absolute;left:0;top:0;width:100%;height:100%;border-radius:12px;object-fit:cover;box-shadow:0 1px 3px rgba(0,0,0,0.1);">
+                                        </div>
+                                        @endif
+                                    </div>
+                                    @endif
+                                </div>
+                                <div style="width:50%;"></div>
+
+                                @else
+                                {{-- === RIGHT side: center | text top, imgs bottom --}}
+                                <div style="width:50%;"></div>
+                                <div style="width:50%;padding-left:16px;" class="flex flex-col items-start justify-start text-left">
+                                    <div class="mb-3">
+                                        <div class="text-[10px] font-bold uppercase tracking-widest text-[#7A6A52]">{{ $u['date'] }}</div>
+                                        <div class="mt-0.5 text-sm font-black uppercase text-[#1C1410] leading-snug">{{ $u['name'] }}</div>
+                                    </div>
+                                    @if(isset($u['images']) && count($u['images']) > 0)
+                                    <div class="relative shrink-0" style="width:170px;height:120px;">
+                                        @if(count($u['images']) > 1)
+                                        <div style="position:absolute;right:0;top:0;width:140px;height:100px;z-index:1;">
+                                            <img src="{{ $u['images'][0] }}" style="position:absolute;left:0;top:8px;width:100%;height:100%;border-radius:12px;object-fit:cover;filter:blur(12px) saturate(1.5);opacity:0.6;transform:scale(0.92);">
+                                            <img src="{{ $u['images'][0] }}" style="position:absolute;left:0;top:0;width:100%;height:100%;border-radius:12px;object-fit:cover;box-shadow:0 1px 3px rgba(0,0,0,0.1);">
+                                        </div>
+                                        <div style="position:absolute;left:0;bottom:0;width:100px;height:70px;z-index:2;transition:transform .2s;"
+                                             onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'">
+                                            <img src="{{ $u['images'][1] }}" style="position:absolute;left:0;top:6px;width:100%;height:100%;border-radius:8px;object-fit:cover;filter:blur(10px) saturate(1.5);opacity:0.6;transform:scale(0.92);">
+                                            <img src="{{ $u['images'][1] }}" style="position:absolute;left:0;top:0;width:100%;height:100%;border-radius:8px;object-fit:cover;box-shadow:0 1px 3px rgba(0,0,0,0.1);">
+                                        </div>
+                                        @else
+                                        <div style="position:absolute;left:0;top:0;width:170px;height:119px;z-index:1;">
+                                            <img src="{{ $u['images'][0] }}" style="position:absolute;left:0;top:10px;width:100%;height:100%;border-radius:12px;object-fit:cover;filter:blur(14px) saturate(1.5);opacity:0.6;transform:scale(0.92);">
+                                            <img src="{{ $u['images'][0] }}" style="position:absolute;left:0;top:0;width:100%;height:100%;border-radius:12px;object-fit:cover;box-shadow:0 1px 3px rgba(0,0,0,0.1);">
+                                        </div>
+                                        @endif
+                                    </div>
+                                    @endif
+                                </div>
+                                @endif
                             </div>
-                        </li>
-                        @endforeach
-                    </ol>
+                            @endforeach
+                        </div>
+                    </div>
 
                     <a href="#"
-                       class="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full py-3 text-sm font-bold transition-all hover:opacity-90"
+                       class="mt-14 mb-2 inline-flex w-full items-center justify-center gap-2 rounded-full py-3 text-sm font-bold transition-all hover:opacity-90"
                        style="background:#FFE381; color:#1C1410; border:2px solid #E8C84A;">
                         Xem lịch đầy đủ <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
                     </a>

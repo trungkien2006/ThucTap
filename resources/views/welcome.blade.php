@@ -38,8 +38,8 @@
                     <p class="font-body-md text-body-md text-text-muted mb-6 line-clamp-3">{{ Str::limit(strip_tags($featured->description), 150) }}</p>
                     <div class="flex items-center gap-6 mb-8">
                         <div class="flex items-center gap-2">
-                            <span class="material-symbols-outlined text-text-muted">group</span>
-                            <span class="font-label-lg text-label-lg font-bold">{{ $featured->registrations->count() }} Registered</span>
+                            <span class="material-symbols-outlined text-text-muted">favorite</span>
+                            <span class="font-label-lg text-label-lg font-bold">{{ $featured->likes_count }} Likes</span>
                         </div>
                         <div class="flex items-center gap-2">
                             <span class="material-symbols-outlined text-text-muted">location_on</span>
@@ -96,8 +96,8 @@
                 <p class="font-body-sm text-body-sm text-text-muted mb-6 flex-1 line-clamp-2">{{ Str::limit(strip_tags($event->description), 100) }}</p>
                 <div class="flex items-center justify-between pt-6 border-t border-outline-variant">
                     <div class="flex items-center gap-2">
-                        <span class="material-symbols-outlined text-fpt-orange">group</span>
-                        <span class="font-label-lg text-label-lg font-bold text-deep-navy">{{ $event->registrations->count() }}</span>
+                        <span class="material-symbols-outlined text-fpt-orange">favorite</span>
+                        <span class="font-label-lg text-label-lg font-bold text-deep-navy">{{ $event->likes_count }}</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <a href="{{ route('events.show', $event->slug) }}" class="p-2 hover:bg-surface-container rounded-full text-text-muted transition-colors flex items-center justify-center" title="Preview"><span class="material-symbols-outlined">visibility</span></a>

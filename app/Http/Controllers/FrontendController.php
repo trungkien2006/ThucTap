@@ -57,11 +57,41 @@ class FrontendController extends Controller
         ];
 
         $upcoming = [
-            ['name' => 'Open Day 2026', 'date' => '30 Jun', 'status' => 'Đang mở', 'open' => true],
-            ['name' => 'Workshop UI/UX', 'date' => '12 Jul', 'status' => 'Còn 24 chỗ', 'open' => true],
-            ['name' => 'Talkshow Khởi nghiệp', 'date' => '24 Jul', 'status' => 'Sắp mở', 'open' => false],
-            ['name' => 'CodeArena Vòng loại', 'date' => '08 Aug', 'status' => 'Đang mở', 'open' => true],
-            ['name' => 'Lễ Khai Giảng', 'date' => '05 Sep', 'status' => 'Theo lời mời', 'open' => false],
+            [
+                'name' => 'Open Day 2026', 
+                'date' => '30 Jun', 
+                'status' => 'Đang mở', 
+                'open' => true,
+                'images' => [asset('images/frontend/event-ceremony.jpg'), asset('images/frontend/event-workshop.jpg')]
+            ],
+            [
+                'name' => 'Workshop UI/UX', 
+                'date' => '12 Jul', 
+                'status' => 'Còn 24 chỗ', 
+                'open' => true,
+                'images' => [asset('images/frontend/media-1.jpg')]
+            ],
+            [
+                'name' => 'Talkshow Khởi nghiệp', 
+                'date' => '24 Jul', 
+                'status' => 'Sắp mở', 
+                'open' => false,
+                'images' => [asset('images/frontend/event-talkshow.jpg'), asset('images/frontend/media-2.jpg')]
+            ],
+            [
+                'name' => 'CodeArena Vòng loại', 
+                'date' => '08 Aug', 
+                'status' => 'Đang mở', 
+                'open' => true,
+                'images' => [asset('images/frontend/event-competition.jpg')]
+            ],
+            [
+                'name' => 'Lễ Khai Giảng', 
+                'date' => '05 Sep', 
+                'status' => 'Theo lời mời', 
+                'open' => false,
+                'images' => [asset('images/frontend/event-ceremony.jpg'), asset('images/frontend/archive-2023.jpg')]
+            ],
         ];
 
         $archive = [

@@ -10,7 +10,7 @@ class PublicEventController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Event::with('bannerImage', 'category', 'registrations')
+        $query = Event::with('bannerImage', 'category')
             ->published()
             ->upcoming()
             ->orderBy('event_date', 'asc');

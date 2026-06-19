@@ -393,7 +393,7 @@
                             </div>
                         </div>
                         <div class="mt-5 flex items-center gap-4">
-                            <a href="#"
+                            <a href="{{ route('events.show', $ev['slug'] ?? '#') }}"
                                class="inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-bold text-white shadow transition-all hover:shadow-md hover:-translate-y-0.5"
                                style="background:#07A0C3;">
                                 Xem chi tiết <i data-lucide="arrow-up-right" class="h-3 w-3"></i>
@@ -443,7 +443,7 @@
                                 <div style="width:50%;padding-right:16px;" class="flex flex-col items-end justify-start text-right">
                                     <div class="mb-3">
                                         <div class="text-[10px] font-bold uppercase tracking-widest text-[#7A6A52]">{{ $u['date'] }}</div>
-                                        <div class="mt-0.5 text-sm font-black uppercase text-[#1C1410] leading-snug">{{ $u['name'] }}</div>
+                                        <a href="{{ route('events.show', $u['slug'] ?? '#') }}" class="mt-0.5 text-sm font-black uppercase text-[#1C1410] leading-snug hover:text-[#07A0C3] transition-colors inline-block">{{ $u['name'] }}</a>
                                     </div>
                                     @if(isset($u['images']) && count($u['images']) > 0)
                                     <div class="relative shrink-0" style="width:170px;height:120px;">
@@ -474,7 +474,7 @@
                                 <div style="width:50%;padding-left:16px;" class="flex flex-col items-start justify-start text-left">
                                     <div class="mb-3">
                                         <div class="text-[10px] font-bold uppercase tracking-widest text-[#7A6A52]">{{ $u['date'] }}</div>
-                                        <div class="mt-0.5 text-sm font-black uppercase text-[#1C1410] leading-snug">{{ $u['name'] }}</div>
+                                        <a href="{{ route('events.show', $u['slug'] ?? '#') }}" class="mt-0.5 text-sm font-black uppercase text-[#1C1410] leading-snug hover:text-[#07A0C3] transition-colors inline-block">{{ $u['name'] }}</a>
                                     </div>
                                     @if(isset($u['images']) && count($u['images']) > 0)
                                     <div class="relative shrink-0" style="width:170px;height:120px;">

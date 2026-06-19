@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Event;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class FrontendController extends Controller
 {
@@ -18,81 +21,48 @@ class FrontendController extends Controller
             ['name' => 'Hoạt động sinh viên', 'desc' => 'Cộng đồng & văn hóa'],
         ];
 
-        $featuredEvents = [
-            [
-                'title' => 'Design Forward — Workshop UI/UX 2026',
-                'date' => '12.07.2026',
-                'location' => 'Hội trường A, ĐH Bách Khoa',
-                'category' => 'Workshop',
-                'img' => asset('images/frontend/event-workshop.jpg'),
-            ],
-            [
-                'title' => 'Voices of Tomorrow — Talkshow khởi nghiệp',
-                'date' => '24.07.2026',
-                'location' => 'Nhà hát Lớn, TP. HCM',
-                'category' => 'Talkshow',
-                'img' => asset('images/frontend/event-talkshow.jpg'),
-            ],
-            [
-                'title' => 'CodeArena 2026 — Cuộc thi lập trình',
-                'date' => '08.08.2026',
-                'location' => 'Trung tâm Đổi mới Sáng tạo',
-                'category' => 'Cuộc thi',
-                'img' => asset('images/frontend/event-competition.jpg'),
-            ],
-            [
-                'title' => 'Lễ Khai Giảng Niên Khóa 2026–2027',
-                'date' => '05.09.2026',
-                'location' => 'Sân Trung Tâm',
-                'category' => 'Lễ khai giảng',
-                'img' => asset('images/frontend/event-ceremony.jpg'),
-            ],
-            [
-                'title' => 'AI & The Future — Seminar quốc tế',
-                'date' => '22.09.2026',
-                'location' => 'Auditorium B2',
-                'category' => 'Seminar',
-                'img' => asset('images/frontend/event-seminar.jpg'),
-            ],
-        ];
+        $dbFeatured = Event::with(['bannerImage', 'category'])
+            ->published()
+            ->orderByRaw('views_count + likes_count DESC')
+            ->take(6)
+            ->get();
+        $featuredEvents = $dbFeatured->map(function ($event) {
+            return [
+                'slug'     => $event->slug,
+                'title'    => $event->title,
+                'date'     => $event->event_date->format('d.m.Y'),
+                'location' => $event->location ?? 'Đang cập nhật',
+                'category' => $event->category ? $event->category->name : 'Sự kiện',
+                'img'      => $event->bannerImage ? Storage::url($event->bannerImage->url) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80',
+            ];
+        })->toArray();
 
-        $upcoming = [
-            [
-                'name' => 'Open Day 2026', 
-                'date' => '30 Jun', 
-                'status' => 'Đang mở', 
-                'open' => true,
-                'images' => [asset('images/frontend/event-ceremony.jpg'), asset('images/frontend/event-workshop.jpg')]
-            ],
-            [
-                'name' => 'Workshop UI/UX', 
-                'date' => '12 Jul', 
-                'status' => 'Còn 24 chỗ', 
-                'open' => true,
-                'images' => [asset('images/frontend/media-1.jpg')]
-            ],
-            [
-                'name' => 'Talkshow Khởi nghiệp', 
-                'date' => '24 Jul', 
-                'status' => 'Sắp mở', 
-                'open' => false,
-                'images' => [asset('images/frontend/event-talkshow.jpg'), asset('images/frontend/media-2.jpg')]
-            ],
-            [
-                'name' => 'CodeArena Vòng loại', 
-                'date' => '08 Aug', 
-                'status' => 'Đang mở', 
-                'open' => true,
-                'images' => [asset('images/frontend/event-competition.jpg')]
-            ],
-            [
-                'name' => 'Lễ Khai Giảng', 
-                'date' => '05 Sep', 
-                'status' => 'Theo lời mời', 
-                'open' => false,
-                'images' => [asset('images/frontend/event-ceremony.jpg'), asset('images/frontend/archive-2023.jpg')]
-            ],
-        ];
+        $dbUpcoming = Event::with(['bannerImage', 'galleryImages'])
+            ->published()
+            ->upcoming()
+            ->orderBy('event_date', 'asc')
+            ->take(5)
+            ->get();
+        $upcoming = $dbUpcoming->map(function ($event) {
+            $images = [];
+            if ($event->bannerImage) {
+                $images[] = Storage::url($event->bannerImage->url);
+            }
+            foreach ($event->galleryImages->where('type', 'image')->take(2) as $gal) {
+                $images[] = Storage::url($gal->url);
+            }
+            if (empty($images)) {
+                $images[] = 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80';
+            }
+            return [
+                'slug'   => $event->slug,
+                'name'   => $event->title,
+                'date'   => $event->event_date->format('d M'),
+                'status' => 'Sắp mở',
+                'open'   => true,
+                'images' => array_values($images),
+            ];
+        })->toArray();
 
         $archive = [
             [
@@ -139,68 +109,38 @@ class FrontendController extends Controller
             ['value' => 12, 'label' => 'Năm lưu trữ', 'suffix' => '', 'decimals' => 0],
         ];
 
-        $slides = [
-            [
-                'id'          => 3,
-                'eyebrow'     => 'Sân khấu ngoài trời — Khu B',
-                'title'       => 'Talkshow Khởi Nghiệp Sinh Viên',
-                'description' => 'Gặp gỡ và lắng nghe hành trình của các founder startup từ 22 tuổi đã gọi vốn thành công.',
-                'image'       => 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80',
-                'tag'         => 'Talkshow',
-                'cta_label'   => 'Xem lịch trình',
-                'cta_url'     => '#',
-            ],
-            [
-                'id'          => 4,
-                'eyebrow'     => 'Phòng hội thảo B2.01',
-                'title'       => 'Seminar Nghiên Cứu Khoa Học',
-                'description' => 'Hội thảo nghiên cứu khoa học sinh viên cấp trường — nơi các đề tài xuất sắc được trình bày.',
-                'image'       => 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=1600&q=80',
-                'tag'         => 'Seminar',
-                'cta_label'   => 'Nộp bài tham dự',
-                'cta_url'     => '#',
-            ],
-            [
-                'id'          => 5,
-                'eyebrow'     => 'Toàn trường — Tất cả cơ sở',
-                'title'       => 'Cuộc Thi Lập Trình 24H',
-                'description' => 'Hackathon xuyên đêm với chủ đề "EdTech for Tomorrow" — giải thưởng tổng lên đến 50 triệu đồng.',
-                'image'       => 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1600&q=80',
-                'tag'         => 'Cuộc thi',
-                'cta_label'   => 'Đăng ký đội',
-                'cta_url'     => '#',
-            ],
-            [
-                'id'          => 6,
-                'eyebrow'     => 'Nhà văn hóa sinh viên',
-                'title'       => 'UniFest — Đêm Hội Âm Nhạc',
-                'description' => 'Lễ hội âm nhạc ngoài trời lớn nhất năm với 9 nghệ sĩ biểu diễn, sân khấu hoành tráng và ánh đèn rực rỡ.',
-                'image'       => 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=1600&q=80',
-                'tag'         => 'Lễ hội',
-                'cta_label'   => 'Mua vé ngay',
-                'cta_url'     => '#',
-            ],
-            [
-                'id'          => 7,
-                'eyebrow'     => 'Trung tâm Thể thao Đại học',
-                'title'       => 'Ngày Hội Thể Thao Sinh Viên',
-                'description' => 'Giải thể thao liên khoa hàng năm với 15 bộ môn — nơi rèn luyện thể chất gặp tinh thần đồng đội.',
-                'image'       => 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=1600&q=80',
-                'tag'         => 'Thể thao',
-                'cta_label'   => 'Xem lịch thi đấu',
-                'cta_url'     => '#',
-            ],
-            [
-                'id'          => 8,
-                'eyebrow'     => 'Hội trường Lớn — Cơ sở B',
-                'title'       => 'Triển Lãm Đồ Án Tốt Nghiệp 2026',
-                'description' => 'Trưng bày hơn 200 đồ án xuất sắc từ các sinh viên cuối khóa — cơ hội kết nối với doanh nghiệp và nhà tuyển dụng.',
-                'image'       => 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&q=80',
-                'tag'         => 'Triển lãm',
-                'cta_label'   => 'Tham quan miễn phí',
-                'cta_url'     => '#',
-            ],
-        ];
+        $dbSlides = Event::with(['bannerImage', 'category'])
+            ->published()
+            ->latest()
+            ->take(6)
+            ->get();
+        $slides = $dbSlides->map(function ($event, $index) {
+            return [
+                'id'          => $event->id,
+                'eyebrow'     => $event->location ?? 'Toàn trường',
+                'title'       => $event->title,
+                'description' => Str::limit(strip_tags($event->description), 120),
+                'image'       => $event->bannerImage ? Storage::url($event->bannerImage->url) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80',
+                'tag'         => $event->category ? $event->category->name : 'Sự kiện',
+                'cta_label'   => 'Xem chi tiết',
+                'cta_url'     => route('events.show', $event->slug),
+            ];
+        })->toArray();
+        // Fallback for slider if no events exist
+        if (empty($slides)) {
+            $slides = [
+                [
+                    'id'          => 1,
+                    'eyebrow'     => 'Chưa có sự kiện',
+                    'title'       => 'Hệ thống đang được cập nhật',
+                    'description' => 'Vui lòng quay lại sau.',
+                    'image'       => 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80',
+                    'tag'         => 'Hệ thống',
+                    'cta_label'   => 'Trang chủ',
+                    'cta_url'     => '#',
+                ]
+            ];
+        }
 
 
         return view('frontend.home', compact('categories', 'featuredEvents', 'upcoming', 'archive', 'media', 'stats', 'slides'));

@@ -26,7 +26,7 @@
     >
         <div class="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-5 lg:px-10">
             <a href="#top" class="group flex items-center gap-2">
-                <span class="font-['Barlow'] text-2xl font-black uppercase tracking-tight transition-colors" :class="scrolled ? 'text-[#1C1410]' : 'text-white'">
+                <span class="font-['Alegreya_SC'] text-2xl font-black uppercase tracking-tight transition-colors" :class="scrolled ? 'text-[#1C1410]' : 'text-white'">
                     Uni<span style="color:#E8C84A;">Event</span>
                 </span>
             </a>
@@ -132,7 +132,7 @@
         <div class="h-1.5" style="background:#FFE381;"></div>
         <div class="mx-auto grid max-w-[1400px] grid-cols-1 gap-12 px-6 pt-32 pb-24 lg:grid-cols-4 lg:px-10">
             <div class="lg:col-span-2">
-                <div class="font-['Barlow'] text-4xl font-black uppercase">
+                <div class="font-['Alegreya_SC'] text-4xl font-black uppercase">
                     Uni<span style="color:#FFE381;">Event</span>
                 </div>
                 <p class="mt-4 max-w-sm text-sm" style="color:rgba(255,227,129,0.55);">

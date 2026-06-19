@@ -315,7 +315,7 @@
         @foreach($stats as $i => $s)
         <div data-aos="fade-up" data-aos-delay="{{ $i * 100 }}"
              class="flex flex-col items-center justify-center py-16 {{ $i < 3 ? 'border-r border-black/10' : '' }}">
-            <div class="font-['Barlow'] text-6xl font-black text-[#1C1410] lg:text-7xl">
+            <div class="font-['Alegreya_SC'] text-6xl font-black text-[#1C1410] lg:text-7xl">
                 <span x-data="{ count:0,target:{{ $s['value'] }},decimals:{{ $s['decimals'] }},started:false }"
                       x-intersect.once="started=true;let step=target/60;let t=setInterval(()=>{count+=step;if(count>=target){count=target;clearInterval(t);}},30)"
                       x-text="decimals?count.toFixed(decimals):Math.round(count).toLocaleString()">0</span>{{ $s['suffix'] }}
@@ -344,7 +344,7 @@
                         <div class="h-7 w-1 rounded-full" style="background:#07A0C3;"></div>
                         <span class="text-xs font-bold uppercase tracking-[0.25em]" style="color:#07A0C3;">Featured Events</span>
                     </div>
-                    <h2 class="font-['Barlow'] text-5xl font-black uppercase tracking-tight text-[#1C1410] lg:text-6xl">Sự kiện nổi bật</h2>
+                    <h2 class="font-['Alegreya_SC'] text-5xl font-black uppercase tracking-tight text-[#1C1410] lg:text-6xl">Sự kiện nổi bật</h2>
                 </div>
                 <a href="#" class="hidden items-center gap-2 text-sm font-semibold lg:inline-flex transition-colors"
                    style="color:#07A0C3;" onmouseover="this.style.color='#04F06A'" onmouseout="this.style.color='#07A0C3'">
@@ -380,7 +380,7 @@
                     </div>
                     <div class="relative z-10 flex flex-1 flex-col justify-between p-5">
                         <div>
-                            <h3 class="font-['Barlow'] text-2xl font-black uppercase leading-tight tracking-wide text-[#1C1410] transition-colors group-hover:text-[#07A0C3]">
+                            <h3 class="font-['Alegreya_SC'] text-2xl font-black uppercase leading-tight tracking-wide text-[#1C1410] transition-colors group-hover:text-[#07A0C3]">
                                 {{ $ev['title'] }}
                             </h3>
                             <div class="mt-3 flex flex-col gap-1.5 text-sm text-[#7A6A52]">
@@ -415,7 +415,7 @@
                     <div class="relative flex items-center justify-between">
                         <div>
                             <div class="text-xs font-bold uppercase tracking-[0.25em] text-[#7A6A52]">Upcoming</div>
-                            <h3 class="font-['Barlow'] mt-0.5 text-3xl font-black uppercase tracking-wide text-[#1C1410]">Sắp diễn ra</h3>
+                            <h3 class="font-['Alegreya_SC'] mt-0.5 text-3xl font-black uppercase tracking-wide text-[#1C1410]">Sắp diễn ra</h3>
                         </div>
                         <div class="flex items-center gap-2 rounded-full bg-white/60 px-3 py-1.5 text-xs font-bold text-[#1C1410] backdrop-blur">
                             <span class="h-2 w-2 animate-pulse rounded-full" style="background:#07A0C3;"></span>Live
@@ -539,7 +539,7 @@
                     <div class="h-7 w-1 rounded-full" style="background:#FFE381;"></div>
                     <span class="text-xs font-bold uppercase tracking-[0.25em]" style="color:#FFE381;">Archive</span>
                 </div>
-                <h2 class="font-['Barlow'] text-5xl font-black uppercase tracking-tight text-white lg:text-7xl">Kho lưu trữ sự kiện</h2>
+                <h2 class="font-['Alegreya_SC'] text-5xl font-black uppercase tracking-tight text-white lg:text-7xl">Kho lưu trữ sự kiện</h2>
                 <p class="mt-3 max-w-md leading-relaxed" style="color:rgba(255,227,129,0.65);">
                     Từng năm. Từng đêm diễn. Từng ký ức được lưu lại để có thể sống lại bất cứ lúc nào.
                 </p>
@@ -565,7 +565,7 @@
         <div class="relative mt-14 grid grid-cols-1 gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
             <!-- Chữ số năm — Jasmine gradient -->
             <div class="relative flex items-start z-10">
-                <div class="font-['Barlow'] text-[28vw] font-black leading-[0.85] tracking-tighter lg:text-[18vw] pl-4 lg:pl-6 pr-4"
+                <div class="font-['Alegreya_SC'] text-[28vw] font-black leading-[0.85] tracking-tighter lg:text-[18vw] pl-4 lg:pl-6 pr-4"
                      style="-webkit-text-fill-color:transparent;-webkit-background-clip:text;background-clip:text;
                             background-image:linear-gradient(160deg,#FFE381 30%,#E8C84A 70%,#07A0C3 100%);"
                      x-text="current.year"
@@ -586,7 +586,7 @@
                     <div class="absolute bottom-6 left-5 right-5">
                         <div class="mb-2 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.25em] text-[#1C1410]"
                              style="background:#FFE381;">✦ Featured event</div>
-                        <h3 class="font-['Barlow'] text-3xl font-black uppercase tracking-wide text-white lg:text-4xl"
+                        <h3 class="font-['Alegreya_SC'] text-3xl font-black uppercase tracking-wide text-white lg:text-4xl"
                             x-text="current.title"></h3>
                     </div>
                 </div>
@@ -648,7 +648,7 @@
                     <div class="h-7 w-1 rounded-full" style="background:#04F06A;"></div>
                     <span class="text-xs font-bold uppercase tracking-[0.25em]" style="color:#04B050;">Media</span>
                 </div>
-                <h2 class="font-['Barlow'] text-4xl font-black uppercase tracking-tight text-[#1C1410] lg:text-5xl">Album & Recap</h2>
+                <h2 class="font-['Alegreya_SC'] text-4xl font-black uppercase tracking-tight text-[#1C1410] lg:text-5xl">Album & Recap</h2>
             </div>
             <a href="#" class="group inline-flex items-center gap-1.5 text-sm font-semibold text-[#07A0C3] transition-colors hover:text-[#04F06A]">
                 Thư viện đầy đủ <i data-lucide="arrow-right" class="h-4 w-4 transition-transform group-hover:translate-x-1"></i>
@@ -681,7 +681,7 @@
                         <div class="mb-2 h-0.5 w-0 rounded-full transition-all duration-500 group-hover:w-full"
                              style="background:#FFE381;"></div>
                         <div class="text-[9px] font-bold uppercase tracking-[0.25em]" style="color:#FFE381;">{{ $m['type'] }}</div>
-                        <div class="font-['Barlow'] mt-1 text-lg font-bold uppercase tracking-wide text-white group-hover:text-[#FFE381] transition-colors">{{ $m['label'] }}</div>
+                        <div class="font-['Alegreya_SC'] mt-1 text-lg font-bold uppercase tracking-wide text-white group-hover:text-[#FFE381] transition-colors">{{ $m['label'] }}</div>
                     </div>
                 </a>
             </div>

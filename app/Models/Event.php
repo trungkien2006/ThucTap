@@ -12,7 +12,7 @@ class Event extends Model
 
     protected $guarded = [];
 
-    protected $appends = ['title_font_size', 'title_color', 'title_outline_color', 'title_outline_width', 'title_font_family', 'desc_font_size', 'desc_color', 'desc_font_family'];
+    protected $appends = ['title_font_size', 'title_color', 'title_outline_color', 'title_outline_width', 'title_font_family', 'desc_font_size', 'desc_color', 'desc_font_family', 'event_template'];
 
     protected $parsedDesignSettings = null;
 
@@ -33,6 +33,7 @@ class Event extends Model
     public function getDescFontSizeAttribute() { return $this->getDesignSetting('desc_font_size'); }
     public function getDescColorAttribute() { return $this->getDesignSetting('desc_color'); }
     public function getDescFontFamilyAttribute() { return $this->getDesignSetting('desc_font_family'); }
+    public function getEventTemplateAttribute() { return $this->getDesignSetting('event_template', 1); }
 
     protected function casts(): array
     {
@@ -77,9 +78,9 @@ class Event extends Model
         return $this->belongsTo(Category::class);
     }
 
-    public function department()
+    public function departments()
     {
-        return $this->belongsTo(Category::class, 'department_id');
+        return $this->belongsToMany(Category::class, 'event_departments', 'event_id', 'department_id');
     }
 
     public function creator()

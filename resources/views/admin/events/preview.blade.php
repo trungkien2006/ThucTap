@@ -128,8 +128,8 @@
                             {{-- Article Blocks --}}
                             @foreach($event->galleryImages->take(4) as $block)
                                 @if($block->content)
-                                    <div class="text-slate-800 text-[16px] leading-[1.8] mb-6 text-justify break-words">
-                                        {!! nl2br(e($block->content)) !!}
+                                    <div class="text-slate-800 text-[16px] leading-[1.8] mb-6 text-justify break-words prose max-w-none">
+                                        {!! $block->content !!}
                                     </div>
                                 @endif
 
@@ -151,7 +151,7 @@
                                 @endif
 
                                 {{-- Tài liệu đính kèm nếu có --}}
-                                @if($block->document_url)
+                                @if($event->event_template == 2 && $block->document_url)
                                     <div class="mb-6">
                                         <a href="{{ Storage::url($block->document_url) }}" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-semibold rounded-xl text-sm border border-emerald-200 transition-all">
                                             <span class="material-symbols-outlined text-lg">download</span>

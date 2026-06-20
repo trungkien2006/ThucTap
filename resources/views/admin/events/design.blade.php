@@ -90,6 +90,14 @@
                             <label class="uni-label">Tiêu đề sự kiện</label>
                             <input type="text" id="inTieuDe" value="{{ $event->title }}" oninput="syncData()" class="uni-input"/>
                         </div>
+                        
+                        <div>
+                            <label class="uni-label text-brand-orange">Mẫu sự kiện</label>
+                            <select id="inEventTemplate" onchange="syncData()" class="uni-input font-bold border-brand-orange/30 focus:border-brand-orange bg-orange-50/30">
+                                <option value="1" {{ $event->event_template == 1 ? 'selected' : '' }}>Mẫu 1: Quảng bá bình thường</option>
+                                <option value="2" {{ $event->event_template == 2 ? 'selected' : '' }}>Mẫu 2: Quảng bá & Chia sẻ tài liệu</option>
+                            </select>
+                        </div>
 
                         <!-- Cấu hình chữ Tiêu đề -->
                         <div class="grid grid-cols-2 gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-200/60">
@@ -403,7 +411,7 @@
                                        value="{{ $media ? $media->caption : '' }}" />
 
                                 {{-- Tài liệu đính kèm (Word, Zip...) --}}
-                                <div class="bg-white border border-slate-200 rounded-xl p-3.5 space-y-2.5">
+                                <div class="doc-upload-section bg-white border border-slate-200 rounded-xl p-3.5 space-y-2.5">
                                     <div class="flex items-center justify-between">
                                         <span class="text-[12px] font-bold text-slate-600 flex items-center gap-1">
                                             <span class="material-symbols-outlined text-[16px] text-slate-500">attach_file</span> Tài liệu đính kèm
@@ -456,7 +464,7 @@
                 <!-- Right Column -->
                 <div class="lg:col-span-4 space-y-6" style="position: sticky; top: 88px; align-self: start; height: max-content;">
                     <!-- Speaker Card -->
-                    <div onclick="openEditor('sec-info')" class="uni-card p-6 cursor-pointer hover:border-slate-300 transition-all group">
+                    <div onclick="openEditor('sec-speaker')" class="uni-card p-6 cursor-pointer hover:border-slate-300 transition-all group">
                         <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
                             <span class="text-[13px] text-slate-500 font-medium">Diễn giả chính</span>
                             <span class="material-symbols-outlined text-slate-400 group-hover:text-brand-orange transition-colors text-[18px]">edit</span>
@@ -878,6 +886,15 @@
             const titleEl = document.getElementById('viewTieuDe');
             titleEl.innerText = document.getElementById('inTieuDe').value;
 
+            // Template toggle
+            const template = document.getElementById('inEventTemplate').value;
+            const docSections = document.querySelectorAll('.doc-upload-section');
+            if (template === '1') {
+                docSections.forEach(el => el.classList.add('hidden'));
+            } else {
+                docSections.forEach(el => el.classList.remove('hidden'));
+            }
+
             // Apply Tiêu đề style
             const titleSize = document.getElementById('inTieuDeSize').value;
             const titleColor = document.getElementById('inTieuDeColor').value;
@@ -1028,6 +1045,7 @@
                 desc_font_size: document.getElementById('inMoTaSize').value,
                 desc_color: document.getElementById('inMoTaColor').value,
                 desc_font_family: document.getElementById('inMoTaFontFamily').value,
+                event_template: document.getElementById('inEventTemplate').value,
                 
                 media_slots: []
             };
@@ -1081,6 +1099,23 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => { syncData(); });
+    </script>
+
+    <!-- TinyMCE for rich text formatting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.3/tinymce.min.js" referrerpolicy="origin"></script>
+    <script>
+        tinymce.init({
+            selector: 'textarea[id^="content"]',
+            menubar: false,
+            plugins: 'lists link code',
+            toolbar: 'bold italic underline | bullist numlist | link | code',
+            branding: false,
+            setup: function(editor) {
+                editor.on('change', function() {
+                    tinymce.triggerSave();
+                });
+            }
+        });
     </script>
 </body>
 </html>

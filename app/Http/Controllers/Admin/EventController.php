@@ -45,14 +45,15 @@ class EventController extends Controller
             'event_date' => 'required|date',
             'location' => 'required|string|max:255',
             'category_id' => 'nullable|exists:categories,id',
-            'department_id' => 'nullable|exists:categories,id',
+            'department_ids' => 'nullable|array',
+            'department_ids.*' => 'exists:categories,id',
             'banner_image' => 'nullable|image|mimes:jpg,jpeg,png,webp',
             'speaker_ids' => 'nullable|array',
             'speaker_ids.*' => 'exists:speakers,id',
         ]);
 
-        // Remove banner_image and speaker_ids from validated data
-        unset($validated['banner_image'], $validated['speaker_ids']);
+        // Remove banner_image, speaker_ids and department_ids from validated data
+        unset($validated['banner_image'], $validated['speaker_ids'], $validated['department_ids']);
 
         $event = new Event($validated);
         $event->is_published = false;
@@ -61,6 +62,10 @@ class EventController extends Controller
 
         if ($request->has('speaker_ids')) {
             $event->speakers()->sync($request->input('speaker_ids'));
+        }
+
+        if ($request->has('department_ids')) {
+            $event->departments()->sync($request->input('department_ids'));
         }
 
         // Handle banner image upload
@@ -115,6 +120,7 @@ class EventController extends Controller
             'desc_font_size' => 'nullable|string',
             'desc_color' => 'nullable|string',
             'desc_font_family' => 'nullable|string',
+            'event_template' => 'nullable|integer',
             
             'media_slots' => 'nullable|array',
         ]);
@@ -143,7 +149,7 @@ class EventController extends Controller
 
         // Save new styling fields
         $designSettings = [];
-        $styleFields = ['title_font_size', 'title_color', 'title_outline_color', 'title_outline_width', 'title_font_family', 'desc_font_size', 'desc_color', 'desc_font_family'];
+        $styleFields = ['title_font_size', 'title_color', 'title_outline_color', 'title_outline_width', 'title_font_family', 'desc_font_size', 'desc_color', 'desc_font_family', 'event_template'];
         foreach ($styleFields as $field) {
             if ($request->has($field)) {
                 $designSettings[$field] = $request->$field;
@@ -152,17 +158,14 @@ class EventController extends Controller
         if (!empty($designSettings)) {
             $event->media()->updateOrCreate(
                 ['type' => 'design_settings'],
-                ['content' => json_encode($designSettings)]
+                [
+                    'content' => json_encode($designSettings),
+                    'url' => ''
+                ]
             );
         }
 
         $event->save();
-
-        if ($request->has('speaker_id') && $request->speaker_id) {
-            $event->speakers()->sync([$request->speaker_id]);
-        } else {
-            $event->speakers()->detach();
-        }
 
         if ($request->has('schedule_text')) {
             $event->scheduleItems()->delete();
@@ -256,7 +259,7 @@ class EventController extends Controller
 
     public function edit(Event $event)
     {
-        $event->load('bannerImage', 'speakers');
+        $event->load('bannerImage', 'speakers', 'departments');
         $categories = Category::eventTypes()->get();
         $departments = Category::departments()->get();
         $speakers = \App\Models\Speaker::all();
@@ -272,7 +275,8 @@ class EventController extends Controller
             'event_date' => 'required|date',
             'location' => 'required|string|max:255',
             'category_id' => 'nullable|exists:categories,id',
-            'department_id' => 'nullable|exists:categories,id',
+            'department_ids' => 'nullable|array',
+            'department_ids.*' => 'exists:categories,id',
             'banner_image' => 'nullable|image|mimes:jpg,jpeg,png,webp',
             'speaker_ids' => 'nullable|array',
             'speaker_ids.*' => 'exists:speakers,id',
@@ -280,7 +284,7 @@ class EventController extends Controller
         ]);
 
         $status = $validated['status'];
-        unset($validated['status'], $validated['banner_image'], $validated['speaker_ids']);
+        unset($validated['status'], $validated['banner_image'], $validated['speaker_ids'], $validated['department_ids']);
 
         $event->fill($validated);
 
@@ -306,6 +310,7 @@ class EventController extends Controller
         $event->save();
 
         $event->speakers()->sync($request->input('speaker_ids', []));
+        $event->departments()->sync($request->input('department_ids', []));
 
         return redirect()->route('admin.events.index')->with('success', 'Cập nhật sự kiện thành công.');
     }

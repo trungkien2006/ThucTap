@@ -13,6 +13,10 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Hanken+Grotesk:wght@600;700&family=Be+Vietnam+Pro:wght@400;600;700&family=Charm:wght@400;700&family=Montserrat:wght@400;600;700&family=Pacifico&family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Rowdies:wght@400;700&display=swap" rel="stylesheet">
+
     @vite(['resources/css/app.css', 'resources/css/frontend.css', 'resources/js/app.js'])
 </head>
 <body class="frontend-body antialiased bg-paper text-ink relative" x-data="{ scrolled: false }" @scroll.window="scrolled = (window.pageYOffset > 40)">
@@ -24,21 +28,21 @@
         :style="scrolled ? 'background:rgba(255,248,208,0.97);border-color:rgba(232,200,74,0.5);' : ''"
         x-data="{ mobileOpen: false, megaMenuOpen: false }"
     >
-        <div class="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-5 lg:px-10">
+        <div class="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-5 lg:px-10 relative">
             <a href="{{ route('home') }}#top" class="group flex items-center gap-2">
                 <span class="font-['Barlow_Condensed'] text-2xl font-black uppercase tracking-tight transition-colors" :class="scrolled ? 'text-[#1C1410]' : 'text-white'">
                     Uni<span style="color:#E8C84A;">Event</span>
                 </span>
             </a>
 
-            <nav class="hidden items-center gap-1 lg:flex">
-                <a href="{{ route('home') }}#top" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-sm font-semibold transition-colors"
+            <nav class="hidden items-center gap-2 lg:flex absolute left-1/2 -translate-x-1/2">
+                <a href="{{ route('home') }}#top" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-base font-semibold transition-colors"
                    :class="scrolled ? 'text-[#7A6A52] hover:text-[#1C1410]' : 'text-white/80 hover:text-white'">
                     Trang chủ
                 </a>
                 
                 <div class="relative" @mouseenter="megaMenuOpen = true" @mouseleave="megaMenuOpen = false">
-                    <a href="{{ route('home') }}#events" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-sm font-semibold transition-colors"
+                    <a href="{{ route('home') }}#events" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-base font-semibold transition-colors"
                        :class="scrolled ? 'text-[#7A6A52] hover:text-[#1C1410]' : 'text-white/80 hover:text-white'">
                         Sự kiện
                         <span class="ml-0.5 inline-block h-2 w-2 rounded-full" style="background:#07A0C3;"></span>
@@ -78,19 +82,19 @@
                     </div>
                 </div>
 
-                <a href="{{ route('home') }}#archive" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-sm font-semibold transition-colors"
+                <a href="{{ route('home') }}#archive" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-base font-semibold transition-colors"
                    :class="scrolled ? 'text-[#7A6A52] hover:text-[#1C1410]' : 'text-white/80 hover:text-white'">
                     Kho lưu trữ
                 </a>
-                <a href="{{ route('home') }}#contact" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-sm font-semibold transition-colors"
+                <a href="{{ route('home') }}#contact" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-base font-semibold transition-colors"
                    :class="scrolled ? 'text-[#7A6A52] hover:text-[#1C1410]' : 'text-white/80 hover:text-white'">
                     Liên hệ
                 </a>
             </nav>
 
-            <div class="hidden lg:block">
+            <div class="hidden lg:block ml-2">
                 <a href="{{ route('home') }}#events"
-                   class="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold text-[#1C1410] shadow-md transition-all hover:shadow-lg hover:scale-105"
+                   class="inline-flex items-center gap-2 rounded-full px-6 py-2.5 text-base font-bold text-[#1C1410] shadow-md transition-all hover:shadow-lg hover:scale-105"
                    style="background:#FFE381;">
                     Khám phá sự kiện
                     <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
@@ -114,10 +118,10 @@
              class="overflow-hidden lg:hidden border-b"
              style="background:#FFF8D0;border-color:#E8C84A;display:none;">
             <div class="space-y-1 px-6 py-4">
-                <a href="{{ route('home') }}#top" class="block py-2 text-sm font-semibold text-[#1C1410]" @click="mobileOpen = false">Trang chủ</a>
-                <a href="{{ route('home') }}#events" class="block py-2 text-sm font-semibold text-[#1C1410]" @click="mobileOpen = false">Sự kiện</a>
-                <a href="{{ route('home') }}#archive" class="block py-2 text-sm font-semibold text-[#1C1410]" @click="mobileOpen = false">Kho lưu trữ</a>
-                <a href="{{ route('home') }}#contact" class="block py-2 text-sm font-semibold text-[#1C1410]" @click="mobileOpen = false">Liên hệ</a>
+                <a href="{{ route('home') }}#top" class="block py-3 text-base font-semibold text-[#1C1410]" @click="mobileOpen = false">Trang chủ</a>
+                <a href="{{ route('home') }}#events" class="block py-3 text-base font-semibold text-[#1C1410]" @click="mobileOpen = false">Sự kiện</a>
+                <a href="{{ route('home') }}#archive" class="block py-3 text-base font-semibold text-[#1C1410]" @click="mobileOpen = false">Kho lưu trữ</a>
+                <a href="{{ route('home') }}#contact" class="block py-3 text-base font-semibold text-[#1C1410]" @click="mobileOpen = false">Liên hệ</a>
             </div>
         </div>
     </header>

@@ -115,8 +115,8 @@
                     @foreach($event->galleryImages->take(4) as $block)
                         <div class="space-y-4">
                             @if($block->content)
-                                <div class="text-on-surface-variant font-body-md leading-relaxed text-justify break-words">
-                                    {!! nl2br(e($block->content)) !!}
+                                <div class="text-on-surface-variant font-body-md leading-relaxed text-justify break-words prose max-w-none">
+                                    {!! $block->content !!}
                                 </div>
                             @endif
 
@@ -139,11 +139,13 @@
 
                             <div class="flex flex-wrap gap-3 mt-4">
                                 {{-- Tài liệu đính kèm nếu có --}}
-                                @if($block->document_url)
-                                    <a href="{{ Storage::url($block->document_url) }}" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-semibold rounded-xl text-sm border border-emerald-200 transition-all">
-                                        <span class="material-symbols-outlined text-lg">download</span>
-                                        Tải tài liệu: {{ $block->document_name ?? basename($block->document_url) }}
-                                    </a>
+                                @if($event->event_template == 2 && $block->document_url)
+                                    <div class="mb-6">
+                                        <a href="{{ Storage::url($block->document_url) }}" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-semibold rounded-xl text-sm border border-emerald-200 transition-all">
+                                            <span class="material-symbols-outlined text-lg">download</span>
+                                            Tải tài liệu: {{ $block->document_name ?? basename($block->document_url) }}
+                                        </a>
+                                    </div>
                                 @endif
 
                                 {{-- URL liên kết ngoài nếu có --}}

@@ -90,7 +90,7 @@
                 <span class="material-symbols-outlined text-primary text-[20px]">category</span>
                 <h3 class="text-[16px] font-bold text-primary font-heading">Phân loại & Giới hạn</h3>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
                     <label class="uni-label" for="category_id">Loại sự kiện <span class="text-red-400">*</span></label>
                     <select class="uni-input" id="category_id" name="category_id" required>
@@ -102,14 +102,16 @@
                     @error('category_id') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="uni-label" for="department_id">Khoa / Bộ phận</label>
-                    <select class="uni-input" id="department_id" name="department_id">
-                        <option value="">— Chọn khoa —</option>
+                    <label class="uni-label">Khoa / Bộ phận tham gia (Có thể chọn nhiều)</label>
+                    <div class="flex flex-wrap gap-2 max-h-[160px] overflow-y-auto p-2.5 border border-slate-200 rounded-xl bg-slate-50/50 mt-1">
                         @foreach($departments as $dept)
-                            <option value="{{ $dept->id }}" {{ old('department_id') == $dept->id ? 'selected' : '' }}>{{ $dept->name }}</option>
+                            <label class="flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 rounded-lg cursor-pointer hover:border-brand-orange transition-all">
+                                <input type="checkbox" name="department_ids[]" value="{{ $dept->id }}" {{ in_array($dept->id, old('department_ids', [])) ? 'checked' : '' }} class="rounded border-slate-300 text-brand-orange focus:ring-brand-orange w-4 h-4 shrink-0">
+                                <span class="text-[13px] font-medium text-slate-700 leading-tight">{{ $dept->name }}</span>
+                            </label>
                         @endforeach
-                    </select>
-                    @error('department_id') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
+                    </div>
+                    @error('department_ids') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
                 </div>
             </div>
         </section>

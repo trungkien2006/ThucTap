@@ -268,7 +268,7 @@ class EventController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'slug' => 'required|string|unique:events,slug,' . $event->id,
-            'description' => 'required|string',
+            'description' => 'nullable|string',
             'event_date' => 'required|date',
             'location' => 'required|string|max:255',
             'category_id' => 'nullable|exists:categories,id',

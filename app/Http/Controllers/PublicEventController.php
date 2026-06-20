@@ -55,7 +55,15 @@ class PublicEventController extends Controller
             session()->put('viewed_events.' . $event->id, true);
         }
 
-        return view('events.show', compact('event'));
+        // Lấy sự kiện mới và nổi bật cho sidebar
+        $newestEvents = Event::with('bannerImage')->published()->latest()->take(3)->get();
+        $prominentEvents = Event::with('bannerImage')->published()->orderByRaw('views_count + likes_count DESC')->take(3)->get();
+
+        // Lấy sự kiện trước và sau
+        $previousEvent = Event::with('bannerImage')->published()->where('id', '<', $event->id)->orderBy('id', 'desc')->first();
+        $nextEvent = Event::with('bannerImage')->published()->where('id', '>', $event->id)->orderBy('id', 'asc')->first();
+
+        return view('events.show', compact('event', 'newestEvents', 'prominentEvents', 'previousEvent', 'nextEvent'));
     }
 
     public function like($event_id)

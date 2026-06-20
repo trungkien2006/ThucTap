@@ -131,6 +131,8 @@
                 const sRect = sliderEl.getBoundingClientRect();
                 const cRect = targetCard.getBoundingClientRect();
 
+                const computedShadow = window.getComputedStyle(targetCard).boxShadow;
+
                 const clone = document.createElement('div');
                 clone.style.cssText =
                     'position:absolute;' +
@@ -139,11 +141,13 @@
                     `width:${cRect.width}px;height:${cRect.height}px;` +
                     `background-image:url('${slides[nextSlideIdx].image}');` +
                     'background-size:cover;background-position:center;' +
+                    `box-shadow:${computedShadow};` +
                     'border-radius:20px;z-index:0;pointer-events:none;' +
                     'transition:top 750ms cubic-bezier(0.4,0,0.2,1),' +
                                'left 750ms cubic-bezier(0.4,0,0.2,1),' +
                                'width 750ms cubic-bezier(0.4,0,0.2,1),' +
                                'height 750ms cubic-bezier(0.4,0,0.2,1),' +
+                               'box-shadow 750ms cubic-bezier(0.4,0,0.2,1),' +
                                'border-radius 750ms cubic-bezier(0.4,0,0.2,1);';
                 sliderEl.appendChild(clone);
 
@@ -154,6 +158,7 @@
                     clone.style.top = '0'; clone.style.left = '0';
                     clone.style.width = '100%'; clone.style.height = '100%';
                     clone.style.borderRadius = '0';
+                    clone.style.boxShadow = '0 0 0 0 rgba(255,227,129,0), 0 28px 72px rgba(0,0,0,0)';
                 }));
 
                 setTimeout(() => {

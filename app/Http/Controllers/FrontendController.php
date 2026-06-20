@@ -11,15 +11,14 @@ class FrontendController extends Controller
 {
     public function home()
     {
-        $categories = [
-            ['name' => 'Workshop', 'desc' => 'Thực hành & sáng tạo'],
-            ['name' => 'Seminar', 'desc' => 'Học thuật chuyên sâu'],
-            ['name' => 'Talkshow', 'desc' => 'Đối thoại cảm hứng'],
-            ['name' => 'Cuộc thi', 'desc' => 'Tranh tài & vinh danh'],
-            ['name' => 'Tuyển sinh', 'desc' => 'Open day & tư vấn'],
-            ['name' => 'Lễ khai giảng', 'desc' => 'Khoảnh khắc trọng đại'],
-            ['name' => 'Hoạt động sinh viên', 'desc' => 'Cộng đồng & văn hóa'],
-        ];
+        $dbCategories = \App\Models\Category::where('type', 'event_type')->get();
+        $categories = $dbCategories->map(function ($c) {
+            return [
+                'name' => $c->name,
+                'desc' => 'Khám phá sự kiện'
+            ];
+        })->toArray();
+
 
         $dbFeatured = Event::with(['bannerImage', 'category'])
             ->published()
@@ -102,11 +101,31 @@ class FrontendController extends Controller
             ['src' => asset('images/frontend/media-4.jpg'), 'type' => 'video', 'label' => 'Recap · Sports Day'],
         ];
 
+        $totalEvents = Event::published()->count();
+        $totalViews = Event::published()->sum('views_count');
+        $totalLikes = Event::published()->sum('likes_count');
+        
+        $oldestEvent = Event::published()->min('event_date');
+        $yearsArchived = 0;
+        if ($oldestEvent) {
+            $yearsArchived = date('Y') - \Carbon\Carbon::parse($oldestEvent)->year + 1;
+        }
+
+        $formatStat = function($value) {
+            if ($value >= 1000000) return ['value' => round($value / 1000000, 1), 'suffix' => 'M', 'decimals' => 1];
+            if ($value >= 1000) return ['value' => round($value / 1000, 1), 'suffix' => 'K', 'decimals' => 1];
+            return ['value' => $value, 'suffix' => '', 'decimals' => 0];
+        };
+
+        $eStat = $formatStat($totalEvents);
+        $vStat = $formatStat($totalViews);
+        $lStat = $formatStat($totalLikes);
+
         $stats = [
-            ['value' => 248, 'label' => 'Tổng sự kiện', 'suffix' => '+', 'decimals' => 0],
-            ['value' => 86, 'label' => 'Lượt tham gia', 'suffix' => 'K', 'decimals' => 0],
-            ['value' => 1.2, 'label' => 'Lượt xem', 'suffix' => 'M', 'decimals' => 1],
-            ['value' => 12, 'label' => 'Năm lưu trữ', 'suffix' => '', 'decimals' => 0],
+            ['value' => $eStat['value'], 'label' => 'Tổng sự kiện', 'suffix' => $eStat['suffix'] ?: '+', 'decimals' => $eStat['decimals']],
+            ['value' => $lStat['value'], 'label' => 'Lượt yêu thích', 'suffix' => $lStat['suffix'], 'decimals' => $lStat['decimals']],
+            ['value' => $vStat['value'], 'label' => 'Lượt xem', 'suffix' => $vStat['suffix'], 'decimals' => $vStat['decimals']],
+            ['value' => max(1, $yearsArchived), 'label' => 'Năm hoạt động', 'suffix' => '', 'decimals' => 0],
         ];
 
         $dbSlides = Event::with(['bannerImage', 'category'])

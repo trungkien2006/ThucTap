@@ -25,20 +25,20 @@
         x-data="{ mobileOpen: false, megaMenuOpen: false }"
     >
         <div class="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-5 lg:px-10">
-            <a href="#top" class="group flex items-center gap-2">
+            <a href="{{ route('home') }}#top" class="group flex items-center gap-2">
                 <span class="font-['Barlow_Condensed'] text-2xl font-black uppercase tracking-tight transition-colors" :class="scrolled ? 'text-[#1C1410]' : 'text-white'">
                     Uni<span style="color:#E8C84A;">Event</span>
                 </span>
             </a>
 
             <nav class="hidden items-center gap-1 lg:flex">
-                <a href="#top" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-sm font-semibold transition-colors"
+                <a href="{{ route('home') }}#top" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-sm font-semibold transition-colors"
                    :class="scrolled ? 'text-[#7A6A52] hover:text-[#1C1410]' : 'text-white/80 hover:text-white'">
                     Trang chủ
                 </a>
                 
                 <div class="relative" @mouseenter="megaMenuOpen = true" @mouseleave="megaMenuOpen = false">
-                    <a href="#events" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-sm font-semibold transition-colors"
+                    <a href="{{ route('home') }}#events" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-sm font-semibold transition-colors"
                        :class="scrolled ? 'text-[#7A6A52] hover:text-[#1C1410]' : 'text-white/80 hover:text-white'">
                         Sự kiện
                         <span class="ml-0.5 inline-block h-2 w-2 rounded-full" style="background:#07A0C3;"></span>
@@ -59,7 +59,7 @@
                             <div class="grid grid-cols-2 gap-1">
                                 @if(isset($categories))
                                     @foreach($categories as $c)
-                                    <a href="#events" class="group flex items-start justify-between rounded-xl px-4 py-3 transition-colors"
+                                    <a href="{{ route('home') }}#events" class="group flex items-start justify-between rounded-xl px-4 py-3 transition-colors"
                                        style="" onmouseover="this.style.background='rgba(255,227,129,0.3)'" onmouseout="this.style.background=''">
                                         <div>
                                             <div class="text-sm font-semibold text-[#1C1410]">{{ $c['name'] }}</div>
@@ -78,18 +78,18 @@
                     </div>
                 </div>
 
-                <a href="#archive" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-sm font-semibold transition-colors"
+                <a href="{{ route('home') }}#archive" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-sm font-semibold transition-colors"
                    :class="scrolled ? 'text-[#7A6A52] hover:text-[#1C1410]' : 'text-white/80 hover:text-white'">
                     Kho lưu trữ
                 </a>
-                <a href="#contact" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-sm font-semibold transition-colors"
+                <a href="{{ route('home') }}#contact" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-sm font-semibold transition-colors"
                    :class="scrolled ? 'text-[#7A6A52] hover:text-[#1C1410]' : 'text-white/80 hover:text-white'">
                     Liên hệ
                 </a>
             </nav>
 
             <div class="hidden lg:block">
-                <a href="#events"
+                <a href="{{ route('home') }}#events"
                    class="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold text-[#1C1410] shadow-md transition-all hover:shadow-lg hover:scale-105"
                    style="background:#FFE381;">
                     Khám phá sự kiện
@@ -114,10 +114,10 @@
              class="overflow-hidden lg:hidden border-b"
              style="background:#FFF8D0;border-color:#E8C84A;display:none;">
             <div class="space-y-1 px-6 py-4">
-                <a href="#top" class="block py-2 text-sm font-semibold text-[#1C1410]" @click="mobileOpen = false">Trang chủ</a>
-                <a href="#events" class="block py-2 text-sm font-semibold text-[#1C1410]" @click="mobileOpen = false">Sự kiện</a>
-                <a href="#archive" class="block py-2 text-sm font-semibold text-[#1C1410]" @click="mobileOpen = false">Kho lưu trữ</a>
-                <a href="#contact" class="block py-2 text-sm font-semibold text-[#1C1410]" @click="mobileOpen = false">Liên hệ</a>
+                <a href="{{ route('home') }}#top" class="block py-2 text-sm font-semibold text-[#1C1410]" @click="mobileOpen = false">Trang chủ</a>
+                <a href="{{ route('home') }}#events" class="block py-2 text-sm font-semibold text-[#1C1410]" @click="mobileOpen = false">Sự kiện</a>
+                <a href="{{ route('home') }}#archive" class="block py-2 text-sm font-semibold text-[#1C1410]" @click="mobileOpen = false">Kho lưu trữ</a>
+                <a href="{{ route('home') }}#contact" class="block py-2 text-sm font-semibold text-[#1C1410]" @click="mobileOpen = false">Liên hệ</a>
             </div>
         </div>
     </header>

@@ -7,10 +7,7 @@
      Overlay ấm — jasmine tint thay vì lạnh xanh
 ════════════════════════════════════════════ --}}
 <section id="top" class="relative h-[100svh] w-full overflow-hidden" style="background:#1C1410;">
-    {{-- Continuous Timer bar at the very top --}}
-    <div class="absolute top-0 left-0 w-full h-1 z-[60]" style="background: rgba(255, 255, 255, 0.2);">
-        <div id="progressBar" class="h-full bg-[#FFE381] w-0 transition-none"></div>
-    </div>
+
     
     <div class="slider-wrapper" id="slider">
         <div class="bg-layers" id="bgLayers">
@@ -190,6 +187,10 @@
             // 4. Invert and Play (FLIP) for smooth sliding
             const newCards = Array.from(cardTrack.children);
             newCards.forEach(c => {
+                if (parseInt(c.dataset.index) === nextSlideIdx) {
+                    return; // Bỏ qua animation bay từ trái qua phải cho thẻ vừa click
+                }
+
                 const firstRect = firstRects.get(c.dataset.index);
                 if (firstRect) {
                     const lastRect = c.getBoundingClientRect();
@@ -241,6 +242,7 @@
         let accumulated = 0;
 
         function updateProgressBar(acc) {
+            if (!progressBar) return;
             const percentage = (acc / INTERVAL) * 100;
             progressBar.style.width = `${percentage}%`;
         }

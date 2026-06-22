@@ -12,29 +12,6 @@ class Event extends Model
 
     protected $guarded = [];
 
-    protected $appends = ['title_font_size', 'title_color', 'title_outline_color', 'title_outline_width', 'title_font_family', 'desc_font_size', 'desc_color', 'desc_font_family', 'event_template'];
-
-    protected $parsedDesignSettings = null;
-
-    public function getDesignSetting($key, $default = null)
-    {
-        if ($this->parsedDesignSettings === null) {
-            $media = $this->media()->where('type', 'design_settings')->first();
-            $this->parsedDesignSettings = $media && $media->content ? json_decode($media->content, true) : [];
-        }
-        return $this->parsedDesignSettings[$key] ?? $default;
-    }
-
-    public function getTitleFontSizeAttribute() { return $this->getDesignSetting('title_font_size'); }
-    public function getTitleColorAttribute() { return $this->getDesignSetting('title_color'); }
-    public function getTitleOutlineColorAttribute() { return $this->getDesignSetting('title_outline_color'); }
-    public function getTitleOutlineWidthAttribute() { return $this->getDesignSetting('title_outline_width'); }
-    public function getTitleFontFamilyAttribute() { return $this->getDesignSetting('title_font_family'); }
-    public function getDescFontSizeAttribute() { return $this->getDesignSetting('desc_font_size'); }
-    public function getDescColorAttribute() { return $this->getDesignSetting('desc_color'); }
-    public function getDescFontFamilyAttribute() { return $this->getDesignSetting('desc_font_family'); }
-    public function getEventTemplateAttribute() { return $this->getDesignSetting('event_template', 1); }
-
     protected function casts(): array
     {
         return [
@@ -78,9 +55,9 @@ class Event extends Model
         return $this->belongsTo(Category::class);
     }
 
-    public function departments()
+    public function department()
     {
-        return $this->belongsToMany(Category::class, 'event_departments', 'event_id', 'department_id');
+        return $this->belongsTo(Category::class, 'department_id');
     }
 
     public function creator()
@@ -102,9 +79,7 @@ class Event extends Model
 
     public function galleryImages()
     {
-        return $this->hasMany(EventMedia::class)
-            ->where('is_banner', false)
-            ->where('type', '!=', 'design_settings');
+        return $this->hasMany(EventMedia::class)->where('is_banner', false);
     }
 
     public function videos()

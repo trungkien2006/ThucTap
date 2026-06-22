@@ -6,12 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\EventMedia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Helpers\ActivityLogger;
 
 class MediaController extends Controller
 {
     public function index(Request $request)
     {
-        $query = EventMedia::query()->with('event');
+        $query = EventMedia::query()->with('event')->whereIn('type', ['image', 'video']);
 
         if ($request->filled('type')) {
             $query->where('type', $request->type);
@@ -21,7 +22,20 @@ class MediaController extends Controller
             $query->where('caption', 'like', '%' . $request->search . '%');
         }
 
-        $media = $query->orderByDesc('created_at')->paginate(24);
+        $sort = $request->input('sort', 'date_desc');
+        if ($sort === 'date_asc') {
+            $query->orderBy('created_at', 'asc');
+        } elseif ($sort === 'event') {
+            $query->leftJoin('events', 'event_medias.event_id', '=', 'events.id')
+                  ->select('event_medias.*')
+                  ->orderBy('events.title', 'asc');
+        } elseif ($sort === 'size') {
+            $query->orderBy('url', 'asc');
+        } else {
+            $query->orderBy('created_at', 'desc');
+        }
+
+        $media = $query->paginate(24);
 
         return view('admin.media.index', compact('media'));
     }
@@ -29,8 +43,8 @@ class MediaController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'files.*' => 'required|file|mimes:jpg,jpeg,png,webp,gif,svg,bmp,mp4,avi,mov,wmv,mkv,webm,pdf,doc,docx|max:51200',
-            'event_id' => 'nullable|exists:events,id',
+            'files.*' => 'required|file|mimes:jpg,jpeg,png,webp,gif,svg,bmp,mp4,avi,mov,wmv,mkv,webm|max:51200',
+            'event_id' => 'required|exists:events,id',
         ]);
 
         $uploaded = 0;
@@ -70,6 +84,10 @@ class MediaController extends Controller
             }
         }
 
+        if ($uploaded > 0) {
+            ActivityLogger::log("đã tải lên {$uploaded} tệp media mới", route('admin.media.index'));
+        }
+
         // If AJAX request (from Design Studio), return JSON
         if ($request->expectsJson() || $request->ajax()) {
             return response()->json(['success' => true, 'uploaded' => $uploaded, 'files' => $results, 'duplicates' => $duplicates]);
@@ -88,7 +106,11 @@ class MediaController extends Controller
         if (Storage::disk('public')->exists($medium->url)) {
             Storage::disk('public')->delete($medium->url);
         }
+        $caption = $medium->caption;
         $medium->delete();
+
+        ActivityLogger::log("đã xóa tệp media: {$caption}", route('admin.media.index'));
+
         return redirect()->route('admin.media.index')->with('success', 'Đã xóa media thành công.');
     }
 }

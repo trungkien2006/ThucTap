@@ -10,16 +10,60 @@ use App\Models\EventMedia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use App\Helpers\ActivityLogger;
 
 class EventController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $events = Event::with('bannerImage', 'category')
-            ->orderBy('event_date', 'desc')
-            ->paginate(10);
+        $query = Event::query()->with('bannerImage', 'category', 'department', 'creator')
+            ->where('is_published', true);
 
-        return view('admin.events.index', compact('events'));
+        if ($request->filled('search')) {
+            $query->where(function($q) use ($request) {
+                $q->where('title', 'like', '%' . $request->search . '%')
+                  ->orWhere('location', 'like', '%' . $request->search . '%')
+                  ->orWhere('id', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        if ($request->filled('year_semester')) {
+            $yearSemesters = array_filter(is_array($request->year_semester) ? $request->year_semester : [$request->year_semester]);
+            if (!empty($yearSemesters)) {
+                $query->where(function ($q) use ($yearSemesters) {
+                    foreach ($yearSemesters as $ys) {
+                        $parts = explode('_', $ys, 2);
+                        if (count($parts) === 2) {
+                            $q->orWhere(function ($sub) use ($parts) {
+                                $sub->where('semester', $parts[0])
+                                    ->where('academic_year', $parts[1]);
+                            });
+                        }
+                    }
+                });
+            }
+        }
+
+        if ($request->filled('category_id')) {
+            $categories = array_filter(is_array($request->category_id) ? $request->category_id : [$request->category_id]);
+            if (!empty($categories)) {
+                $query->whereIn('category_id', $categories);
+            }
+        }
+
+        if ($request->filled('department_id')) {
+            $depts = array_filter(is_array($request->department_id) ? $request->department_id : [$request->department_id]);
+            if (!empty($depts)) {
+                $query->whereIn('department_id', $depts);
+            }
+        }
+
+        $events = $query->orderBy('event_date', 'desc')->paginate(10);
+
+        $categories = Category::eventTypes()->get();
+        $departments = Category::departments()->get();
+
+        return view('admin.events.index', compact('events', 'categories', 'departments'));
     }
 
     public function show(Event $event)
@@ -32,7 +76,7 @@ class EventController extends Controller
     {
         $categories = Category::eventTypes()->get();
         $departments = Category::departments()->get();
-        $speakers = \App\Models\Speaker::all();
+        $speakers = \App\Models\Speaker::where('is_hidden', false)->get();
         return view('admin.events.create', compact('categories', 'departments', 'speakers'));
     }
 
@@ -41,19 +85,18 @@ class EventController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'slug' => 'required|string|unique:events,slug',
-            'description' => 'nullable|string',
+            'description' => 'required|string',
             'event_date' => 'required|date',
             'location' => 'required|string|max:255',
             'category_id' => 'nullable|exists:categories,id',
-            'department_ids' => 'nullable|array',
-            'department_ids.*' => 'exists:categories,id',
+            'department_id' => 'nullable|exists:categories,id',
             'banner_image' => 'nullable|image|mimes:jpg,jpeg,png,webp',
             'speaker_ids' => 'nullable|array',
             'speaker_ids.*' => 'exists:speakers,id',
         ]);
 
-        // Remove banner_image, speaker_ids and department_ids from validated data
-        unset($validated['banner_image'], $validated['speaker_ids'], $validated['department_ids']);
+        // Remove banner_image and speaker_ids from validated data
+        unset($validated['banner_image'], $validated['speaker_ids']);
 
         $event = new Event($validated);
         $event->is_published = false;
@@ -62,10 +105,6 @@ class EventController extends Controller
 
         if ($request->has('speaker_ids')) {
             $event->speakers()->sync($request->input('speaker_ids'));
-        }
-
-        if ($request->has('department_ids')) {
-            $event->departments()->sync($request->input('department_ids'));
         }
 
         // Handle banner image upload
@@ -77,6 +116,8 @@ class EventController extends Controller
                 'is_banner' => true,
             ]);
         }
+
+        ActivityLogger::log("đã tạo sự kiện mới: {$event->title}", route('admin.events.index'));
 
         // Redirect to design step (Step 2)
         return redirect()->route('admin.events.design', $event)->with('success', 'Sự kiện đã được tạo. Hãy thiết kế giao diện!');
@@ -92,10 +133,11 @@ class EventController extends Controller
         $mediaLibrary = EventMedia::whereIn('type', ['image', 'video'])
             ->orderByDesc('created_at')
             ->get();
-        $allSpeakers = \App\Models\Speaker::all();
-        $newestEvents = Event::with('bannerImage')->latest()->take(3)->get();
-        $prominentEvents = Event::with('bannerImage')->orderByRaw('views_count + likes_count DESC')->take(3)->get();
-        return view('admin.events.design', compact('event', 'mediaLibrary', 'allSpeakers', 'newestEvents', 'prominentEvents'));
+        $eventSpeakerIds = $event->speakers->pluck('id')->toArray();
+        $allSpeakers = \App\Models\Speaker::where('is_hidden', false)
+            ->orWhereIn('id', $eventSpeakerIds)
+            ->get();
+        return view('admin.events.design', compact('event', 'mediaLibrary', 'allSpeakers'));
     }
 
     public function saveDesign(Request $request, Event $event)
@@ -120,7 +162,6 @@ class EventController extends Controller
             'desc_font_size' => 'nullable|string',
             'desc_color' => 'nullable|string',
             'desc_font_family' => 'nullable|string',
-            'event_template' => 'nullable|integer',
             
             'media_slots' => 'nullable|array',
         ]);
@@ -148,24 +189,22 @@ class EventController extends Controller
         if ($request->has('department_id')) $event->department_id = $request->department_id;
 
         // Save new styling fields
-        $designSettings = [];
-        $styleFields = ['title_font_size', 'title_color', 'title_outline_color', 'title_outline_width', 'title_font_family', 'desc_font_size', 'desc_color', 'desc_font_family', 'event_template'];
-        foreach ($styleFields as $field) {
-            if ($request->has($field)) {
-                $designSettings[$field] = $request->$field;
-            }
-        }
-        if (!empty($designSettings)) {
-            $event->media()->updateOrCreate(
-                ['type' => 'design_settings'],
-                [
-                    'content' => json_encode($designSettings),
-                    'url' => ''
-                ]
-            );
-        }
+        if ($request->has('title_font_size')) $event->title_font_size = $request->title_font_size;
+        if ($request->has('title_color')) $event->title_color = $request->title_color;
+        if ($request->has('title_outline_color')) $event->title_outline_color = $request->title_outline_color;
+        if ($request->has('title_outline_width')) $event->title_outline_width = $request->title_outline_width;
+        if ($request->has('title_font_family')) $event->title_font_family = $request->title_font_family;
+        if ($request->has('desc_font_size')) $event->desc_font_size = $request->desc_font_size;
+        if ($request->has('desc_color')) $event->desc_color = $request->desc_color;
+        if ($request->has('desc_font_family')) $event->desc_font_family = $request->desc_font_family;
 
         $event->save();
+
+        if ($request->has('speaker_id') && $request->speaker_id) {
+            $event->speakers()->sync([$request->speaker_id]);
+        } else {
+            $event->speakers()->detach();
+        }
 
         if ($request->has('schedule_text')) {
             $event->scheduleItems()->delete();
@@ -211,18 +250,14 @@ class EventController extends Controller
                     $doc_path = str_replace(Storage::url(''), '', parse_url($doc_path, PHP_URL_PATH));
                 }
                 
-                $jsonContent = json_encode([
-                    'text' => $content,
-                    'document_url' => $doc_path,
-                    'document_name' => $document_name,
-                    'action_url' => $action_url,
-                ]);
-
                 $event->media()->create([
                     'type' => $type,
                     'url' => $path ?? '',
                     'caption' => $caption,
-                    'content' => $jsonContent,
+                    'content' => $content,
+                    'document_url' => $doc_path,
+                    'document_name' => $document_name,
+                    'action_url' => $action_url,
                     'is_banner' => false,
                 ]);
             }
@@ -252,17 +287,18 @@ class EventController extends Controller
     public function preview(Event $event)
     {
         $event->load('bannerImage', 'media', 'category', 'scheduleItems', 'speakers');
-        $newestEvents = Event::with('bannerImage')->latest()->take(3)->get();
-        $prominentEvents = Event::with('bannerImage')->orderByRaw('views_count + likes_count DESC')->take(3)->get();
-        return view('admin.events.preview', compact('event', 'newestEvents', 'prominentEvents'));
+        return view('admin.events.preview', compact('event'));
     }
 
     public function edit(Event $event)
     {
-        $event->load('bannerImage', 'speakers', 'departments');
+        $event->load('bannerImage', 'speakers');
         $categories = Category::eventTypes()->get();
         $departments = Category::departments()->get();
-        $speakers = \App\Models\Speaker::all();
+        $eventSpeakerIds = $event->speakers->pluck('id')->toArray();
+        $speakers = \App\Models\Speaker::where('is_hidden', false)
+            ->orWhereIn('id', $eventSpeakerIds)
+            ->get();
         return view('admin.events.edit', compact('event', 'categories', 'departments', 'speakers'));
     }
 
@@ -271,12 +307,11 @@ class EventController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'slug' => 'required|string|unique:events,slug,' . $event->id,
-            'description' => 'nullable|string',
+            'description' => 'required|string',
             'event_date' => 'required|date',
             'location' => 'required|string|max:255',
             'category_id' => 'nullable|exists:categories,id',
-            'department_ids' => 'nullable|array',
-            'department_ids.*' => 'exists:categories,id',
+            'department_id' => 'nullable|exists:categories,id',
             'banner_image' => 'nullable|image|mimes:jpg,jpeg,png,webp',
             'speaker_ids' => 'nullable|array',
             'speaker_ids.*' => 'exists:speakers,id',
@@ -284,7 +319,7 @@ class EventController extends Controller
         ]);
 
         $status = $validated['status'];
-        unset($validated['status'], $validated['banner_image'], $validated['speaker_ids'], $validated['department_ids']);
+        unset($validated['status'], $validated['banner_image'], $validated['speaker_ids']);
 
         $event->fill($validated);
 
@@ -310,7 +345,8 @@ class EventController extends Controller
         $event->save();
 
         $event->speakers()->sync($request->input('speaker_ids', []));
-        $event->departments()->sync($request->input('department_ids', []));
+
+        ActivityLogger::log("đã cập nhật sự kiện: {$event->title}", route('admin.events.index'));
 
         return redirect()->route('admin.events.index')->with('success', 'Cập nhật sự kiện thành công.');
     }
@@ -324,7 +360,53 @@ class EventController extends Controller
             }
         }
 
+        $eventTitle = $event->title;
         $event->delete();
+
+        ActivityLogger::log("đã xóa sự kiện: {$eventTitle}", route('admin.events.index'));
+
         return redirect()->route('admin.events.index')->with('success', 'Đã xóa sự kiện thành công.');
+    }
+
+    public function archive(Event $event)
+    {
+        $event->update(['is_published' => false]);
+
+        ActivityLogger::log("đã lưu trữ sự kiện: {$event->title}", route('admin.archive.index'));
+
+        return redirect()->route('admin.events.index')->with('success', 'Đã di chuyển sự kiện vào kho lưu trữ.');
+    }
+
+    public function archiveIndex(Request $request)
+    {
+        $query = Event::query()->with('bannerImage', 'category', 'department', 'creator')
+            ->where('is_published', false);
+
+        if ($request->filled('search')) {
+            $query->where(function($q) use ($request) {
+                $q->where('title', 'like', '%' . $request->search . '%')
+                  ->orWhere('location', 'like', '%' . $request->search . '%')
+                  ->orWhere('id', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        if ($request->filled('academic_year')) {
+            $query->where('academic_year', $request->academic_year);
+        }
+
+        if ($request->filled('semester')) {
+            $query->where('semester', $request->semester);
+        }
+
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        $events = $query->orderBy('event_date', 'desc')->get();
+
+        $academicYears = Event::select('academic_year')->whereNotNull('academic_year')->distinct()->pluck('academic_year');
+        $categories = Category::eventTypes()->get();
+
+        return view('admin.archive.index', compact('events', 'academicYears', 'categories'));
     }
 }

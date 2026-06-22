@@ -7,7 +7,14 @@
      Overlay ấm — jasmine tint thay vì lạnh xanh
 ════════════════════════════════════════════ --}}
 <section id="top" class="relative h-[100svh] w-full overflow-hidden" style="background:#1C1410;">
+<<<<<<< HEAD
 
+=======
+    {{-- Continuous Timer bar at the very top --}}
+    <div class="absolute top-0 left-0 w-full h-1 z-[60]" style="background: rgba(255, 255, 255, 0.2);">
+        <div id="progressBar" class="h-full bg-[#FFE381] w-0 transition-none"></div>
+    </div>
+>>>>>>> origin/kien
     
     <div class="slider-wrapper" id="slider">
         <div class="bg-layers" id="bgLayers">
@@ -131,8 +138,11 @@
                 const sRect = sliderEl.getBoundingClientRect();
                 const cRect = targetCard.getBoundingClientRect();
 
+<<<<<<< HEAD
                 const computedShadow = window.getComputedStyle(targetCard).boxShadow;
 
+=======
+>>>>>>> origin/kien
                 const clone = document.createElement('div');
                 clone.style.cssText =
                     'position:absolute;' +
@@ -141,13 +151,19 @@
                     `width:${cRect.width}px;height:${cRect.height}px;` +
                     `background-image:url('${slides[nextSlideIdx].image}');` +
                     'background-size:cover;background-position:center;' +
+<<<<<<< HEAD
                     `box-shadow:${computedShadow};` +
+=======
+>>>>>>> origin/kien
                     'border-radius:20px;z-index:0;pointer-events:none;' +
                     'transition:top 750ms cubic-bezier(0.4,0,0.2,1),' +
                                'left 750ms cubic-bezier(0.4,0,0.2,1),' +
                                'width 750ms cubic-bezier(0.4,0,0.2,1),' +
                                'height 750ms cubic-bezier(0.4,0,0.2,1),' +
+<<<<<<< HEAD
                                'box-shadow 750ms cubic-bezier(0.4,0,0.2,1),' +
+=======
+>>>>>>> origin/kien
                                'border-radius 750ms cubic-bezier(0.4,0,0.2,1);';
                 sliderEl.appendChild(clone);
 
@@ -158,7 +174,10 @@
                     clone.style.top = '0'; clone.style.left = '0';
                     clone.style.width = '100%'; clone.style.height = '100%';
                     clone.style.borderRadius = '0';
+<<<<<<< HEAD
                     clone.style.boxShadow = '0 0 0 0 rgba(255,227,129,0), 0 28px 72px rgba(0,0,0,0)';
+=======
+>>>>>>> origin/kien
                 }));
 
                 setTimeout(() => {
@@ -322,7 +341,7 @@
         @foreach($stats as $i => $s)
         <div data-aos="fade-up" data-aos-delay="{{ $i * 100 }}"
              class="flex flex-col items-center justify-center py-16 {{ $i < 3 ? 'border-r border-black/10' : '' }}">
-            <div class="font-['Barlow_Condensed'] text-6xl font-black text-[#1C1410] lg:text-7xl">
+            <div class="font-['Barlow'] text-6xl font-black text-[#1C1410] lg:text-7xl">
                 <span x-data="{ count:0,target:{{ $s['value'] }},decimals:{{ $s['decimals'] }},started:false }"
                       x-intersect.once="started=true;let step=target/60;let t=setInterval(()=>{count+=step;if(count>=target){count=target;clearInterval(t);}},30)"
                       x-text="decimals?count.toFixed(decimals):Math.round(count).toLocaleString()">0</span>{{ $s['suffix'] }}
@@ -351,7 +370,7 @@
                         <div class="h-7 w-1 rounded-full" style="background:#07A0C3;"></div>
                         <span class="text-xs font-bold uppercase tracking-[0.25em]" style="color:#07A0C3;">Featured Events</span>
                     </div>
-                    <h2 class="font-['Barlow_Condensed'] text-5xl font-black uppercase tracking-tight text-[#1C1410] lg:text-6xl">Sự kiện nổi bật</h2>
+                    <h2 class="font-['Barlow'] text-5xl font-black uppercase tracking-tight text-[#1C1410] lg:text-6xl">Sự kiện nổi bật</h2>
                 </div>
                 <a href="#" class="hidden items-center gap-2 text-sm font-semibold lg:inline-flex transition-colors"
                    style="color:#07A0C3;" onmouseover="this.style.color='#04F06A'" onmouseout="this.style.color='#07A0C3'">
@@ -389,6 +408,7 @@
                     </div>
                     <div class="relative z-10 flex flex-1 flex-col justify-between p-5">
                         <div>
+<<<<<<< HEAD
                             <h3 class="font-['Barlow_Condensed'] text-2xl font-black uppercase leading-tight tracking-wide text-[#1C1410] transition-colors group-hover:text-[#07A0C3]">
                                 <a href="{{ route('events.show', $ev['slug'] ?? '#') }}">
                                     {{ $ev['title'] }}
@@ -398,6 +418,27 @@
                                 <p class="line-clamp-3">{{ $ev['summary'] ?? '' }}</p>
                             </div>
                         </div>
+=======
+                            <h3 class="font-['Barlow'] text-2xl font-black uppercase leading-tight tracking-wide text-[#1C1410] transition-colors group-hover:text-[#07A0C3]">
+                                {{ $ev['title'] }}
+                            </h3>
+                            <div class="mt-3 flex flex-col gap-1.5 text-sm text-[#7A6A52]">
+                                <span class="inline-flex items-center gap-2">
+                                    <i data-lucide="calendar" class="h-4 w-4" style="color:#07A0C3;"></i> {{ $ev['date'] }}
+                                </span>
+                                <span class="inline-flex items-center gap-2">
+                                    <i data-lucide="map-pin" class="h-4 w-4" style="color:#04F06A;"></i> <span class="truncate">{{ $ev['location'] }}</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="mt-5 flex items-center gap-4">
+                            <a href="#"
+                               class="inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-bold text-white shadow transition-all hover:shadow-md hover:-translate-y-0.5"
+                               style="background:#07A0C3;">
+                                Xem chi tiết <i data-lucide="arrow-up-right" class="h-3 w-3"></i>
+                            </a>
+                        </div>
+>>>>>>> origin/kien
                     </div>
                 </article>
                 @endforeach
@@ -414,7 +455,7 @@
                     <div class="relative flex items-center justify-between">
                         <div>
                             <div class="text-xs font-bold uppercase tracking-[0.25em] text-[#7A6A52]">Upcoming</div>
-                            <h3 class="font-['Barlow_Condensed'] mt-0.5 text-3xl font-black uppercase tracking-wide text-[#1C1410]">Sắp diễn ra</h3>
+                            <h3 class="font-['Barlow'] mt-0.5 text-3xl font-black uppercase tracking-wide text-[#1C1410]">Sắp diễn ra</h3>
                         </div>
                         <div class="flex items-center gap-2 rounded-full bg-white/60 px-3 py-1.5 text-xs font-bold text-[#1C1410] backdrop-blur">
                             <span class="h-2 w-2 animate-pulse rounded-full" style="background:#07A0C3;"></span>Live
@@ -538,7 +579,7 @@
                     <div class="h-7 w-1 rounded-full" style="background:#FFE381;"></div>
                     <span class="text-xs font-bold uppercase tracking-[0.25em]" style="color:#FFE381;">Archive</span>
                 </div>
-                <h2 class="font-['Barlow_Condensed'] text-5xl font-black uppercase tracking-tight text-white lg:text-7xl">Kho lưu trữ sự kiện</h2>
+                <h2 class="font-['Barlow'] text-5xl font-black uppercase tracking-tight text-white lg:text-7xl">Kho lưu trữ sự kiện</h2>
                 <p class="mt-3 max-w-md leading-relaxed" style="color:rgba(255,227,129,0.65);">
                     Từng năm. Từng đêm diễn. Từng ký ức được lưu lại để có thể sống lại bất cứ lúc nào.
                 </p>
@@ -564,7 +605,11 @@
         <div class="relative mt-14 grid grid-cols-1 gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
             <!-- Chữ số năm — Jasmine gradient -->
             <div class="relative flex items-start z-10">
+<<<<<<< HEAD
                 <div class="font-['Barlow_Condensed'] text-[28vw] font-black leading-[0.85] tracking-tighter lg:text-[18vw] pl-4 lg:pl-6 pr-4"
+=======
+                <div class="font-['Barlow'] text-[28vw] font-black leading-[0.85] tracking-tighter lg:text-[18vw] pl-4 lg:pl-6 pr-4"
+>>>>>>> origin/kien
                      style="-webkit-text-fill-color:transparent;-webkit-background-clip:text;background-clip:text;
                             background-image:linear-gradient(160deg,#FFE381 30%,#E8C84A 70%,#07A0C3 100%);"
                      x-text="current.year"
@@ -585,7 +630,11 @@
                     <div class="absolute bottom-6 left-5 right-5">
                         <div class="mb-2 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.25em] text-[#1C1410]"
                              style="background:#FFE381;">✦ Featured event</div>
+<<<<<<< HEAD
                         <h3 class="font-['Barlow_Condensed'] text-3xl font-black uppercase tracking-wide text-white lg:text-4xl"
+=======
+                        <h3 class="font-['Barlow'] text-3xl font-black uppercase tracking-wide text-white lg:text-4xl"
+>>>>>>> origin/kien
                             x-text="current.title"></h3>
                     </div>
                 </div>
@@ -631,9 +680,13 @@
 {{-- ════════════════════════════════════════
      MEDIA — Nền Jasmine ấm, thoáng sáng
 ════════════════════════════════════════════ --}}
+<<<<<<< HEAD
 @php $mediaJson = json_encode($media); @endphp
 <section class="relative overflow-hidden py-24 lg:py-32" style="background:#FFF3C4;"
          x-data="mediaPlayer({{ $mediaJson }})" x-init="initPlayer()">
+=======
+<section class="relative overflow-hidden py-24 lg:py-32" style="background:#FFF3C4;">
+>>>>>>> origin/kien
     <!-- Top Jasmine border -->
     <div class="absolute inset-x-0 top-0 h-1.5" style="background:#FFE381;"></div>
     <!-- Subtle accent blobs -->
@@ -649,13 +702,18 @@
                     <div class="h-7 w-1 rounded-full" style="background:#04F06A;"></div>
                     <span class="text-xs font-bold uppercase tracking-[0.25em]" style="color:#04B050;">Media</span>
                 </div>
+<<<<<<< HEAD
                 <h2 class="font-['Barlow_Condensed'] text-4xl font-black uppercase tracking-tight text-[#1C1410] lg:text-5xl">Album & Recap</h2>
+=======
+                <h2 class="font-['Barlow'] text-4xl font-black uppercase tracking-tight text-[#1C1410] lg:text-5xl">Album & Recap</h2>
+>>>>>>> origin/kien
             </div>
             <a href="#" class="group inline-flex items-center gap-1.5 text-sm font-semibold text-[#07A0C3] transition-colors hover:text-[#04F06A]">
                 Thư viện đầy đủ <i data-lucide="arrow-right" class="h-4 w-4 transition-transform group-hover:translate-x-1"></i>
             </a>
         </div>
 
+<<<<<<< HEAD
         <template x-if="items.length > 0">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <!-- Left Side: Main Player -->
@@ -814,6 +872,41 @@
             }));
         });
     </script>
+=======
+        <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
+            @foreach($media as $i => $m)
+            <div data-aos="fade-up" data-aos-delay="{{ $i * 80 }}">
+                <a href="#"
+                   class="group relative block aspect-[3/4] overflow-hidden rounded-2xl transition-all duration-500 hover:-translate-y-2"
+                   style="box-shadow:0 4px 20px rgba(255,200,60,0.3);"
+                   onmouseover="this.style.boxShadow='0 16px 50px rgba(7,160,195,0.25)'"
+                   onmouseout="this.style.boxShadow='0 4px 20px rgba(255,200,60,0.3)'">
+                    <img src="{{ $m['src'] }}" alt="{{ $m['label'] }}" loading="lazy"
+                         class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#2D1F0A]/80 via-[#2D1F0A]/10 to-transparent"></div>
+
+                    @if($m['type'] === 'video')
+                    <div class="absolute inset-0 grid place-items-center">
+                        <div class="grid h-14 w-14 place-items-center rounded-full text-[#1C1410] shadow-lg transition-transform group-hover:scale-110"
+                             style="background:#FFE381;">
+                            <i data-lucide="play" class="h-5 w-5 translate-x-0.5 fill-current"></i>
+                        </div>
+                    </div>
+                    @endif
+
+                    <div class="absolute bottom-0 left-0 right-0 p-4">
+                        <!-- Sliding bottom bar -->
+                        <div class="mb-2 h-0.5 w-0 rounded-full transition-all duration-500 group-hover:w-full"
+                             style="background:#FFE381;"></div>
+                        <div class="text-[9px] font-bold uppercase tracking-[0.25em]" style="color:#FFE381;">{{ $m['type'] }}</div>
+                        <div class="font-['Barlow'] mt-1 text-lg font-bold uppercase tracking-wide text-white group-hover:text-[#FFE381] transition-colors">{{ $m['label'] }}</div>
+                    </div>
+                </a>
+            </div>
+            @endforeach
+        </div>
+    </div>
+>>>>>>> origin/kien
 </section>
 
 @endsection

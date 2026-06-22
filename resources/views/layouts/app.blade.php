@@ -5,167 +5,296 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'UniEvents') }} — Dashboard</title>
+    <title>{{ $pageTitle ?? 'UniEvent Admin' }} · UniEvent Admin</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Hanken+Grotesk:wght@600;700&family=Be+Vietnam+Pro:wght@400;600;700&family=Charm:wght@400;700&family=Montserrat:wght@400;600;700&family=Pacifico&family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Rowdies:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Hanken+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
+    
+    <style>
+        .sidebar-transition {
+            transition: width 0.2s ease, transform 0.2s ease;
+        }
+        .sidebar-menu-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.9rem;
+            width: 100%;
+            height: 2.75rem;
+            padding: 0 1rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--color-sidebar-foreground, #475569);
+            border-radius: var(--radius);
+            transition: background-color 0.15s, color 0.15s;
+        }
+        .sidebar-menu-btn.active {
+            background-color: var(--color-sidebar-accent, #f1f5f9);
+            color: var(--color-sidebar-accent-foreground, #0f172a);
+            font-weight: 600;
+        }
+        .sidebar-menu-btn:hover:not(.active) {
+            background-color: var(--color-sidebar-accent, #f1f5f9);
+            color: var(--color-sidebar-accent-foreground, #0f172a);
+        }
+        
+        /* Mobile Overlay styling */
+        #mobileOverlay.show {
+            display: block;
+        }
+    </style>
 </head>
-<body class="overflow-x-clip bg-body-bg text-primary font-body">
+<body class="overflow-x-clip bg-background text-foreground font-body admin-body">
 
     <!-- Mobile Overlay -->
-    <div id="sidebarOverlay" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 hidden md:hidden transition-opacity"></div>
+    <div id="mobileOverlay" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 hidden md:hidden transition-opacity"></div>
 
-    <!-- ─── Sidebar ─── -->
-    <aside id="sidebar" class="admin-sidebar fixed left-0 top-0 h-full flex flex-col bg-white border-r border-slate-100 w-[260px] z-50 md:translate-x-0 transition-transform duration-300">
-        <!-- Logo -->
-        <div class="px-6 pt-6 pb-4 border-b border-slate-100">
-            <a href="{{ route('admin.events.index') }}" class="flex items-center gap-2.5">
-                <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white font-bold text-lg font-heading">U</div>
-                <span class="text-[18px] font-bold text-primary font-heading tracking-tight">
-                    UniEvents
-                    <span class="text-brand-orange font-normal text-[13px]">| Admin</span>
-                </span>
-            </a>
-        </div>
-
-        <!-- User Info -->
-        <div class="px-5 py-4 border-b border-slate-100">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-brand-orange text-white flex items-center justify-center font-bold text-sm uppercase">
-                    {{ substr(Auth::user()->name, 0, 1) }}
-                </div>
-                <div>
-                    <p class="text-[13px] font-semibold text-primary">{{ Auth::user()->name }}</p>
-                    <p class="text-[11px] text-slate-400">Quản trị viên</p>
-                </div>
+    <!-- Sidebar Wrapper -->
+    <aside id="sidebar" class="sidebar-transition fixed left-0 top-0 h-full flex flex-col bg-sidebar border-r border-sidebar-border w-[240px] z-50 -translate-x-full md:translate-x-0">
+        <!-- Sidebar Header -->
+        <div class="flex h-16 shrink-0 items-center gap-2 border-b border-sidebar-border px-4">
+            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                <i data-lucide="graduation-cap" class="h-5 w-5"></i>
+            </div>
+            <div class="flex flex-col min-w-0">
+                <span class="text-sm font-bold leading-tight truncate">UniEvent</span>
+                <span class="text-[11px] text-muted-foreground leading-tight">Trang quản trị</span>
             </div>
         </div>
 
-        <!-- Navigation -->
-        <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1">
-            <p class="uni-section-title px-4 mb-2">Tổng quan</p>
-            <a class="sidebar-nav-item {{ request()->routeIs('admin.events.index') || request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('admin.events.index') }}">
-                <span class="material-symbols-outlined text-[20px]">dashboard</span>
-                <span>Dashboard</span>
-            </a>
+        <!-- Sidebar Navigation -->
+        <nav class="flex-1 overflow-y-auto p-3 space-y-4">
+            <!-- Main Group -->
+            <div>
+                <p class="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground/70 px-3 mb-1.5">Chính</p>
+                <div class="space-y-0.5">
+                    <a href="{{ route('admin.dashboard') }}" class="sidebar-menu-btn {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                        <i data-lucide="layout-dashboard" class="h-5 w-5"></i>
+                        <span>Tổng quan</span>
+                    </a>
+                    <a href="{{ route('admin.events.index') }}" class="sidebar-menu-btn {{ request()->routeIs('admin.events.*') && !request()->routeIs('admin.events.create') && !request()->routeIs('admin.events.edit') && !request()->routeIs('admin.events.design') && !request()->routeIs('admin.events.preview') && !request()->routeIs('admin.events.show') ? 'active' : '' }}">
+                        <i data-lucide="calendar" class="h-5 w-5"></i>
+                        <span>Sự kiện</span>
+                    </a>
+                    <a href="{{ route('admin.categories.index') }}" class="sidebar-menu-btn {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+                        <i data-lucide="tag" class="h-5 w-5"></i>
+                        <span>Danh mục sự kiện</span>
+                    </a>
+                    <a href="{{ route('admin.departments.index') }}" class="sidebar-menu-btn {{ request()->routeIs('admin.departments.*') ? 'active' : '' }}">
+                        <i data-lucide="building" class="h-5 w-5"></i>
+                        <span>Khoa / Bộ phận</span>
+                    </a>
+                    <a href="{{ route('admin.archive.index') }}" class="sidebar-menu-btn {{ request()->routeIs('admin.archive.*') ? 'active' : '' }}">
+                        <i data-lucide="archive" class="h-5 w-5"></i>
+                        <span>Lưu trữ sự kiện</span>
+                    </a>
+                    <a href="{{ route('admin.speakers.index') }}" class="sidebar-menu-btn {{ request()->routeIs('admin.speakers.*') ? 'active' : '' }}">
+                        <i data-lucide="mic" class="h-5 w-5"></i>
+                        <span>Diễn giả / Khách mời</span>
+                    </a>
+                </div>
+            </div>
 
-            <p class="uni-section-title px-4 mt-5 mb-2">Quản lý</p>
-            <a class="sidebar-nav-item {{ request()->routeIs('admin.events.create') || request()->routeIs('admin.events.edit') ? 'active' : '' }}" href="{{ route('admin.events.create') }}">
-                <span class="material-symbols-outlined text-[20px]">add_circle</span>
-                <span>Tạo sự kiện</span>
-            </a>
-            <a class="sidebar-nav-item {{ request()->routeIs('admin.speakers.*') ? 'active' : '' }}" href="{{ route('admin.speakers.index') }}">
-                <span class="material-symbols-outlined text-[20px]">groups</span>
-                <span>Diễn giả</span>
-            </a>
-            <a class="sidebar-nav-item {{ request()->routeIs('admin.media.*') ? 'active' : '' }}" href="{{ route('admin.media.index') }}">
-                <span class="material-symbols-outlined text-[20px]">perm_media</span>
-                <span>Quản lý Media</span>
-            </a>
-            <a class="sidebar-nav-item {{ request()->routeIs('admin.documents.*') ? 'active' : '' }}" href="{{ route('admin.documents.index') }}">
-                <span class="material-symbols-outlined text-[20px]">description</span>
-                <span>Tài liệu</span>
-            </a>
-
-            <p class="uni-section-title px-4 mt-5 mb-2">Hệ thống</p>
-            <a class="sidebar-nav-item" href="{{ route('home') }}" target="_blank">
-                <span class="material-symbols-outlined text-[20px]">visibility</span>
-                <span>Xem trang công khai</span>
-            </a>
-            <a class="sidebar-nav-item" href="#">
-                <span class="material-symbols-outlined text-[20px]">settings</span>
-                <span>Cài đặt</span>
-            </a>
+            <!-- Content Group -->
+            <div>
+                <p class="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground/70 px-3 mb-1.5">Nội dung</p>
+                <div class="space-y-0.5">
+                    <a href="{{ route('admin.media.index') }}" class="sidebar-menu-btn {{ request()->routeIs('admin.media.*') ? 'active' : '' }}">
+                        <i data-lucide="image" class="h-5 w-5"></i>
+                        <span>Thư viện Media</span>
+                    </a>
+                    <a href="{{ route('admin.documents.index') }}" class="sidebar-menu-btn {{ request()->routeIs('admin.documents.*') ? 'active' : '' }}">
+                        <i data-lucide="files" class="h-5 w-5"></i>
+                        <span>Tài liệu</span>
+                    </a>
+                </div>
+            </div>
         </nav>
 
-        <!-- Bottom -->
-        <div class="px-3 pb-4 space-y-1 border-t border-slate-100 pt-3">
-            <a href="{{ route('admin.events.create') }}" class="flex items-center justify-center gap-2 w-full py-2.5 bg-primary hover:bg-slate-800 text-white font-semibold rounded-xl text-[13px] shadow-sm transition-all mb-2">
-                <span class="material-symbols-outlined text-[18px]">add</span>
-                <span>Sự kiện mới</span>
-            </a>
-            <form method="POST" action="{{ route('logout') }}" class="block">
-                @csrf
-                <button type="submit" class="sidebar-nav-item w-full text-left text-red-400 hover:text-red-600 hover:bg-red-50">
-                    <span class="material-symbols-outlined text-[20px]">logout</span>
-                    <span>Đăng xuất</span>
-                </button>
-            </form>
-        </div>
-    </aside>
-
-    <!-- ─── Top Header ─── -->
-    <header class="fixed top-0 left-0 md:left-[260px] right-0 h-[60px] z-30 flex items-center justify-between px-5 md:px-8 bg-white border-b border-slate-100 shadow-nav">
-        <div class="flex items-center gap-4">
-            <!-- Mobile toggle -->
-            <button id="openSidebarBtn" class="md:hidden text-slate-500 hover:text-primary p-1.5 rounded-lg hover:bg-slate-50 transition-colors">
-                <span class="material-symbols-outlined">menu</span>
-            </button>
-            <!-- Mobile logo -->
-            <span class="md:hidden text-[16px] font-bold text-primary font-heading">UniEvents</span>
-            <!-- Breadcrumb area -->
-            <div class="hidden md:block">
-                @if(isset($pageTitle))
-                    <h2 class="text-[15px] font-bold text-primary font-heading">{{ $pageTitle }}</h2>
-                @endif
-                @if(isset($pageSubtitle))
-                    <p class="text-[12px] text-slate-400">{{ $pageSubtitle }}</p>
-                @endif
-            </div>
-        </div>
-        <div class="flex items-center gap-3">
-            <button class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:bg-slate-50 hover:text-primary transition-all relative">
-                <span class="material-symbols-outlined text-[20px]">notifications</span>
-                <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-brand-orange rounded-full"></span>
-            </button>
-
-            <!-- Profile Dropdown -->
+        <!-- Sidebar Footer -->
+        <div class="border-t border-sidebar-border p-3">
             <div class="relative">
-                <button id="profileDropdownBtn" class="flex items-center gap-2 px-2 py-1.5 rounded-xl hover:bg-slate-50 transition-all">
-                    <div class="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold text-xs uppercase">
-                        {{ substr(Auth::user()->name, 0, 1) }}
+                <button id="adminAvatarBtn" class="flex items-center gap-2 w-full mb-2 hover:bg-accent/50 rounded-md p-1 transition-colors">
+                    @php
+                        $userInitials = collect(explode(' ', Auth::user()->name))->map(fn($w) => substr($w, 0, 1))->slice(0, 2)->implode('');
+                    @endphp
+                    <div class="h-8 w-8 shrink-0 rounded-full bg-accent text-accent-foreground grid place-items-center text-xs font-semibold uppercase">
+                        {{ $userInitials }}
                     </div>
-                    <span class="text-[13px] font-medium text-primary hidden sm:block">{{ Auth::user()->name }}</span>
-                    <span class="material-symbols-outlined text-slate-400 text-[16px]">expand_more</span>
+                    <div class="min-w-0 flex-1 text-left">
+                        <div class="text-xs font-medium truncate">{{ Auth::user()->name }}</div>
+                        <div class="text-[11px] text-muted-foreground truncate">{{ Auth::user()->email }}</div>
+                    </div>
+                    <i data-lucide="chevron-up" class="h-3 w-3 text-muted-foreground"></i>
                 </button>
-                <div id="profileDropdown" class="absolute right-0 top-full mt-1 w-48 bg-white rounded-xl shadow-lg py-1.5 hidden border border-slate-100">
-                    <a href="#" class="block px-4 py-2 text-[13px] text-slate-600 hover:bg-slate-50 rounded-lg mx-1">Hồ sơ</a>
-                    <form method="POST" action="{{ route('logout') }}">
+                <div id="adminAvatarDropdown" class="absolute bottom-full left-0 right-0 mb-2 bg-white border border-border rounded-md shadow-lg py-1 hidden z-50">
+                    <a href="{{ route('admin.profile.edit') }}" class="flex items-center px-3 py-2 text-xs text-foreground hover:bg-accent">
+                        <i data-lucide="settings" class="h-3.5 w-3.5 mr-2"></i> Cài đặt tài khoản
+                    </a>
+                    <a href="{{ route('admin.profile.activity') }}" class="flex items-center px-3 py-2 text-xs text-foreground hover:bg-accent">
+                        <i data-lucide="history" class="h-3.5 w-3.5 mr-2"></i> Lịch sử hoạt động
+                    </a>
+                    <div class="h-px bg-border my-1"></div>
+                    <form method="POST" action="{{ route('logout') }}" class="block">
                         @csrf
-                        <button type="submit" class="block w-full text-left px-4 py-2 text-[13px] text-red-500 hover:bg-red-50 rounded-lg mx-1">
-                            Đăng xuất
+                        <button type="submit" class="flex items-center w-full px-3 py-2 text-xs text-destructive hover:bg-accent">
+                            <i data-lucide="log-out" class="h-3.5 w-3.5 mr-2"></i> Đăng xuất
                         </button>
                     </form>
                 </div>
             </div>
         </div>
+    </aside>
+
+    <!-- Top Header -->
+    <header class="fixed top-0 left-0 md:left-[240px] right-0 h-16 z-30 flex items-center gap-2 border-b border-border bg-background/95 backdrop-blur px-3 md:px-4 justify-between">
+        <div class="flex items-center gap-2 min-w-0">
+            <!-- Mobile Toggle Button -->
+            <button id="mobileSidebarToggle" class="md:hidden h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-accent rounded-xl flex items-center justify-center transition-all">
+                <i data-lucide="menu" class="h-5 w-5"></i>
+            </button>
+
+            <!-- Breadcrumbs -->
+            <div class="hidden md:flex items-center text-xs text-muted-foreground gap-1 min-w-0">
+                <div class="flex items-center gap-1 min-w-0">
+                    <a href="{{ route('admin.dashboard') }}" class="hover:text-foreground">Home</a>
+                    @if(isset($breadcrumbs) && is_array($breadcrumbs))
+                        @foreach($breadcrumbs as $bc)
+                            <i data-lucide="chevron-right" class="h-3 w-3 shrink-0"></i>
+                            @if(isset($bc['route']))
+                                <a href="{{ $bc['route'] }}" class="hover:text-foreground truncate">{{ $bc['label'] }}</a>
+                            @else
+                                <span class="text-foreground font-medium truncate">{{ $bc['label'] }}</span>
+                            @endif
+                        @endforeach
+                    @else
+                        <i data-lucide="chevron-right" class="h-3 w-3 shrink-0"></i>
+                        <span class="text-foreground font-medium truncate">{{ $pageTitle ?? 'Dashboard' }}</span>
+                    @endif
+                </div>
+            </div>
+        </div>
+
+        @php
+            $nowTime = now();
+            $startingSoon = \App\Models\Event::where('is_published', true)
+                ->where('event_date', '>', $nowTime)
+                ->where('event_date', '<=', $nowTime->copy()->addMinutes(10))
+                ->get();
+            $runningEvents = \App\Models\Event::where('is_published', true)
+                ->where('event_date', '<=', $nowTime)
+                ->where('end_date', '>=', $nowTime)
+                ->get();
+            $notificationCount = $startingSoon->count() + $runningEvents->count();
+        @endphp
+        <div class="flex items-center gap-2 md:gap-3">
+            <!-- Semester Badge (Real-time Clock) -->
+            <div class="hidden lg:inline-flex items-center gap-1.5 h-11 px-4 rounded-full border border-border text-[12px] font-normal text-muted-foreground">
+                <span class="h-1.5 w-1.5 rounded-full bg-primary animate-pulse"></span>
+                <span id="dateTimeString"></span>
+            </div>
+
+            <!-- Create quick dropdown -->
+            <div class="relative">
+                <button id="quickCreateBtn" class="flex items-center gap-1.5 h-11 px-5 bg-primary text-primary-foreground hover:bg-primary/95 rounded-xl text-sm font-semibold transition-all">
+                    <i data-lucide="plus" class="h-5 w-5"></i> Tạo mới
+                    <i data-lucide="chevron-down" class="h-3 w-3 opacity-70"></i>
+                </button>
+                <div id="quickCreateDropdown" class="absolute right-0 top-full mt-1.5 w-48 bg-white border border-border rounded-md shadow-lg py-1 hidden z-50">
+                    <div class="px-2.5 py-1.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Tạo nhanh</div>
+                    <div class="h-px bg-border my-1"></div>
+                    <a href="{{ route('admin.events.create') }}" class="flex items-center px-2.5 py-1.5 text-xs text-foreground hover:bg-accent rounded-sm mx-1">Sự kiện mới</a>
+                    <a href="{{ route('admin.speakers.create') }}" class="flex items-center px-2.5 py-1.5 text-xs text-foreground hover:bg-accent rounded-sm mx-1">Diễn giả mới</a>
+                    <a href="{{ route('admin.media.index') }}" class="flex items-center px-2.5 py-1.5 text-xs text-foreground hover:bg-accent rounded-sm mx-1">Tải lên Media</a>
+                </div>
+            </div>
+
+            <!-- Notifications Button with Dropdown -->
+            <div class="relative">
+                <button id="notificationBtn" class="h-11 w-11 relative text-muted-foreground hover:text-foreground hover:bg-accent rounded-xl flex items-center justify-center transition-all">
+                    <i data-lucide="bell" class="h-5 w-5"></i>
+                    @if($notificationCount > 0)
+                        <span class="absolute top-3 right-3 h-4 w-4 bg-destructive text-white text-[9px] font-bold rounded-full flex items-center justify-center animate-pulse">
+                            {{ $notificationCount }}
+                        </span>
+                    @endif
+                </button>
+                <div id="notificationDropdown" class="absolute right-0 top-full mt-1.5 w-80 bg-white border border-border rounded-md shadow-lg py-2 hidden z-50">
+                    <div class="px-3 py-1.5 text-xs font-semibold text-foreground border-b border-border flex justify-between items-center">
+                        <span>Thông báo sự kiện</span>
+                        @if($notificationCount > 0)
+                            <span class="bg-destructive/10 text-destructive text-[10px] px-1.5 py-0.5 rounded-full font-medium">{{ $notificationCount }} mới</span>
+                        @endif
+                    </div>
+                    <div class="max-h-64 overflow-y-auto divide-y divide-border">
+                        @if($notificationCount == 0)
+                            <div class="p-4 text-center text-xs text-muted-foreground">Không có thông báo nào vào lúc này</div>
+                        @else
+                            @foreach($startingSoon as $evt)
+                                @php
+                                    $diffMin = max(1, round($nowTime->diffInMinutes($evt->event_date)));
+                                @endphp
+                                <div class="p-3 hover:bg-accent/40 transition-colors">
+                                    <div class="flex items-start gap-2.5">
+                                        <div class="h-7 w-7 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center shrink-0">
+                                            <i data-lucide="clock" class="h-4 w-4"></i>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-xs font-medium text-foreground truncate">{{ $evt->title }}</p>
+                                            <p class="text-[11px] text-amber-600 font-medium mt-0.5">Sắp diễn ra: Bắt đầu sau {{ $diffMin }} phút nữa</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                            @foreach($runningEvents as $evt)
+                                @php
+                                    $diffEnd = $nowTime->diffInMinutes($evt->end_date);
+                                    $diffEndStr = $diffEnd > 60 ? (round($diffEnd / 60) . ' giờ') : ($diffEnd . ' phút');
+                                @endphp
+                                <div class="p-3 hover:bg-accent/40 transition-colors">
+                                    <div class="flex items-start gap-2.5">
+                                        <div class="h-7 w-7 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
+                                            <i data-lucide="play" class="h-4 w-4"></i>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-xs font-medium text-foreground truncate">{{ $evt->title }}</p>
+                                            <p class="text-[11px] text-emerald-600 font-medium mt-0.5">Đang diễn ra: Còn {{ $diffEndStr }} là kết thúc</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            <!-- Public site link -->
+            <a href="{{ route('home') }}" target="_blank" class="h-11 w-11 text-muted-foreground hover:text-foreground hover:bg-accent rounded-xl flex items-center justify-center transition-all" title="Xem trang công khai">
+                <i data-lucide="external-link" class="h-5 w-5"></i>
+            </a>
+        </div>
     </header>
 
-    <!-- ─── Main Content ─── -->
-    <main class="pt-[60px] md:pl-[260px] min-h-screen">
-        <div class="max-w-[1200px] mx-auto px-5 md:px-8 py-8">
+    <!-- Main Content Wrapper -->
+    <main class="pt-16 md:pl-[240px] min-h-screen">
+        <div class="p-4 md:p-6 lg:p-8 max-w-[1600px] mx-auto">
             @if(session('success'))
-                <div class="mb-6 bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-xl text-[13px] flex items-center gap-2 animate-fade-in">
-                    <span class="material-symbols-outlined text-[18px]">check_circle</span>
-                    {{ session('success') }}
+                <div class="mb-4 bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-lg text-xs flex items-center gap-2 animate-fade-in shadow-sm">
+                    <i data-lucide="check-circle-2" class="h-4 w-4 text-emerald-600"></i>
+                    <span class="font-medium">{{ session('success') }}</span>
                 </div>
             @endif
             @if(session('error'))
-                <div class="mb-6 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl text-[13px] flex items-center gap-2">
-                    <span class="material-symbols-outlined text-[18px]">error</span>
-                    {{ session('error') }}
-                </div>
-            @endif
-
-            @if(isset($header))
-                <div class="mb-8">
-                    {{ $header }}
+                <div class="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-xs flex items-center gap-2 shadow-sm">
+                    <i data-lucide="alert-circle" class="h-4 w-4 text-red-600"></i>
+                    <span class="font-medium">{{ session('error') }}</span>
                 </div>
             @endif
 
@@ -175,40 +304,105 @@
     </main>
 
     <script>
+        // Initialize Lucide Icons
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+        });
+
         // Sidebar Mobile Toggle
         const sidebar = document.getElementById('sidebar');
-        const openSidebarBtn = document.getElementById('openSidebarBtn');
-        const closeSidebarBtn = document.getElementById('closeSidebarBtn');
-        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const mobileSidebarToggle = document.getElementById('mobileSidebarToggle');
+        const mobileOverlay = document.getElementById('mobileOverlay');
 
         function openSidebar() {
-            sidebar.classList.add('sidebar-open');
-            sidebarOverlay.classList.remove('hidden');
+            sidebar.classList.remove('-translate-x-full');
+            mobileOverlay.classList.remove('hidden');
         }
         function closeSidebar() {
-            sidebar.classList.remove('sidebar-open');
-            sidebarOverlay.classList.add('hidden');
+            sidebar.classList.add('-translate-x-full');
+            mobileOverlay.classList.add('hidden');
         }
 
-        if (openSidebarBtn) openSidebarBtn.addEventListener('click', openSidebar);
-        if (closeSidebarBtn) closeSidebarBtn.addEventListener('click', closeSidebar);
-        if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
+        if (mobileSidebarToggle) mobileSidebarToggle.addEventListener('click', openSidebar);
+        if (mobileOverlay) mobileOverlay.addEventListener('click', closeSidebar);
 
-        // Profile Dropdown Toggle
-        const profileDropdownBtn = document.getElementById('profileDropdownBtn');
-        const profileDropdown = document.getElementById('profileDropdown');
+        // Quick Create Dropdown Toggle
+        const quickCreateBtn = document.getElementById('quickCreateBtn');
+        const quickCreateDropdown = document.getElementById('quickCreateDropdown');
 
-        if (profileDropdownBtn) {
-            profileDropdownBtn.addEventListener('click', (e) => {
+        if (quickCreateBtn && quickCreateDropdown) {
+            quickCreateBtn.addEventListener('click', function(e) {
                 e.stopPropagation();
-                profileDropdown.classList.toggle('hidden');
+                quickCreateDropdown.classList.toggle('hidden');
+            });
+            document.addEventListener('click', function(e) {
+                if (!quickCreateDropdown.contains(e.target) && !quickCreateBtn.contains(e.target)) {
+                    quickCreateDropdown.classList.add('hidden');
+                }
             });
         }
-        document.addEventListener('click', (e) => {
-            if (profileDropdown && !profileDropdown.contains(e.target) && !profileDropdownBtn.contains(e.target)) {
-                profileDropdown.classList.add('hidden');
-            }
-        });
+
+        // Admin Avatar Dropdown Toggle
+        const adminAvatarBtn = document.getElementById('adminAvatarBtn');
+        const adminAvatarDropdown = document.getElementById('adminAvatarDropdown');
+
+        if (adminAvatarBtn && adminAvatarDropdown) {
+            adminAvatarBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                adminAvatarDropdown.classList.toggle('hidden');
+            });
+            document.addEventListener('click', function(e) {
+                if (!adminAvatarDropdown.contains(e.target) && !adminAvatarBtn.contains(e.target)) {
+                    adminAvatarDropdown.classList.add('hidden');
+                }
+            });
+        }
+
+        // Notification Dropdown Toggle
+        const notificationBtn = document.getElementById('notificationBtn');
+        const notificationDropdown = document.getElementById('notificationDropdown');
+
+        if (notificationBtn && notificationDropdown) {
+            notificationBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                notificationDropdown.classList.toggle('hidden');
+            });
+            document.addEventListener('click', function(e) {
+                if (!notificationDropdown.contains(e.target) && !notificationBtn.contains(e.target)) {
+                    notificationDropdown.classList.add('hidden');
+                }
+            });
+        }
+
+        // Dynamic Real-time Clock
+        const dateTimeString = document.getElementById('dateTimeString');
+        if (dateTimeString) {
+            const updateClock = () => {
+                const now = new Date();
+                const month = now.getMonth() + 1;
+                let semester = '';
+                if (month >= 1 && month <= 4) {
+                    semester = 'Spring';
+                } else if (month >= 5 && month <= 8) {
+                    semester = 'Summer';
+                } else {
+                    semester = 'Fall';
+                }
+                const options = { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'numeric', 
+                    day: 'numeric',
+                    hour: '2-digit', 
+                    minute: '2-digit', 
+                    second: '2-digit',
+                    hour12: false 
+                };
+                dateTimeString.textContent = now.toLocaleDateString('vi-VN', options) + ` · Kỳ ${semester}`;
+            };
+            updateClock();
+            setInterval(updateClock, 1000);
+        }
     </script>
 
     @stack('scripts')

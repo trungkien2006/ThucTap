@@ -14,7 +14,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 </head>
-<body class="bg-surface text-on-surface overflow-x-hidden">
+<body class="bg-white text-on-surface overflow-x-hidden">
 
     <!-- TopNavBar -->
     <nav class="flex justify-between items-center w-full px-4 md:px-margin-desktop h-16 fixed top-0 z-50 bg-deep-navy shadow-md">
@@ -107,7 +107,7 @@
     </main>
 
     <!-- Footer -->
-    <footer class="w-full py-12 px-margin-desktop flex flex-col md:flex-row justify-between items-center gap-gutter bg-surface-container-highest border-t border-outline-variant">
+    <footer class="w-full py-12 px-margin-desktop flex flex-col md:flex-row justify-between items-center gap-gutter bg-surface">
         <div class="flex flex-col gap-4">
             <span class="font-label-lg text-label-lg font-bold text-deep-navy">FPT Polytechnic</span>
             <p class="font-body-sm text-body-sm text-text-muted">© {{ date('Y') }} FPT Polytechnic. All rights reserved.</p>

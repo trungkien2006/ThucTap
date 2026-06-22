@@ -121,10 +121,12 @@ class FrontendController extends Controller
             ->get();
 
         $media = $dbMedia->map(function ($m) {
+            $labelType = $m->type == 'video' ? 'Video' : 'Album';
             return [
                 'id' => $m->id,
                 'src' => Storage::url($m->url),
                 'type' => $m->type,
+                'label' => $labelType . ' · ' . ($m->event ? $m->event->title : 'Sự kiện'),
                 'title' => $m->caption ?: ($m->content ?: 'Khoảnh khắc sự kiện'),
                 'event_name' => $m->event ? $m->event->title : '',
                 'event_url' => $m->event ? route('events.show', $m->event->slug) : '#',
@@ -190,7 +192,6 @@ class FrontendController extends Controller
                 ]
             ];
         }
-
 
         return view('frontend.home', compact('categories', 'featuredEvents', 'upcoming', 'archive', 'media', 'stats', 'slides'));
     }

@@ -22,6 +22,7 @@
 <body class="frontend-body antialiased bg-paper text-ink relative" x-data="{ scrolled: false }" @scroll.window="scrolled = (window.pageYOffset > 40)">
     
     @php $isHome = request()->routeIs('home'); @endphp
+    <!-- Header -->
     <header 
         class="fixed inset-x-0 top-0 z-50 transition-all duration-500 {{ !$isHome ? 'backdrop-blur-xl border-b shadow-sm' : '' }}"
         {!! $isHome ? ":class=\"scrolled ? 'backdrop-blur-xl border-b shadow-sm' : 'bg-transparent'\"" : "" !!}
@@ -29,20 +30,22 @@
         {!! $isHome ? ":style=\"scrolled ? 'background:rgba(255,248,208,0.97);border-color:rgba(232,200,74,0.5);' : ''\"" : "" !!}
         x-data="{ mobileOpen: false, megaMenuOpen: false }"
     >
-        <div class="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-5 lg:px-10 relative">
+        <div class="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-5 lg:px-10">
             <a href="{{ route('home') }}#top" class="group flex items-center gap-2">
-                <span class="font-['Barlow_Condensed'] text-2xl font-black uppercase tracking-tight transition-colors {{ !$isHome ? 'text-[#1C1410]' : '' }}" {!! $isHome ? ":class=\"scrolled ? 'text-[#1C1410]' : 'text-white'\"" : "" !!}>
+                <span class="font-['Barlow'] text-2xl font-black uppercase tracking-tight transition-colors {{ !$isHome ? 'text-[#1C1410]' : '' }}" {!! $isHome ? ":class=\"scrolled ? 'text-[#1C1410]' : 'text-white'\"" : "" !!}>
                     Uni<span style="color:#E8C84A;">Event</span>
                 </span>
             </a>
 
-            <nav class="hidden items-center gap-2 lg:flex absolute left-1/2 -translate-x-1/2">
-                <a href="{{ route('home') }}#top" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-base font-semibold transition-colors {{ !$isHome ? 'text-[#7A6A52] hover:text-[#1C1410]' : '' }}" {!! $isHome ? ":class=\"scrolled ? 'text-[#7A6A52] hover:text-[#1C1410]' : 'text-white/80 hover:text-white'\"" : "" !!}>
+            <nav class="hidden items-center gap-1 lg:flex">
+                <a href="{{ route('home') }}#top" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-sm font-semibold transition-colors {{ !$isHome ? 'text-[#7A6A52] hover:text-[#1C1410]' : '' }}"
+                   {!! $isHome ? ":class=\"scrolled ? 'text-[#7A6A52] hover:text-[#1C1410]' : 'text-white/80 hover:text-white'\"" : "" !!}>
                     Trang chủ
                 </a>
                 
                 <div class="relative" @mouseenter="megaMenuOpen = true" @mouseleave="megaMenuOpen = false">
-                    <a href="{{ route('home') }}#events" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-base font-semibold transition-colors {{ !$isHome ? 'text-[#7A6A52] hover:text-[#1C1410]' : '' }}" {!! $isHome ? ":class=\"scrolled ? 'text-[#7A6A52] hover:text-[#1C1410]' : 'text-white/80 hover:text-white'\"" : "" !!}>
+                    <a href="{{ route('home') }}#events" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-sm font-semibold transition-colors {{ !$isHome ? 'text-[#7A6A52] hover:text-[#1C1410]' : '' }}"
+                       {!! $isHome ? ":class=\"scrolled ? 'text-[#7A6A52] hover:text-[#1C1410]' : 'text-white/80 hover:text-white'\"" : "" !!}>
                         Sự kiện
                         <span class="ml-0.5 inline-block h-2 w-2 rounded-full" style="background:#07A0C3;"></span>
                     </a>
@@ -81,17 +84,19 @@
                     </div>
                 </div>
 
-                <a href="{{ route('home') }}#archive" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-base font-semibold transition-colors {{ !$isHome ? 'text-[#7A6A52] hover:text-[#1C1410]' : '' }}" {!! $isHome ? ":class=\"scrolled ? 'text-[#7A6A52] hover:text-[#1C1410]' : 'text-white/80 hover:text-white'\"" : "" !!}>
+                <a href="{{ route('home') }}#archive" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-sm font-semibold transition-colors {{ !$isHome ? 'text-[#7A6A52] hover:text-[#1C1410]' : '' }}"
+                   {!! $isHome ? ":class=\"scrolled ? 'text-[#7A6A52] hover:text-[#1C1410]' : 'text-white/80 hover:text-white'\"" : "" !!}>
                     Kho lưu trữ
                 </a>
-                <a href="{{ route('home') }}#contact" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-base font-semibold transition-colors {{ !$isHome ? 'text-[#7A6A52] hover:text-[#1C1410]' : '' }}" {!! $isHome ? ":class=\"scrolled ? 'text-[#7A6A52] hover:text-[#1C1410]' : 'text-white/80 hover:text-white'\"" : "" !!}>
+                <a href="{{ route('home') }}#contact" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-sm font-semibold transition-colors {{ !$isHome ? 'text-[#7A6A52] hover:text-[#1C1410]' : '' }}"
+                   {!! $isHome ? ":class=\"scrolled ? 'text-[#7A6A52] hover:text-[#1C1410]' : 'text-white/80 hover:text-white'\"" : "" !!}>
                     Liên hệ
                 </a>
             </nav>
 
-            <div class="hidden lg:block ml-2">
+            <div class="hidden lg:block">
                 <a href="{{ route('home') }}#events"
-                   class="inline-flex items-center gap-2 rounded-full px-6 py-2.5 text-base font-bold text-[#1C1410] shadow-md transition-all hover:shadow-lg hover:scale-105"
+                   class="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold text-[#1C1410] shadow-md transition-all hover:shadow-lg hover:scale-105"
                    style="background:#FFE381;">
                     Khám phá sự kiện
                     <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
@@ -112,79 +117,129 @@
              x-transition:leave="transition ease-in duration-200"
              x-transition:leave-start="opacity-100 max-h-screen"
              x-transition:leave-end="opacity-0 max-h-0"
-             class="overflow-hidden lg:hidden border-b"
-             style="background:#FFF8D0;border-color:#E8C84A;display:none;">
-            <div class="space-y-1 px-6 py-4">
-                <a href="{{ route('home') }}#top" class="block py-3 text-base font-semibold text-[#1C1410]" @click="mobileOpen = false">Trang chủ</a>
-                <a href="{{ route('home') }}#events" class="block py-3 text-base font-semibold text-[#1C1410]" @click="mobileOpen = false">Sự kiện</a>
-                <a href="{{ route('home') }}#archive" class="block py-3 text-base font-semibold text-[#1C1410]" @click="mobileOpen = false">Kho lưu trữ</a>
-                <a href="{{ route('home') }}#contact" class="block py-3 text-base font-semibold text-[#1C1410]" @click="mobileOpen = false">Liên hệ</a>
-            </div>
+             class="lg:hidden overflow-hidden bg-white border-t border-gray-100"
+             style="display: none;">
+            <nav class="flex flex-col px-6 py-4 space-y-4">
+                <a href="{{ route('home') }}#top" class="text-lg font-medium text-[#1C1410] hover:text-[#07A0C3]" @click="mobileOpen = false">Trang chủ</a>
+                <a href="{{ route('home') }}#events" class="text-lg font-medium text-[#1C1410] hover:text-[#07A0C3]" @click="mobileOpen = false">Sự kiện</a>
+                <div class="pl-4 border-l-2 border-gray-100 flex flex-col gap-3">
+                    @if(isset($categories))
+                        @foreach($categories as $c)
+                            <a href="{{ isset($c['slug']) ? route('events.category', $c['slug']) : '#' }}" class="text-sm text-[#7A6A52] hover:text-[#07A0C3]" @click="mobileOpen = false">{{ $c['name'] }}</a>
+                        @endforeach
+                    @endif
+                </div>
+                <a href="{{ route('home') }}#archive" class="text-lg font-medium text-[#1C1410] hover:text-[#07A0C3]" @click="mobileOpen = false">Kho lưu trữ</a>
+                <a href="{{ route('home') }}#contact" class="text-lg font-medium text-[#1C1410] hover:text-[#07A0C3]" @click="mobileOpen = false">Liên hệ</a>
+            </nav>
         </div>
     </header>
 
-    <main>
+    <main class="w-full">
         @yield('content')
     </main>
 
-    <!-- Footer — ấm tối, Jasmine accent -->
-    <footer id="contact" class="relative text-white" style="background: linear-gradient(to top, rgba(45,31,10,0.95), rgba(45,31,10,0.85)), url('{{ asset('images/frontend/footer-bg.png') }}') bottom/cover no-repeat;">
-        <!-- Top border Jasmine -->
-        <div class="h-1.5" style="background:#FFE381;"></div>
-        <div class="mx-auto grid max-w-[1400px] grid-cols-1 gap-12 px-6 pt-32 pb-24 lg:grid-cols-4 lg:px-10">
-            <div class="lg:col-span-2">
-                <div class="font-['Barlow_Condensed'] text-4xl font-black uppercase">
-                    Uni<span style="color:#FFE381;">Event</span>
+    <!-- Footer -->
+    <footer class="relative bg-[#1C1410] pt-24 pb-12 overflow-hidden">
+        <div class="absolute inset-0 z-0 opacity-20 pointer-events-none" style="background-image:url('{{ asset('images/frontend/footer-bg.png') }}'); background-size: cover; background-position: center;"></div>
+        <div class="mx-auto max-w-[1400px] px-6 lg:px-10 relative z-10">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-16">
+                <!-- Brand Info -->
+                <div class="lg:col-span-1">
+                    <a href="{{ route('home') }}#top" class="inline-block mb-6">
+                        <span class="font-['Barlow'] text-3xl font-black uppercase tracking-tight text-white">
+                            Uni<span style="color:#E8C84A;">Event</span>
+                        </span>
+                    </a>
+                    <p class="text-white/60 text-sm leading-relaxed mb-6 max-w-xs">
+                        Nền tảng quản lý và trải nghiệm sự kiện học đường hàng đầu, kết nối sinh viên và kiến tạo kỷ niệm đáng nhớ.
+                    </p>
+                    <div class="flex items-center gap-4">
+                        <a href="#" class="w-10 h-10 rounded-full flex items-center justify-center bg-white/5 hover:bg-[#E8C84A] hover:text-[#1C1410] text-white transition-all">
+                            <i data-lucide="facebook" class="w-5 h-5"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full flex items-center justify-center bg-white/5 hover:bg-[#E8C84A] hover:text-[#1C1410] text-white transition-all">
+                            <i data-lucide="instagram" class="w-5 h-5"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full flex items-center justify-center bg-white/5 hover:bg-[#E8C84A] hover:text-[#1C1410] text-white transition-all">
+                            <i data-lucide="youtube" class="w-5 h-5"></i>
+                        </a>
+                    </div>
                 </div>
-                <p class="mt-4 max-w-sm text-sm" style="color:rgba(255,227,129,0.55);">
-                    Nền tảng sự kiện học đường — nơi mỗi khoảnh khắc trở thành một ký ức điện ảnh.
+
+                <!-- Quick Links -->
+                <div>
+                    <h4 class="text-white font-bold mb-6 text-lg tracking-wide uppercase font-['Barlow']">Khám Phá</h4>
+                    <ul class="space-y-4">
+                        <li><a href="{{ route('home') }}#events" class="text-white/60 hover:text-[#E8C84A] text-sm transition-colors flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4"></i> Sự kiện nổi bật</a></li>
+                        <li><a href="{{ route('home') }}#archive" class="text-white/60 hover:text-[#E8C84A] text-sm transition-colors flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4"></i> Kho lưu trữ</a></li>
+                        <li><a href="#" class="text-white/60 hover:text-[#E8C84A] text-sm transition-colors flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4"></i> Hướng dẫn tham gia</a></li>
+                        <li><a href="#" class="text-white/60 hover:text-[#E8C84A] text-sm transition-colors flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4"></i> Câu hỏi thường gặp</a></li>
+                    </ul>
+                </div>
+
+                <!-- Categories -->
+                <div>
+                    <h4 class="text-white font-bold mb-6 text-lg tracking-wide uppercase font-['Barlow']">Danh Mục</h4>
+                    <ul class="space-y-4">
+                        @if(isset($categories) && count($categories) > 0)
+                            @foreach(array_slice($categories, 0, 4) as $c)
+                            <li><a href="{{ isset($c['slug']) ? route('events.category', $c['slug']) : '#' }}" class="text-white/60 hover:text-[#E8C84A] text-sm transition-colors flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4"></i> {{ $c['name'] }}</a></li>
+                            @endforeach
+                        @else
+                            <li><a href="#" class="text-white/60 hover:text-[#E8C84A] text-sm transition-colors flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4"></i> Workshop</a></li>
+                            <li><a href="#" class="text-white/60 hover:text-[#E8C84A] text-sm transition-colors flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4"></i> Hội thảo</a></li>
+                            <li><a href="#" class="text-white/60 hover:text-[#E8C84A] text-sm transition-colors flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4"></i> Thể thao</a></li>
+                            <li><a href="#" class="text-white/60 hover:text-[#E8C84A] text-sm transition-colors flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4"></i> Văn hóa nghệ thuật</a></li>
+                        @endif
+                    </ul>
+                </div>
+
+                <!-- Contact -->
+                <div id="contact">
+                    <h4 class="text-white font-bold mb-6 text-lg tracking-wide uppercase font-['Barlow']">Liên Hệ</h4>
+                    <ul class="space-y-4">
+                        <li class="flex items-start gap-3">
+                            <i data-lucide="map-pin" class="w-5 h-5 text-[#E8C84A] shrink-0 mt-0.5"></i>
+                            <span class="text-white/60 text-sm leading-relaxed">Văn phòng Đoàn Thanh niên - Hội Sinh viên, Tòa nhà Trung tâm</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i data-lucide="phone" class="w-5 h-5 text-[#E8C84A] shrink-0"></i>
+                            <a href="tel:0123456789" class="text-white/60 hover:text-white text-sm transition-colors">0123.456.789</a>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i data-lucide="mail" class="w-5 h-5 text-[#E8C84A] shrink-0"></i>
+                            <a href="mailto:contact@unievent.edu.vn" class="text-white/60 hover:text-white text-sm transition-colors">contact@unievent.edu.vn</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-white/40 text-sm">
+                    &copy; 2026 UniEvent. Bản quyền thuộc về CLB Tin học - Đoàn Thanh niên.
                 </p>
-            </div>
-
-            <div>
-                <div class="text-xs font-bold uppercase tracking-[0.3em]" style="color:#FFE381;">Liên hệ</div>
-                <ul class="mt-4 space-y-3 text-sm" style="color:rgba(255,255,255,0.65);">
-                    <li class="flex items-center gap-3"><i data-lucide="mail" class="h-4 w-4" style="color:#07A0C3;"></i> hello@unievent.vn</li>
-                    <li class="flex items-center gap-3"><i data-lucide="phone" class="h-4 w-4" style="color:#07A0C3;"></i> +84 28 3823 4567</li>
-                    <li class="flex items-center gap-3"><i data-lucide="map-pin" class="h-4 w-4" style="color:#07A0C3;"></i> 268 Lý Thường Kiệt, Q.10, TP.HCM</li>
-                </ul>
-            </div>
-
-            <div>
-                <div class="text-xs font-bold uppercase tracking-[0.3em]" style="color:#FFE381;">Mạng xã hội</div>
-                <div class="mt-4 flex gap-3">
-                    <a href="#" class="grid h-10 w-10 place-items-center rounded-full transition-colors"
-                       style="background:rgba(255,227,129,0.12);" onmouseover="this.style.background='#FFE381';this.style.color='#1C1410'" onmouseout="this.style.background='rgba(255,227,129,0.12)';this.style.color='white'">
-                        <i data-lucide="instagram" class="h-4 w-4"></i>
-                    </a>
-                    <a href="#" class="grid h-10 w-10 place-items-center rounded-full transition-colors"
-                       style="background:rgba(255,227,129,0.12);" onmouseover="this.style.background='#07A0C3';" onmouseout="this.style.background='rgba(255,227,129,0.12)';">
-                        <i data-lucide="facebook" class="h-4 w-4"></i>
-                    </a>
-                    <a href="#" class="grid h-10 w-10 place-items-center rounded-full transition-colors"
-                       style="background:rgba(255,227,129,0.12);" onmouseover="this.style.background='#04F06A';this.style.color='#1C1410'" onmouseout="this.style.background='rgba(255,227,129,0.12)';this.style.color='white'">
-                        <i data-lucide="youtube" class="h-4 w-4"></i>
-                    </a>
+                <div class="flex items-center gap-6">
+                    <a href="#" class="text-white/40 hover:text-white text-sm transition-colors">Điều khoản</a>
+                    <a href="#" class="text-white/40 hover:text-white text-sm transition-colors">Bảo mật</a>
                 </div>
             </div>
-        </div>
-        <div class="border-t py-6 text-center text-xs" style="border-color:rgba(255,227,129,0.15);color:rgba(255,227,129,0.35);">
-            © 2026 UniEvent. All rights reserved.
         </div>
     </footer>
 
-    <!-- AOS Script -->
+    <!-- Initialize AOS -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             lucide.createIcons();
             AOS.init({
-                duration: 900,
                 once: true,
                 offset: 50,
-                easing: 'ease-out-cubic'
+                duration: 800,
+                easing: 'ease-out-cubic',
             });
         });
     </script>
+    @stack('scripts')
 </body>
 </html>

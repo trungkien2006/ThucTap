@@ -13,30 +13,15 @@ class EventMedia extends Model
 
     protected $guarded = [];
 
-    protected $appends = ['document_url', 'action_url', 'document_name'];
-
-    public function getContentAttribute($value)
+    protected static function boot()
     {
-        $data = json_decode($value, true);
-        return is_array($data) && isset($data['text']) ? $data['text'] : $value;
-    }
+        parent::boot();
 
-    public function getDocumentUrlAttribute()
-    {
-        $data = json_decode($this->attributes['content'] ?? '', true);
-        return is_array($data) ? ($data['document_url'] ?? null) : null;
-    }
-
-    public function getActionUrlAttribute()
-    {
-        $data = json_decode($this->attributes['content'] ?? '', true);
-        return is_array($data) ? ($data['action_url'] ?? null) : null;
-    }
-
-    public function getDocumentNameAttribute()
-    {
-        $data = json_decode($this->attributes['content'] ?? '', true);
-        return is_array($data) ? ($data['document_name'] ?? null) : null;
+        static::creating(function ($model) {
+            if (!$model->created_at) {
+                $model->created_at = now();
+            }
+        });
     }
 
     protected function casts(): array

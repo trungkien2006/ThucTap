@@ -1,275 +1,275 @@
 @extends('layouts.app')
-
-@section('content')
 @php
-    $totalViews = \App\Models\Event::sum('views_count') ?? 0;
-    $totalLikes = \App\Models\Event::sum('likes_count') ?? 0;
-    $totalEvents = \App\Models\Event::count();
-    $activeEvents = \App\Models\Event::where('event_date', '>=', now())->count();
-    $livePages = \App\Models\Event::where('is_published', true)->count();
-    $archivedEvents = \App\Models\Event::where('event_date', '<', now())->count();
-    $totalSpeakers = \App\Models\Speaker::count();
-    $totalMediaSize = \App\Models\EventMedia::count();
-    $totalDocuments = \App\Models\EventDocument::count();
+    $pageTitle = 'Events';
+    $breadcrumbs = [['label' => 'Events']];
 @endphp
 
-<!-- Page Header -->
-<div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
-    <div>
-        <h1 class="text-[28px] font-bold text-primary font-heading leading-tight">
-            Xin chào, {{ Auth::user()->name }} 👋
-        </h1>
-        <p class="text-[14px] text-slate-400 mt-1">Tổng quan về các sự kiện và hoạt động của bạn.</p>
-    </div>
-    <a href="{{ route('admin.events.create') }}" class="btn-orange flex items-center gap-2 w-fit">
-        <span class="material-symbols-outlined text-[18px]">add</span>
-        Tạo sự kiện mới
-    </a>
-</div>
-
-<!-- Primary Stats -->
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-    <!-- Total Views -->
-    <div class="stat-card border-l-4 border-brand-orange">
-        <div class="flex justify-between items-start">
-            <div class="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center text-brand-orange">
-                <span class="material-symbols-outlined text-[22px]">visibility</span>
-            </div>
-        </div>
-        <div class="mt-5">
-            <p class="stat-label">Tổng lượt xem</p>
-            <p class="stat-value">{{ number_format($totalViews) }}</p>
-        </div>
-    </div>
-
-    <!-- Active Events -->
-    <div class="stat-card border-l-4 border-emerald-400">
-        <div class="flex justify-between items-start">
-            <div class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-500">
-                <span class="material-symbols-outlined text-[22px]">event_available</span>
-            </div>
-        </div>
-        <div class="mt-5">
-            <p class="stat-label">Sự kiện đang hoạt động</p>
-            <p class="stat-value">{{ $activeEvents }}</p>
-        </div>
-    </div>
-
-    <!-- Published Events -->
-    <div class="stat-card border-l-4 border-blue-400">
-        <div class="flex justify-between items-start">
-            <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500">
-                <span class="material-symbols-outlined text-[22px]">sensors</span>
-            </div>
-            <span class="flex items-center gap-1.5">
-                <span class="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span class="text-emerald-500 text-[10px] font-bold uppercase">Live</span>
-            </span>
-        </div>
-        <div class="mt-5">
-            <p class="stat-label">Đã xuất bản</p>
-            <p class="stat-value">{{ $livePages }}</p>
-        </div>
-    </div>
-
-    <!-- Checked In -->
-    <div class="stat-card border-l-4 border-purple-400">
-        <div class="flex justify-between items-start">
-            <div class="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center text-purple-500">
-                <span class="material-symbols-outlined text-[22px]">favorite</span>
-            </div>
-        </div>
-        <div class="mt-5">
-            <p class="stat-label">Tổng lượt thích</p>
-            <p class="stat-value">{{ number_format($totalLikes) }}</p>
-        </div>
-    </div>
-</div>
-
-<!-- See More Stats (collapsed) -->
-<div id="moreStatsSection" class="hidden mb-8">
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
-        <!-- Archived Events -->
-        <div class="stat-card border-l-4 border-slate-300">
-            <div class="flex justify-between items-start">
-                <div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400">
-                    <span class="material-symbols-outlined text-[22px]">archive</span>
-                </div>
-            </div>
-            <div class="mt-5">
-                <p class="stat-label">Sự kiện đã qua</p>
-                <p class="stat-value text-slate-500">{{ $archivedEvents }}</p>
-            </div>
-        </div>
-
-        <!-- Total Media -->
-        <div class="stat-card border-l-4 border-indigo-300">
-            <div class="flex justify-between items-start">
-                <div class="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-500">
-                    <span class="material-symbols-outlined text-[22px]">perm_media</span>
-                </div>
-            </div>
-            <div class="mt-5">
-                <p class="stat-label">Tổng Media & Tài liệu</p>
-                <p class="stat-value text-indigo-600">{{ $totalMediaSize + $totalDocuments }}</p>
-            </div>
-        </div>
-
-        <!-- Total Speakers -->
-        <div class="stat-card border-l-4 border-teal-300">
-            <div class="flex justify-between items-start">
-                <div class="w-10 h-10 rounded-xl bg-teal-50 flex items-center justify-center text-teal-500">
-                    <span class="material-symbols-outlined text-[22px]">record_voice_over</span>
-                </div>
-            </div>
-            <div class="mt-5">
-                <p class="stat-label">Diễn giả được mời</p>
-                <p class="stat-value text-teal-600">{{ $totalSpeakers }}</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="flex justify-center mb-8">
-    <button onclick="toggleMoreStats()" id="moreStatsBtn" class="btn-ghost flex items-center gap-1.5 text-[12px]">
-        <span class="material-symbols-outlined text-[16px]">expand_more</span>
-        <span id="moreStatsBtnText">Xem thêm thống kê</span>
-    </button>
-</div>
-
-<!-- Recent Events Table -->
-<section class="uni-card overflow-hidden">
-    <div class="px-6 py-5 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+@section('content')
+<div class="space-y-4">
+    {{-- Page Header --}}
+    <div class="flex items-end justify-between flex-wrap gap-3">
         <div>
-            <h3 class="text-[16px] font-bold text-primary font-heading flex items-center gap-2">
-                <span class="w-1 h-5 bg-primary rounded-full"></span>
-                Sự kiện gần đây
-            </h3>
-            <p class="text-[12px] text-slate-400 mt-0.5">Quản lý và theo dõi các sự kiện của bạn</p>
+            <h1 class="text-[22px] font-semibold tracking-tight">Sự kiện</h1>
+            <p class="text-xs text-muted-foreground mt-0.5">Quản lý tất cả sự kiện theo khoa và học kỳ</p>
         </div>
-        <div class="flex gap-2">
-            <a href="{{ route('admin.events.create') }}" class="btn-primary flex items-center gap-1.5 text-[12px] py-2 px-3">
-                <span class="material-symbols-outlined text-[16px]">add</span>
-                Tạo mới
+        <div class="flex items-center gap-2">
+            <a href="{{ route('admin.events.create') }}" class="inline-flex items-center gap-1.5 h-11 px-5 text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl transition-all shadow-sm">
+                <i data-lucide="plus" class="h-5 w-5"></i> Sự kiện mới
             </a>
         </div>
     </div>
 
-    <div class="overflow-x-auto">
-        <table class="w-full text-left uni-table">
-            <thead>
-                <tr>
-                    <th>Sự kiện</th>
-                    <th>Ngày</th>
-                    <th>Trạng thái</th>
-                    <th>Tương tác</th>
-                    <th class="text-right">Thao tác</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($events as $event)
-                <tr>
-                    <td>
-                        <div class="flex items-center gap-3.5">
-                            <div class="w-11 h-11 rounded-xl bg-slate-50 flex items-center justify-center overflow-hidden shrink-0 border border-slate-100">
-                                @if($event->bannerImage)
-                                    <img src="{{ Storage::url($event->bannerImage->url) }}" alt="{{ $event->title }}" class="w-full h-full object-cover">
-                                @else
-                                    <span class="material-symbols-outlined text-slate-300 text-[20px]">image</span>
-                                @endif
-                            </div>
-                            <div>
-                                <a href="{{ route('admin.events.show', $event) }}" class="text-[13px] font-semibold text-primary hover:text-brand-orange transition-colors">{{ $event->title }}</a>
-                                <p class="text-[11px] text-slate-400 mt-0.5">{{ Str::limit($event->location, 35) }}</p>
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <p class="text-[13px] text-primary font-medium">{{ $event->event_date->format('d/m/Y') }}</p>
-                        <p class="text-[11px] text-slate-400">{{ $event->event_date->format('H:i') }}</p>
-                    </td>
-                    <td>
-                        @if($event->status == 'published')
-                            <span class="badge-success flex items-center gap-1 w-fit">
-                                <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
-                                Đã xuất bản
-                            </span>
-                        @else
-                            <span class="badge-draft">Bản nháp</span>
+    {{-- Filters Card --}}
+    @php
+        // Build combined year+semester options from events
+        $semestersMap = ['1' => 'fall', '2' => 'spring', '3' => 'summer'];
+        $selectedYearSemesters = array_filter(is_array(request('year_semester')) ? request('year_semester') : [request('year_semester')]);
+        $selectedCategories = array_filter(is_array(request('category_id')) ? request('category_id') : [request('category_id')]);
+        $selectedDepartments = array_filter(is_array(request('department_id')) ? request('department_id') : [request('department_id')]);
+
+        // Build combined year_semester options from distinct event combos
+        $yearSemesterOptions = \App\Models\Event::select('academic_year', 'semester')
+            ->whereNotNull('academic_year')
+            ->whereNotNull('semester')
+            ->distinct()
+            ->orderBy('academic_year', 'desc')
+            ->orderBy('semester')
+            ->get()
+            ->map(function ($e) use ($semestersMap) {
+                $semLabel = $semestersMap[$e->semester] ?? 'HK' . $e->semester;
+                return [
+                    'value' => $e->semester . '_' . $e->academic_year,
+                    'label' => $semLabel . ' ' . $e->academic_year,
+                ];
+            });
+    @endphp
+    <div class="bg-card rounded-lg border border-border p-4 shadow-none flex flex-col gap-4">
+        <form method="GET" action="{{ route('admin.events.index') }}" id="filterForm" class="space-y-3 w-full">
+            @foreach($selectedYearSemesters as $ys)
+                <input type="hidden" name="year_semester[]" value="{{ $ys }}" class="filter-input-year_semester">
+            @endforeach
+            @foreach($selectedCategories as $c)
+                <input type="hidden" name="category_id[]" value="{{ $c }}" class="filter-input-category_id">
+            @endforeach
+            @foreach($selectedDepartments as $d)
+                <input type="hidden" name="department_id[]" value="{{ $d }}" class="filter-input-department_id">
+            @endforeach
+
+            <div class="flex flex-wrap items-center gap-2 w-full">
+                <div class="relative flex-1 min-w-[220px]">
+                    <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground"></i>
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Tìm kiếm theo tên, ID, địa điểm…" class="h-9 w-full rounded-lg border border-input pl-10 text-sm bg-background focus:outline-none focus:border-ring transition-all">
+                </div>
+
+                <button type="submit" class="inline-flex items-center justify-center rounded-lg text-xs font-medium bg-primary text-primary-foreground h-9 px-3 hover:bg-primary/90 transition-all gap-1">
+                    <i data-lucide="search" class="h-3.5 w-3.5"></i> Tìm
+                </button>
+
+                @if(request('search') || count($selectedYearSemesters) > 0 || count($selectedCategories) > 0 || count($selectedDepartments) > 0)
+                    <a href="{{ route('admin.events.index') }}" class="inline-flex items-center justify-center rounded-lg text-xs font-medium border border-input bg-background h-9 px-3 hover:bg-accent transition-all gap-1">
+                        <i data-lucide="x" class="h-3.5 w-3.5"></i> Xóa lọc
+                    </a>
+                @endif
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2">
+                <select onchange="addFilterTag('year_semester', this)" class="h-9 min-w-[220px] border border-input rounded-lg text-xs bg-background px-2.5 focus:outline-none focus:border-ring transition-all text-muted-foreground cursor-pointer">
+                    <option value="">+ Năm học & Học kỳ</option>
+                    @foreach($yearSemesterOptions as $opt)
+                        @if(!in_array($opt['value'], $selectedYearSemesters))
+                            <option value="{{ $opt['value'] }}">{{ $opt['label'] }}</option>
                         @endif
-                    </td>
-                    <td>
-                        <div class="flex items-center gap-3">
-                            <span class="flex items-center gap-1 text-[12px] font-semibold text-slate-600">
-                                <span class="material-symbols-outlined text-[14px]">visibility</span>
-                                {{ number_format($event->views_count ?? 0) }}
-                            </span>
-                            <span class="flex items-center gap-1 text-[12px] font-semibold text-slate-600">
-                                <span class="material-symbols-outlined text-[14px]">favorite</span>
-                                {{ number_format($event->likes_count ?? 0) }}
-                            </span>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="flex items-center justify-end gap-1">
-                            <a href="{{ route('admin.events.show', $event) }}" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:bg-slate-50 hover:text-brand-orange transition-all" title="Xem chi tiết">
-                                <span class="material-symbols-outlined text-[18px]">visibility</span>
+                    @endforeach
+                </select>
+
+                <select onchange="addFilterTag('category_id', this)" class="h-9 min-w-[180px] border border-input rounded-lg text-xs bg-background px-2.5 focus:outline-none focus:border-ring transition-all text-muted-foreground cursor-pointer">
+                    <option value="">+ Danh mục</option>
+                    @foreach($categories as $cat)
+                        @if(!in_array($cat->id, $selectedCategories))
+                            <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                        @endif
+                    @endforeach
+                </select>
+
+                <select onchange="addFilterTag('department_id', this)" class="h-9 min-w-[180px] border border-input rounded-lg text-xs bg-background px-2.5 focus:outline-none focus:border-ring transition-all text-muted-foreground cursor-pointer">
+                    <option value="">+ Khoa</option>
+                    @foreach($departments as $dept)
+                        @if(!in_array($dept->id, $selectedDepartments))
+                            <option value="{{ $dept->id }}">{{ $dept->name }}</option>
+                        @endif
+                    @endforeach
+                </select>
+            </div>
+
+            {{-- Render Active Tags --}}
+            @if(count($selectedYearSemesters) > 0 || count($selectedCategories) > 0 || count($selectedDepartments) > 0)
+                <div class="flex flex-wrap items-center gap-1.5 pt-2 border-t border-border/50">
+                    <span class="text-[11px] font-semibold text-muted-foreground mr-1">Bộ lọc đang chọn:</span>
+
+                    @foreach($selectedYearSemesters as $ys)
+                        @php
+                            $parts = explode('_', $ys, 2);
+                            $semVal = $parts[0] ?? '';
+                            $yearVal = $parts[1] ?? '';
+                            $semLabel = $semestersMap[$semVal] ?? 'HK'.$semVal;
+                            $ysLabel = $semLabel . ' ' . $yearVal;
+                        @endphp
+                        <span class="inline-flex items-center gap-1 bg-primary/10 text-primary border border-primary/20 rounded-lg px-2.5 py-1 text-xs font-medium">
+                            {{ $ysLabel }}
+                            <button type="button" onclick="removeFilterTag('year_semester', '{{ $ys }}')" class="hover:text-destructive transition-colors ml-0.5">
+                                <i data-lucide="x" class="h-3 w-3"></i>
+                            </button>
+                        </span>
+                    @endforeach
+
+                    @foreach($selectedCategories as $c)
+                        @php $catModel = $categories->firstWhere('id', $c); @endphp
+                        <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-600 border border-emerald-200 rounded-lg px-2.5 py-1 text-xs font-medium">
+                            Danh mục: {{ $catModel->name ?? $c }}
+                            <button type="button" onclick="removeFilterTag('category_id', '{{ $c }}')" class="hover:text-destructive transition-colors ml-0.5">
+                                <i data-lucide="x" class="h-3 w-3"></i>
+                            </button>
+                        </span>
+                    @endforeach
+
+                    @foreach($selectedDepartments as $d)
+                        @php $deptModel = $departments->firstWhere('id', $d); @endphp
+                        <span class="inline-flex items-center gap-1 bg-amber-50 text-amber-600 border border-amber-200 rounded-lg px-2.5 py-1 text-xs font-medium">
+                            Khoa: {{ $deptModel->name ?? $d }}
+                            <button type="button" onclick="removeFilterTag('department_id', '{{ $d }}')" class="hover:text-destructive transition-colors ml-0.5">
+                                <i data-lucide="x" class="h-3 w-3"></i>
+                            </button>
+                        </span>
+                    @endforeach
+                </div>
+            @endif
+        </form>
+    </div>
+
+    {{-- Events Table --}}
+    <div class="bg-card rounded-lg border border-border overflow-hidden shadow-none">
+        <div class="flex items-center justify-between px-3 py-2 border-b border-border bg-muted/30">
+            <span class="text-xs text-muted-foreground font-medium">Tổng số: {{ $events->total() }} sự kiện</span>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-xs">
+                <thead class="bg-muted/40 text-[11px] uppercase tracking-wide text-muted-foreground sticky top-0">
+                    <tr>
+                        <th class="text-left px-4 py-2 font-medium">Sự kiện</th>
+                        <th class="text-left px-3 py-2 font-medium">Danh mục</th>
+                        <th class="text-left px-3 py-2 font-medium">Khoa</th>
+                        <th class="text-left px-3 py-2 font-medium">Học kỳ - Năm học</th>
+                        <th class="text-left px-3 py-2 font-medium">Địa điểm</th>
+                        <th class="text-left px-3 py-2 font-medium">Ngày diễn ra</th>
+                        <th class="text-left px-3 py-2 font-medium">Trạng thái</th>
+                        <th class="w-10 px-3 py-2"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($events as $event)
+                    @php
+                        $semesterName = $event->semester == 1 ? 'fall' : ($event->semester == 2 ? 'spring' : 'summer');
+                        $yearStr = $event->academic_year ?? '2024-2025';
+                    @endphp
+                    <tr class="border-t border-border hover:bg-muted/20">
+                        <td class="px-4 py-2.5">
+                            <a href="{{ route('admin.events.show', $event) }}" class="font-medium truncate block hover:text-primary transition-colors">{{ $event->title }}</a>
+                        </td>
+                        <td class="px-3 py-2.5">
+                            <span class="inline-flex items-center h-5 px-1.5 rounded text-[10px] font-medium border border-border bg-background">{{ $event->category?->name ?? '—' }}</span>
+                        </td>
+                        <td class="px-3 py-2.5 text-muted-foreground">{{ $event->department?->name ?? '—' }}</td>
+                        <td class="px-3 py-2.5 whitespace-nowrap text-muted-foreground">
+                            {{ $semesterName . ' ' . $yearStr }}
+                        </td>
+                        <td class="px-3 py-2.5 text-muted-foreground max-w-[180px] truncate" title="{{ $event->location ?? '—' }}">{{ $event->location ?? '—' }}</td>
+                        <td class="px-3 py-2.5 tabular-nums whitespace-nowrap">{{ $event->event_date->format('Y-m-d') }}</td>
+                        <td class="px-3 py-2.5">
+                            @if($event->is_published)
+                                <span class="inline-flex items-center h-5 px-1.5 rounded text-[10px] font-medium bg-emerald-100 text-emerald-700">Đã xuất bản</span>
+                            @else
+                                <span class="inline-flex items-center h-5 px-1.5 rounded text-[10px] font-medium bg-blue-100 text-blue-700">Sắp diễn ra</span>
+                            @endif
+                        </td>
+                        <td class="px-3 py-2.5">
+                            <div class="flex items-center justify-end gap-1">
+                                <a href="{{ route('admin.events.show', $event) }}" class="h-9 w-9 rounded-lg flex items-center justify-center text-muted-foreground hover:bg-accent hover:text-foreground transition-all" title="Xem">
+                                    <i data-lucide="eye" class="h-4 w-4"></i>
+                                </a>
+                                <a href="{{ route('admin.events.edit', $event) }}" class="h-9 w-9 rounded-lg flex items-center justify-center text-muted-foreground hover:bg-accent hover:text-foreground transition-all" title="Sửa">
+                                    <i data-lucide="pencil" class="h-4 w-4"></i>
+                                </a>
+                                <form action="{{ route('admin.events.archive', $event) }}" method="POST" class="inline" onsubmit="return confirm('Bạn có chắc chắn muốn lưu trữ sự kiện này?');">
+                                    @csrf
+                                    <button type="submit" class="h-9 w-9 rounded-lg flex items-center justify-center text-muted-foreground hover:bg-accent hover:text-foreground transition-all" title="Lưu trữ">
+                                        <i data-lucide="archive" class="h-4 w-4"></i>
+                                    </button>
+                                </form>
+                                <form action="{{ route('admin.events.destroy', $event) }}" method="POST" class="inline" onsubmit="return confirm('Xóa sự kiện này?');">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="h-9 w-9 rounded-lg flex items-center justify-center text-muted-foreground hover:bg-red-50 hover:text-red-500 transition-all" title="Xóa">
+                                        <i data-lucide="trash-2" class="h-4 w-4"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="8" class="px-4 py-12 text-center">
+                            <i data-lucide="calendar-x" class="h-10 w-10 text-muted-foreground/30 mx-auto mb-3"></i>
+                            <p class="text-sm text-muted-foreground mb-4">Chưa có sự kiện nào.</p>
+                            <a href="{{ route('admin.events.create') }}" class="inline-flex items-center gap-1.5 h-11 px-5 text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl transition-all">
+                                <i data-lucide="plus" class="h-5 w-5"></i> Tạo sự kiện đầu tiên
                             </a>
-                            <a href="{{ route('admin.events.edit', $event) }}" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:bg-slate-50 hover:text-primary transition-all" title="Chỉnh sửa">
-                                <span class="material-symbols-outlined text-[18px]">edit</span>
-                            </a>
-                            <form action="{{ route('admin.events.destroy', $event) }}" method="POST" class="inline" onsubmit="return confirm('Bạn có chắc muốn xóa sự kiện này?');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:bg-red-50 hover:text-red-500 transition-all" title="Xóa">
-                                    <span class="material-symbols-outlined text-[18px]">delete</span>
-                                </button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+        @if($events->hasPages())
+        <div class="flex items-center justify-between px-4 py-3 border-t border-border text-xs text-muted-foreground">
+            <span>Hiển thị {{ $events->firstItem() }}–{{ $events->lastItem() }} trên {{ $events->total() }}</span>
+            <div class="flex items-center gap-1">
+                {{ $events->links() }}
+            </div>
+        </div>
+        @endif
     </div>
-
-    @if($events->hasPages())
-    <div class="p-5 border-t border-slate-100">
-        {{ $events->links() }}
-    </div>
-    @endif
-
-    @if($events->count() == 0)
-    <div class="p-16 text-center">
-        <span class="material-symbols-outlined text-[48px] text-slate-200 mb-3">event_busy</span>
-        <p class="text-[14px] text-slate-400 mb-4">Chưa có sự kiện nào. Hãy tạo sự kiện đầu tiên!</p>
-        <a href="{{ route('admin.events.create') }}" class="btn-orange inline-flex items-center gap-2">
-            <span class="material-symbols-outlined text-[18px]">add</span>
-            Tạo sự kiện mới
-        </a>
-    </div>
-    @endif
-</section>
-
+</div>
 @endsection
 
 @push('scripts')
 <script>
-function toggleMoreStats() {
-    const section = document.getElementById('moreStatsSection');
-    const btn = document.getElementById('moreStatsBtn');
-    const btnText = document.getElementById('moreStatsBtnText');
-    const icon = btn.querySelector('.material-symbols-outlined');
+    function addFilterTag(name, selectElement) {
+        const val = selectElement.value;
+        if (!val) return;
 
-    if (section.classList.contains('hidden')) {
-        section.classList.remove('hidden');
-        btnText.textContent = 'Ẩn bớt';
-        icon.textContent = 'expand_less';
-    } else {
-        section.classList.add('hidden');
-        btnText.textContent = 'Xem thêm thống kê';
-        icon.textContent = 'expand_more';
+        const form = document.getElementById('filterForm');
+
+        // Add new hidden input
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = `${name}[]`;
+        input.value = val;
+        input.className = `filter-input-${name}`;
+        form.appendChild(input);
+
+        // Submit form
+        form.submit();
     }
-}
+
+    function removeFilterTag(name, value) {
+        const inputs = document.querySelectorAll(`.filter-input-${name}`);
+        inputs.forEach(input => {
+            if (input.value == value) {
+                input.remove();
+            }
+        });
+
+        // Submit form
+        document.getElementById('filterForm').submit();
+    }
 </script>
 @endpush

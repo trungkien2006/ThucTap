@@ -11,11 +11,24 @@ class FrontendController extends Controller
 {
     public function home()
     {
-        $dbCategories = \App\Models\Category::where('type', 'event_type')->get();
-        $categories = $dbCategories->map(function ($c) {
+        $dbCategories = \App\Models\Category::where('type', 'event_type')
+            ->where('name', '!=', 'Other')
+            ->get();
+
+        $vietnameseNames = [
+            'Conference' => 'Hội nghị',
+            'Workshop' => 'Hội thảo thực hành',
+            'Seminar' => 'Hội thảo chuyên đề',
+            'Cultural' => 'Văn hóa nghệ thuật',
+            'Sports' => 'Thể thao',
+            'Orientation' => 'Định hướng'
+        ];
+
+        $categories = $dbCategories->map(function ($c) use ($vietnameseNames) {
             return [
                 'name' => $c->name,
-                'desc' => 'Khám phá sự kiện'
+                'slug' => $c->slug,
+                'desc' => $vietnameseNames[$c->name] ?? 'Sự kiện'
             ];
         })->toArray();
 
@@ -31,6 +44,7 @@ class FrontendController extends Controller
                 'title'    => $event->title,
                 'date'     => $event->event_date->format('d.m.Y'),
                 'location' => $event->location ?? 'Đang cập nhật',
+                'summary'  => Str::limit(strip_tags($event->description), 100),
                 'category' => $event->category ? $event->category->name : 'Sự kiện',
                 'img'      => $event->bannerImage ? Storage::url($event->bannerImage->url) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80',
             ];
@@ -54,12 +68,13 @@ class FrontendController extends Controller
                 $images[] = 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80';
             }
             return [
-                'slug'   => $event->slug,
-                'name'   => $event->title,
-                'date'   => $event->event_date->format('d M'),
-                'status' => 'Sắp mở',
-                'open'   => true,
-                'images' => array_values($images),
+                'slug'    => $event->slug,
+                'name'    => $event->title,
+                'date'    => $event->event_date->format('d M'),
+                'summary' => Str::limit(strip_tags($event->description), 80),
+                'status'  => 'Sắp mở',
+                'open'    => true,
+                'images'  => array_values($images),
             ];
         })->toArray();
 
@@ -178,5 +193,80 @@ class FrontendController extends Controller
 
 
         return view('frontend.home', compact('categories', 'featuredEvents', 'upcoming', 'archive', 'media', 'stats', 'slides'));
+    }
+
+    public function category($slug)
+    {
+        $category = \App\Models\Category::where('slug', $slug)->firstOrFail();
+
+        // Get categories for navigation menu
+        $dbCategories = \App\Models\Category::where('type', 'event_type')
+            ->where('name', '!=', 'Other')
+            ->get();
+        $vietnameseNames = [
+            'Conference' => 'Hội nghị',
+            'Workshop' => 'Hội thảo thực hành',
+            'Seminar' => 'Hội thảo chuyên đề',
+            'Cultural' => 'Văn hóa nghệ thuật',
+            'Sports' => 'Thể thao',
+            'Orientation' => 'Định hướng'
+        ];
+        $categories = $dbCategories->map(function ($c) use ($vietnameseNames) {
+            return [
+                'name' => $c->name,
+                'slug' => $c->slug,
+                'desc' => $vietnameseNames[$c->name] ?? 'Sự kiện'
+            ];
+        })->toArray();
+
+        // Newest event for the top section
+        $newestEvent = Event::with(['bannerImage'])
+            ->where('category_id', $category->id)
+            ->published()
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        // Other new events (excluding the newest one)
+        $query = Event::with(['bannerImage'])
+            ->where('category_id', $category->id)
+            ->published()
+            ->orderBy('created_at', 'desc');
+
+        if ($newestEvent) {
+            $query->where('id', '!=', $newestEvent->id);
+        }
+        $otherEvents = $query->paginate(10);
+
+        // Featured events for this category
+        $featuredEvents = Event::with(['bannerImage'])
+            ->where('category_id', $category->id)
+            ->published()
+            ->orderByRaw('views_count + likes_count DESC')
+            ->take(5)
+            ->get();
+
+        // Media for this category
+        $dbMedia = \App\Models\EventMedia::with('event')
+            ->whereHas('event', function($q) use ($category) {
+                $q->published()->where('category_id', $category->id);
+            })
+            ->whereIn('type', ['image', 'video'])
+            ->where('is_banner', false)
+            ->latest()
+            ->take(8)
+            ->get();
+
+        $media = $dbMedia->map(function ($m) {
+            return [
+                'id' => $m->id,
+                'src' => Storage::url($m->url),
+                'type' => $m->type,
+                'title' => $m->caption ?: ($m->content ?: 'Khoảnh khắc sự kiện'),
+                'event_name' => $m->event ? $m->event->title : '',
+                'event_url' => $m->event ? route('events.show', $m->event->slug) : '#',
+            ];
+        })->toArray();
+
+        return view('frontend.category', compact('category', 'categories', 'newestEvent', 'otherEvents', 'featuredEvents', 'media'));
     }
 }

@@ -248,14 +248,14 @@
         <!-- Right Column (Aside) -->
         <div class="lg:col-span-4 space-y-6" style="position: sticky; top: 110px; align-self: start; height: max-content;">
             
-            <!-- Thời gian & Trạng thái -->
+            <!-- Thông tin sự kiện -->
             <div class="p-6 rounded-2xl shadow-sm" style="background:#FFF8D0; border:1px solid rgba(255,227,129,0.5);">
                 <div class="flex items-center gap-4 mb-5">
                     <div class="w-10 h-10 rounded-full flex items-center justify-center" style="background:#FFE381; color:#1C1410;">
-                        <span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span>
+                        <span class="material-symbols-outlined" data-icon="info">info</span>
                     </div>
                     <div>
-                        <h3 class="font-['Barlow_Condensed'] font-black uppercase text-2xl text-[#1C1410]">Thời gian</h3>
+                        <h3 class="font-['Barlow_Condensed'] font-black uppercase text-2xl text-[#1C1410]">Thông tin sự kiện</h3>
                     </div>
                 </div>
                 <div class="space-y-3 text-sm">
@@ -267,6 +267,12 @@
                         <span class="text-[#7A6A52] font-semibold">Giờ</span>
                         <span class="text-[#1C1410] font-bold">{{ $event->event_date->format('H:i') }}</span>
                     </div>
+                    @if($event->location)
+                    <div class="flex justify-between border-b pb-2 gap-4" style="border-color:rgba(255,227,129,0.4);">
+                        <span class="text-[#7A6A52] font-semibold shrink-0">Địa điểm</span>
+                        <span class="text-[#1C1410] font-bold text-right">{{ $event->location }}</span>
+                    </div>
+                    @endif
                     <div class="flex justify-between pt-1">
                         <span class="text-[#7A6A52] font-semibold">Trạng thái</span>
                         @if($event->event_date > now())

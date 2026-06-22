@@ -21,29 +21,28 @@
 </head>
 <body class="frontend-body antialiased bg-paper text-ink relative" x-data="{ scrolled: false }" @scroll.window="scrolled = (window.pageYOffset > 40)">
     
-    <!-- Header -->
+    @php $isHome = request()->routeIs('home'); @endphp
     <header 
-        class="fixed inset-x-0 top-0 z-50 transition-all duration-500"
-        :class="scrolled ? 'backdrop-blur-xl border-b shadow-sm' : 'bg-transparent'"
-        :style="scrolled ? 'background:rgba(255,248,208,0.97);border-color:rgba(232,200,74,0.5);' : ''"
+        class="fixed inset-x-0 top-0 z-50 transition-all duration-500 {{ !$isHome ? 'backdrop-blur-xl border-b shadow-sm' : '' }}"
+        {!! $isHome ? ":class=\"scrolled ? 'backdrop-blur-xl border-b shadow-sm' : 'bg-transparent'\"" : "" !!}
+        style="{{ !$isHome ? 'background:rgba(255,248,208,0.97);border-color:rgba(232,200,74,0.5);' : '' }}"
+        {!! $isHome ? ":style=\"scrolled ? 'background:rgba(255,248,208,0.97);border-color:rgba(232,200,74,0.5);' : ''\"" : "" !!}
         x-data="{ mobileOpen: false, megaMenuOpen: false }"
     >
         <div class="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-5 lg:px-10 relative">
             <a href="{{ route('home') }}#top" class="group flex items-center gap-2">
-                <span class="font-['Barlow_Condensed'] text-2xl font-black uppercase tracking-tight transition-colors" :class="scrolled ? 'text-[#1C1410]' : 'text-white'">
+                <span class="font-['Barlow_Condensed'] text-2xl font-black uppercase tracking-tight transition-colors {{ !$isHome ? 'text-[#1C1410]' : '' }}" {!! $isHome ? ":class=\"scrolled ? 'text-[#1C1410]' : 'text-white'\"" : "" !!}>
                     Uni<span style="color:#E8C84A;">Event</span>
                 </span>
             </a>
 
             <nav class="hidden items-center gap-2 lg:flex absolute left-1/2 -translate-x-1/2">
-                <a href="{{ route('home') }}#top" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-base font-semibold transition-colors"
-                   :class="scrolled ? 'text-[#7A6A52] hover:text-[#1C1410]' : 'text-white/80 hover:text-white'">
+                <a href="{{ route('home') }}#top" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-base font-semibold transition-colors {{ !$isHome ? 'text-[#7A6A52] hover:text-[#1C1410]' : '' }}" {!! $isHome ? ":class=\"scrolled ? 'text-[#7A6A52] hover:text-[#1C1410]' : 'text-white/80 hover:text-white'\"" : "" !!}>
                     Trang chủ
                 </a>
                 
                 <div class="relative" @mouseenter="megaMenuOpen = true" @mouseleave="megaMenuOpen = false">
-                    <a href="{{ route('home') }}#events" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-base font-semibold transition-colors"
-                       :class="scrolled ? 'text-[#7A6A52] hover:text-[#1C1410]' : 'text-white/80 hover:text-white'">
+                    <a href="{{ route('home') }}#events" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-base font-semibold transition-colors {{ !$isHome ? 'text-[#7A6A52] hover:text-[#1C1410]' : '' }}" {!! $isHome ? ":class=\"scrolled ? 'text-[#7A6A52] hover:text-[#1C1410]' : 'text-white/80 hover:text-white'\"" : "" !!}>
                         Sự kiện
                         <span class="ml-0.5 inline-block h-2 w-2 rounded-full" style="background:#07A0C3;"></span>
                     </a>
@@ -63,7 +62,7 @@
                             <div class="grid grid-cols-2 gap-1">
                                 @if(isset($categories))
                                     @foreach($categories as $c)
-                                    <a href="{{ route('home') }}#events" class="group flex items-start justify-between rounded-xl px-4 py-3 transition-colors"
+                                    <a href="{{ isset($c['slug']) ? route('events.category', $c['slug']) : '#' }}" class="group flex items-start justify-between rounded-xl px-4 py-3 transition-colors"
                                        style="" onmouseover="this.style.background='rgba(255,227,129,0.3)'" onmouseout="this.style.background=''">
                                         <div>
                                             <div class="text-sm font-semibold text-[#1C1410]">{{ $c['name'] }}</div>
@@ -82,12 +81,10 @@
                     </div>
                 </div>
 
-                <a href="{{ route('home') }}#archive" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-base font-semibold transition-colors"
-                   :class="scrolled ? 'text-[#7A6A52] hover:text-[#1C1410]' : 'text-white/80 hover:text-white'">
+                <a href="{{ route('home') }}#archive" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-base font-semibold transition-colors {{ !$isHome ? 'text-[#7A6A52] hover:text-[#1C1410]' : '' }}" {!! $isHome ? ":class=\"scrolled ? 'text-[#7A6A52] hover:text-[#1C1410]' : 'text-white/80 hover:text-white'\"" : "" !!}>
                     Kho lưu trữ
                 </a>
-                <a href="{{ route('home') }}#contact" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-base font-semibold transition-colors"
-                   :class="scrolled ? 'text-[#7A6A52] hover:text-[#1C1410]' : 'text-white/80 hover:text-white'">
+                <a href="{{ route('home') }}#contact" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-base font-semibold transition-colors {{ !$isHome ? 'text-[#7A6A52] hover:text-[#1C1410]' : '' }}" {!! $isHome ? ":class=\"scrolled ? 'text-[#7A6A52] hover:text-[#1C1410]' : 'text-white/80 hover:text-white'\"" : "" !!}>
                     Liên hệ
                 </a>
             </nav>
@@ -101,7 +98,7 @@
                 </a>
             </div>
 
-            <button @click="mobileOpen = !mobileOpen" class="lg:hidden transition-colors" :class="scrolled ? 'text-ink' : 'text-white'" aria-label="Menu">
+            <button @click="mobileOpen = !mobileOpen" class="lg:hidden transition-colors {{ !$isHome ? 'text-ink' : '' }}" {!! $isHome ? ":class=\"scrolled ? 'text-ink' : 'text-white'\"" : "" !!} aria-label="Menu">
                 <i data-lucide="menu" x-show="!mobileOpen"></i>
                 <i data-lucide="x" x-show="mobileOpen" style="display: none;"></i>
             </button>

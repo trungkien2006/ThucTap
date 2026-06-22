@@ -395,20 +395,8 @@
                                 </a>
                             </h3>
                             <div class="mt-3 flex flex-col gap-1.5 text-sm text-[#7A6A52]">
-                                <span class="inline-flex items-center gap-2">
-                                    <i data-lucide="calendar" class="h-4 w-4" style="color:#07A0C3;"></i> {{ $ev['date'] }}
-                                </span>
-                                <span class="inline-flex items-center gap-2">
-                                    <i data-lucide="map-pin" class="h-4 w-4" style="color:#04F06A;"></i> <span class="truncate">{{ $ev['location'] }}</span>
-                                </span>
+                                <p class="line-clamp-3">{{ $ev['summary'] ?? '' }}</p>
                             </div>
-                        </div>
-                        <div class="mt-5 flex items-center gap-4">
-                            <a href="{{ route('events.show', $ev['slug'] ?? '#') }}"
-                               class="inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-bold text-white shadow transition-all hover:shadow-md hover:-translate-y-0.5"
-                               style="background:#07A0C3;">
-                                Xem chi tiết <i data-lucide="arrow-up-right" class="h-3 w-3"></i>
-                            </a>
                         </div>
                     </div>
                 </article>
@@ -453,8 +441,8 @@
                                 {{-- === LEFT side: text top, imgs bottom --}}
                                 <div style="width:50%;padding-right:16px;" class="flex flex-col items-end justify-start text-right">
                                     <div class="mb-3">
-                                        <div class="text-[10px] font-bold uppercase tracking-widest text-[#7A6A52]">{{ $u['date'] }}</div>
                                         <a href="{{ route('events.show', $u['slug'] ?? '#') }}" class="mt-0.5 text-sm font-black uppercase text-[#1C1410] leading-snug hover:text-[#07A0C3] transition-colors inline-block">{{ $u['name'] }}</a>
+                                        <p class="mt-2 text-xs text-[#7A6A52] line-clamp-2">{{ $u['summary'] ?? '' }}</p>
                                     </div>
                                     @if(isset($u['images']) && count($u['images']) > 0)
                                     <div class="relative shrink-0" style="width:170px;height:120px;">
@@ -484,8 +472,8 @@
                                 <div style="width:50%;"></div>
                                 <div style="width:50%;padding-left:16px;" class="flex flex-col items-start justify-start text-left">
                                     <div class="mb-3">
-                                        <div class="text-[10px] font-bold uppercase tracking-widest text-[#7A6A52]">{{ $u['date'] }}</div>
                                         <a href="{{ route('events.show', $u['slug'] ?? '#') }}" class="mt-0.5 text-sm font-black uppercase text-[#1C1410] leading-snug hover:text-[#07A0C3] transition-colors inline-block">{{ $u['name'] }}</a>
+                                        <p class="mt-2 text-xs text-[#7A6A52] line-clamp-2">{{ $u['summary'] ?? '' }}</p>
                                     </div>
                                     @if(isset($u['images']) && count($u['images']) > 0)
                                     <div class="relative shrink-0" style="width:170px;height:120px;">

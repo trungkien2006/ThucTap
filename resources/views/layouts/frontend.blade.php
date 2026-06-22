@@ -126,11 +126,20 @@
         @yield('content')
     </main>
 
-    <!-- Footer — ấm tối, Jasmine accent -->
-    <footer id="contact" class="relative text-white" style="background: linear-gradient(to top, rgba(45,31,10,0.95), rgba(45,31,10,0.85)), url('{{ asset('images/frontend/footer-bg.png') }}') bottom/cover no-repeat;">
-        <!-- Top border Jasmine -->
-        <div class="h-1.5" style="background:#FFE381;"></div>
-        <div class="mx-auto grid max-w-[1400px] grid-cols-1 gap-12 px-6 pt-32 pb-24 lg:grid-cols-4 lg:px-10">
+    <style>
+        #contact {
+            aspect-ratio: auto;
+        }
+        @media (min-width: 768px) {
+            #contact {
+                aspect-ratio: 1024 / 278;
+            }
+        }
+    </style>
+
+    <!-- Footer — Sáng, Jasmine accent -->
+    <footer id="contact" class="relative text-white w-full flex flex-col justify-end" style="background: linear-gradient(to bottom, #FFF3C4 0%, rgba(255, 243, 196, 0.4) 15%, transparent 40%), url('{{ asset('images/frontend/footer-bg.png') }}') top center/cover no-repeat; margin-top: -2px;">
+        <div class="mx-auto grid max-w-[1400px] grid-cols-1 gap-12 px-6 pb-24 lg:grid-cols-4 lg:px-10 w-full">
             <div class="lg:col-span-2">
                 <div class="font-['Barlow'] text-4xl font-black uppercase">
                     Uni<span style="color:#FFE381;">Event</span>
@@ -152,15 +161,15 @@
             <div>
                 <div class="text-xs font-bold uppercase tracking-[0.3em]" style="color:#FFE381;">Mạng xã hội</div>
                 <div class="mt-4 flex gap-3">
-                    <a href="#" class="grid h-10 w-10 place-items-center rounded-full transition-colors"
+                    <a href="#" class="grid h-10 w-10 place-items-center rounded-full transition-colors text-white"
                        style="background:rgba(255,227,129,0.12);" onmouseover="this.style.background='#FFE381';this.style.color='#1C1410'" onmouseout="this.style.background='rgba(255,227,129,0.12)';this.style.color='white'">
                         <i data-lucide="instagram" class="h-4 w-4"></i>
                     </a>
-                    <a href="#" class="grid h-10 w-10 place-items-center rounded-full transition-colors"
-                       style="background:rgba(255,227,129,0.12);" onmouseover="this.style.background='#07A0C3';" onmouseout="this.style.background='rgba(255,227,129,0.12)';">
+                    <a href="#" class="grid h-10 w-10 place-items-center rounded-full transition-colors text-white"
+                       style="background:rgba(255,227,129,0.12);" onmouseover="this.style.background='#07A0C3';this.style.color='white'" onmouseout="this.style.background='rgba(255,227,129,0.12)';this.style.color='white'">
                         <i data-lucide="facebook" class="h-4 w-4"></i>
                     </a>
-                    <a href="#" class="grid h-10 w-10 place-items-center rounded-full transition-colors"
+                    <a href="#" class="grid h-10 w-10 place-items-center rounded-full transition-colors text-white"
                        style="background:rgba(255,227,129,0.12);" onmouseover="this.style.background='#04F06A';this.style.color='#1C1410'" onmouseout="this.style.background='rgba(255,227,129,0.12)';this.style.color='white'">
                         <i data-lucide="youtube" class="h-4 w-4"></i>
                     </a>

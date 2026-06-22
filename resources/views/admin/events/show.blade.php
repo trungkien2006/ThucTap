@@ -134,7 +134,10 @@
                         <div class="flex gap-3 p-3 rounded-lg border border-border bg-muted/20">
                             <div class="h-12 w-12 rounded-full overflow-hidden shrink-0 bg-muted border border-border">
                                 @if($speaker->photo_url)
-                                    <img src="{{ Storage::url($speaker->photo_url) }}" class="w-full h-full object-cover" alt="">
+                                    @php
+                                        $photoUrl = (strpos($speaker->photo_url, 'http') === 0 || strpos($speaker->photo_url, '/') === 0) ? $speaker->photo_url : Storage::url($speaker->photo_url);
+                                    @endphp
+                                    <img src="{{ $photoUrl }}" class="w-full h-full object-cover" alt="">
                                 @else
                                     <div class="w-full h-full flex items-center justify-center bg-primary/10 text-primary font-bold text-sm">
                                         {{ substr($speaker->name, 0, 1) }}

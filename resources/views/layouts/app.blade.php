@@ -379,6 +379,15 @@
         if (dateTimeString) {
             const updateClock = () => {
                 const now = new Date();
+                const month = now.getMonth() + 1;
+                let semester = '';
+                if (month >= 1 && month <= 4) {
+                    semester = 'Spring';
+                } else if (month >= 5 && month <= 8) {
+                    semester = 'Summer';
+                } else {
+                    semester = 'Fall';
+                }
                 const options = { 
                     weekday: 'long', 
                     year: 'numeric', 
@@ -389,7 +398,7 @@
                     second: '2-digit',
                     hour12: false 
                 };
-                dateTimeString.textContent = now.toLocaleDateString('vi-VN', options);
+                dateTimeString.textContent = now.toLocaleDateString('vi-VN', options) + ` · Kỳ ${semester}`;
             };
             updateClock();
             setInterval(updateClock, 1000);

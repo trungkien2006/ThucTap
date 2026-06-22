@@ -24,7 +24,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
         $totalEvents = \App\Models\Event::count();
         $upcomingEventsCount = \App\Models\Event::where('event_date', '>=', now())->count();
         $completedEventsCount = \App\Models\Event::where('event_date', '<', now())->count();
-        $totalSpeakers = \App\Models\Speaker::count();
+        $totalSpeakers = \App\Models\Speaker::where('is_hidden', false)->count();
         $totalMedia = \App\Models\EventMedia::whereIn('type', ['image', 'video'])->count();
 
         $upcomingEvents = \App\Models\Event::with('category')

@@ -235,16 +235,22 @@
 
                     <!-- Speaker Card -->
                     @if($event->speakers->count() > 0)
+                    @php
+                        $firstSpeaker = $event->speakers->first();
+                        $speakerPhoto = $firstSpeaker->photo_url 
+                            ? ((strpos($firstSpeaker->photo_url, 'http') === 0 || strpos($firstSpeaker->photo_url, '/') === 0) ? $firstSpeaker->photo_url : asset($firstSpeaker->photo_url))
+                            : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80';
+                    @endphp
                     <div class="bg-white rounded-2xl p-5 border border-slate-200/60 shadow-sm flex gap-4 items-center">
                         <div class="w-16 h-16 rounded-xl overflow-hidden shrink-0 border border-slate-200 shadow-inner bg-slate-50">
-                            <img class="w-full h-full object-cover" src="{{ $event->speakers->first()->photo_url ? asset($event->speakers->first()->photo_url) : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80' }}"/>
+                            <img class="w-full h-full object-cover" src="{{ $speakerPhoto }}"/>
                         </div>
                         <div>
                             <span class="text-brand-orange text-[10px] font-bold uppercase tracking-widest block mb-0.5">Keynote Speaker</span>
                             <h3 class="text-[16px] font-bold font-heading text-primary">
-                                {{ $event->speakers->first()->name }}
+                                {{ $firstSpeaker->name }}
                             </h3>
-                            <p class="text-[12px] text-slate-400 font-light mt-0.5">{{ Str::limit($event->speakers->first()->bio, 100) }}</p>
+                            <p class="text-[12px] text-slate-400 font-light mt-0.5">{{ Str::limit($firstSpeaker->bio, 100) }}</p>
                         </div>
                     </div>
                     @endif

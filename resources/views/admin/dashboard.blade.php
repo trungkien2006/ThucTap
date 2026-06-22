@@ -2,6 +2,20 @@
 @php
     $pageTitle = 'Dashboard';
     $categories = $categoriesData ?? [];
+
+    $now = now();
+    $month = $now->month;
+    $year = $now->year;
+    if ($month >= 1 && $month <= 4) {
+        $semesterName = 'Spring';
+        $schoolYear = ($year - 1) . '–' . $year;
+    } elseif ($month >= 5 && $month <= 8) {
+        $semesterName = 'Summer';
+        $schoolYear = ($year - 1) . '–' . $year;
+    } else {
+        $semesterName = 'Fall';
+        $schoolYear = $year . '–' . ($year + 1);
+    }
 @endphp
 
 @section('content')
@@ -10,7 +24,7 @@
         <div class="flex items-end justify-between flex-wrap gap-3">
             <div>
                 <h1 class="text-xl md:text-[22px] font-semibold tracking-tight">Tổng quan</h1>
-                <p class="text-xs text-muted-foreground mt-0.5">Học kỳ Xuân 2024–2025 · Cập nhật 2 phút trước</p>
+                <p class="text-xs text-muted-foreground mt-0.5">Học kỳ {{ $semesterName }} {{ $schoolYear }} · Cập nhật 2 phút trước</p>
             </div>
             <div class="flex items-center gap-2">
                 <a href="{{ route('admin.events.create') }}"

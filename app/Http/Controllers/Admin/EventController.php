@@ -76,7 +76,7 @@ class EventController extends Controller
     {
         $categories = Category::eventTypes()->get();
         $departments = Category::departments()->get();
-        $speakers = \App\Models\Speaker::all();
+        $speakers = \App\Models\Speaker::where('is_hidden', false)->get();
         return view('admin.events.create', compact('categories', 'departments', 'speakers'));
     }
 
@@ -133,7 +133,10 @@ class EventController extends Controller
         $mediaLibrary = EventMedia::whereIn('type', ['image', 'video'])
             ->orderByDesc('created_at')
             ->get();
-        $allSpeakers = \App\Models\Speaker::all();
+        $eventSpeakerIds = $event->speakers->pluck('id')->toArray();
+        $allSpeakers = \App\Models\Speaker::where('is_hidden', false)
+            ->orWhereIn('id', $eventSpeakerIds)
+            ->get();
         return view('admin.events.design', compact('event', 'mediaLibrary', 'allSpeakers'));
     }
 
@@ -292,7 +295,10 @@ class EventController extends Controller
         $event->load('bannerImage', 'speakers');
         $categories = Category::eventTypes()->get();
         $departments = Category::departments()->get();
-        $speakers = \App\Models\Speaker::all();
+        $eventSpeakerIds = $event->speakers->pluck('id')->toArray();
+        $speakers = \App\Models\Speaker::where('is_hidden', false)
+            ->orWhereIn('id', $eventSpeakerIds)
+            ->get();
         return view('admin.events.edit', compact('event', 'categories', 'departments', 'speakers'));
     }
 

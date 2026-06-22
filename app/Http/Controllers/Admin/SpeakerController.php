@@ -12,7 +12,7 @@ class SpeakerController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Speaker::withCount('events');
+        $query = Speaker::where('is_hidden', false)->withCount('events');
 
         if ($request->filled('search')) {
             $query->where('name', 'like', '%' . $request->search . '%');
@@ -50,6 +50,13 @@ class SpeakerController extends Controller
 
         ActivityLogger::log("đã tạo diễn giả mới: {$speaker->name}", route('admin.speakers.index'));
 
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'speaker' => $speaker
+            ]);
+        }
+
         return redirect()->route('admin.speakers.index')->with('success', 'Thêm diễn giả thành công.');
     }
 
@@ -86,10 +93,10 @@ class SpeakerController extends Controller
     public function destroy(Speaker $speaker)
     {
         $speakerName = $speaker->name;
-        $speaker->delete();
+        $speaker->update(['is_hidden' => true]);
 
-        ActivityLogger::log("đã xóa diễn giả: {$speakerName}", route('admin.speakers.index'));
+        ActivityLogger::log("đã ẩn diễn giả: {$speakerName}", route('admin.speakers.index'));
 
-        return redirect()->route('admin.speakers.index')->with('success', 'Xóa diễn giả thành công.');
+        return redirect()->route('admin.speakers.index')->with('success', 'Ẩn diễn giả thành công.');
     }
 }

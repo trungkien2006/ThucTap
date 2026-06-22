@@ -272,7 +272,12 @@
                     <select id="inTenDienGia" onchange="syncData()" class="uni-input">
                         <option value="" data-name="Chuyên gia Creative Director" data-photo="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80">-- Chọn diễn giả (Mặc định) --</option>
                         @foreach($allSpeakers as $speaker)
-                            <option value="{{ $speaker->id }}" data-name="{{ $speaker->name }}" data-photo="{{ $speaker->photo_url ? asset($speaker->photo_url) : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80' }}" {{ $event->speakers->contains('id', $speaker->id) ? 'selected' : '' }}>
+                            @php
+                                $photoUrl = $speaker->photo_url 
+                                    ? ((strpos($speaker->photo_url, 'http') === 0 || strpos($speaker->photo_url, '/') === 0) ? $speaker->photo_url : asset($speaker->photo_url))
+                                    : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80';
+                            @endphp
+                            <option value="{{ $speaker->id }}" data-name="{{ $speaker->name }}" data-photo="{{ $photoUrl }}" {{ $event->speakers->contains('id', $speaker->id) ? 'selected' : '' }}>
                                 {{ $speaker->name }} - {{ Str::limit($speaker->bio, 30) }}
                             </option>
                         @endforeach

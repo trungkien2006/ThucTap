@@ -143,9 +143,9 @@
             <div>
                 <div class="text-xs font-bold uppercase tracking-[0.3em]" style="color:#FFE381;">Liên hệ</div>
                 <ul class="mt-4 space-y-3 text-sm" style="color:rgba(255,255,255,0.65);">
-                    <li class="flex items-center gap-3"><i data-lucide="mail" class="h-4 w-4" style="color:#07A0C3;"></i> hello@unievent.vn</li>
-                    <li class="flex items-center gap-3"><i data-lucide="phone" class="h-4 w-4" style="color:#07A0C3;"></i> +84 28 3823 4567</li>
-                    <li class="flex items-center gap-3"><i data-lucide="map-pin" class="h-4 w-4" style="color:#07A0C3;"></i> 268 Lý Thường Kiệt, Q.10, TP.HCM</li>
+                    <li class="flex items-center gap-3"><i data-lucide="globe" class="h-4 w-4" style="color:#07A0C3;"></i> caodang.fpt.edu.vn</li>
+                    <li class="flex items-center gap-3"><i data-lucide="phone" class="h-4 w-4" style="color:#07A0C3;"></i> +84 24 7300 1955</li>
+                    <li class="flex items-center gap-3"><i data-lucide="map-pin" class="h-4 w-4" style="color:#07A0C3;"></i> Tổ Hợp Giáo Dục FPT Unischool, Khu Đại Học Nam Cao, Hà Nam</li>
                 </ul>
             </div>
 

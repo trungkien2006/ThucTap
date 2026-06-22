@@ -639,7 +639,9 @@
 {{-- ════════════════════════════════════════
      MEDIA — Nền Jasmine ấm, thoáng sáng
 ════════════════════════════════════════════ --}}
-<section class="relative overflow-hidden py-24 lg:py-32" style="background:#FFF3C4;">
+@php $mediaJson = json_encode($media); @endphp
+<section class="relative overflow-hidden py-24 lg:py-32" style="background:#FFF3C4;"
+         x-data="mediaPlayer({{ $mediaJson }})" x-init="initPlayer()">
     <!-- Top Jasmine border -->
     <div class="absolute inset-x-0 top-0 h-1.5" style="background:#FFE381;"></div>
     <!-- Subtle accent blobs -->
@@ -662,39 +664,164 @@
             </a>
         </div>
 
-        <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
-            @foreach($media as $i => $m)
-            <div data-aos="fade-up" data-aos-delay="{{ $i * 80 }}">
-                <a href="#"
-                   class="group relative block aspect-[3/4] overflow-hidden rounded-2xl transition-all duration-500 hover:-translate-y-2"
-                   style="box-shadow:0 4px 20px rgba(255,200,60,0.3);"
-                   onmouseover="this.style.boxShadow='0 16px 50px rgba(7,160,195,0.25)'"
-                   onmouseout="this.style.boxShadow='0 4px 20px rgba(255,200,60,0.3)'">
-                    <img src="{{ $m['src'] }}" alt="{{ $m['label'] }}" loading="lazy"
-                         class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                    <div class="absolute inset-0 bg-gradient-to-t from-[#2D1F0A]/80 via-[#2D1F0A]/10 to-transparent"></div>
+        <template x-if="items.length > 0">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Left Side: Main Player -->
+                <div class="lg:col-span-8 bg-black rounded-2xl overflow-hidden relative" style="box-shadow:0 16px 50px rgba(7,160,195,0.15); height: 500px;">
+                    <template x-for="(item, index) in items" :key="index">
+                        <div x-show="currentIndex === index" 
+                             x-transition:enter="transition ease-out duration-700 transform"
+                             x-transition:enter-start="opacity-0 scale-95"
+                             x-transition:enter-end="opacity-100 scale-100"
+                             x-transition:leave="transition ease-in duration-300 transform"
+                             x-transition:leave-start="opacity-100 scale-100"
+                             x-transition:leave-end="opacity-0 scale-105"
+                             class="absolute inset-0 flex items-center justify-center">
+                            <template x-if="item.type === 'video'">
+                                <video :src="item.src" class="w-full h-full object-contain" autoplay muted playsinline @ended="next()"></video>
+                            </template>
+                            <template x-if="item.type === 'image'">
+                                <img :src="item.src" :alt="item.title" class="w-full h-full object-contain" />
+                            </template>
+                        </div>
+                    </template>
+                    
+                    <!-- Progress Bar at the bottom of the player -->
+                    <div class="absolute bottom-0 left-0 right-0 h-1.5 bg-black/50 z-20">
+                        <div class="h-full bg-[#07A0C3] transition-all duration-100" :style="`width: ${progress}%`"></div>
+                    </div>
+                </div>
 
-                    @if($m['type'] === 'video')
-                    <div class="absolute inset-0 grid place-items-center">
-                        <div class="grid h-14 w-14 place-items-center rounded-full text-[#1C1410] shadow-lg transition-transform group-hover:scale-110"
-                             style="background:#FFE381;">
-                            <i data-lucide="play" class="h-5 w-5 translate-x-0.5 fill-current"></i>
+                <!-- Right Side: Info and Thumbnails -->
+                <div class="lg:col-span-4 flex flex-col gap-4 h-[500px]">
+                    <!-- Top Info Box (2/3) -->
+                    <div class="flex-1 rounded-2xl p-6 flex flex-col justify-center relative overflow-hidden group" style="background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); box-shadow: 0 4px 20px rgba(255,200,60,0.15); border: 1px solid rgba(255, 227, 129, 0.5);">
+                        <div class="mb-4 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.25em] text-[#1C1410]" style="background:#FFE381;" x-text="currentItem.type === 'video' ? 'Video' : 'Hình ảnh'"></div>
+                        
+                        <h3 class="font-['Barlow_Condensed'] text-3xl font-black uppercase tracking-wide text-[#1C1410] leading-snug line-clamp-4" x-text="currentItem.title"></h3>
+                        
+                        <div class="mt-4 flex items-center gap-2">
+                            <div class="h-10 w-1 rounded-full" style="background:#04F06A;"></div>
+                            <a :href="currentItem.event_url" class="text-sm font-semibold text-[#7A6A52] hover:text-[#07A0C3] transition-colors" x-text="currentItem.event_name"></a>
                         </div>
                     </div>
-                    @endif
 
-                    <div class="absolute bottom-0 left-0 right-0 p-4">
-                        <!-- Sliding bottom bar -->
-                        <div class="mb-2 h-0.5 w-0 rounded-full transition-all duration-500 group-hover:w-full"
-                             style="background:#FFE381;"></div>
-                        <div class="text-[9px] font-bold uppercase tracking-[0.25em]" style="color:#FFE381;">{{ $m['type'] }}</div>
-                        <div class="font-['Barlow_Condensed'] mt-1 text-lg font-bold uppercase tracking-wide text-white group-hover:text-[#FFE381] transition-colors">{{ $m['label'] }}</div>
+                    <!-- Bottom Thumbnails (1/3) -->
+                    <div class="h-[120px] grid grid-cols-3 gap-3">
+                        <template x-for="i in 3" :key="i">
+                            <div class="rounded-xl overflow-hidden cursor-pointer relative group bg-black" 
+                                 @click="goToItem(getThumbIndex(i))"
+                                 :class="getThumbIndex(i) === currentIndex ? 'ring-2 ring-[#07A0C3]' : ''">
+                                <template x-if="items[getThumbIndex(i)]">
+                                    <template x-if="items[getThumbIndex(i)].type === 'video'">
+                                        <video :src="items[getThumbIndex(i)].src" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 opacity-60 group-hover:opacity-100"></video>
+                                    </template>
+                                </template>
+                                <template x-if="items[getThumbIndex(i)]">
+                                    <template x-if="items[getThumbIndex(i)].type === 'image'">
+                                        <img :src="items[getThumbIndex(i)].src" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 opacity-60 group-hover:opacity-100" />
+                                    </template>
+                                </template>
+                                
+                                <template x-if="items[getThumbIndex(i)] && items[getThumbIndex(i)].type === 'video'">
+                                    <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                        <div class="grid h-8 w-8 place-items-center rounded-full bg-white/80 text-[#1C1410] shadow-sm">
+                                            <i data-lucide="play" class="h-3 w-3 translate-x-0.5"></i>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
                     </div>
-                </a>
+                </div>
             </div>
-            @endforeach
-        </div>
+        </template>
     </div>
+    
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('mediaPlayer', (mediaItems) => ({
+                items: mediaItems || [],
+                currentIndex: 0,
+                progress: 0,
+                timer: null,
+                duration: 5000,
+                intervalStep: 50,
+                
+                get currentItem() {
+                    return this.items[this.currentIndex] || {};
+                },
+                
+                initPlayer() {
+                    if (this.items.length === 0) return;
+                    this.startMedia();
+                },
+                
+                startMedia() {
+                    this.stopTimer();
+                    this.progress = 0;
+                    
+                    if (this.currentItem.type === 'image') {
+                        // Image timer logic
+                        this.timer = setInterval(() => {
+                            this.progress += (this.intervalStep / this.duration) * 100;
+                            if (this.progress >= 100) {
+                                this.next();
+                            }
+                        }, this.intervalStep);
+                        
+                        // Pause videos
+                        this.$nextTick(() => {
+                            const videos = this.$root.querySelectorAll('video');
+                            videos.forEach(v => v.pause());
+                        });
+                        
+                    } else if (this.currentItem.type === 'video') {
+                        // For video, progress bar is handled by the video element's timeupdate
+                        this.$nextTick(() => {
+                            const videos = this.$root.querySelectorAll('video');
+                            videos.forEach(v => {
+                                if (v.getAttribute('src') === this.currentItem.src) {
+                                    v.currentTime = 0;
+                                    v.play().catch(e => console.log('Autoplay blocked', e));
+                                    v.ontimeupdate = () => {
+                                        if (v.duration) {
+                                            this.progress = (v.currentTime / v.duration) * 100;
+                                        }
+                                    };
+                                } else {
+                                    v.pause();
+                                }
+                            });
+                        });
+                    }
+                },
+                
+                stopTimer() {
+                    if (this.timer) {
+                        clearInterval(this.timer);
+                        this.timer = null;
+                    }
+                },
+                
+                next() {
+                    this.currentIndex = (this.currentIndex + 1) % this.items.length;
+                    this.startMedia();
+                },
+                
+                goToItem(index) {
+                    if (index === this.currentIndex || index >= this.items.length) return;
+                    this.currentIndex = index;
+                    this.startMedia();
+                },
+                
+                getThumbIndex(offset) {
+                    if (this.items.length === 0) return 0;
+                    return (this.currentIndex + offset) % this.items.length;
+                }
+            }));
+        });
+    </script>
 </section>
 
 @endsection

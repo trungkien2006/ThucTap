@@ -94,12 +94,27 @@ class FrontendController extends Controller
             ],
         ];
 
-        $media = [
-            ['src' => asset('images/frontend/media-1.jpg'), 'type' => 'album', 'label' => 'Album · UniFest 2025'],
-            ['src' => asset('images/frontend/media-2.jpg'), 'type' => 'video', 'label' => 'Recap · Đêm Gala'],
-            ['src' => asset('images/frontend/media-3.jpg'), 'type' => 'album', 'label' => 'Album · Triển lãm SV'],
-            ['src' => asset('images/frontend/media-4.jpg'), 'type' => 'video', 'label' => 'Recap · Sports Day'],
-        ];
+        $dbMedia = \App\Models\EventMedia::with('event')
+            ->whereHas('event', function($q) {
+                $q->published();
+            })
+            ->whereIn('type', ['image', 'video'])
+            ->where('is_banner', false)
+            ->orderByRaw('(CASE WHEN caption IS NOT NULL AND caption != "" THEN 1 ELSE 0 END) + (CASE WHEN content IS NOT NULL AND content != "" THEN 1 ELSE 0 END) DESC')
+            ->latest()
+            ->take(10)
+            ->get();
+
+        $media = $dbMedia->map(function ($m) {
+            return [
+                'id' => $m->id,
+                'src' => Storage::url($m->url),
+                'type' => $m->type,
+                'title' => $m->caption ?: ($m->content ?: 'Khoảnh khắc sự kiện'),
+                'event_name' => $m->event ? $m->event->title : '',
+                'event_url' => $m->event ? route('events.show', $m->event->slug) : '#',
+            ];
+        })->toArray();
 
         $totalEvents = Event::published()->count();
         $totalViews = Event::published()->sum('views_count');

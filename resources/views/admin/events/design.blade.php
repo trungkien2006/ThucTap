@@ -385,13 +385,13 @@
                                 {{-- Image slot --}}
                                 <div class="relative">
                                     <div onclick="activateSlot({{ $i }})"
-                                         class="media-slot w-full h-32 bg-white hover:bg-slate-50 border-2 {{ $hasMedia ? '' : 'border-dashed' }} border-slate-300 hover:border-brand-orange rounded-xl flex items-center justify-center gap-2 cursor-pointer text-slate-500 hover:text-brand-orange transition-all {{ $hasMedia ? 'slot-filled' : '' }}"
+                                         class="media-slot w-full {{ $hasMedia ? 'h-auto' : 'h-32' }} bg-white hover:bg-slate-50 border-2 {{ $hasMedia ? '' : 'border-dashed' }} border-slate-300 hover:border-brand-orange rounded-xl flex items-center justify-center gap-2 cursor-pointer text-slate-500 hover:text-brand-orange transition-all {{ $hasMedia ? 'slot-filled' : '' }}"
                                          data-slot="{{ $i }}" id="slot{{ $i }}">
                                         @if($hasMedia)
                                             @if($media->type === 'video')
-                                                <video src="{{ Storage::url($media->url) }}" class="w-full h-full object-cover rounded-xl" autoplay loop muted playsinline></video>
+                                                <video src="{{ Storage::url($media->url) }}" class="w-full h-auto rounded-xl" autoplay loop muted playsinline></video>
                                             @else
-                                                <img src="{{ Storage::url($media->url) }}" class="w-full h-full object-cover rounded-xl" alt=""/>
+                                                <img src="{{ Storage::url($media->url) }}" class="w-full h-auto rounded-xl" alt=""/>
                                             @endif
                                         @else
                                             <span class="material-symbols-outlined text-[22px]">add_photo_alternate</span>
@@ -640,8 +640,8 @@
                 <span class="material-symbols-outlined text-[22px]">add_photo_alternate</span>
                 <span class="text-[13px] font-medium">Thêm hình ảnh ${slotNum}</span>
             `;
-            slot.classList.remove('slot-filled');
-            slot.classList.add('border-dashed', 'border-slate-300');
+            slot.classList.remove('slot-filled', 'h-auto');
+            slot.classList.add('border-dashed', 'border-slate-300', 'h-32');
             document.getElementById('removeBtn' + slotNum).classList.add('hidden');
         }
 
@@ -649,12 +649,12 @@
             if (!activeSlotId) return false;
             const slot = document.getElementById('slot' + activeSlotId);
             if (type === 'video') {
-                slot.innerHTML = `<video src="${url}" class="w-full h-full object-cover rounded-xl" autoplay loop muted></video>`;
+                slot.innerHTML = `<video src="${url}" class="w-full h-auto rounded-xl" autoplay loop muted></video>`;
             } else {
-                slot.innerHTML = `<img src="${url}" class="w-full h-full object-cover rounded-xl" alt=""/>`;
+                slot.innerHTML = `<img src="${url}" class="w-full h-auto rounded-xl" alt=""/>`;
             }
-            slot.classList.add('slot-filled');
-            slot.classList.remove('border-dashed', 'border-slate-300', 'slot-active');
+            slot.classList.add('slot-filled', 'h-auto');
+            slot.classList.remove('border-dashed', 'border-slate-300', 'slot-active', 'h-32');
 
             // Show remove button
             document.getElementById('removeBtn' + activeSlotId).classList.remove('hidden');

@@ -124,9 +124,9 @@
                                 <figure class="my-6">
                                     <div class="rounded-xl overflow-hidden bg-slate-100 shadow-sm max-w-2xl">
                                         @if($block->type === 'video')
-                                            <video src="{{ Storage::url($block->url) }}" class="w-full h-auto object-cover max-h-[500px]" autoplay loop muted playsinline controls></video>
+                                            <video src="{{ Storage::url($block->url) }}" class="w-full h-auto rounded-xl" autoplay loop muted playsinline controls></video>
                                         @else
-                                            <img src="{{ Storage::url($block->url) }}" class="w-full h-auto object-contain max-h-[500px]" alt=""/>
+                                            <img src="{{ Storage::url($block->url) }}" class="w-full h-auto rounded-xl" alt=""/>
                                         @endif
                                     </div>
                                     @if($block->caption)

@@ -126,49 +126,80 @@
         @yield('content')
     </main>
 
-    <!-- Footer — ấm tối, Jasmine accent -->
-    <footer id="contact" class="relative text-white" style="background: linear-gradient(to top, rgba(45,31,10,0.95), rgba(45,31,10,0.85)), url('{{ asset('images/frontend/footer-bg.png') }}') bottom/cover no-repeat;">
-        <!-- Top border Jasmine -->
-        <div class="h-1.5" style="background:#FFE381;"></div>
-        <div class="mx-auto grid max-w-[1400px] grid-cols-1 gap-12 px-6 pt-32 pb-24 lg:grid-cols-4 lg:px-10">
-            <div class="lg:col-span-2">
-                <div class="font-['Barlow_Condensed'] text-4xl font-black uppercase">
-                    Uni<span style="color:#FFE381;">Event</span>
+    <!-- Footer — Premium Glassmorphism & FPT Orange/Jasmine accent -->
+    <footer id="contact" class="relative text-white overflow-hidden" style="background: linear-gradient(to top, rgba(15, 10, 5, 0.55), rgba(28, 20, 16, 0.25)), url('{{ asset('bg-hanam.jpg') }}') center 80%/cover no-repeat;">
+        <!-- Glowing Ambient Lights -->
+        <div class="absolute top-0 left-1/4 w-96 h-96 bg-[#F26F21] rounded-full mix-blend-screen filter blur-[120px] opacity-20 pointer-events-none"></div>
+        <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-[#FFE381] rounded-full mix-blend-screen filter blur-[120px] opacity-10 pointer-events-none"></div>
+
+        <!-- Glowing Top Border -->
+        <div class="h-1.5 w-full bg-gradient-to-r from-[#F26F21] via-[#FFE381] to-[#F26F21] shadow-[0_0_15px_rgba(255,227,129,0.5)]"></div>
+        
+        <div class="mx-auto grid max-w-[1400px] grid-cols-1 gap-12 px-6 pt-24 pb-16 lg:grid-cols-12 lg:px-10 relative z-10">
+            <!-- Brand Column -->
+            <div class="lg:col-span-4" data-aos="fade-up" data-aos-duration="1000">
+                <div class="font-['Barlow_Condensed'] text-5xl font-black uppercase tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-[#F26F21] to-[#FFE381] drop-shadow-lg">
+                    FPT Polytechnic
                 </div>
-                <p class="mt-4 max-w-sm text-sm" style="color:rgba(255,227,129,0.55);">
-                    Nền tảng sự kiện học đường — nơi mỗi khoảnh khắc trở thành một ký ức điện ảnh.
+                <p class="mt-4 max-w-sm text-sm leading-relaxed" style="color:rgba(255,255,255,0.8);">
+                    Thực học - Thực nghiệp.<br>
+                    Nơi mỗi khoảnh khắc học đường trở thành một kỷ niệm đáng giá và hành trang vững chắc cho tương lai.
                 </p>
             </div>
 
-            <div>
-                <div class="text-xs font-bold uppercase tracking-[0.3em]" style="color:#FFE381;">Liên hệ</div>
-                <ul class="mt-4 space-y-3 text-sm" style="color:rgba(255,255,255,0.65);">
-                    <li class="flex items-center gap-3"><i data-lucide="globe" class="h-4 w-4" style="color:#07A0C3;"></i> caodang.fpt.edu.vn</li>
-                    <li class="flex items-center gap-3"><i data-lucide="phone" class="h-4 w-4" style="color:#07A0C3;"></i> +84 24 7300 1955</li>
-                    <li class="flex items-center gap-3"><i data-lucide="map-pin" class="h-4 w-4" style="color:#07A0C3;"></i> Tổ Hợp Giáo Dục FPT Unischool, Khu Đại Học Nam Cao, Hà Nam</li>
+            <!-- Contact Column -->
+            <div class="lg:col-span-4" data-aos="fade-up" data-aos-delay="100" data-aos-duration="1000">
+                <div class="text-xs font-bold uppercase tracking-[0.2em] text-[#FFE381] mb-6 flex items-center gap-2">
+                    <span class="w-8 h-[1px] bg-[#FFE381]"></span> Thông tin liên hệ
+                </div>
+                <ul class="space-y-4 text-sm" style="color:rgba(255,255,255,0.8);">
+                    <li class="flex items-start gap-4 group cursor-pointer transition-all duration-300 hover:text-white">
+                        <div class="p-2 rounded-lg bg-white/5 border border-white/10 group-hover:bg-[#F26F21]/20 group-hover:border-[#F26F21]/50 transition-colors">
+                            <i data-lucide="globe" class="h-4 w-4 text-[#FFE381] group-hover:text-[#F26F21]"></i>
+                        </div>
+                        <span class="mt-1.5 group-hover:translate-x-1 transition-transform">caodang.fpt.edu.vn</span>
+                    </li>
+                    <li class="flex items-start gap-4 group cursor-pointer transition-all duration-300 hover:text-white">
+                        <div class="p-2 rounded-lg bg-white/5 border border-white/10 group-hover:bg-[#F26F21]/20 group-hover:border-[#F26F21]/50 transition-colors">
+                            <i data-lucide="phone" class="h-4 w-4 text-[#FFE381] group-hover:text-[#F26F21]"></i>
+                        </div>
+                        <span class="mt-1.5 group-hover:translate-x-1 transition-transform">+84 24 7300 1955</span>
+                    </li>
+                    <li class="flex items-start gap-4 group cursor-pointer transition-all duration-300 hover:text-white">
+                        <div class="p-2 rounded-lg bg-white/5 border border-white/10 group-hover:bg-[#F26F21]/20 group-hover:border-[#F26F21]/50 transition-colors">
+                            <i data-lucide="map-pin" class="h-4 w-4 text-[#FFE381] group-hover:text-[#F26F21]"></i>
+                        </div>
+                        <span class="mt-1.5 leading-relaxed group-hover:translate-x-1 transition-transform">Tổ Hợp Giáo Dục FPT Unischool, Khu Đại Học Nam Cao, Hà Nam</span>
+                    </li>
                 </ul>
             </div>
 
-            <div>
-                <div class="text-xs font-bold uppercase tracking-[0.3em]" style="color:#FFE381;">Mạng xã hội</div>
-                <div class="mt-4 flex gap-3">
-                    <a href="#" class="grid h-10 w-10 place-items-center rounded-full transition-colors"
-                       style="background:rgba(255,227,129,0.12);" onmouseover="this.style.background='#FFE381';this.style.color='#1C1410'" onmouseout="this.style.background='rgba(255,227,129,0.12)';this.style.color='white'">
-                        <i data-lucide="instagram" class="h-4 w-4"></i>
+            <!-- Newsletter & Social Column -->
+            <div class="lg:col-span-4" data-aos="fade-up" data-aos-delay="200" data-aos-duration="1000">
+                <div class="text-xs font-bold uppercase tracking-[0.2em] text-[#FFE381] mb-6 flex items-center gap-2">
+                    <span class="w-8 h-[1px] bg-[#FFE381]"></span> Kết nối với chúng tôi
+                </div>
+                
+                <div class="flex gap-4">
+                    <a href="#" class="grid h-12 w-12 place-items-center rounded-xl bg-white/5 border border-white/10 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_5px_15px_rgba(225,48,108,0.4)] hover:bg-gradient-to-br hover:from-[#833ab4] hover:via-[#fd1d1d] hover:to-[#fcb045] hover:border-transparent group">
+                        <i data-lucide="instagram" class="h-5 w-5 text-white/70 group-hover:text-white"></i>
                     </a>
-                    <a href="#" class="grid h-10 w-10 place-items-center rounded-full transition-colors"
-                       style="background:rgba(255,227,129,0.12);" onmouseover="this.style.background='#07A0C3';" onmouseout="this.style.background='rgba(255,227,129,0.12)';">
-                        <i data-lucide="facebook" class="h-4 w-4"></i>
+                    <a href="#" class="grid h-12 w-12 place-items-center rounded-xl bg-white/5 border border-white/10 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_5px_15px_rgba(24,119,242,0.4)] hover:bg-[#1877F2] hover:border-transparent group">
+                        <i data-lucide="facebook" class="h-5 w-5 text-white/70 group-hover:text-white"></i>
                     </a>
-                    <a href="#" class="grid h-10 w-10 place-items-center rounded-full transition-colors"
-                       style="background:rgba(255,227,129,0.12);" onmouseover="this.style.background='#04F06A';this.style.color='#1C1410'" onmouseout="this.style.background='rgba(255,227,129,0.12)';this.style.color='white'">
-                        <i data-lucide="youtube" class="h-4 w-4"></i>
+                    <a href="#" class="grid h-12 w-12 place-items-center rounded-xl bg-white/5 border border-white/10 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_5px_15px_rgba(255,0,0,0.4)] hover:bg-[#FF0000] hover:border-transparent group">
+                        <i data-lucide="youtube" class="h-5 w-5 text-white/70 group-hover:text-white"></i>
                     </a>
                 </div>
             </div>
         </div>
-        <div class="border-t py-6 text-center text-xs" style="border-color:rgba(255,227,129,0.15);color:rgba(255,227,129,0.35);">
-            © 2026 UniEvent. All rights reserved.
+
+        <div class="relative z-10 border-t border-white/10 py-6 text-center text-sm font-medium tracking-wide flex flex-col md:flex-row justify-center items-center gap-2" style="color:rgba(255,255,255,0.6);">
+            <span>© 2026 FPT Polytechnic. All rights reserved.</span>
+            <span class="hidden md:inline text-white/20">|</span>
+            <span class="flex items-center gap-1">Designed with <i data-lucide="heart" class="h-3 w-3 text-red-500 fill-red-500 animate-pulse"></i> for Students</span>
+        </div>
+    </footer>an class="flex items-center gap-1">Designed with <i data-lucide="heart" class="h-3 w-3 text-red-500 fill-red-500 animate-pulse"></i> for Students</span>
         </div>
     </footer>
 

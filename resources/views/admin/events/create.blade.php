@@ -1,144 +1,214 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start mt-4">
-    <!-- Left Panel: Context -->
-    <aside class="lg:col-span-4 space-y-8">
-        <div class="bg-surface-container-lowest p-8 rounded-xl shadow-sm border border-outline-variant/30">
-            <h2 class="font-headline-lg text-headline-lg text-deep-navy mb-6">Create New Event</h2>
-            <p class="font-body-md text-body-md text-text-muted mb-8">Launch your next campus activity. Fill in the essential details to start attracting attendees.</p>
-            
-            <div class="space-y-6">
-                <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-full bg-fpt-orange text-pure-white flex items-center justify-center font-bold">1</div>
-                    <div>
-                        <p class="font-label-lg text-label-lg text-fpt-orange">Step 1</p>
-                        <p class="font-body-md text-body-md font-semibold text-deep-navy">Basic Information</p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-4 opacity-50">
-                    <div class="w-10 h-10 rounded-full border-2 border-outline flex items-center justify-center font-bold">2</div>
-                    <div>
-                        <p class="font-label-lg text-label-lg">Step 2</p>
-                        <p class="font-body-md text-body-md font-semibold">Publish & Share</p>
-                    </div>
-                </div>
+<div class="max-w-[1000px] mx-auto">
+    <!-- Page Header -->
+    <div class="mb-8">
+        <h1 class="text-[28px] font-bold text-primary font-heading leading-tight">Tạo sự kiện mới</h1>
+        <p class="text-[14px] text-slate-400 mt-1">Nhập thông tin cơ bản để bắt đầu quy trình tạo sự kiện.</p>
+    </div>
+
+    <!-- Progress Indicator -->
+    <div class="uni-card p-5 mb-8">
+        <div class="flex items-center justify-between relative">
+            <!-- Progress Line -->
+            <div class="absolute top-5 left-[60px] right-[60px] h-[2px] bg-slate-100 z-0"></div>
+            <div class="absolute top-5 left-[60px] h-[2px] bg-primary z-0" style="width: calc(0%)"></div>
+
+            <!-- Step 1: Details (Active) -->
+            <div class="step-indicator">
+                <div class="step-circle active">1</div>
+                <span class="text-[11px] font-semibold text-primary">Thông tin</span>
+            </div>
+            <!-- Step 2: Design -->
+            <div class="step-indicator">
+                <div class="step-circle inactive">2</div>
+                <span class="text-[11px] font-medium text-slate-400">Thiết kế</span>
+            </div>
+            <!-- Step 3: Preview -->
+            <div class="step-indicator">
+                <div class="step-circle inactive">3</div>
+                <span class="text-[11px] font-medium text-slate-400">Xem trước</span>
             </div>
         </div>
+    </div>
 
-        <div class="relative overflow-hidden bg-deep-navy rounded-xl p-8 text-pure-white shadow-xl">
-            <div class="relative z-10">
-                <span class="material-symbols-outlined text-fpt-orange text-4xl mb-4">lightbulb</span>
-                <h3 class="font-headline-md text-headline-md mb-2">Pro Tip</h3>
-                <p class="font-body-sm text-body-sm text-pure-white/80">Events with clear, concise descriptions and high-quality banners see 45% higher student engagement rates.</p>
+    <!-- Form -->
+    <form action="{{ route('admin.events.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+        @csrf
+
+        <!-- Section 1: Basic Info -->
+        <section class="uni-card p-6 space-y-5">
+            <div class="flex items-center gap-2.5 border-b border-slate-100 pb-3">
+                <span class="material-symbols-outlined text-primary text-[20px]">info</span>
+                <h3 class="text-[16px] font-bold text-primary font-heading">Thông tin cơ bản</h3>
             </div>
-            <div class="absolute -right-8 -bottom-8 opacity-10">
-                <span class="material-symbols-outlined text-[120px]" style="font-variation-settings: 'FILL' 1;">event</span>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                    <label class="uni-label" for="title">Tiêu đề sự kiện <span class="text-red-400">*</span></label>
+                    <input class="uni-input" id="title" name="title" value="{{ old('title') }}" required type="text" placeholder="VD: Workshop Sáng tạo nội dung số"/>
+                    @error('title') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
+                </div>
+                <div>
+                    <label class="uni-label" for="slug">Đường dẫn (URL Slug) <span class="text-red-400">*</span></label>
+                    <div class="flex">
+                        <span class="bg-slate-50 px-3 py-2.5 border border-r-0 border-slate-200 rounded-l-xl text-slate-400 text-[12px] flex items-center">unievent.edu/e/</span>
+                        <input class="uni-input rounded-l-none" id="slug" name="slug" value="{{ old('slug') }}" required type="text" placeholder="workshop-sang-tao-2024"/>
+                    </div>
+                    @error('slug') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
+                </div>
             </div>
-        </div>
-    </aside>
+            <div>
+                <label class="uni-label" for="description">Mô tả chi tiết <span class="text-red-400">*</span></label>
+                <textarea class="uni-input" id="description" name="description" rows="4" required placeholder="Mô tả nội dung, hoạt động nổi bật, lý do tham gia...">{{ old('description') }}</textarea>
+                @error('description') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
+            </div>
+        </section>
 
-    <!-- Right Panel: Form Content -->
-    <section class="lg:col-span-8">
-        <div class="bg-surface-container-lowest p-8 md:p-12 rounded-xl shadow-sm border border-outline-variant/30">
-            <form action="{{ route('admin.events.store') }}" method="POST" enctype="multipart/form-data" class="space-y-8">
-                @csrf
-
-                <!-- Title -->
-                <div class="space-y-2">
-                    <label class="font-label-lg text-label-lg text-on-surface-variant" for="title">Event Title <span class="text-red-500">*</span></label>
-                    <input class="w-full px-4 py-3 bg-white border border-outline-variant rounded-lg font-body-md text-body-md focus:ring-2 focus:ring-fpt-orange transition-all" id="title" name="title" value="{{ old('title') }}" required type="text" placeholder="e.g. FPT Tech Workshop 2024"/>
-                    @error('title') <p class="text-red-500 text-xs">{{ $message }}</p> @enderror
+        <!-- Section 2: Time & Location -->
+        <section class="uni-card p-6 space-y-5">
+            <div class="flex items-center gap-2.5 border-b border-slate-100 pb-3">
+                <span class="material-symbols-outlined text-primary text-[20px]">schedule</span>
+                <h3 class="text-[16px] font-bold text-primary font-heading">Thời gian & Địa điểm</h3>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                    <label class="uni-label" for="event_date">Ngày & Giờ bắt đầu <span class="text-red-400">*</span></label>
+                    <input class="uni-input" id="event_date" name="event_date" value="{{ old('event_date') }}" required type="datetime-local"/>
+                    @error('event_date') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
                 </div>
-
-                <!-- Category & Slug -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
-                    <div class="space-y-2">
-                        <label class="font-label-lg text-label-lg text-on-surface-variant" for="category_id">Event Type <span class="text-red-500">*</span></label>
-                        <select class="w-full px-4 py-3 bg-white border border-outline-variant rounded-lg font-body-md text-body-md focus:ring-2 focus:ring-fpt-orange transition-all" id="category_id" name="category_id" required>
-                            <option value="">-- Select type --</option>
-                            @foreach($categories as $cat)
-                                <option value="{{ $cat->id }}" {{ old('category_id') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
-                            @endforeach
-                        </select>
-                        @error('category_id') <p class="text-red-500 text-xs">{{ $message }}</p> @enderror
+                <div>
+                    <label class="uni-label" for="location">Địa điểm / Phòng <span class="text-red-400">*</span></label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-[18px]">location_on</span>
+                        <input class="uni-input pl-10" id="location" name="location" value="{{ old('location') }}" required type="text" placeholder="VD: Phòng Studio, Tầng 3"/>
                     </div>
-                    <div class="space-y-2">
-                        <label class="font-label-lg text-label-lg text-on-surface-variant" for="slug">URL Slug <span class="text-red-500">*</span></label>
-                        <input class="w-full px-4 py-3 bg-white border border-outline-variant rounded-lg font-body-md text-body-md focus:ring-2 focus:ring-fpt-orange transition-all" id="slug" name="slug" value="{{ old('slug') }}" required type="text" placeholder="e.g. tech-workshop-2024"/>
-                        @error('slug') <p class="text-red-500 text-xs">{{ $message }}</p> @enderror
-                    </div>
+                    @error('location') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
                 </div>
+            </div>
+        </section>
 
-                <!-- Date & Location -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
-                    <div class="space-y-2">
-                        <label class="font-label-lg text-label-lg text-on-surface-variant" for="event_date">Date & Time <span class="text-red-500">*</span></label>
-                        <input class="w-full px-4 py-3 bg-white border border-outline-variant rounded-lg font-body-md text-body-md focus:ring-2 focus:ring-fpt-orange transition-all" id="event_date" name="event_date" value="{{ old('event_date') }}" required type="datetime-local"/>
-                        @error('event_date') <p class="text-red-500 text-xs">{{ $message }}</p> @enderror
-                    </div>
-                    <div class="space-y-2">
-                        <label class="font-label-lg text-label-lg text-on-surface-variant" for="location">Location / Venue <span class="text-red-500">*</span></label>
-                        <div class="relative">
-                            <input class="w-full pl-10 pr-4 py-3 bg-white border border-outline-variant rounded-lg font-body-md text-body-md focus:ring-2 focus:ring-fpt-orange transition-all" id="location" name="location" value="{{ old('location') }}" required type="text" placeholder="Campus Hall A or Virtual Link"/>
-                            <span class="material-symbols-outlined absolute left-3 top-3 text-on-surface-variant">location_on</span>
-                        </div>
-                        @error('location') <p class="text-red-500 text-xs">{{ $message }}</p> @enderror
-                    </div>
+        <!-- Section 3: Classification -->
+        <section class="uni-card p-6 space-y-5">
+            <div class="flex items-center gap-2.5 border-b border-slate-100 pb-3">
+                <span class="material-symbols-outlined text-primary text-[20px]">category</span>
+                <h3 class="text-[16px] font-bold text-primary font-heading">Phân loại & Giới hạn</h3>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div>
+                    <label class="uni-label" for="category_id">Loại sự kiện <span class="text-red-400">*</span></label>
+                    <select class="uni-input" id="category_id" name="category_id" required>
+                        <option value="">— Chọn loại —</option>
+                        @foreach($categories as $cat)
+                            <option value="{{ $cat->id }}" {{ old('category_id') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
+                        @endforeach
+                    </select>
+                    @error('category_id') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
                 </div>
-
-                <!-- Department -->
-                <div class="space-y-2">
-                    <label class="font-label-lg text-label-lg text-on-surface-variant" for="department_id">Department (Optional)</label>
-                    <select class="w-full px-4 py-3 bg-white border border-outline-variant rounded-lg font-body-md text-body-md focus:ring-2 focus:ring-fpt-orange transition-all" id="department_id" name="department_id">
-                        <option value="">-- Select department --</option>
+                <div>
+                    <label class="uni-label" for="department_id">Khoa / Bộ phận</label>
+                    <select class="uni-input" id="department_id" name="department_id">
+                        <option value="">— Chọn khoa —</option>
                         @foreach($departments as $dept)
                             <option value="{{ $dept->id }}" {{ old('department_id') == $dept->id ? 'selected' : '' }}>{{ $dept->name }}</option>
                         @endforeach
                     </select>
-                    @error('department_id') <p class="text-red-500 text-xs">{{ $message }}</p> @enderror
+                    @error('department_id') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
                 </div>
+            </div>
+        </section>
 
-                <!-- Description -->
-                <div class="space-y-2">
-                    <label class="font-label-lg text-label-lg text-on-surface-variant" for="description">Description <span class="text-red-500">*</span></label>
-                    <textarea class="w-full px-4 py-3 bg-white border border-outline-variant rounded-lg font-body-md text-body-md focus:ring-2 focus:ring-fpt-orange transition-all" id="description" name="description" rows="6" required placeholder="Describe what makes this event special...">{{ old('description') }}</textarea>
-                    @error('description') <p class="text-red-500 text-xs">{{ $message }}</p> @enderror
+        <!-- Section 4: Speakers -->
+        <section class="uni-card p-6 space-y-5">
+            <div class="flex items-center gap-2.5 border-b border-slate-100 pb-3">
+                <span class="material-symbols-outlined text-primary text-[20px]">groups</span>
+                <h3 class="text-[16px] font-bold text-primary font-heading">Diễn giả</h3>
+            </div>
+            <div>
+                <label class="uni-label">Chọn diễn giả (Có thể chọn nhiều)</label>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[240px] overflow-y-auto p-2 border border-slate-200 rounded-xl bg-slate-50/50">
+                    @forelse($speakers as $speaker)
+                        <label class="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-lg cursor-pointer hover:border-brand-orange transition-all">
+                            <input type="checkbox" name="speaker_ids[]" value="{{ $speaker->id }}" {{ is_array(old('speaker_ids')) && in_array($speaker->id, old('speaker_ids')) ? 'checked' : '' }} class="rounded border-slate-300 text-brand-orange focus:ring-brand-orange w-4 h-4">
+                            <div class="flex items-center gap-3">
+                                <img src="{{ $speaker->photo_url ? Storage::url($speaker->photo_url) : 'https://ui-avatars.com/api/?name='.urlencode($speaker->name).'&background=random' }}" class="w-8 h-8 rounded-full object-cover">
+                                <div>
+                                    <p class="text-[13px] font-semibold text-primary">{{ $speaker->name }}</p>
+                                    <p class="text-[11px] text-slate-400">{{ $speaker->title ?? 'Diễn giả' }}</p>
+                                </div>
+                            </div>
+                        </label>
+                    @empty
+                        <div class="col-span-full py-6 text-center">
+                            <p class="text-[13px] text-slate-400">Chưa có diễn giả nào trong hệ thống.</p>
+                            <a href="{{ route('admin.speakers.create') ?? '#' }}" class="inline-flex items-center gap-1.5 text-brand-orange text-[12px] font-semibold hover:underline mt-2">
+                                <span class="material-symbols-outlined text-[16px]">add_circle</span>
+                                Thêm diễn giả mới
+                            </a>
+                        </div>
+                    @endforelse
                 </div>
+                @error('speaker_ids') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
+            </div>
+        </section>
 
-                <!-- Banner Image & Max Attendees -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
-                    <div class="space-y-2">
-                        <label class="font-label-lg text-label-lg text-on-surface-variant" for="banner_image">Banner Image</label>
-                        <input class="w-full px-4 py-2 bg-white border border-outline-variant rounded-lg font-body-md text-body-md focus:ring-2 focus:ring-fpt-orange transition-all" id="banner_image" name="banner_image" type="file" accept="image/*"/>
-                        @error('banner_image') <p class="text-red-500 text-xs">{{ $message }}</p> @enderror
-                    </div>
-                    <div class="space-y-2">
-                        <label class="font-label-lg text-label-lg text-on-surface-variant" for="max_attendees">Max Attendees (Optional)</label>
-                        <input class="w-full px-4 py-3 bg-white border border-outline-variant rounded-lg font-body-md text-body-md focus:ring-2 focus:ring-fpt-orange transition-all" id="max_attendees" name="max_attendees" value="{{ old('max_attendees') }}" type="number" min="1"/>
-                        @error('max_attendees') <p class="text-red-500 text-xs">{{ $message }}</p> @enderror
-                    </div>
+        <!-- Section 5: Banner -->
+        <section class="uni-card p-6 space-y-5">
+            <div class="flex items-center gap-2.5 border-b border-slate-100 pb-3">
+                <span class="material-symbols-outlined text-primary text-[20px]">image</span>
+                <h3 class="text-[16px] font-bold text-primary font-heading">Ảnh bìa sự kiện</h3>
+            </div>
+            <div class="border-2 border-dashed border-slate-200 rounded-xl p-10 flex flex-col items-center justify-center gap-3 bg-slate-50/30 hover:bg-slate-50 hover:border-brand-orange transition-all cursor-pointer relative">
+                <input type="file" id="banner_image" name="banner_image" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"/>
+                <div class="w-14 h-14 rounded-2xl bg-slate-100 flex items-center justify-center text-brand-orange">
+                    <span class="material-symbols-outlined text-[28px]">cloud_upload</span>
                 </div>
+                <p class="text-[13px] font-semibold text-primary">Nhấn để tải ảnh bìa lên</p>
+                <p class="text-[11px] text-slate-400">Khuyến nghị: 1200 x 480 pixels (PNG, JPG)</p>
+                @error('banner_image') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
+            </div>
+        </section>
 
-                <div class="space-y-2">
-                    <label class="flex items-center gap-2 mt-4">
-                        <input type="checkbox" name="registration_open" value="1" {{ old('registration_open', true) ? 'checked' : '' }} class="rounded border-gray-300 text-fpt-orange focus:ring-fpt-orange">
-                        <span class="font-label-lg text-label-lg text-on-surface-variant">Open for Registration immediately</span>
-                    </label>
-                </div>
-
-                <!-- Form Actions -->
-                <div class="pt-8 flex items-center justify-between border-t border-outline-variant/30">
-                    <a href="{{ route('admin.events.index') }}" class="px-6 py-3 font-label-lg text-label-lg text-deep-navy border border-deep-navy rounded-lg hover:bg-deep-navy/5 transition-all">
-                        Cancel
-                    </a>
-                    <button class="px-10 py-3 bg-fpt-orange text-pure-white font-label-lg text-label-lg rounded-lg shadow-lg shadow-fpt-orange/20 hover:brightness-110 transition-all flex items-center gap-2" type="submit">
-                        Create Event
-                        <span class="material-symbols-outlined">check</span>
-                    </button>
-                </div>
-            </form>
+        <!-- Form Actions -->
+        <div class="flex items-center justify-between pt-4">
+            <a href="{{ route('admin.events.index') }}" class="btn-ghost">
+                Hủy bỏ
+            </a>
+            <button class="btn-primary flex items-center gap-2" type="submit">
+                Tạo sự kiện & Tiếp tục
+                <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+            </button>
         </div>
-    </section>
+    </form>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.getElementById('title').addEventListener('input', function() {
+        const title = this.value;
+        const slug = title.toLowerCase()
+            .replace(/á|à|ả|ạ|ã|ă|ắ|ằ|ẳ|ẵ|ặ|â|ấ|ầ|ẩ|ẫ|ậ/gi, 'a')
+            .replace(/é|è|ẻ|ẽ|ẹ|ê|ế|ề|ể|ễ|ệ/gi, 'e')
+            .replace(/i|í|ì|ỉ|ĩ|ị/gi, 'i')
+            .replace(/ó|ò|ỏ|õ|ọ|ô|ố|ồ|ổ|ỗ|ộ|ơ|ớ|ờ|ở|ỡ|ợ/gi, 'o')
+            .replace(/ú|ù|ủ|ũ|ụ|ư|ứ|ừ|ử|ữ|ự/gi, 'u')
+            .replace(/ý|ỳ|ỷ|ỹ|ỵ/gi, 'y')
+            .replace(/đ/gi, 'd')
+            .replace(/\s+/g, '-')
+            .replace(/[^a-z0-9-]/g, '')
+            .replace(/-+/g, '-')
+            .replace(/^-|-$/g, '');
+        
+        // Only auto-fill if the user hasn't manually edited the slug
+        const slugInput = document.getElementById('slug');
+        if (!slugInput.dataset.manuallyEdited) {
+            slugInput.value = slug;
+        }
+    });
+
+    document.getElementById('slug').addEventListener('input', function() {
+        this.dataset.manuallyEdited = true;
+    });
+</script>
+@endpush

@@ -1,24 +1,25 @@
 <x-guest-layout>
 
-    {{-- Header --}}
-    <div class="mb-8">
-        <h2 class="text-deep-navy font-extrabold" style="font-size: 1.8rem;">Chào mừng trở lại 👋</h2>
-        <p class="text-text-muted mt-1 text-sm">Đăng nhập để quản lý sự kiện của FPT Polytechnic.</p>
-    </div>
+    {{-- Light Glassmorphism Card --}}
+    <div class="bg-white/40 backdrop-blur-lg border border-white/60 rounded-3xl p-8 sm:p-10 shadow-2xl relative overflow-hidden">
+        
+        {{-- Ánh sáng phản chiếu nhỏ góc trên --}}
+        <div class="absolute top-0 left-10 w-24 h-1 bg-white/70 blur-[2px] rounded-full"></div>
 
-    {{-- Session Status --}}
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+        {{-- Header --}}
+        <div class="mb-8">
+            <h2 class="text-slate-900 font-bold text-3xl mb-2">Đăng nhập</h2>
+            <p class="text-slate-700 text-sm">Chào mừng trở lại, vui lòng đăng nhập vào tài khoản của bạn</p>
+        </div>
 
-    <form method="POST" action="{{ route('login') }}" class="space-y-5">
-        @csrf
+        {{-- Session Status --}}
+        <x-auth-session-status class="mb-4" :status="session('status')" />
 
-        {{-- Email --}}
-        <div>
-            <label for="email" class="block text-sm font-semibold text-on-surface mb-1.5">
-                Địa chỉ Email
-            </label>
+        <form method="POST" action="{{ route('login') }}" class="space-y-5">
+            @csrf
+
+            {{-- Email / Username --}}
             <div class="relative">
-                <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-outline" style="font-size:18px">mail</span>
                 <input
                     id="email"
                     type="email"
@@ -27,95 +28,77 @@
                     required
                     autofocus
                     autocomplete="username"
-                    placeholder="admin@fptpolytechnic.edu.vn"
-                    class="w-full pl-10 pr-4 py-3 rounded-xl border border-outline-variant bg-pure-white text-on-surface text-sm
-                           focus:outline-none focus:ring-2 focus:ring-fpt-orange focus:border-fpt-orange
-                           transition-all placeholder-text-muted
-                           {{ $errors->get('email') ? 'border-error ring-2 ring-error/30' : '' }}"
+                    placeholder="Địa chỉ Email"
+                    class="w-full bg-white/50 border border-white/60 rounded-xl px-4 py-3.5 text-slate-900 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all shadow-inner"
                 />
+                <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none">person</span>
             </div>
-            <x-input-error :messages="$errors->get('email')" class="mt-1.5" />
-        </div>
+            <x-input-error :messages="$errors->get('email')" class="mt-1" />
 
-        {{-- Password --}}
-        <div>
-            <div class="flex items-center justify-between mb-1.5">
-                <label for="password" class="block text-sm font-semibold text-on-surface">
-                    Mật khẩu
-                </label>
-                @if (Route::has('password.request'))
-                    <a href="{{ route('password.request') }}" class="text-xs text-fpt-orange hover:underline font-medium">
-                        Quên mật khẩu?
-                    </a>
-                @endif
-            </div>
+            {{-- Password --}}
             <div class="relative">
-                <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-outline" style="font-size:18px">lock</span>
                 <input
                     id="password"
                     type="password"
                     name="password"
                     required
                     autocomplete="current-password"
-                    placeholder="••••••••"
-                    class="w-full pl-10 pr-12 py-3 rounded-xl border border-outline-variant bg-pure-white text-on-surface text-sm
-                           focus:outline-none focus:ring-2 focus:ring-fpt-orange focus:border-fpt-orange
-                           transition-all placeholder-text-muted
-                           {{ $errors->get('password') ? 'border-error ring-2 ring-error/30' : '' }}"
+                    placeholder="Mật khẩu"
+                    class="w-full bg-white/50 border border-white/60 rounded-xl px-4 py-3.5 text-slate-900 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all pr-12 shadow-inner"
                 />
-                {{-- Toggle password visibility --}}
-                <button type="button" id="togglePassword" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface transition-colors">
-                    <span class="material-symbols-outlined" id="eyeIcon" style="font-size:18px">visibility</span>
+                <button type="button" id="togglePassword" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-800 transition-colors focus:outline-none">
+                    <span class="material-symbols-outlined" id="eyeIcon">visibility_off</span>
                 </button>
             </div>
-            <x-input-error :messages="$errors->get('password')" class="mt-1.5" />
-        </div>
+            <x-input-error :messages="$errors->get('password')" class="mt-1" />
 
-        {{-- Remember Me --}}
-        <div class="flex items-center gap-2.5">
-            <input
-                id="remember_me"
-                type="checkbox"
-                name="remember"
-                class="w-4 h-4 rounded border-outline-variant text-fpt-orange focus:ring-fpt-orange cursor-pointer"
-            />
-            <label for="remember_me" class="text-sm text-text-muted cursor-pointer select-none">
-                Ghi nhớ đăng nhập
-            </label>
-        </div>
-
-        {{-- Submit --}}
-        <button
-            type="submit"
-            class="w-full bg-deep-navy text-pure-white py-3.5 px-6 rounded-xl font-semibold text-sm
-                   hover:bg-deep-navy/90 active:scale-[0.98] transition-all duration-200
-                   flex items-center justify-center gap-2 shadow-lg shadow-deep-navy/20 mt-2"
-        >
-            <span class="material-symbols-outlined" style="font-size:18px">login</span>
-            Đăng nhập
-        </button>
-
-        {{-- Divider --}}
-        <div class="relative my-2">
-            <div class="absolute inset-0 flex items-center">
-                <div class="w-full border-t border-outline-variant"></div>
+            {{-- Remember Me --}}
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <div class="relative flex items-center justify-center">
+                        <input
+                            id="remember_me"
+                            type="checkbox"
+                            name="remember"
+                            class="peer appearance-none w-5 h-5 border border-white/60 rounded bg-white/50 checked:bg-emerald-500 checked:border-emerald-500 transition-all cursor-pointer focus:ring-0 focus:ring-offset-0"
+                        />
+                        <span class="material-symbols-outlined absolute text-white text-[14px] pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity">check</span>
+                    </div>
+                    <label for="remember_me" class="text-sm text-slate-800 font-medium cursor-pointer select-none">
+                        Ghi nhớ
+                    </label>
+                </div>
+                
+                @if (Route::has('password.request'))
+                    <a href="{{ route('password.request') }}" class="text-sm text-slate-700 hover:text-slate-900 font-medium transition-colors">
+                        Quên mật khẩu?
+                    </a>
+                @endif
             </div>
-            <div class="relative flex justify-center text-xs">
-                <span class="bg-surface px-3 text-text-muted">Cổng dành cho Admin</span>
+
+            {{-- Submit --}}
+            <button
+                type="submit"
+                class="w-full bg-slate-800 text-white py-3.5 px-6 rounded-xl font-bold text-[15px]
+                       hover:bg-slate-900 active:scale-[0.98] transition-all duration-200 mt-2 shadow-lg shadow-slate-900/20"
+            >
+                Đăng nhập
+            </button>
+
+            {{-- Signup text --}}
+            <div class="text-center mt-6">
+                <p class="text-slate-700 text-sm">
+                    Bạn chưa có tài khoản? <a href="{{ Route::has('register') ? route('register') : '#' }}" class="text-slate-900 font-bold hover:underline">Đăng ký</a>
+                </p>
             </div>
-        </div>
+            
+            {{-- Footer info --}}
+            <div class="text-center mt-8">
+                <p class="text-slate-600 text-xs italic">Hệ thống quản lý sự kiện UniEvents</p>
+            </div>
 
-        {{-- Info note --}}
-        <div class="flex items-start gap-2.5 bg-deep-navy/5 border border-deep-navy/10 rounded-xl p-3.5">
-            <span class="material-symbols-outlined text-deep-navy mt-0.5 shrink-0" style="font-size:16px">info</span>
-            <p class="text-xs text-text-muted leading-relaxed">
-                Trang đăng nhập này chỉ dành cho <strong class="text-deep-navy">quản trị viên</strong>.
-                Sinh viên muốn đăng ký sự kiện vui lòng truy cập
-                <a href="{{ route('home') }}" class="text-fpt-orange hover:underline font-medium">trang chủ</a>.
-            </p>
-        </div>
-
-    </form>
+        </form>
+    </div>
 
     <script>
         const toggleBtn = document.getElementById('togglePassword');
@@ -125,7 +108,7 @@
             toggleBtn.addEventListener('click', () => {
                 const isPassword = passwordInput.type === 'password';
                 passwordInput.type = isPassword ? 'text' : 'password';
-                eyeIcon.textContent = isPassword ? 'visibility_off' : 'visibility';
+                eyeIcon.textContent = isPassword ? 'visibility' : 'visibility_off';
             });
         }
     </script>

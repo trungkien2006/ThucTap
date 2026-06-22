@@ -49,9 +49,25 @@ class PublicEventController extends Controller
             'documents',
         ])->where('slug', $slug)->published()->firstOrFail();
 
-        // Tăng lượt xem
-        $event->increment('views_count');
+        // Tăng lượt xem với chống spam bằng Session
+        if (!session()->has('viewed_events.' . $event->id)) {
+            $event->increment('views_count');
+            session()->put('viewed_events.' . $event->id, true);
+        }
 
         return view('events.show', compact('event'));
+    }
+
+    public function like($event_id)
+    {
+        $event = Event::findOrFail($event_id);
+
+        if (!session()->has('liked_events.' . $event->id)) {
+            $event->increment('likes_count');
+            session()->put('liked_events.' . $event->id, true);
+            return response()->json(['success' => true, 'likes_count' => $event->likes_count]);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Bạn đã thích sự kiện này rồi', 'likes_count' => $event->likes_count]);
     }
 }

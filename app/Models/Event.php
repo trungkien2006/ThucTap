@@ -17,7 +17,6 @@ class Event extends Model
         return [
             'event_date' => 'datetime',
             'end_date' => 'datetime',
-            'registration_open' => 'boolean',
             'is_published' => 'boolean',
         ];
     }
@@ -66,16 +65,11 @@ class Event extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function registrations()
-    {
-        return $this->hasMany(Registration::class);
-    }
-
     // ── Media Relationships ────────────────────────────
 
     public function media()
     {
-        return $this->hasMany(EventMedia::class)->orderBy('sort_order');
+        return $this->hasMany(EventMedia::class);
     }
 
     public function bannerImage()
@@ -85,12 +79,12 @@ class Event extends Model
 
     public function galleryImages()
     {
-        return $this->hasMany(EventMedia::class)->where('type', 'image')->where('is_banner', false)->orderBy('sort_order');
+        return $this->hasMany(EventMedia::class)->where('is_banner', false);
     }
 
     public function videos()
     {
-        return $this->hasMany(EventMedia::class)->where('type', 'video')->orderBy('sort_order');
+        return $this->hasMany(EventMedia::class)->where('type', 'video');
     }
 
 
@@ -104,7 +98,7 @@ class Event extends Model
 
     public function scheduleItems()
     {
-        return $this->hasMany(EventSchedule::class)->orderBy('sort_order');
+        return $this->hasMany(EventSchedule::class)->orderBy('start_time');
     }
 
     public function speakers()

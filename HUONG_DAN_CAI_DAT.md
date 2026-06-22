@@ -96,7 +96,27 @@ npm run build
 
 ---
 
-## 3. Khởi Chạy Website
+## 3. Nếu Bạn Xóa Thư Mục Cũ Và Tải File ZIP Mới (Từ nhánh `tuan`)
+
+Trong trường hợp bạn không dùng Git để pull code mà **xóa hẳn folder cũ đi và giải nén file ZIP mới tải về**, hãy lưu ý:
+
+1. Bạn **KHÔNG CẦN** cài đặt lại các phần mềm ở **Mục 1** (PHP, Composer, Node.js) vì máy tính của bạn đã có sẵn.
+2. Nhưng do đây là một thư mục mới hoàn toàn, bạn **BẮT BUỘC PHẢI THỰC HIỆN LẠI TOÀN BỘ Các Bước ở Mục 2**, bao gồm:
+
+Mở Terminal tại thư mục mã nguồn mới giải nén và chạy tuần tự:
+- `composer install`
+- `npm install`
+- `copy .env.example .env`
+- `php artisan key:generate`
+- `php artisan migrate --seed` (Nhấn `yes` để tạo lại CSDL sqlite mới với các cấu trúc bảng đã được cập nhật)
+- `php artisan storage:link`
+- `npm run build`
+
+Sau khi chạy xong, hãy chạy `php artisan serve` như ở **Mục 4**.
+
+---
+
+## 4. Khởi Chạy Website
 
 Sau khi đã hoàn tất các bước cài đặt trên, khởi động server nội bộ bằng lệnh:
 
@@ -108,7 +128,7 @@ Màn hình sẽ hiển thị đường link `http://127.0.0.1:8000`. Hãy copy �
 
 ---
 
-## 4. Hướng Dẫn Kiểm Tra (Testing)
+## 5. Hướng Dẫn Kiểm Tra (Testing)
 
 Để đảm bảo website hoạt động hoàn hảo, hãy thực hiện bài kiểm tra nhỏ sau:
 

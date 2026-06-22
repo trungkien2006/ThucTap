@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('event_documents', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('event_id')->constrained()->cascadeOnDelete();
-            $table->string('file_name');
-            $table->string('file_path');
+            $table->foreignId('event_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->string('title');
+            $table->string('url');
             $table->bigInteger('file_size')->nullable()->comment('bytes');
-            $table->string('mime_type')->nullable();
+            $table->string('file_type')->nullable();
             $table->timestamp('created_at')->nullable();
         });
     }

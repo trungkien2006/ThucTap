@@ -5,115 +5,141 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'FPT Event Maker') }} - Dashboard</title>
+    <title>{{ config('app.name', 'UniEvents') }} — Dashboard</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Hanken+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0" rel="stylesheet">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
-    
-    <style>
-        .glass-card {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(224, 224, 224, 0.5);
-        }
-        /* Mobile sidebar hidden by default, shown via toggle class */
-        @media (max-width: 767px) {
-            .sidebar-open { transform: translateX(0); }
-            .sidebar-closed { transform: translateX(-100%); }
-        }
-    </style>
 </head>
-<body class="overflow-x-hidden font-body-md text-on-background bg-surface-gray selection:bg-fpt-orange selection:text-white">
+<body class="overflow-x-clip bg-body-bg text-primary font-body">
 
     <!-- Mobile Overlay -->
-    <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden transition-opacity"></div>
+    <div id="sidebarOverlay" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 hidden md:hidden transition-opacity"></div>
 
-    <!-- SideNavBar Integration -->
-    <aside id="sidebar" class="fixed left-0 top-0 h-full flex flex-col py-base bg-surface border-r border-outline-variant w-64 z-50 md:translate-x-0 sidebar-closed transition-transform duration-300">
-        <div class="px-6 mb-8 flex justify-between items-center">
-            <div>
-                <a href="{{ route('home') }}" class="font-headline-md text-headline-md text-deep-navy font-bold block">FPT Polytechnic</a>
-                <p class="font-label-lg text-label-lg text-text-muted">Event Management</p>
-            </div>
-            <button id="closeSidebarBtn" class="md:hidden text-text-muted hover:text-deep-navy p-1">
-                <span class="material-symbols-outlined">close</span>
-            </button>
+    <!-- ─── Sidebar ─── -->
+    <aside id="sidebar" class="admin-sidebar fixed left-0 top-0 h-full flex flex-col bg-white border-r border-slate-100 w-[260px] z-50 md:translate-x-0 transition-transform duration-300">
+        <!-- Logo -->
+        <div class="px-6 pt-6 pb-4 border-b border-slate-100">
+            <a href="{{ route('admin.events.index') }}" class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white font-bold text-lg font-heading">U</div>
+                <span class="text-[18px] font-bold text-primary font-heading tracking-tight">
+                    UniEvents
+                    <span class="text-brand-orange font-normal text-[13px]">| Admin</span>
+                </span>
+            </a>
         </div>
-        <nav class="flex-1 space-y-1 px-3">
-            <a class="flex items-center gap-3 px-4 py-3 {{ request()->routeIs('dashboard') || request()->routeIs('admin.events.index') ? 'text-primary font-bold border-r-4 border-primary bg-primary-fixed/30' : 'text-on-surface-variant hover:bg-surface-container' }} transition-all duration-150" href="{{ route('admin.events.index') }}">
-                <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
-                <span class="font-label-lg text-label-lg">Dashboard</span>
+
+        <!-- User Info -->
+        <div class="px-5 py-4 border-b border-slate-100">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-brand-orange text-white flex items-center justify-center font-bold text-sm uppercase">
+                    {{ substr(Auth::user()->name, 0, 1) }}
+                </div>
+                <div>
+                    <p class="text-[13px] font-semibold text-primary">{{ Auth::user()->name }}</p>
+                    <p class="text-[11px] text-slate-400">Quản trị viên</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1">
+            <p class="uni-section-title px-4 mb-2">Tổng quan</p>
+            <a class="sidebar-nav-item {{ request()->routeIs('admin.events.index') || request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('admin.events.index') }}">
+                <span class="material-symbols-outlined text-[20px]">dashboard</span>
+                <span>Dashboard</span>
             </a>
-            <a class="flex items-center gap-3 px-4 py-3 {{ request()->routeIs('admin.events.create') ? 'text-primary font-bold border-r-4 border-primary bg-primary-fixed/30' : 'text-on-surface-variant hover:bg-surface-container' }} transition-all duration-150" href="{{ route('admin.events.create') }}">
-                <span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
-                <span class="font-label-lg text-label-lg">Event Creator</span>
+
+            <p class="uni-section-title px-4 mt-5 mb-2">Quản lý</p>
+            <a class="sidebar-nav-item {{ request()->routeIs('admin.events.create') || request()->routeIs('admin.events.edit') ? 'active' : '' }}" href="{{ route('admin.events.create') }}">
+                <span class="material-symbols-outlined text-[20px]">add_circle</span>
+                <span>Tạo sự kiện</span>
             </a>
-            <a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container transition-all duration-150" href="{{ route('home') }}" target="_blank">
-                <span class="material-symbols-outlined" data-icon="visibility">visibility</span>
-                <span class="font-label-lg text-label-lg">Live Preview</span>
+            <a class="sidebar-nav-item {{ request()->routeIs('admin.speakers.*') ? 'active' : '' }}" href="{{ route('admin.speakers.index') }}">
+                <span class="material-symbols-outlined text-[20px]">groups</span>
+                <span>Diễn giả</span>
+            </a>
+            <a class="sidebar-nav-item {{ request()->routeIs('admin.media.*') ? 'active' : '' }}" href="{{ route('admin.media.index') }}">
+                <span class="material-symbols-outlined text-[20px]">perm_media</span>
+                <span>Quản lý Media</span>
+            </a>
+            <a class="sidebar-nav-item {{ request()->routeIs('admin.documents.*') ? 'active' : '' }}" href="{{ route('admin.documents.index') }}">
+                <span class="material-symbols-outlined text-[20px]">description</span>
+                <span>Tài liệu</span>
+            </a>
+
+            <p class="uni-section-title px-4 mt-5 mb-2">Hệ thống</p>
+            <a class="sidebar-nav-item" href="{{ route('home') }}" target="_blank">
+                <span class="material-symbols-outlined text-[20px]">visibility</span>
+                <span>Xem trang công khai</span>
+            </a>
+            <a class="sidebar-nav-item" href="#">
+                <span class="material-symbols-outlined text-[20px]">settings</span>
+                <span>Cài đặt</span>
             </a>
         </nav>
-        <div class="px-4 mb-4">
-            <a href="{{ route('admin.events.create') }}" class="w-full flex items-center justify-center gap-2 bg-fpt-orange text-pure-white font-bold py-3 px-4 rounded-lg hover:brightness-110 active:scale-95 transition-all">
-                <span class="material-symbols-outlined">add</span>
-                <span>Create New</span>
-            </a>
-        </div>
-        <div class="mt-auto px-3 border-t border-outline-variant pt-4 space-y-1">
-            <a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container transition-all" href="#">
-                <span class="material-symbols-outlined" data-icon="person">person</span>
-                <span class="font-label-lg text-label-lg">Profile</span>
+
+        <!-- Bottom -->
+        <div class="px-3 pb-4 space-y-1 border-t border-slate-100 pt-3">
+            <a href="{{ route('admin.events.create') }}" class="flex items-center justify-center gap-2 w-full py-2.5 bg-primary hover:bg-slate-800 text-white font-semibold rounded-xl text-[13px] shadow-sm transition-all mb-2">
+                <span class="material-symbols-outlined text-[18px]">add</span>
+                <span>Sự kiện mới</span>
             </a>
             <form method="POST" action="{{ route('logout') }}" class="block">
                 @csrf
-                <button type="submit" class="w-full flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container transition-all text-left">
-                    <span class="material-symbols-outlined" data-icon="logout">logout</span>
-                    <span class="font-label-lg text-label-lg">Logout</span>
+                <button type="submit" class="sidebar-nav-item w-full text-left text-red-400 hover:text-red-600 hover:bg-red-50">
+                    <span class="material-symbols-outlined text-[20px]">logout</span>
+                    <span>Đăng xuất</span>
                 </button>
             </form>
         </div>
     </aside>
 
-    <!-- TopNavBar Integration -->
-    <header class="flex justify-between items-center w-full px-4 md:px-margin-desktop h-16 fixed top-0 z-30 bg-deep-navy shadow-md md:pl-[17rem]">
+    <!-- ─── Top Header ─── -->
+    <header class="fixed top-0 left-0 md:left-[260px] right-0 h-[60px] z-30 flex items-center justify-between px-5 md:px-8 bg-white border-b border-slate-100 shadow-nav">
         <div class="flex items-center gap-4">
-            <button id="openSidebarBtn" class="md:hidden text-pure-white hover:bg-white/10 p-2 rounded-lg transition-colors">
+            <!-- Mobile toggle -->
+            <button id="openSidebarBtn" class="md:hidden text-slate-500 hover:text-primary p-1.5 rounded-lg hover:bg-slate-50 transition-colors">
                 <span class="material-symbols-outlined">menu</span>
             </button>
-            <span class="font-headline-md text-[18px] font-bold text-pure-white block md:hidden">FPT Event Maker</span>
-            <div class="hidden md:flex items-center gap-6">
-                <a class="text-fpt-orange border-b-2 border-fpt-orange pb-1 font-body-md text-body-md" href="{{ route('admin.events.index') }}">Dashboard</a>
-                <a class="text-pure-white/80 hover:text-pure-white transition-colors font-body-md text-body-md" href="{{ route('admin.events.create') }}">New Event</a>
+            <!-- Mobile logo -->
+            <span class="md:hidden text-[16px] font-bold text-primary font-heading">UniEvents</span>
+            <!-- Breadcrumb area -->
+            <div class="hidden md:block">
+                @if(isset($pageTitle))
+                    <h2 class="text-[15px] font-bold text-primary font-heading">{{ $pageTitle }}</h2>
+                @endif
+                @if(isset($pageSubtitle))
+                    <p class="text-[12px] text-slate-400">{{ $pageSubtitle }}</p>
+                @endif
             </div>
         </div>
-        <div class="flex items-center gap-4">
-            <div class="flex items-center gap-2 relative">
-                <button class="text-pure-white/80 hover:bg-white/10 p-2 rounded-full transition-colors active:scale-95 duration-200">
-                    <span class="material-symbols-outlined" data-icon="notifications">notifications</span>
-                </button>
-                
-                <!-- Profile Dropdown Toggle -->
-                <button id="profileDropdownBtn" class="flex items-center gap-2 focus:outline-none ml-2">
-                    <div class="w-8 h-8 rounded-full overflow-hidden border-2 border-fpt-orange bg-fpt-orange text-white flex items-center justify-center font-bold text-xs uppercase">
+        <div class="flex items-center gap-3">
+            <button class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:bg-slate-50 hover:text-primary transition-all relative">
+                <span class="material-symbols-outlined text-[20px]">notifications</span>
+                <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-brand-orange rounded-full"></span>
+            </button>
+
+            <!-- Profile Dropdown -->
+            <div class="relative">
+                <button id="profileDropdownBtn" class="flex items-center gap-2 px-2 py-1.5 rounded-xl hover:bg-slate-50 transition-all">
+                    <div class="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold text-xs uppercase">
                         {{ substr(Auth::user()->name, 0, 1) }}
                     </div>
-                    <span class="text-pure-white text-sm hidden sm:block">{{ Auth::user()->name }}</span>
-                    <span class="material-symbols-outlined text-pure-white text-sm">expand_more</span>
+                    <span class="text-[13px] font-medium text-primary hidden sm:block">{{ Auth::user()->name }}</span>
+                    <span class="material-symbols-outlined text-slate-400 text-[16px]">expand_more</span>
                 </button>
-
-                <!-- Profile Dropdown Menu -->
-                <div id="profileDropdown" class="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg py-1 hidden border border-outline-variant/30">
-                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+                <div id="profileDropdown" class="absolute right-0 top-full mt-1 w-48 bg-white rounded-xl shadow-lg py-1.5 hidden border border-slate-100">
+                    <a href="#" class="block px-4 py-2 text-[13px] text-slate-600 hover:bg-slate-50 rounded-lg mx-1">Hồ sơ</a>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                            Log Out
+                        <button type="submit" class="block w-full text-left px-4 py-2 text-[13px] text-red-500 hover:bg-red-50 rounded-lg mx-1">
+                            Đăng xuất
                         </button>
                     </form>
                 </div>
@@ -121,25 +147,25 @@
         </div>
     </header>
 
-    <!-- Main Content Area -->
-    <main class="pt-24 pb-12 md:pl-64 min-h-screen">
-        <div class="max-w-container-max mx-auto px-4 md:px-margin-desktop">
-            @if(isset($header))
-                <div class="mb-8">
-                    {{ $header }}
-                </div>
-            @endif
-
+    <!-- ─── Main Content ─── -->
+    <main class="pt-[60px] md:pl-[260px] min-h-screen">
+        <div class="max-w-[1200px] mx-auto px-5 md:px-8 py-8">
             @if(session('success'))
-                <div class="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-md text-sm font-body-md flex items-center gap-2">
-                    <span class="material-symbols-outlined">check_circle</span>
+                <div class="mb-6 bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-xl text-[13px] flex items-center gap-2 animate-fade-in">
+                    <span class="material-symbols-outlined text-[18px]">check_circle</span>
                     {{ session('success') }}
                 </div>
             @endif
             @if(session('error'))
-                <div class="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm font-body-md flex items-center gap-2">
-                    <span class="material-symbols-outlined">error</span>
+                <div class="mb-6 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl text-[13px] flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[18px]">error</span>
                     {{ session('error') }}
+                </div>
+            @endif
+
+            @if(isset($header))
+                <div class="mb-8">
+                    {{ $header }}
                 </div>
             @endif
 
@@ -147,18 +173,6 @@
             {{ $slot ?? '' }}
         </div>
     </main>
-
-    <!-- Footer Integration -->
-    <footer class="w-full py-12 px-margin-desktop flex flex-col md:flex-row justify-between items-center gap-gutter bg-surface-container-highest border-t border-outline-variant md:ml-64 relative">
-        <div class="flex flex-col gap-2 items-center md:items-start">
-            <h4 class="font-label-lg text-label-lg font-bold text-deep-navy uppercase">FPT Polytechnic</h4>
-            <div class="font-body-sm text-body-sm text-text-muted mt-2">© {{ date('Y') }} FPT Polytechnic. All rights reserved.</div>
-        </div>
-        <div class="flex flex-wrap justify-center gap-8 mt-4 md:mt-0">
-            <a class="text-text-muted hover:text-deep-navy font-body-sm text-body-sm transition-opacity duration-200" href="#">Contact Us</a>
-            <a class="text-text-muted hover:text-deep-navy font-body-sm text-body-sm transition-opacity duration-200" href="#">Support</a>
-        </div>
-    </footer>
 
     <script>
         // Sidebar Mobile Toggle
@@ -168,37 +182,35 @@
         const sidebarOverlay = document.getElementById('sidebarOverlay');
 
         function openSidebar() {
-            sidebar.classList.remove('sidebar-closed');
             sidebar.classList.add('sidebar-open');
             sidebarOverlay.classList.remove('hidden');
         }
-
         function closeSidebar() {
-            sidebar.classList.add('sidebar-closed');
             sidebar.classList.remove('sidebar-open');
             sidebarOverlay.classList.add('hidden');
         }
 
-        openSidebarBtn.addEventListener('click', openSidebar);
-        closeSidebarBtn.addEventListener('click', closeSidebar);
-        sidebarOverlay.addEventListener('click', closeSidebar);
+        if (openSidebarBtn) openSidebarBtn.addEventListener('click', openSidebar);
+        if (closeSidebarBtn) closeSidebarBtn.addEventListener('click', closeSidebar);
+        if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
 
         // Profile Dropdown Toggle
         const profileDropdownBtn = document.getElementById('profileDropdownBtn');
         const profileDropdown = document.getElementById('profileDropdown');
 
-        profileDropdownBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            profileDropdown.classList.toggle('hidden');
-        });
-
+        if (profileDropdownBtn) {
+            profileDropdownBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                profileDropdown.classList.toggle('hidden');
+            });
+        }
         document.addEventListener('click', (e) => {
-            if (!profileDropdown.contains(e.target) && !profileDropdownBtn.contains(e.target)) {
+            if (profileDropdown && !profileDropdown.contains(e.target) && !profileDropdownBtn.contains(e.target)) {
                 profileDropdown.classList.add('hidden');
             }
         });
     </script>
-    
+
     @stack('scripts')
 </body>
 </html>

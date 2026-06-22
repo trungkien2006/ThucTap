@@ -62,10 +62,15 @@
         </div>
         @endif
 
-        <div class="flex flex-col md:flex-row justify-center gap-4">
-            @if($event->registration_open)
-                <a href="#registration-section" class="bg-fpt-orange hover:bg-on-primary-container text-pure-white px-10 py-4 rounded-lg font-headline-md transition-all active:scale-95 shadow-lg shadow-fpt-orange/20 inline-block">Register Now</a>
-            @endif
+        <div class="flex flex-col md:flex-row justify-center gap-4 mt-8">
+            <button id="like-btn" data-event-id="{{ $event->id }}" class="bg-surface-container/20 hover:bg-surface-container/40 backdrop-blur-md border border-white/20 text-pure-white px-8 py-3 rounded-full font-headline-md transition-all active:scale-95 shadow-lg flex items-center gap-2 {{ session()->has('liked_events.' . $event->id) ? 'text-red-400 border-red-400/50' : '' }}">
+                <span class="material-symbols-outlined {{ session()->has('liked_events.' . $event->id) ? 'text-red-400' : '' }} font-fill">favorite</span>
+                <span id="likes-count">{{ $event->likes_count }}</span> Lượt thích
+            </button>
+            <div class="bg-surface-container/20 backdrop-blur-md border border-white/20 text-pure-white px-8 py-3 rounded-full font-headline-md shadow-lg flex items-center gap-2">
+                <span class="material-symbols-outlined">visibility</span>
+                <span>{{ $event->views_count }}</span> Lượt xem
+            </div>
         </div>
     </div>
 </section>
@@ -161,129 +166,64 @@
     </div>
 </section>
 
-<!-- Registration Section -->
-<section id="registration-section" class="bg-surface-container py-24 rounded-[24px] mb-12">
-    <div class="max-w-3xl mx-auto px-margin-desktop">
-        <div class="text-center mb-12">
-            <h2 class="font-headline-lg text-headline-lg text-deep-navy mb-4">Register for the Event</h2>
-            <p class="text-text-muted font-body-sm">Secure your spot by filling out the information below. A check-in QR code will be sent to your email.</p>
-        </div>
-
-        <div class="bg-pure-white rounded-2xl p-8 border border-outline-variant shadow-xl">
-            
-            {{-- Flash messages --}}
-            @if(session('success'))
-                <div class="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-md text-sm font-body-md flex items-center gap-2">
-                    <span class="material-symbols-outlined">check_circle</span>
-                    {{ session('success') }}
-                </div>
-            @endif
-            @if(session('error'))
-                <div class="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm font-body-md flex items-center gap-2">
-                    <span class="material-symbols-outlined">error</span>
-                    {{ session('error') }}
-                </div>
-            @endif
-
-            @if($event->registration_open)
-                <div class="mb-8 flex justify-between items-center pb-6 border-b border-surface-container">
-                    @if($event->max_attendees)
-                        <div class="text-center">
-                            <div class="text-sm text-text-muted mb-1">Capacity</div>
-                            <div class="font-bold text-deep-navy">{{ $event->registrations()->count() }} / {{ $event->max_attendees }}</div>
-                        </div>
-                    @endif
-                    <div class="text-center">
-                        <div class="text-sm text-text-muted mb-1">Status</div>
-                        <div class="font-bold text-green-600 flex items-center gap-1 justify-center"><span class="material-symbols-outlined text-sm">lock_open</span> Open</div>
-                    </div>
-                </div>
-
-                <form action="{{ route('events.register', $event) }}" method="POST" class="space-y-6">
-                    @csrf
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="md:col-span-2">
-                            <label for="full_name" class="block font-label-lg text-deep-navy mb-2">Họ và tên <span class="text-red-500">*</span></label>
-                            <input type="text" name="full_name" id="full_name" value="{{ old('full_name') }}" required
-                                class="w-full border-outline-variant rounded-lg px-4 py-3 focus:ring-2 focus:ring-fpt-orange focus:border-fpt-orange transition-all bg-surface-container-lowest">
-                            @error('full_name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                        </div>
-                        <div>
-                            <label for="email" class="block font-label-lg text-deep-navy mb-2">Email <span class="text-red-500">*</span></label>
-                            <input type="email" name="email" id="email" value="{{ old('email') }}" required
-                                class="w-full border-outline-variant rounded-lg px-4 py-3 focus:ring-2 focus:ring-fpt-orange focus:border-fpt-orange transition-all bg-surface-container-lowest">
-                            @error('email') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                        </div>
-                        <div>
-                            <label for="phone" class="block font-label-lg text-deep-navy mb-2">Số điện thoại</label>
-                            <input type="tel" name="phone" id="phone" value="{{ old('phone') }}"
-                                class="w-full border-outline-variant rounded-lg px-4 py-3 focus:ring-2 focus:ring-fpt-orange focus:border-fpt-orange transition-all bg-surface-container-lowest">
-                        </div>
-                        <div>
-                            <label for="student_id" class="block font-label-lg text-deep-navy mb-2">Mã sinh viên</label>
-                            <input type="text" name="student_id" id="student_id" value="{{ old('student_id') }}"
-                                class="w-full border-outline-variant rounded-lg px-4 py-3 focus:ring-2 focus:ring-fpt-orange focus:border-fpt-orange transition-all bg-surface-container-lowest">
-                        </div>
-                        <div>
-                            <label for="department_id" class="block font-label-lg text-deep-navy mb-2">Khoa / Ngành</label>
-                            <select name="department_id" id="department_id"
-                                class="w-full border-outline-variant rounded-lg px-4 py-3 focus:ring-2 focus:ring-fpt-orange focus:border-fpt-orange transition-all bg-surface-container-lowest">
-                                <option value="">-- Chọn khoa --</option>
-                                @foreach(\App\Models\Category::departments()->get() as $dept)
-                                    <option value="{{ $dept->id }}" {{ old('department_id') == $dept->id ? 'selected' : '' }}>{{ $dept->name }}</option>
-                                @endforeach
-                            </select>
-                            @error('department_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                        </div>
-                    </div>
-                    
-                    <button type="submit" class="w-full bg-fpt-orange text-pure-white py-4 rounded-xl font-headline-md flex items-center justify-center gap-2 hover:opacity-90 transition-opacity shadow-lg active:scale-95 mt-8">
-                        Hoàn tất đăng ký
-                    </button>
-                </form>
-            @else
-                <div class="text-center py-12">
-                    <span class="material-symbols-outlined text-6xl text-text-muted mb-4">event_busy</span>
-                    <h3 class="font-headline-md text-deep-navy mb-2">Registration Closed</h3>
-                    <p class="text-text-muted font-body-sm">We are no longer accepting registrations for this event.</p>
-                </div>
-            @endif
-        </div>
-    </div>
-</section>
 
 @push('scripts')
 <script>
-    const dateStr = document.getElementById('countdown')?.getAttribute('data-date');
-    if (dateStr) {
-        function updateCountdown() {
-            const target = new Date(dateStr).getTime();
-            
-            function update() {
-                const now = new Date().getTime();
-                const diff = target - now;
+    const dateStr = document.getElementById('countdown-wrapper')?.getAttribute('data-date');
+    const eventDate = new Date(dateStr).getTime();
 
-                if (diff <= 0) {
-                    document.getElementById('countdown').style.display = 'none';
-                    return;
-                }
+    function updateCountdown() {
+        const now = new Date().getTime();
+        const distance = eventDate - now;
 
-                const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-                const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                const s = Math.floor((diff % (1000 * 60)) / 1000);
-
-                document.getElementById('days').innerText = d.toString().padStart(2, '0');
-                document.getElementById('hours').innerText = h.toString().padStart(2, '0');
-                document.getElementById('minutes').innerText = m.toString().padStart(2, '0');
-                document.getElementById('seconds').innerText = s.toString().padStart(2, '0');
-            }
-
-            setInterval(update, 1000);
-            update();
+        if (distance < 0) {
+            document.getElementById('countdown-wrapper').style.display = 'none';
+            return;
         }
+
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        document.getElementById('days').innerText = days.toString().padStart(2, '0');
+        document.getElementById('hours').innerText = hours.toString().padStart(2, '0');
+        document.getElementById('minutes').innerText = minutes.toString().padStart(2, '0');
+        document.getElementById('seconds').innerText = seconds.toString().padStart(2, '0');
+    }
+
+    if (document.getElementById('countdown-wrapper')) {
+        setInterval(updateCountdown, 1000);
         updateCountdown();
     }
+
+    // Like logic
+    document.getElementById('like-btn').addEventListener('click', function() {
+        const eventId = this.dataset.eventId;
+        const btn = this;
+        const countSpan = document.getElementById('likes-count');
+
+        fetch(`/events/${eventId}/like`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                countSpan.innerText = data.likes_count;
+                btn.classList.add('text-red-400', 'border-red-400/50');
+                btn.querySelector('.material-symbols-outlined').classList.add('text-red-400');
+                btn.style.animation = 'pulse 0.5s ease-in-out';
+                setTimeout(() => btn.style.animation = '', 500);
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
 </script>
 @endpush
 @endsection

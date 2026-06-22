@@ -375,8 +375,10 @@
                     <div class="sweep-bg"></div>
 
                     <div class="relative z-10 h-48 w-full shrink-0 overflow-hidden">
-                        <img src="{{ $ev['img'] }}" alt="{{ $ev['title'] }}" loading="lazy"
-                             class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                        <a href="{{ route('events.show', $ev['slug'] ?? '#') }}" class="block h-full w-full">
+                            <img src="{{ $ev['img'] }}" alt="{{ $ev['title'] }}" loading="lazy"
+                                 class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                        </a>
                         <!-- Bottom accent bar -->
                         <div class="absolute bottom-0 left-0 right-0 h-1" style="background:#FFE381;"></div>
                         <!-- Category badge -->
@@ -388,7 +390,9 @@
                     <div class="relative z-10 flex flex-1 flex-col justify-between p-5">
                         <div>
                             <h3 class="font-['Barlow_Condensed'] text-2xl font-black uppercase leading-tight tracking-wide text-[#1C1410] transition-colors group-hover:text-[#07A0C3]">
-                                {{ $ev['title'] }}
+                                <a href="{{ route('events.show', $ev['slug'] ?? '#') }}">
+                                    {{ $ev['title'] }}
+                                </a>
                             </h3>
                             <div class="mt-3 flex flex-col gap-1.5 text-sm text-[#7A6A52]">
                                 <span class="inline-flex items-center gap-2">

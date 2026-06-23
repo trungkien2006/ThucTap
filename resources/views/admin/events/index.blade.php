@@ -178,7 +178,9 @@
                         <td class="px-3 py-2.5">
                             <span class="inline-flex items-center h-5 px-1.5 rounded text-[10px] font-medium border border-border bg-background">{{ $event->category?->name ?? '—' }}</span>
                         </td>
-                        <td class="px-3 py-2.5 text-muted-foreground">{{ $event->department?->name ?? '—' }}</td>
+                        <td class="px-3 py-2.5 text-muted-foreground" title="{{ $event->departments->pluck('name')->implode(', ') }}">
+                            {{ $event->departments->count() > 0 ? $event->departments->first()->name . ($event->departments->count() > 1 ? '...' : '') : '—' }}
+                        </td>
                         <td class="px-3 py-2.5 whitespace-nowrap text-muted-foreground">
                             {{ $semesterName . ' ' . $yearStr }}
                         </td>

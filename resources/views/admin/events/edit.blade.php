@@ -81,14 +81,21 @@
                         @endforeach
                     </select>
                 </div>
-                <div>
-                    <label class="uni-label" for="department_id">Khoa / Bộ phận</label>
-                    <select class="uni-input" id="department_id" name="department_id">
-                        <option value="">— Chọn —</option>
+                <div class="md:col-span-2">
+                    <label class="uni-label" for="department_ids">Khoa / Bộ phận (Có thể chọn nhiều)</label>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mt-2">
                         @foreach($departments as $dept)
-                            <option value="{{ $dept->id }}" {{ old('department_id', $event->department_id) == $dept->id ? 'selected' : '' }}>{{ $dept->name }}</option>
+                            <label class="relative block cursor-pointer group">
+                                <input type="checkbox" name="department_ids[]" value="{{ $dept->id }}" {{ (is_array(old('department_ids')) && in_array($dept->id, old('department_ids'))) || (!old('department_ids') && $event->departments->contains($dept->id)) ? 'checked' : '' }} class="peer sr-only">
+                                <div class="flex items-center justify-center px-3 py-2.5 border border-slate-200 rounded-xl bg-white text-[13px] font-semibold text-slate-600 transition-all duration-200 peer-checked:border-brand-orange peer-checked:bg-orange-50 peer-checked:text-brand-orange group-hover:border-brand-orange/50 shadow-sm text-center h-full">
+                                    {{ $dept->name }}
+                                </div>
+                                <div class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-brand-orange text-white rounded-full flex items-center justify-center opacity-0 peer-checked:opacity-100 transition-all duration-200 transform scale-50 peer-checked:scale-100 shadow-md">
+                                    <span class="material-symbols-outlined text-[12px] font-bold">check</span>
+                                </div>
+                            </label>
                         @endforeach
-                    </select>
+                    </div>
                 </div>
             </div>
         </section>
@@ -102,16 +109,22 @@
             <div>
                 <div class="flex items-center justify-between gap-3 mb-2 flex-wrap">
                     <label class="uni-label mb-0">Chọn diễn giả (Có thể chọn nhiều)</label>
-                    <div class="relative w-full sm:w-64">
-                        <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-[18px]">search</span>
-                        <input type="text" id="speaker_search" placeholder="Tìm kiếm diễn giả..." class="uni-input py-1.5 text-xs" style="padding-left: 2.5rem !important;">
+                    <div class="flex items-center gap-2 w-full sm:w-auto">
+                        <button type="button" class="open-add-speaker-modal-btn btn-ghost py-1.5 px-3 text-xs flex items-center gap-1 border border-slate-200">
+                            <span class="material-symbols-outlined text-[16px]">add</span>
+                            Thêm mới
+                        </button>
+                        <div class="relative flex-1 sm:w-64">
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-[18px]">search</span>
+                            <input type="text" id="speaker_search" placeholder="Tìm kiếm diễn giả..." class="uni-input py-1.5 text-xs" style="padding-left: 2.5rem !important;">
+                        </div>
                     </div>
                 </div>
                 <div id="speaker_list_container" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[240px] overflow-y-auto p-2 border border-slate-200 rounded-xl bg-slate-50/50">
                     @forelse($speakers as $speaker)
                         @php
                             $photoUrl = $speaker->photo_url 
-                                ? ((strpos($speaker->photo_url, 'http') === 0 || strpos($speaker->photo_url, '/') === 0) ? $speaker->photo_url : Storage::url($speaker->photo_url)) 
+                                ? ((strpos($speaker->photo_url, 'http') === 0 || strpos($speaker->photo_url, '/') === 0) ? $speaker->photo_url : \App\Helpers\FileHelper::url($speaker->photo_url)) 
                                 : 'https://ui-avatars.com/api/?name='.urlencode($speaker->name).'&background=random';
                         @endphp
                         <label class="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-lg cursor-pointer hover:border-brand-orange transition-all relative">
@@ -166,7 +179,7 @@
             
             @php
                 $hasBanner = $event->bannerImage && $event->bannerImage->url;
-                $bannerUrl = $hasBanner ? Storage::url($event->bannerImage->url) : '';
+                $bannerUrl = $hasBanner ? \App\Helpers\FileHelper::url($event->bannerImage->url) : '';
             @endphp
             
             <div id="preview_container" class="{{ $hasBanner ? '' : 'hidden' }} rounded-xl overflow-hidden border border-slate-200 h-[320px] mb-4">
@@ -203,11 +216,11 @@
         <div class="flex items-center justify-between pt-4">
             <a href="{{ route('admin.events.show', $event) }}" class="btn-ghost">Hủy bỏ</a>
             <div class="flex gap-3">
-                <a href="{{ route('admin.events.design', $event) }}" class="btn-ghost border border-slate-200 flex items-center gap-1.5">
+                <button type="submit" name="redirect_to" value="design" class="btn-ghost border border-slate-200 flex items-center gap-1.5">
                     <span class="material-symbols-outlined text-[16px]">palette</span>
-                    Thiết kế
-                </a>
-                <button type="submit" class="btn-primary flex items-center gap-2">
+                    Lưu & Thiết kế
+                </button>
+                <button type="submit" name="redirect_to" value="index" class="btn-primary flex items-center gap-2">
                     <span class="material-symbols-outlined text-[18px]">check</span>
                     Cập nhật sự kiện
                 </button>

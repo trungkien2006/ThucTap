@@ -16,8 +16,7 @@ class EventController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Event::query()->with('bannerImage', 'category', 'department', 'creator')
-            ->where('is_published', true);
+        $query = Event::query()->with('bannerImage', 'category', 'departments', 'creator');
 
         if ($request->filled('search')) {
             $query->where(function($q) use ($request) {
@@ -54,7 +53,9 @@ class EventController extends Controller
         if ($request->filled('department_id')) {
             $depts = array_filter(is_array($request->department_id) ? $request->department_id : [$request->department_id]);
             if (!empty($depts)) {
-                $query->whereIn('department_id', $depts);
+                $query->whereHas('departments', function($q) use ($depts) {
+                    $q->whereIn('categories.id', $depts);
+                });
             }
         }
 
@@ -89,14 +90,15 @@ class EventController extends Controller
             'event_date' => 'required|date',
             'location' => 'required|string|max:255',
             'category_id' => 'nullable|exists:categories,id',
-            'department_id' => 'nullable|exists:categories,id',
+            'department_ids' => 'nullable|array',
+            'department_ids.*' => 'exists:categories,id',
             'banner_image' => 'nullable|image|mimes:jpg,jpeg,png,webp',
             'speaker_ids' => 'nullable|array',
             'speaker_ids.*' => 'exists:speakers,id',
         ]);
 
         // Remove banner_image and speaker_ids from validated data
-        unset($validated['banner_image'], $validated['speaker_ids']);
+        unset($validated['banner_image'], $validated['speaker_ids'], $validated['department_ids']);
 
         $event = new Event($validated);
         $event->is_published = false;
@@ -107,9 +109,15 @@ class EventController extends Controller
             $event->speakers()->sync($request->input('speaker_ids'));
         }
 
+        if ($request->has('department_ids')) {
+            $event->departments()->sync($request->input('department_ids'));
+        }
+
         // Handle banner image upload
         if ($request->hasFile('banner_image')) {
-            $path = $request->file('banner_image')->store('events/banners', 'public');
+            $categorySlug = $event->category ? $event->category->slug : 'uncategorized';
+            $folderPath = "{$categorySlug}/{$event->slug}/banners";
+            $path = $request->file('banner_image')->store($folderPath);
             $event->media()->create([
                 'type' => 'image',
                 'url' => $path,
@@ -132,12 +140,21 @@ class EventController extends Controller
         // All media in the library (global, for reuse picker)
         $mediaLibrary = EventMedia::whereIn('type', ['image', 'video'])
             ->orderByDesc('created_at')
-            ->get();
+            ->get()
+            ->map(function($m) {
+                $m->full_url = \App\Helpers\FileHelper::url($m->url);
+                return $m;
+            });
         $eventSpeakerIds = $event->speakers->pluck('id')->toArray();
         $allSpeakers = \App\Models\Speaker::where('is_hidden', false)
             ->orWhereIn('id', $eventSpeakerIds)
             ->get();
-        return view('admin.events.design', compact('event', 'mediaLibrary', 'allSpeakers'));
+        $featuredEvents = \App\Models\Event::where('is_published', true)
+            ->where('id', '!=', $event->id)
+            ->orderBy('created_at', 'desc')
+            ->take(3)
+            ->get();
+        return view('admin.events.design', compact('event', 'mediaLibrary', 'allSpeakers', 'featuredEvents'));
     }
 
     public function saveDesign(Request $request, Event $event)
@@ -201,9 +218,7 @@ class EventController extends Controller
         $event->save();
 
         if ($request->has('speaker_id') && $request->speaker_id) {
-            $event->speakers()->sync([$request->speaker_id]);
-        } else {
-            $event->speakers()->detach();
+            $event->speakers()->syncWithoutDetaching([$request->speaker_id]);
         }
 
         if ($request->has('schedule_text')) {
@@ -228,6 +243,7 @@ class EventController extends Controller
             
             foreach ($request->media_slots as $slot) {
                 $url = is_array($slot) ? ($slot['url'] ?? '') : $slot;
+                $raw_path = is_array($slot) ? ($slot['path'] ?? null) : null;
                 $caption = is_array($slot) ? ($slot['caption'] ?? '') : '';
                 $content = is_array($slot) ? ($slot['content'] ?? '') : '';
                 $document_url = is_array($slot) ? ($slot['document_url'] ?? '') : null;
@@ -236,18 +252,34 @@ class EventController extends Controller
 
                 if (empty($url) && empty($content) && empty($document_url) && empty($action_url)) continue;
                 
-                $path = null;
+                $path = $raw_path;
                 $type = 'text';
                 
                 if (!empty($url)) {
-                    $path = str_replace(Storage::url(''), '', parse_url($url, PHP_URL_PATH));
+                    if (!$path) {
+                        $parsed = parse_url($url);
+                        if (isset($parsed['query'])) {
+                            parse_str($parsed['query'], $queryParams);
+                            $path = $queryParams['path'] ?? null;
+                        }
+                        if (!$path) {
+                            $path = str_replace(Storage::url(''), '', $parsed['path'] ?? '');
+                        }
+                    }
                     $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
                     $type = in_array($ext, ['mp4', 'avi', 'mov', 'wmv', 'mkv', 'webm']) ? 'video' : 'image';
                 }
 
                 $doc_path = $document_url;
                 if (!empty($doc_path)) {
-                    $doc_path = str_replace(Storage::url(''), '', parse_url($doc_path, PHP_URL_PATH));
+                    $parsedDoc = parse_url($doc_path);
+                    if (isset($parsedDoc['query'])) {
+                        parse_str($parsedDoc['query'], $queryParams);
+                        $doc_path = $queryParams['path'] ?? null;
+                    }
+                    if (!$doc_path) {
+                        $doc_path = str_replace(Storage::url(''), '', $parsedDoc['path'] ?? '');
+                    }
                 }
                 
                 $event->media()->create([
@@ -274,11 +306,19 @@ class EventController extends Controller
 
         if ($request->hasFile('file')) {
             $file = $request->file('file');
-            $path = $file->store('documents', 'public');
+            $folderPath = 'documents';
+            if ($request->has('event_id')) {
+                $evt = \App\Models\Event::with('category')->find($request->event_id);
+                if ($evt) {
+                    $catSlug = $evt->category ? $evt->category->slug : 'uncategorized';
+                    $folderPath = "{$catSlug}/{$evt->slug}/documents";
+                }
+            }
+            $path = $file->store($folderPath);
             return response()->json([
                 'success' => true,
                 'name' => $file->getClientOriginalName(),
-                'url' => Storage::url($path)
+                'url' => \App\Helpers\FileHelper::url($path)
             ]);
         }
 
@@ -287,12 +327,17 @@ class EventController extends Controller
     public function preview(Event $event)
     {
         $event->load('bannerImage', 'media', 'category', 'scheduleItems', 'speakers');
-        return view('admin.events.preview', compact('event'));
+        $featuredEvents = \App\Models\Event::where('is_published', true)
+            ->where('id', '!=', $event->id)
+            ->orderBy('created_at', 'desc')
+            ->take(3)
+            ->get();
+        return view('admin.events.preview', compact('event', 'featuredEvents'));
     }
 
     public function edit(Event $event)
     {
-        $event->load('bannerImage', 'speakers');
+        $event->load('bannerImage', 'speakers', 'departments');
         $categories = Category::eventTypes()->get();
         $departments = Category::departments()->get();
         $eventSpeakerIds = $event->speakers->pluck('id')->toArray();
@@ -311,7 +356,8 @@ class EventController extends Controller
             'event_date' => 'required|date',
             'location' => 'required|string|max:255',
             'category_id' => 'nullable|exists:categories,id',
-            'department_id' => 'nullable|exists:categories,id',
+            'department_ids' => 'nullable|array',
+            'department_ids.*' => 'exists:categories,id',
             'banner_image' => 'nullable|image|mimes:jpg,jpeg,png,webp',
             'speaker_ids' => 'nullable|array',
             'speaker_ids.*' => 'exists:speakers,id',
@@ -319,7 +365,7 @@ class EventController extends Controller
         ]);
 
         $status = $validated['status'];
-        unset($validated['status'], $validated['banner_image'], $validated['speaker_ids']);
+        unset($validated['status'], $validated['banner_image'], $validated['speaker_ids'], $validated['department_ids']);
 
         $event->fill($validated);
 
@@ -329,12 +375,14 @@ class EventController extends Controller
         if ($request->hasFile('banner_image')) {
             // Delete old banner if exists
             $oldBanner = $event->bannerImage;
-            if ($oldBanner && Storage::disk('public')->exists($oldBanner->url)) {
-                Storage::disk('public')->delete($oldBanner->url);
+            if ($oldBanner && Storage::exists($oldBanner->url)) {
+                Storage::delete($oldBanner->url);
                 $oldBanner->delete();
             }
 
-            $path = $request->file('banner_image')->store('events/banners', 'public');
+            $categorySlug = $event->category ? $event->category->slug : 'uncategorized';
+            $folderPath = "{$categorySlug}/{$event->slug}/banners";
+            $path = $request->file('banner_image')->store($folderPath);
             $event->media()->create([
                 'type' => 'image',
                 'url' => $path,
@@ -345,8 +393,13 @@ class EventController extends Controller
         $event->save();
 
         $event->speakers()->sync($request->input('speaker_ids', []));
+        $event->departments()->sync($request->input('department_ids', []));
 
         ActivityLogger::log("đã cập nhật sự kiện: {$event->title}", route('admin.events.index'));
+
+        if ($request->input('redirect_to') === 'design') {
+            return redirect()->route('admin.events.design', $event)->with('success', 'Lưu thay đổi thành công. Hãy thiết kế giao diện!');
+        }
 
         return redirect()->route('admin.events.index')->with('success', 'Cập nhật sự kiện thành công.');
     }
@@ -355,8 +408,8 @@ class EventController extends Controller
     {
         // Delete all associated image files from storage
         foreach ($event->media()->where('type', 'image')->get() as $image) {
-            if (Storage::disk('public')->exists($image->url)) {
-                Storage::disk('public')->delete($image->url);
+            if (Storage::exists($image->url)) {
+                Storage::delete($image->url);
             }
         }
 
@@ -379,7 +432,7 @@ class EventController extends Controller
 
     public function archiveIndex(Request $request)
     {
-        $query = Event::query()->with('bannerImage', 'category', 'department', 'creator')
+        $query = Event::query()->with('bannerImage', 'category', 'departments', 'creator')
             ->where('is_published', false);
 
         if ($request->filled('search')) {

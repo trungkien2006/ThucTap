@@ -1,58 +1,129 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# UniEvent — Nền tảng quản lý sự kiện học trường
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+UniEvent là một hệ thống toàn diện dành cho việc quản lý, quảng bá và lưu trữ các sự kiện nội bộ của trường đại học/câu lạc bộ. Dự án cung cấp cả giao diện người dùng (Frontend) đẹp mắt, mượt mà và bảng điều khiển (Admin Dashboard) mạnh mẽ giúp ban tổ chức dễ dàng tạo và quản lý sự kiện, diễn giả, cũng như hình ảnh truyền thông.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🚀 Tính năng nổi bật
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **Quản lý sự kiện toàn diện:** Trạng thái sự kiện, thông tin địa điểm, diễn giả, phòng ban tổ chức.
+- **Tối ưu hóa hiệu năng cực cao:** Sử dụng cơ chế Caching (Bộ đệm) thông minh, tự động xóa bộ đệm khi thay đổi dữ liệu, giảm thiểu truy vấn DB xuống mức 0 cho các trang Public.
+- **Trình Studio Thiết kế Sự kiện:** Công cụ tùy biến kéo thả và thay đổi giao diện riêng cho từng trang sự kiện trực quan.
+- **Lưu trữ Cloud siêu tốc:** Hỗ trợ lưu trữ file và ảnh lên Google Drive, đồng thời có cơ chế Cache Local Proxy giúp ảnh tải nhanh dưới 0.1 giây ở Front-end.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 🛠 Yêu cầu hệ thống
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Để chạy dự án ở môi trường phát triển (Local), máy tính của bạn cần cài đặt sẵn:
+- **PHP** >= 8.2
+- **Composer** (để quản lý thư viện PHP)
+- **Node.js** & **npm** (để quản lý và build thư viện Frontend)
+- **MySQL** (hoặc MariaDB / PostgreSQL)
+- (Tùy chọn) Git để quản lý source code.
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+## 💻 Hướng dẫn Cài đặt & Khởi chạy (Cho thành viên nhóm)
 
-## Agentic Development
+Vui lòng làm theo từng bước dưới đây theo đúng thứ tự để đảm bảo hệ thống hoạt động hoàn hảo mà không gặp lỗi.
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+### Bước 1: Sao chép dự án và cài đặt Dependencies
+Mở Terminal / Command Prompt tại thư mục muốn cài đặt và chạy:
 
 ```bash
-composer require laravel/boost --dev
+# 1. Clone source code từ nhánh main (Nếu bạn dùng Git)
+# git clone <URL-của-repo>
+# cd ThucTap-main
 
-php artisan boost:install
+# 2. Cài đặt các gói thư viện PHP
+composer install
+
+# 3. Cài đặt các gói thư viện Frontend (Tailwind, AlpineJS,...)
+npm install
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### Bước 2: Thiết lập Biến môi trường (.env)
+Dự án cần một tệp `.env` để cấu hình kết nối Database và các dịch vụ bên ngoài.
 
-## Contributing
+```bash
+# 1. Copy tệp .env mẫu
+cp .env.example .env
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+# 2. Tạo khóa bảo mật cho ứng dụng (Application Key)
+php artisan key:generate
+```
 
-## Code of Conduct
+Mở tệp `.env` vừa tạo, tìm và sửa các dòng sau cho khớp với thông tin MySQL trên máy của bạn:
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=thuctap      # (Thay bằng tên database bạn vừa tạo trong MySQL)
+DB_USERNAME=root         # (User của MySQL)
+DB_PASSWORD=             # (Mật khẩu MySQL của bạn)
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+*(Lưu ý: Bạn cần mở phpMyAdmin hoặc MySQL Workbench để tạo sẵn một cơ sở dữ liệu có tên là `thuctap` trước khi sang bước 3).*
 
-## Security Vulnerabilities
+### Bước 3: Di chuyển cấu trúc dữ liệu (Migrations) và Dữ liệu mẫu
+Chạy lệnh sau để tạo các bảng trong Database:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+php artisan migrate
+```
 
-## License
+*(Nếu hệ thống có seed data mẫu, bạn có thể chạy `php artisan migrate --seed` tùy theo cấu hình của team).*
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Bước 4: Thiết lập Storage & Google Drive (QUAN TRỌNG)
+Hệ thống sử dụng cơ chế lưu ảnh lai (Hybrid) giữa Local và Google Drive để tăng tốc độ. 
+
+1. Đọc và làm theo hướng dẫn chi tiết tại tệp: **[SETUP_GOOGLE_DRIVE.md](SETUP_GOOGLE_DRIVE.md)** để cấu hình API Key.
+2. Bạn **bắt buộc** phải chạy lệnh sau để liên kết thư mục ảnh:
+```bash
+php artisan storage:link
+```
+
+### Bước 5: Khởi chạy dự án
+
+Bạn cần mở **2 cửa sổ Terminal** cùng lúc để chạy cả Backend và Frontend:
+
+**Terminal 1 (Chạy server PHP):**
+```bash
+php artisan serve
+```
+
+**Terminal 2 (Chạy trình biên dịch CSS/JS):**
+```bash
+npm run dev
+```
+
+Truy cập vào trang chủ: `http://localhost:8000` và trải nghiệm thành quả!
+
+---
+
+## 🤖 Cài đặt Tự động bằng AI Agent (Dành cho đồng đội dùng AI)
+
+Nếu bạn đang sử dụng một AI Agent (như Cursor, GitHub Copilot Workspace, Cline, hoặc Antigravity), bạn có thể copy toàn bộ câu lệnh (Prompt) dưới đây và dán vào Agent để nó tự động thiết lập dự án thay cho bạn:
+
+```text
+Please set up the UniEvent project for me on this local machine. Follow these exact steps:
+1. Run `composer install` and `npm install`.
+2. Copy `.env.example` to `.env` if it doesn't exist.
+3. Run `php artisan key:generate`.
+4. Ask me for the MySQL database credentials (DB_DATABASE, DB_USERNAME, DB_PASSWORD) and update the `.env` file accordingly.
+5. Once I provide the credentials, run `php artisan migrate`.
+6. Ask me for the Google Drive API credentials (GOOGLE_DRIVE_CLIENT_ID, GOOGLE_DRIVE_CLIENT_SECRET, GOOGLE_DRIVE_REFRESH_TOKEN, GOOGLE_DRIVE_FOLDER) and update the `.env` file.
+7. Run `php artisan storage:link`.
+8. Start the development servers using `php artisan serve` and `npm run dev`.
+```
+
+Agent của bạn sẽ tự động thực thi các tập lệnh Terminal và chỉnh sửa file môi trường dựa trên cấu hình máy của bạn!
+
+---
+
+## 🔧 Xóa Cache (Dành cho Dev)
+Trong quá trình phát triển, nếu bạn thấy thay đổi dữ liệu hoặc code mà web chưa cập nhật, hãy chạy lệnh xóa bộ đệm:
+```bash
+php artisan optimize:clear
+```

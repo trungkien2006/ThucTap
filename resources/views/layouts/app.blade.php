@@ -71,6 +71,12 @@
 
         <!-- Sidebar Navigation -->
         <nav class="flex-1 overflow-y-auto p-3 space-y-4">
+            
+            <a href="{{ route('home') }}" target="_blank" class="sidebar-menu-btn text-brand-orange hover:text-brand-orange hover:bg-orange-50 bg-orange-50/50 mb-2 border border-brand-orange/20">
+                <i data-lucide="globe" class="h-5 w-5"></i>
+                <span>Xem Website</span>
+            </a>
+
             <!-- Main Group -->
             <div>
                 <p class="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground/70 px-3 mb-1.5">Chính</p>

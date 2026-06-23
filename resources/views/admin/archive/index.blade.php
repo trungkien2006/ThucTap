@@ -76,7 +76,7 @@
                 <div class="bg-card rounded-lg border border-border overflow-hidden shadow-sm hover:shadow-md transition-all">
                     <div class="aspect-[16/9] bg-gradient-to-br from-primary/25 via-primary/10 to-accent grid place-items-center relative overflow-hidden">
                         @if($e->bannerImage)
-                            <img src="{{ Storage::url($e->bannerImage->url) }}" class="w-full h-full object-cover" alt="">
+                            <img src="{{ \App\Helpers\FileHelper::url($e->bannerImage->url) }}" class="w-full h-full object-cover" alt="">
                         @else
                             <i data-lucide="image" class="h-8 w-8 text-primary/50"></i>
                         @endif

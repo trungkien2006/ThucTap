@@ -86,14 +86,14 @@
                 <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                     @forelse($media as $m)
                         <div class="bg-card rounded-lg border border-border overflow-hidden shadow-sm hover:shadow-md transition-all group cursor-pointer media-item-card"
-                            data-url="{{ Storage::url($m->url) }}" data-type="{{ $m->type }}"
+                            data-url="{{ \App\Helpers\FileHelper::url($m->url) }}" data-type="{{ $m->type }}"
                             data-caption="{{ $m->caption ?? basename($m->url) }}"
                             data-created-at="{{ $m->created_at ? $m->created_at->diffForHumans() : '—' }}"
                             data-event="{{ $m->event->title ?? '—' }}" data-delete-url="{{ route('admin.media.destroy', $m) }}">
                             <div
                                 class="aspect-square bg-gradient-to-br from-primary/20 via-primary/5 to-accent grid place-items-center relative overflow-hidden">
                                 @if($m->type === 'image')
-                                    <img src="{{ Storage::url($m->url) }}" class="w-full h-full object-cover" alt="">
+                                    <img src="{{ \App\Helpers\FileHelper::url($m->url) }}" class="w-full h-full object-cover" alt="">
                                     <span
                                         class="absolute top-2 left-2 inline-flex items-center h-5 px-1.5 rounded text-[10px] font-medium bg-background/90 text-foreground">image</span>
                                 @elseif($m->type === 'video')
@@ -130,9 +130,9 @@
                     <div id="preview-media-container"
                         class="aspect-square rounded-md bg-gradient-to-br from-primary/20 via-primary/5 to-accent grid place-items-center overflow-hidden mb-3">
                         @if($first->type === 'image')
-                            <img src="{{ Storage::url($first->url) }}" class="w-full h-full object-cover rounded-md" alt="">
+                            <img src="{{ \App\Helpers\FileHelper::url($first->url) }}" class="w-full h-full object-cover rounded-md" alt="">
                         @elseif($first->type === 'video')
-                            <video src="{{ Storage::url($first->url) }}" controls
+                            <video src="{{ \App\Helpers\FileHelper::url($first->url) }}" controls
                                 class="w-full h-full object-cover rounded-md"></video>
                         @else
                             <i data-lucide="file-text" class="h-10 w-10 text-primary/50"></i>

@@ -38,7 +38,7 @@
 <!-- Event Banner (if available) -->
 @if($event->bannerImage)
     <div class="w-full h-[220px] md:h-[300px] rounded-xl overflow-hidden shadow-sm mb-6 border border-border">
-        <img src="{{ Storage::url($event->bannerImage->url) }}" class="w-full h-full object-cover" alt="Event Banner">
+        <img src="{{ \App\Helpers\FileHelper::url($event->bannerImage->url) }}" class="w-full h-full object-cover" alt="Event Banner">
     </div>
 @endif
 
@@ -102,7 +102,7 @@
                 </div>
                 <div class="space-y-1">
                     <span class="text-muted-foreground">Khoa / Bộ phận</span>
-                    <p class="font-semibold text-foreground text-sm capitalize">{{ $event->department?->name ?? '—' }}</p>
+                    <p class="text-[13px] font-semibold text-primary mt-1">{{ $event->departments->pluck('name')->implode(', ') ?: '—' }}</p>
                 </div>
             </div>
         </div>
@@ -135,7 +135,7 @@
                             <div class="h-12 w-12 rounded-full overflow-hidden shrink-0 bg-muted border border-border">
                                 @if($speaker->photo_url)
                                     @php
-                                        $photoUrl = (strpos($speaker->photo_url, 'http') === 0 || strpos($speaker->photo_url, '/') === 0) ? $speaker->photo_url : Storage::url($speaker->photo_url);
+                                        $photoUrl = (strpos($speaker->photo_url, 'http') === 0 || strpos($speaker->photo_url, '/') === 0) ? $speaker->photo_url : \App\Helpers\FileHelper::url($speaker->photo_url);
                                     @endphp
                                     <img src="{{ $photoUrl }}" class="w-full h-full object-cover" alt="">
                                 @else
@@ -237,7 +237,7 @@
                                     <span class="text-[9px] text-muted-foreground font-mono uppercase">{{ $doc->file_type ?? 'FILE' }}</span>
                                 </div>
                             </div>
-                            <a href="{{ Storage::url($doc->url) }}" download class="h-7 w-7 rounded-md border border-border flex items-center justify-center hover:bg-accent text-muted-foreground hover:text-foreground shrink-0 transition-colors">
+                            <a href="{{ \App\Helpers\FileHelper::url($doc->url) }}" download class="h-7 w-7 rounded-md border border-border flex items-center justify-center hover:bg-accent text-muted-foreground hover:text-foreground shrink-0 transition-colors">
                                 <i data-lucide="download" class="h-3.5 w-3.5"></i>
                             </a>
                         </div>
@@ -260,9 +260,9 @@
             @if($allMedia->count() > 0)
                 <div class="grid grid-cols-3 gap-2">
                     @foreach($allMedia->take(6) as $m)
-                        <a href="{{ Storage::url($m->url) }}" target="_blank" class="aspect-square rounded-lg overflow-hidden border border-border hover:opacity-85 transition-opacity relative group bg-muted/40 grid place-items-center">
+                        <a href="{{ \App\Helpers\FileHelper::url($m->url) }}" target="_blank" class="aspect-square rounded-lg overflow-hidden border border-border hover:opacity-85 transition-opacity relative group bg-muted/40 grid place-items-center">
                             @if($m->type === 'image')
-                                <img src="{{ Storage::url($m->url) }}" class="w-full h-full object-cover" alt="">
+                                <img src="{{ \App\Helpers\FileHelper::url($m->url) }}" class="w-full h-full object-cover" alt="">
                             @else
                                 <i data-lucide="video" class="h-5 w-5 text-primary/70"></i>
                                 <span class="absolute bottom-1 right-1 bg-black/70 text-white text-[8px] px-1 rounded">video</span>

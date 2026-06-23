@@ -30,14 +30,14 @@
         {!! $isHome ? ":style=\"scrolled ? 'background:rgba(255,248,208,0.97);border-color:rgba(232,200,74,0.5);' : ''\"" : "" !!}
         x-data="{ mobileOpen: false, megaMenuOpen: false }"
     >
-        <div class="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-5 lg:px-10">
+        <div class="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-5 lg:px-10 relative">
             <a href="{{ route('home') }}#top" class="group flex items-center gap-2">
                 <span class="font-['Barlow'] text-2xl font-black uppercase tracking-tight transition-colors {{ !$isHome ? 'text-[#1C1410]' : '' }}" {!! $isHome ? ":class=\"scrolled ? 'text-[#1C1410]' : 'text-white'\"" : "" !!}>
                     Uni<span style="color:#E8C84A;">Event</span>
                 </span>
             </a>
 
-            <nav class="hidden items-center gap-1 lg:flex">
+            <nav class="hidden items-center gap-1 lg:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
                 <a href="{{ route('home') }}#top" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-sm font-semibold transition-colors {{ !$isHome ? 'text-[#7A6A52] hover:text-[#1C1410]' : '' }}"
                    {!! $isHome ? ":class=\"scrolled ? 'text-[#7A6A52] hover:text-[#1C1410]' : 'text-white/80 hover:text-white'\"" : "" !!}>
                     Trang chủ

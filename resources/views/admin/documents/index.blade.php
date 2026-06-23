@@ -74,7 +74,7 @@
                                 <i data-lucide="file-text" class="h-3.5 w-3.5"></i>
                             </div>
                             <div class="min-w-0">
-                                <a href="{{ Storage::url($doc->url) }}" target="_blank" class="text-xs font-semibold text-foreground hover:underline block truncate max-w-[240px] sm:max-w-[360px] md:max-w-md">{{ $doc->title ?? basename($doc->url) }}</a>
+                                <a href="{{ \App\Helpers\FileHelper::url($doc->url) }}" target="_blank" class="text-xs font-semibold text-foreground hover:underline block truncate max-w-[240px] sm:max-w-[360px] md:max-w-md">{{ $doc->title ?? basename($doc->url) }}</a>
                                 <span class="inline-flex items-center rounded-md border border-border px-1.5 py-0.5 text-[9px] font-mono font-medium text-muted-foreground mt-0.5 uppercase">{{ $ext }}</span>
                             </div>
                         </div>
@@ -92,7 +92,7 @@
                                     <i data-lucide="pencil" class="h-3.5 w-3.5 text-muted-foreground"></i>
                                     Sửa
                                 </a>
-                                <a href="{{ Storage::url($doc->url) }}" download class="flex items-center gap-1.5 w-full text-left px-2 py-1.5 rounded text-xs hover:bg-accent hover:text-accent-foreground transition-colors font-medium">
+                                <a href="{{ \App\Helpers\FileHelper::url($doc->url) }}" download class="flex items-center gap-1.5 w-full text-left px-2 py-1.5 rounded text-xs hover:bg-accent hover:text-accent-foreground transition-colors font-medium">
                                     <i data-lucide="download" class="h-3.5 w-3.5 text-muted-foreground"></i>
                                     Tải xuống
                                 </a>

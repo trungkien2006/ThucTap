@@ -55,7 +55,34 @@ class PublicEventController extends Controller
             session()->put('viewed_events.' . $event->id, true);
         }
 
-        return view('events.show', compact('event'));
+        $newestEvents = \Illuminate\Support\Facades\Cache::remember('newest_events', 300, function() {
+            return Event::with(['bannerImage', 'category'])
+                ->where('is_published', true)
+                ->orderBy('created_at', 'desc')
+                ->take(4)
+                ->get();
+        })->filter(function($e) use ($event) { return $e->id !== $event->id; })->take(3);
+
+        $prominentEvents = \Illuminate\Support\Facades\Cache::remember('prominent_events', 300, function() {
+            return Event::with(['bannerImage', 'category'])
+                ->where('is_published', true)
+                ->orderBy('views_count', 'desc')
+                ->orderBy('likes_count', 'desc')
+                ->take(4)
+                ->get();
+        })->filter(function($e) use ($event) { return $e->id !== $event->id; })->take(3);
+
+        $previousEvent = Event::where('is_published', true)
+            ->where('event_date', '<', $event->event_date)
+            ->orderBy('event_date', 'desc')
+            ->first();
+
+        $nextEvent = Event::where('is_published', true)
+            ->where('event_date', '>', $event->event_date)
+            ->orderBy('event_date', 'asc')
+            ->first();
+
+        return view('events.show', compact('event', 'newestEvents', 'prominentEvents', 'previousEvent', 'nextEvent'));
     }
 
     public function like($event_id)

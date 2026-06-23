@@ -32,8 +32,17 @@ class DocumentController extends Controller
 
         $uploaded = 0;
         if ($request->hasFile('files')) {
+            $folderPath = 'documents';
+            if ($request->has('event_id') && $request->event_id) {
+                $evt = \App\Models\Event::with('category')->find($request->event_id);
+                if ($evt) {
+                    $catSlug = $evt->category ? $evt->category->slug : 'uncategorized';
+                    $folderPath = "{$catSlug}/{$evt->slug}/documents";
+                }
+            }
+
             foreach ($request->file('files') as $file) {
-                $path = $file->store('documents', 'public');
+                $path = $file->store($folderPath);
 
                 $doc = EventDocument::create([
                     'event_id' => $request->event_id,
@@ -76,8 +85,8 @@ class DocumentController extends Controller
 
     public function destroy(EventDocument $document)
     {
-        if (Storage::disk('public')->exists($document->url)) {
-            Storage::disk('public')->delete($document->url);
+        if (Storage::exists($document->url)) {
+            Storage::delete($document->url);
         }
         $title = $document->title;
         $document->delete();

@@ -33,7 +33,7 @@
             </div>
             <div class="flex-1 relative h-[300px] lg:h-[400px] xl:h-auto overflow-hidden">
                 <a href="{{ route('events.show', $newestEvent->slug) }}" class="block w-full h-full">
-                    <img src="{{ $newestEvent->bannerImage ? Storage::url($newestEvent->bannerImage->url) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80' }}" 
+                    <img src="{{ $newestEvent->bannerImage ? \App\Helpers\FileHelper::url($newestEvent->bannerImage->url) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80' }}" 
                          alt="{{ $newestEvent->title }}" 
                          class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                 </a>
@@ -62,7 +62,7 @@
                     
                     <div class="relative z-10 h-48 w-full shrink-0 overflow-hidden">
                         <a href="{{ route('events.show', $ev->slug) }}" class="block h-full w-full">
-                            <img src="{{ $ev->bannerImage ? Storage::url($ev->bannerImage->url) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80' }}" 
+                            <img src="{{ $ev->bannerImage ? \App\Helpers\FileHelper::url($ev->bannerImage->url) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80' }}" 
                                  alt="{{ $ev->title }}" loading="lazy"
                                  class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
                         </a>
@@ -104,7 +104,7 @@
                     @foreach($featuredEvents as $fEv)
                     <a href="{{ route('events.show', $fEv->slug) }}" class="flex gap-4 items-center group">
                         <div class="w-20 h-16 rounded-lg overflow-hidden shrink-0 bg-slate-100 border border-slate-200">
-                            <img src="{{ $fEv->bannerImage ? Storage::url($fEv->bannerImage->url) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80' }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform">
+                            <img src="{{ $fEv->bannerImage ? \App\Helpers\FileHelper::url($fEv->bannerImage->url) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80' }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform">
                         </div>
                         <div>
                             <h5 class="text-[14px] font-bold text-[#1C1410] group-hover:text-[#07A0C3] transition-colors line-clamp-2 leading-snug">{{ $fEv->title }}</h5>

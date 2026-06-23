@@ -42,8 +42,8 @@ class SpeakerController extends Controller
         $speaker = new Speaker($validated);
 
         if ($request->hasFile('photo')) {
-            $path = $request->file('photo')->store('speakers', 'public');
-            $speaker->photo_url = Storage::url($path);
+            $path = $request->file('photo')->store('speakers');
+            $speaker->photo_url = \App\Helpers\FileHelper::url($path);
         }
 
         $speaker->save();
@@ -79,8 +79,8 @@ class SpeakerController extends Controller
         $speaker->fill($validated);
 
         if ($request->hasFile('photo')) {
-            $path = $request->file('photo')->store('speakers', 'public');
-            $speaker->photo_url = Storage::url($path);
+            $path = $request->file('photo')->store('speakers');
+            $speaker->photo_url = \App\Helpers\FileHelper::url($path);
         }
 
         $speaker->save();

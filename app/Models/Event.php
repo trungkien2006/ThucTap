@@ -36,6 +36,21 @@ class Event extends Model
                 $event->slug = Str::slug($event->title);
             }
         });
+
+        // Clear performance caches
+        static::saved(function ($event) {
+            \Illuminate\Support\Facades\Cache::forget('admin_dashboard_stats');
+            \Illuminate\Support\Facades\Cache::forget('frontend_home_data');
+            \Illuminate\Support\Facades\Cache::forget('newest_events');
+            \Illuminate\Support\Facades\Cache::forget('prominent_events');
+        });
+
+        static::deleted(function ($event) {
+            \Illuminate\Support\Facades\Cache::forget('admin_dashboard_stats');
+            \Illuminate\Support\Facades\Cache::forget('frontend_home_data');
+            \Illuminate\Support\Facades\Cache::forget('newest_events');
+            \Illuminate\Support\Facades\Cache::forget('prominent_events');
+        });
     }
 
     // ── Accessors ──────────────────────────────────────
@@ -58,6 +73,11 @@ class Event extends Model
     public function department()
     {
         return $this->belongsTo(Category::class, 'department_id');
+    }
+
+    public function departments()
+    {
+        return $this->belongsToMany(Category::class, 'event_departments', 'event_id', 'department_id');
     }
 
     public function creator()

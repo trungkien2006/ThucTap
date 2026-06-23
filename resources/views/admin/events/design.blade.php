@@ -90,6 +90,14 @@
                             <label class="uni-label">Tiêu đề sự kiện</label>
                             <input type="text" id="inTieuDe" value="{{ $event->title }}" oninput="syncData()" class="uni-input"/>
                         </div>
+                        
+                        <div>
+                            <label class="uni-label text-brand-orange">Mẫu sự kiện</label>
+                            <select id="inEventTemplate" onchange="syncData()" class="uni-input font-bold border-brand-orange/30 focus:border-brand-orange bg-orange-50/30">
+                                <option value="1" {{ $event->event_template == 1 ? 'selected' : '' }}>Mẫu 1: Quảng bá bình thường</option>
+                                <option value="2" {{ $event->event_template == 2 ? 'selected' : '' }}>Mẫu 2: Quảng bá & Chia sẻ tài liệu</option>
+                            </select>
+                        </div>
 
                         <!-- Cấu hình chữ Tiêu đề -->
                         <div class="grid grid-cols-2 gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-200/60">
@@ -220,15 +228,15 @@
                         <div id="mediaLibraryGrid" class="grid grid-cols-3 gap-2 max-h-[220px] overflow-y-auto pr-1">
                             @foreach($mediaLibrary as $media)
                             <div class="lib-item relative aspect-square rounded-xl overflow-hidden border-2 border-transparent bg-slate-900"
-                                 onclick="applyLibraryItem('{{ Storage::url($media->url) }}', '{{ $media->type }}')"
+                                 onclick="applyLibraryItem('{{ $media->full_url }}', '{{ $media->type }}', '{{ $media->url }}')"
                                  title="{{ $media->caption ?? basename($media->url) }}">
                                 @if($media->type === 'video')
-                                    <video src="{{ Storage::url($media->url) }}" class="w-full h-full object-cover"></video>
+                                    <video src="{{ \App\Helpers\FileHelper::url($media->url) }}" class="w-full h-full object-cover"></video>
                                     <div class="absolute inset-0 bg-black/30 flex items-center justify-center">
                                         <span class="material-symbols-outlined text-white text-[24px]">play_circle</span>
                                     </div>
                                 @else
-                                    <img src="{{ Storage::url($media->url) }}" class="w-full h-full object-cover" alt="">
+                                    <img src="{{ \App\Helpers\FileHelper::url($media->url) }}" class="w-full h-full object-cover" alt="">
                                 @endif
                                 <div class="absolute inset-0 bg-black/0 hover:bg-black/30 transition-all flex items-center justify-center">
                                     <span class="material-symbols-outlined text-white opacity-0 group-hover:opacity-100 text-[20px]">add_photo_alternate</span>
@@ -272,12 +280,7 @@
                     <select id="inTenDienGia" onchange="syncData()" class="uni-input">
                         <option value="" data-name="Chuyên gia Creative Director" data-photo="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80">-- Chọn diễn giả (Mặc định) --</option>
                         @foreach($allSpeakers as $speaker)
-                            @php
-                                $photoUrl = $speaker->photo_url 
-                                    ? ((strpos($speaker->photo_url, 'http') === 0 || strpos($speaker->photo_url, '/') === 0) ? $speaker->photo_url : asset($speaker->photo_url))
-                                    : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80';
-                            @endphp
-                            <option value="{{ $speaker->id }}" data-name="{{ $speaker->name }}" data-photo="{{ $photoUrl }}" {{ $event->speakers->contains('id', $speaker->id) ? 'selected' : '' }}>
+                            <option value="{{ $speaker->id }}" data-name="{{ $speaker->name }}" data-photo="{{ $speaker->photo_url ? asset($speaker->photo_url) : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80' }}" {{ $event->speakers->contains('id', $speaker->id) ? 'selected' : '' }}>
                                 {{ $speaker->name }} - {{ Str::limit($speaker->bio, 30) }}
                             </option>
                         @endforeach
@@ -329,7 +332,7 @@
             <!-- Hero Section -->
             <section class="relative h-[320px] w-full overflow-hidden bg-slate-900">
                 <div id="viewHeroBg" class="absolute inset-0 bg-cover bg-center transition-all duration-500 scale-105"
-                    style="background-image: url('{{ $event->bannerImage ? Storage::url($event->bannerImage->url) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80' }}');">
+                    style="background-image: url('{{ $event->bannerImage ? \App\Helpers\FileHelper::url($event->bannerImage->url) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80' }}');">
                 </div>
                 <div class="absolute inset-0 hero-overlay"></div>
 
@@ -382,13 +385,13 @@
                                 {{-- Image slot --}}
                                 <div class="relative">
                                     <div onclick="activateSlot({{ $i }})"
-                                         class="media-slot w-full h-32 bg-white hover:bg-slate-50 border-2 {{ $hasMedia ? '' : 'border-dashed' }} border-slate-300 hover:border-brand-orange rounded-xl flex items-center justify-center gap-2 cursor-pointer text-slate-500 hover:text-brand-orange transition-all {{ $hasMedia ? 'slot-filled' : '' }}"
+                                         class="media-slot w-full {{ $hasMedia ? 'h-auto' : 'h-32' }} bg-white hover:bg-slate-50 border-2 {{ $hasMedia ? '' : 'border-dashed' }} border-slate-300 hover:border-brand-orange rounded-xl flex items-center justify-center gap-2 cursor-pointer text-slate-500 hover:text-brand-orange transition-all {{ $hasMedia ? 'slot-filled' : '' }}"
                                          data-slot="{{ $i }}" id="slot{{ $i }}">
                                         @if($hasMedia)
                                             @if($media->type === 'video')
-                                                <video src="{{ Storage::url($media->url) }}" class="w-full h-full object-cover rounded-xl" autoplay loop muted playsinline></video>
+                                                <video src="{{ \App\Helpers\FileHelper::url($media->url) }}" class="w-full h-auto rounded-xl" autoplay loop muted playsinline></video>
                                             @else
-                                                <img src="{{ Storage::url($media->url) }}" class="w-full h-full object-cover rounded-xl" alt=""/>
+                                                <img src="{{ \App\Helpers\FileHelper::url($media->url) }}" class="w-full h-auto rounded-xl" alt=""/>
                                             @endif
                                         @else
                                             <span class="material-symbols-outlined text-[22px]">add_photo_alternate</span>
@@ -408,7 +411,7 @@
                                        value="{{ $media ? $media->caption : '' }}" />
 
                                 {{-- Tài liệu đính kèm (Word, Zip...) --}}
-                                <div class="bg-white border border-slate-200 rounded-xl p-3.5 space-y-2.5">
+                                <div class="doc-upload-section bg-white border border-slate-200 rounded-xl p-3.5 space-y-2.5">
                                     <div class="flex items-center justify-between">
                                         <span class="text-[12px] font-bold text-slate-600 flex items-center gap-1">
                                             <span class="material-symbols-outlined text-[16px] text-slate-500">attach_file</span> Tài liệu đính kèm
@@ -420,7 +423,7 @@
                                     </div>
                                     <div class="flex items-center gap-2 {{ $media && $media->document_url ? '' : 'hidden' }}" id="docInfoWrap{{ $i }}">
                                         <span class="material-symbols-outlined text-[16px] text-emerald-600">article</span>
-                                        <a href="{{ $media && $media->document_url ? Storage::url($media->document_url) : '#' }}" id="docLink{{ $i }}" target="_blank" class="text-[12px] font-medium text-brand-orange hover:underline truncate max-w-[200px]">
+                                        <a href="{{ $media && $media->document_url ? \App\Helpers\FileHelper::url($media->document_url) : '#' }}" id="docLink{{ $i }}" target="_blank" class="text-[12px] font-medium text-brand-orange hover:underline truncate max-w-[200px]">
                                             {{ $media ? ($media->document_name ?? basename($media->document_url)) : '' }}
                                         </a>
                                         <button type="button" onclick="removeDocumentFile({{ $i }})" class="text-red-500 hover:text-red-700 ml-auto flex items-center">
@@ -460,64 +463,8 @@
 
                 <!-- Right Column -->
                 <div class="lg:col-span-4 space-y-6" style="position: sticky; top: 88px; align-self: start; height: max-content;">
-                    <!-- Registration Card -->
-                    <div class="uni-card p-5">
-                        <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
-                            <span class="text-[13px] text-slate-500 font-medium">Cổng đăng ký</span>
-                            <span class="badge-success flex items-center gap-1">
-                                <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
-                                Đang mở
-                            </span>
-                        </div>
-
-                        <div class="space-y-3.5 mb-5">
-                            <div onclick="openEditor('sec-time')" class="flex items-center gap-3.5 cursor-pointer hover:bg-slate-50 p-1.5 rounded-lg transition-all">
-                                <div class="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center text-primary">
-                                    <span class="material-symbols-outlined text-[18px]">calendar_today</span>
-                                </div>
-                                <div>
-                                    <p class="text-[11px] text-slate-400 font-medium">Ngày diễn ra</p>
-                                    <p id="viewNgay" class="text-[13px] font-semibold text-primary">{{ $event->event_date->format('d/m/Y') }}</p>
-                                </div>
-                            </div>
-                            <div onclick="openEditor('sec-time')" class="flex items-center gap-3.5 cursor-pointer hover:bg-slate-50 p-1.5 rounded-lg transition-all">
-                                <div class="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center text-primary">
-                                    <span class="material-symbols-outlined text-[18px]">schedule</span>
-                                </div>
-                                <div>
-                                    <p class="text-[11px] text-slate-400 font-medium">Thời gian</p>
-                                    <p id="viewGio" class="text-[13px] font-semibold text-primary">{{ $event->event_date->format('H:i') }} - {{ $event->end_date ? $event->end_date->format('H:i') : '17:00' }}</p>
-                                </div>
-                            </div>
-                            <div onclick="openEditor('sec-time')" class="flex items-center gap-3.5 cursor-pointer hover:bg-slate-50 p-1.5 rounded-lg transition-all">
-                                <div class="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center text-primary">
-                                    <span class="material-symbols-outlined text-[18px]">location_on</span>
-                                </div>
-                                <div>
-                                    <p class="text-[11px] text-slate-400 font-medium">Địa điểm</p>
-                                    <p id="viewDiaDiem" class="text-[13px] font-semibold text-primary">{{ $event->location }}</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <button class="w-full py-2.5 bg-brand-orange hover:bg-orange-600 text-white rounded-xl text-[13px] font-bold transition-all shadow-md shadow-orange-500/10 pointer-events-none">
-                            Giữ chỗ (Giới hạn: <span id="viewToiDa">{{ $event->max_attendees ?? 50 }}</span> slot)
-                        </button>
-                    </div>
-
-                    <!-- Schedule Card -->
-                    <div onclick="openEditor('sec-timeline')" class="uni-card p-5 cursor-pointer hover:border-slate-300 transition-all">
-                        <h4 class="text-[13px] font-bold text-primary mb-3 font-heading flex items-center gap-1.5">
-                            <span class="material-symbols-outlined text-[16px] text-brand-orange">format_list_bulleted</span>
-                            Lịch hoạt động sự kiện
-                        </h4>
-                        <div id="viewLichHoatDong" class="text-[12px] text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-100 whitespace-pre-line leading-relaxed">
-                            {{ $event->scheduleItems->map(fn($s) => $s->start_time . ' - ' . $s->title)->implode("\n") ?: "Chưa có lịch hoạt động" }}
-                        </div>
-                    </div>
-
                     <!-- Speaker Card -->
-                    <div onclick="openEditor('sec-info')" class="uni-card p-6 cursor-pointer hover:border-slate-300 transition-all group">
+                    <div onclick="openEditor('sec-speaker')" class="uni-card p-6 cursor-pointer hover:border-slate-300 transition-all group">
                         <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
                             <span class="text-[13px] text-slate-500 font-medium">Diễn giả chính</span>
                             <span class="material-symbols-outlined text-slate-400 group-hover:text-brand-orange transition-colors text-[18px]">edit</span>
@@ -535,6 +482,74 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Schedule Card -->
+                    <div onclick="openEditor('sec-timeline')" class="uni-card p-5 cursor-pointer hover:border-slate-300 transition-all">
+                        <h4 class="text-[13px] font-bold text-primary mb-3 font-heading flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[16px] text-brand-orange">format_list_bulleted</span>
+                            Lịch hoạt động sự kiện
+                        </h4>
+                        <div id="viewLichHoatDong" class="text-[12px] text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-100 whitespace-pre-line leading-relaxed">
+                            {{ $event->scheduleItems->map(fn($s) => $s->start_time . ' - ' . $s->title)->implode("\n") ?: "Chưa có lịch hoạt động" }}
+                        </div>
+                    </div>
+
+                    <!-- Promoted Events: Newest -->
+                    @if(isset($newestEvents) && $newestEvents->count() > 0)
+                    <div class="uni-card p-5">
+                        <h4 class="text-[13px] font-bold text-primary mb-4 font-heading flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[16px] text-emerald-500">new_releases</span>
+                            Sự kiện mới nhất
+                        </h4>
+                        <div class="space-y-4">
+                            @foreach($newestEvents as $newEv)
+                                <a href="{{ route('events.show', $newEv->slug) }}" target="_blank" class="flex gap-3 items-center group">
+                                    <div class="w-16 h-12 rounded-lg overflow-hidden shrink-0 bg-slate-100 border border-slate-200">
+                                        @if($newEv->bannerImage)
+                                            <img src="{{ \App\Helpers\FileHelper::url($newEv->bannerImage->url) }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform">
+                                        @else
+                                            <div class="w-full h-full bg-slate-200"></div>
+                                        @endif
+                                    </div>
+                                    <div>
+                                        <h5 class="text-[12px] font-bold text-primary group-hover:text-brand-orange transition-colors line-clamp-2 leading-snug">{{ $newEv->title }}</h5>
+                                        <p class="text-[10px] text-slate-400 mt-1">{{ $newEv->event_date->format('d/m/Y') }}</p>
+                                    </div>
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+                    @endif
+
+                    <!-- Promoted Events: Prominent -->
+                    @if(isset($prominentEvents) && $prominentEvents->count() > 0)
+                    <div class="uni-card p-5">
+                        <h4 class="text-[13px] font-bold text-primary mb-4 font-heading flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[16px] text-amber-500">local_fire_department</span>
+                            Sự kiện nổi bật
+                        </h4>
+                        <div class="space-y-4">
+                            @foreach($prominentEvents as $promEv)
+                                <a href="{{ route('events.show', $promEv->slug) }}" target="_blank" class="flex gap-3 items-center group">
+                                    <div class="w-16 h-12 rounded-lg overflow-hidden shrink-0 bg-slate-100 border border-slate-200">
+                                        @if($promEv->bannerImage)
+                                            <img src="{{ \App\Helpers\FileHelper::url($promEv->bannerImage->url) }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform">
+                                        @else
+                                            <div class="w-full h-full bg-slate-200"></div>
+                                        @endif
+                                    </div>
+                                    <div>
+                                        <h5 class="text-[12px] font-bold text-primary group-hover:text-brand-orange transition-colors line-clamp-2 leading-snug">{{ $promEv->title }}</h5>
+                                        <div class="flex items-center gap-2 mt-1">
+                                            <span class="text-[10px] text-slate-400 flex items-center gap-0.5"><span class="material-symbols-outlined text-[12px]">visibility</span>{{ $promEv->views_count }}</span>
+                                            <span class="text-[10px] text-slate-400 flex items-center gap-0.5"><span class="material-symbols-outlined text-[12px]">favorite</span>{{ $promEv->likes_count }}</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+                    @endif
                 </div>
             </div>
         </main>
@@ -625,21 +640,21 @@
                 <span class="material-symbols-outlined text-[22px]">add_photo_alternate</span>
                 <span class="text-[13px] font-medium">Thêm hình ảnh ${slotNum}</span>
             `;
-            slot.classList.remove('slot-filled');
-            slot.classList.add('border-dashed', 'border-slate-300');
+            slot.classList.remove('slot-filled', 'h-auto');
+            slot.classList.add('border-dashed', 'border-slate-300', 'h-32');
             document.getElementById('removeBtn' + slotNum).classList.add('hidden');
         }
 
-        function applyMediaToSlot(url, type) {
+        function applyMediaToSlot(url, type, path = null) {
             if (!activeSlotId) return false;
             const slot = document.getElementById('slot' + activeSlotId);
             if (type === 'video') {
-                slot.innerHTML = `<video src="${url}" class="w-full h-full object-cover rounded-xl" autoplay loop muted></video>`;
+                slot.innerHTML = `<video src="${url}" data-path="${path}" class="w-full h-auto rounded-xl" autoplay loop muted></video>`;
             } else {
-                slot.innerHTML = `<img src="${url}" class="w-full h-full object-cover rounded-xl" alt=""/>`;
+                slot.innerHTML = `<img src="${url}" data-path="${path}" class="w-full h-auto rounded-xl" alt=""/>`;
             }
-            slot.classList.add('slot-filled');
-            slot.classList.remove('border-dashed', 'border-slate-300', 'slot-active');
+            slot.classList.add('slot-filled', 'h-auto');
+            slot.classList.remove('border-dashed', 'border-slate-300', 'slot-active', 'h-32');
 
             // Show remove button
             document.getElementById('removeBtn' + activeSlotId).classList.remove('hidden');
@@ -650,7 +665,7 @@
         }
 
         // ── Library pick ─────────────────────────────────────────
-        function applyLibraryItem(url, type = 'image') {
+        function applyLibraryItem(url, type = 'image', path = null) {
             if (!activeSlotId) {
                 // Flash indicator to tell user to pick a slot
                 const indicator = document.getElementById('activeSlotIndicator');
@@ -669,7 +684,7 @@
             // Highlight selected lib item
             document.querySelectorAll('.lib-item').forEach(i => i.classList.remove('selected'));
             event.currentTarget && event.currentTarget.classList.add('selected');
-            applyMediaToSlot(url, type);
+            applyMediaToSlot(url, type, path);
         }
 
         // ── File Upload (AJAX) ────────────────────────────────────
@@ -787,7 +802,7 @@
                             const div = document.createElement('div');
                             div.className = 'lib-item relative aspect-square rounded-xl overflow-hidden border-2 border-transparent bg-slate-900';
                             div.title = file.caption;
-                            div.onclick = () => applyLibraryItem(file.url, file.type);
+                            div.onclick = () => applyLibraryItem(file.url, file.type, file.path);
                             
                             let mediaHtml = '';
                             if (file.type === 'video') {
@@ -870,6 +885,15 @@
         function syncData() {
             const titleEl = document.getElementById('viewTieuDe');
             titleEl.innerText = document.getElementById('inTieuDe').value;
+
+            // Template toggle
+            const template = document.getElementById('inEventTemplate').value;
+            const docSections = document.querySelectorAll('.doc-upload-section');
+            if (template === '1') {
+                docSections.forEach(el => el.classList.add('hidden'));
+            } else {
+                docSections.forEach(el => el.classList.remove('hidden'));
+            }
 
             // Apply Tiêu đề style
             const titleSize = document.getElementById('inTieuDeSize').value;
@@ -990,6 +1014,22 @@
         }
 
         async function saveDesignThen(callback) {
+            // Hiển thị Overlay Loading
+            let loadingOverlay = document.getElementById('globalLoadingOverlay');
+            if (!loadingOverlay) {
+                loadingOverlay = document.createElement('div');
+                loadingOverlay.id = 'globalLoadingOverlay';
+                loadingOverlay.className = 'fixed inset-0 z-[9999] flex items-center justify-center bg-white/70 backdrop-blur-sm transition-opacity';
+                loadingOverlay.innerHTML = `
+                    <div class="bg-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 border border-slate-100">
+                        <span class="material-symbols-outlined animate-spin text-brand-orange text-[28px]">sync</span>
+                        <span class="text-[15px] font-bold text-primary font-heading">Đang lưu cấu hình...</span>
+                    </div>
+                `;
+                document.body.appendChild(loadingOverlay);
+            }
+            loadingOverlay.classList.remove('hidden');
+
             const formData = {
                 title: document.getElementById('inTieuDe').value,
                 description: document.getElementById('inMoTa').value,
@@ -1005,6 +1045,7 @@
                 desc_font_size: document.getElementById('inMoTaSize').value,
                 desc_color: document.getElementById('inMoTaColor').value,
                 desc_font_family: document.getElementById('inMoTaFontFamily').value,
+                event_template: document.getElementById('inEventTemplate').value,
                 
                 media_slots: []
             };
@@ -1021,6 +1062,7 @@
                 if ((mediaEl && mediaEl.src) || (contentEl && contentEl.value.trim() !== '') || docFileUrlVal || actionUrlVal) {
                     formData.media_slots.push({
                         url: mediaEl && mediaEl.src ? mediaEl.src : '',
+                        path: mediaEl ? mediaEl.getAttribute('data-path') : null,
                         caption: captionEl ? captionEl.value : '',
                         content: contentEl ? contentEl.value : '',
                         document_url: docFileUrlVal,
@@ -1049,10 +1091,32 @@
             } catch (e) {
                 console.error(e);
                 alert('Lỗi lưu cấu hình!');
+            } finally {
+                // Ẩn Overlay Loading
+                if (loadingOverlay) {
+                    loadingOverlay.classList.add('hidden');
+                }
             }
         }
 
         window.addEventListener('DOMContentLoaded', () => { syncData(); });
+    </script>
+
+    <!-- TinyMCE for rich text formatting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.3/tinymce.min.js" referrerpolicy="origin"></script>
+    <script>
+        tinymce.init({
+            selector: 'textarea[id^="content"]',
+            menubar: false,
+            plugins: 'lists link code',
+            toolbar: 'bold italic underline | bullist numlist | link | code',
+            branding: false,
+            setup: function(editor) {
+                editor.on('change', function() {
+                    tinymce.triggerSave();
+                });
+            }
+        });
     </script>
 </body>
 </html>

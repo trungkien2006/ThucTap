@@ -94,7 +94,7 @@
             <!-- Hero Section -->
             <section class="relative h-[320px] w-full overflow-hidden bg-slate-900">
                 <div class="absolute inset-0 bg-cover bg-center scale-105 transition-transform"
-                    style="background-image: url('{{ $event->bannerImage ? Storage::url($event->bannerImage->url) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80' }}');">
+                    style="background-image: url('{{ $event->bannerImage ? \App\Helpers\FileHelper::url($event->bannerImage->url) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80' }}');">
                 </div>
                 <div class="absolute inset-0 hero-overlay" style="background: linear-gradient(to top, rgba(15,23,42,0.95), rgba(15,23,42,0.2) 60%, transparent);"></div>
 
@@ -128,8 +128,8 @@
                             {{-- Article Blocks --}}
                             @foreach($event->galleryImages->take(4) as $block)
                                 @if($block->content)
-                                    <div class="text-slate-800 text-[16px] leading-[1.8] mb-6 text-justify break-words">
-                                        {!! nl2br(e($block->content)) !!}
+                                    <div class="text-slate-800 text-[16px] leading-[1.8] mb-6 text-justify break-words prose max-w-none">
+                                        {!! $block->content !!}
                                     </div>
                                 @endif
 
@@ -137,9 +137,9 @@
                                     <figure class="mb-6">
                                         <div class="rounded-xl overflow-hidden bg-slate-100 shadow-sm">
                                             @if($block->type === 'video')
-                                                <video src="{{ Storage::url($block->url) }}" class="w-full h-auto object-cover max-h-[500px]" autoplay loop muted playsinline controls></video>
+                                                <video src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="w-full h-auto rounded-xl" autoplay loop muted playsinline controls></video>
                                             @else
-                                                <img src="{{ Storage::url($block->url) }}" class="w-full h-auto object-contain max-h-[500px] mx-auto" alt=""/>
+                                                <img src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="w-full h-auto rounded-xl" alt=""/>
                                             @endif
                                         </div>
                                         @if($block->caption)
@@ -151,9 +151,9 @@
                                 @endif
 
                                 {{-- Tài liệu đính kèm nếu có --}}
-                                @if($block->document_url)
+                                @if($event->event_template == 2 && $block->document_url)
                                     <div class="mb-6">
-                                        <a href="{{ Storage::url($block->document_url) }}" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-semibold rounded-xl text-sm border border-emerald-200 transition-all">
+                                        <a href="{{ \App\Helpers\FileHelper::url($block->document_url) }}" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-semibold rounded-xl text-sm border border-emerald-200 transition-all">
                                             <span class="material-symbols-outlined text-lg">download</span>
                                             Tải tài liệu: {{ $block->document_name ?? basename($block->document_url) }}
                                         </a>
@@ -177,50 +177,21 @@
 
                 <!-- Right Column -->
                 <div class="lg:col-span-4 space-y-6" style="position: sticky; top: 88px; align-self: start; height: max-content;">
-                    <!-- Registration Card -->
-                    <div class="bg-white rounded-2xl p-5 border border-slate-200/60 shadow-sm">
-                        <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
-                            <span class="text-[13px] text-slate-500 font-medium">Cổng đăng ký</span>
-                            <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-emerald-50 text-emerald-600 text-[11px] font-bold uppercase tracking-wider">
-                                <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
-                                Đang mở
-                            </span>
+                    <!-- Speaker Card -->
+                    @if($event->speakers->count() > 0)
+                    <div class="bg-white rounded-2xl p-5 border border-slate-200/60 shadow-sm flex gap-4 items-center">
+                        <div class="w-16 h-16 rounded-xl overflow-hidden shrink-0 border border-slate-200 shadow-inner bg-slate-50">
+                            <img class="w-full h-full object-cover" src="{{ $event->speakers->first()->photo_url ? asset($event->speakers->first()->photo_url) : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80' }}"/>
                         </div>
-
-                        <div class="space-y-3.5 mb-5">
-                            <div class="flex items-center gap-3.5 p-1.5">
-                                <div class="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center text-primary">
-                                    <span class="material-symbols-outlined text-[18px]">calendar_today</span>
-                                </div>
-                                <div>
-                                    <p class="text-[11px] text-slate-400 font-medium">Ngày diễn ra</p>
-                                    <p class="text-[13px] font-semibold text-primary">{{ $event->event_date->format('d/m/Y') }}</p>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-3.5 p-1.5">
-                                <div class="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center text-primary">
-                                    <span class="material-symbols-outlined text-[18px]">schedule</span>
-                                </div>
-                                <div>
-                                    <p class="text-[11px] text-slate-400 font-medium">Thời gian</p>
-                                    <p class="text-[13px] font-semibold text-primary">{{ $event->event_date->format('H:i') }} - {{ $event->end_date ? $event->end_date->format('H:i') : '17:00' }}</p>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-3.5 p-1.5">
-                                <div class="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center text-primary">
-                                    <span class="material-symbols-outlined text-[18px]">location_on</span>
-                                </div>
-                                <div>
-                                    <p class="text-[11px] text-slate-400 font-medium">Địa điểm</p>
-                                    <p class="text-[13px] font-semibold text-primary">{{ $event->location }}</p>
-                                </div>
-                            </div>
+                        <div>
+                            <span class="text-brand-orange text-[10px] font-bold uppercase tracking-widest block mb-0.5">Keynote Speaker</span>
+                            <h3 class="text-[16px] font-bold font-heading text-primary">
+                                {{ $event->speakers->first()->name }}
+                            </h3>
+                            <p class="text-[12px] text-slate-400 font-light mt-0.5">{{ Str::limit($event->speakers->first()->bio, 100) }}</p>
                         </div>
-
-                        <button class="w-full py-2.5 bg-brand-orange hover:bg-orange-600 text-white rounded-xl text-[13px] font-bold transition-all shadow-md shadow-orange-500/10 cursor-pointer">
-                            Giữ chỗ (Giới hạn: {{ $event->max_attendees ?? 50 }} slot)
-                        </button>
                     </div>
+                    @endif
 
                     <!-- Schedule Card -->
                     <div class="bg-white rounded-2xl p-5 border border-slate-200/60 shadow-sm">
@@ -233,24 +204,59 @@
                         </div>
                     </div>
 
-                    <!-- Speaker Card -->
-                    @if($event->speakers->count() > 0)
-                    @php
-                        $firstSpeaker = $event->speakers->first();
-                        $speakerPhoto = $firstSpeaker->photo_url 
-                            ? ((strpos($firstSpeaker->photo_url, 'http') === 0 || strpos($firstSpeaker->photo_url, '/') === 0) ? $firstSpeaker->photo_url : asset($firstSpeaker->photo_url))
-                            : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80';
-                    @endphp
-                    <div class="bg-white rounded-2xl p-5 border border-slate-200/60 shadow-sm flex gap-4 items-center">
-                        <div class="w-16 h-16 rounded-xl overflow-hidden shrink-0 border border-slate-200 shadow-inner bg-slate-50">
-                            <img class="w-full h-full object-cover" src="{{ $speakerPhoto }}"/>
+                    <!-- Promoted Events: Newest -->
+                    @if(isset($newestEvents) && $newestEvents->count() > 0)
+                    <div class="bg-white rounded-2xl p-5 border border-slate-200/60 shadow-sm">
+                        <h4 class="text-[13px] font-bold text-primary mb-4 font-heading flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[16px] text-emerald-500">new_releases</span>
+                            Sự kiện mới nhất
+                        </h4>
+                        <div class="space-y-4">
+                            @foreach($newestEvents as $newEv)
+                                <a href="{{ route('events.show', $newEv->slug) }}" target="_blank" class="flex gap-3 items-center group">
+                                    <div class="w-16 h-12 rounded-lg overflow-hidden shrink-0 bg-slate-100 border border-slate-200">
+                                        @if($newEv->bannerImage)
+                                            <img src="{{ \App\Helpers\FileHelper::url($newEv->bannerImage->url) }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform">
+                                        @else
+                                            <div class="w-full h-full bg-slate-200"></div>
+                                        @endif
+                                    </div>
+                                    <div>
+                                        <h5 class="text-[12px] font-bold text-primary group-hover:text-brand-orange transition-colors line-clamp-2 leading-snug">{{ $newEv->title }}</h5>
+                                        <p class="text-[10px] text-slate-400 mt-1">{{ $newEv->event_date->format('d/m/Y') }}</p>
+                                    </div>
+                                </a>
+                            @endforeach
                         </div>
-                        <div>
-                            <span class="text-brand-orange text-[10px] font-bold uppercase tracking-widest block mb-0.5">Keynote Speaker</span>
-                            <h3 class="text-[16px] font-bold font-heading text-primary">
-                                {{ $firstSpeaker->name }}
-                            </h3>
-                            <p class="text-[12px] text-slate-400 font-light mt-0.5">{{ Str::limit($firstSpeaker->bio, 100) }}</p>
+                    </div>
+                    @endif
+
+                    <!-- Promoted Events: Prominent -->
+                    @if(isset($prominentEvents) && $prominentEvents->count() > 0)
+                    <div class="bg-white rounded-2xl p-5 border border-slate-200/60 shadow-sm">
+                        <h4 class="text-[13px] font-bold text-primary mb-4 font-heading flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[16px] text-amber-500">local_fire_department</span>
+                            Sự kiện nổi bật
+                        </h4>
+                        <div class="space-y-4">
+                            @foreach($prominentEvents as $promEv)
+                                <a href="{{ route('events.show', $promEv->slug) }}" target="_blank" class="flex gap-3 items-center group">
+                                    <div class="w-16 h-12 rounded-lg overflow-hidden shrink-0 bg-slate-100 border border-slate-200">
+                                        @if($promEv->bannerImage)
+                                            <img src="{{ \App\Helpers\FileHelper::url($promEv->bannerImage->url) }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform">
+                                        @else
+                                            <div class="w-full h-full bg-slate-200"></div>
+                                        @endif
+                                    </div>
+                                    <div>
+                                        <h5 class="text-[12px] font-bold text-primary group-hover:text-brand-orange transition-colors line-clamp-2 leading-snug">{{ $promEv->title }}</h5>
+                                        <div class="flex items-center gap-2 mt-1">
+                                            <span class="text-[10px] text-slate-400 flex items-center gap-0.5"><span class="material-symbols-outlined text-[12px]">visibility</span>{{ $promEv->views_count }}</span>
+                                            <span class="text-[10px] text-slate-400 flex items-center gap-0.5"><span class="material-symbols-outlined text-[12px]">favorite</span>{{ $promEv->likes_count }}</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            @endforeach
                         </div>
                     </div>
                     @endif

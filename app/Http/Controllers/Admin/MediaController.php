@@ -66,7 +66,13 @@ class MediaController extends Controller
 
                 $ext = strtolower($file->getClientOriginalExtension());
                 $type = in_array($ext, ['mp4', 'avi', 'mov', 'wmv', 'mkv', 'webm']) ? 'video' : (in_array($ext, ['pdf', 'doc', 'docx']) ? 'document' : 'image');
-                $path = $file->store('media', 'public');
+                
+                $event = \App\Models\Event::with('category')->find($request->event_id);
+                $categorySlug = $event && $event->category ? $event->category->slug : 'uncategorized';
+                $eventSlug = $event ? $event->slug : 'general';
+                $folderPath = "{$categorySlug}/{$eventSlug}/media";
+
+                $path = $file->store($folderPath);
 
                 $media = EventMedia::create([
                     'event_id' => $request->event_id,
@@ -76,7 +82,8 @@ class MediaController extends Controller
                 ]);
                 $results[] = [
                     'id'  => $media->id,
-                    'url' => Storage::url($path),
+                    'url' => \App\Helpers\FileHelper::url($media->url),
+                    'path' => $media->url,
                     'caption' => $media->caption,
                     'type' => $type,
                 ];
@@ -103,8 +110,8 @@ class MediaController extends Controller
 
     public function destroy(EventMedia $medium)
     {
-        if (Storage::disk('public')->exists($medium->url)) {
-            Storage::disk('public')->delete($medium->url);
+        if (Storage::exists($medium->url)) {
+            Storage::delete($medium->url);
         }
         $caption = $medium->caption;
         $medium->delete();

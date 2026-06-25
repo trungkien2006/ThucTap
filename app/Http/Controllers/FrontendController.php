@@ -79,36 +79,34 @@ class FrontendController extends Controller
                 ];
             })->toArray();
 
-            $archive = [
-                [
-                    'year' => 2023,
-                    'title' => 'Innovation Expo',
-                    'img' => asset('images/frontend/archive-2023.jpg'),
-                    'desc' => 'Triển lãm đổi mới sáng tạo đầu tiên do sinh viên tổ chức, hội tụ hơn 40 dự án từ 12 khoa, biến hành lang trường thành một thành phố tương lai thu nhỏ.',
-                    'achievements' => ['42 dự án trưng bày', '6.500 lượt tham quan', 'Giải Bạc Sinh viên NCKH'],
-                ],
-                [
-                    'year' => 2024,
-                    'title' => 'University Debate Finals',
-                    'img' => asset('images/frontend/archive-2024.jpg'),
-                    'desc' => 'Vòng chung kết tranh biện liên trường — đêm của ngôn từ, lý lẽ và bản lĩnh. Khán phòng kín chỗ, hàng vạn lượt xem trực tuyến.',
-                    'achievements' => ['32 đội tham dự', '12.000 lượt xem livestream', 'Phủ sóng 18 trường ĐH'],
-                ],
-                [
-                    'year' => 2025,
-                    'title' => 'UniFest — Mùa lễ hội âm nhạc',
-                    'img' => asset('images/frontend/archive-2025.jpg'),
-                    'desc' => 'Một đêm hè không ngủ. Sân khấu ngoài trời, đèn quét bầu trời, 15 nghìn người cùng hát một bài. Trở thành ký ức điện ảnh của niên khóa.',
-                    'achievements' => ['15.000 người tham dự', '9 nghệ sĩ biểu diễn', 'Top trending mạng xã hội'],
-                ],
-                [
-                    'year' => 2026,
-                    'title' => 'AI Summit — Tương lai đã ở đây',
-                    'img' => asset('images/frontend/archive-2026.jpg'),
-                    'desc' => 'Diễn đàn AI sinh viên lớn nhất từ trước đến nay, với panel chuyên gia toàn cầu, trình diễn mô hình trực tiếp và cuộc thi hackathon 48 giờ.',
-                    'achievements' => ['28 diễn giả quốc tế', '120 đội hackathon', 'Giải thưởng 500 triệu VND'],
-                ],
-            ];
+            $archivedEvents = Event::with('bannerImage')
+                ->published()
+                ->where(function($q) {
+                    $q->where('status', 'archived')
+                      ->orWhere('event_date', '<', now());
+                })
+                ->orderBy('event_date', 'desc')
+                ->get();
+            
+            $archiveGroups = $archivedEvents->groupBy(function($event) {
+                return \Carbon\Carbon::parse($event->event_date)->year;
+            });
+
+            $archive = [];
+            foreach ($archiveGroups as $year => $events) {
+                $featured = $events->first();
+                $archive[] = [
+                    'year' => $year,
+                    'title' => 'Tổng kết năm ' . $year,
+                    'img' => $featured->bannerImage ? \App\Helpers\FileHelper::url($featured->bannerImage->url) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80',
+                    'desc' => 'Kho lưu trữ chứa ' . $events->count() . ' sự kiện đã diễn ra trong năm ' . $year . '. Từ hội thảo, hội nghị đến các hoạt động ngoại khóa.',
+                    'achievements' => [$events->count() . ' sự kiện đã tổ chức'],
+                ];
+            }
+            // Sort archive by year descending
+            usort($archive, function($a, $b) {
+                return $b['year'] <=> $a['year'];
+            });
 
             $dbMedia = \App\Models\EventMedia::with('event')
                 ->whereHas('event', function($q) {
@@ -280,5 +278,79 @@ class FrontendController extends Controller
         })->toArray();
 
         return view('frontend.category', compact('category', 'categories', 'newestEvent', 'otherEvents', 'featuredEvents', 'media'));
+    }
+
+    public function archive(Request $request)
+    {
+        $selectedYear = $request->input('year');
+
+        $query = Event::with(['bannerImage', 'category', 'galleryImages', 'documents', 'speakers'])
+            ->published()
+            ->where(function($q) {
+                $q->where('status', 'archived')
+                  ->orWhere('event_date', '<', now());
+            })
+            ->orderBy('event_date', 'desc');
+
+        $events = $query->get();
+
+        $archive = $events->map(function ($event) {
+            return [
+                'id' => $event->id,
+                'event_year' => \Carbon\Carbon::parse($event->event_date)->year,
+                'year' => \Carbon\Carbon::parse($event->event_date)->year,
+                'month' => \Carbon\Carbon::parse($event->event_date)->format('m'),
+                'category' => $event->category ? $event->category->name : 'Sự kiện khác',
+                'title' => $event->title,
+                'date_str' => \Carbon\Carbon::parse($event->event_date)->format('d/m/Y'),
+                'desc' => Str::limit(strip_tags($event->description), 100),
+                'url' => route('events.show', $event->slug),
+                'img' => $event->bannerImage ? \App\Helpers\FileHelper::url($event->bannerImage->url) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80',
+                'achievements' => [],
+                'images' => $event->galleryImages->where('type', 'image')->map(function($media) {
+                    return ['url' => \App\Helpers\FileHelper::url($media->url), 'caption' => $media->caption];
+                })->values()->toArray(),
+                'videos' => $event->galleryImages->where('type', 'video')->map(function($media) {
+                    return ['url' => \App\Helpers\FileHelper::url($media->url), 'caption' => $media->caption];
+                })->values()->toArray(),
+                'documents' => $event->documents->map(function($doc) {
+                    return [
+                        'title' => $doc->title,
+                        'type' => strtolower(pathinfo($doc->file_path, PATHINFO_EXTENSION)) ?: 'pdf',
+                        'size' => round(\Illuminate\Support\Facades\Storage::exists($doc->file_path) ? \Illuminate\Support\Facades\Storage::size($doc->file_path) / 1024 : 0, 2) . ' KB',
+                        'url' => \App\Helpers\FileHelper::url($doc->file_path),
+                    ];
+                })->values()->toArray(),
+                'speakers' => $event->speakers->map(function($speaker) {
+                    return [
+                        'name' => $speaker->name,
+                        'role' => $speaker->role,
+                        'avatar' => $speaker->avatar ? \App\Helpers\FileHelper::url($speaker->avatar) : null,
+                    ];
+                })->values()->toArray(),
+            ];
+        })->toArray();
+
+        // Get categories for navigation menu
+        $dbCategories = \App\Models\Category::where('type', 'event_type')
+            ->where('name', '!=', 'Other')
+            ->get();
+        $vietnameseNames = [
+            'Conference' => 'Hội nghị',
+            'Workshop' => 'Hội thảo thực hành',
+            'Seminar' => 'Hội thảo chuyên đề',
+            'Cultural' => 'Văn hóa nghệ thuật',
+            'Sports' => 'Thể thao',
+            'Orientation' => 'Định hướng'
+        ];
+        $categories = $dbCategories->map(function ($c) use ($vietnameseNames) {
+            return [
+                'name' => $c->name,
+                'slug' => $c->slug,
+                'desc' => $vietnameseNames[$c->name] ?? 'Sự kiện'
+            ];
+        })->toArray();
+
+        return view('frontend.archive', compact('archive', 'categories', 'selectedYear'));
     }
 }

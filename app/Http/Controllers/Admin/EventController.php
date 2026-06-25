@@ -117,7 +117,7 @@ class EventController extends Controller
         if ($request->hasFile('banner_image')) {
             $categorySlug = $event->category ? $event->category->slug : 'uncategorized';
             $folderPath = "{$categorySlug}/{$event->slug}/banners";
-            $path = $request->file('banner_image')->store($folderPath);
+            $path = $request->file('banner_image')->store($folderPath, 'google');
             $event->media()->create([
                 'type' => 'image',
                 'url' => $path,
@@ -214,6 +214,7 @@ class EventController extends Controller
         if ($request->has('desc_font_size')) $event->desc_font_size = $request->desc_font_size;
         if ($request->has('desc_color')) $event->desc_color = $request->desc_color;
         if ($request->has('desc_font_family')) $event->desc_font_family = $request->desc_font_family;
+        if ($request->has('event_template')) $event->page_template = $request->event_template;
 
         $event->save();
 
@@ -257,13 +258,22 @@ class EventController extends Controller
                 
                 if (!empty($url)) {
                     if (!$path) {
-                        $parsed = parse_url($url);
-                        if (isset($parsed['query'])) {
-                            parse_str($parsed['query'], $queryParams);
-                            $path = $queryParams['path'] ?? null;
-                        }
-                        if (!$path) {
-                            $path = str_replace(Storage::url(''), '', $parsed['path'] ?? '');
+                        if (strpos($url, 'http://') === 0 || strpos($url, 'https://') === 0) {
+                            $parsed = parse_url($url);
+                            if (isset($parsed['query'])) {
+                                parse_str($parsed['query'], $queryParams);
+                                $path = $queryParams['path'] ?? null;
+                            }
+                            if (!$path) {
+                                // If it's not our local storage or proxy, keep the full URL
+                                if (strpos($url, config('app.url')) === false && strpos($url, 'file/proxy') === false && strpos($url, Storage::url('')) === false) {
+                                    $path = $url;
+                                } else {
+                                    $path = str_replace(Storage::url(''), '', $parsed['path'] ?? '');
+                                }
+                            }
+                        } else {
+                            $path = $url;
                         }
                     }
                     $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
@@ -272,13 +282,21 @@ class EventController extends Controller
 
                 $doc_path = $document_url;
                 if (!empty($doc_path)) {
-                    $parsedDoc = parse_url($doc_path);
-                    if (isset($parsedDoc['query'])) {
-                        parse_str($parsedDoc['query'], $queryParams);
-                        $doc_path = $queryParams['path'] ?? null;
-                    }
-                    if (!$doc_path) {
-                        $doc_path = str_replace(Storage::url(''), '', $parsedDoc['path'] ?? '');
+                    if (strpos($doc_path, 'http://') === 0 || strpos($doc_path, 'https://') === 0) {
+                        $parsedDoc = parse_url($doc_path);
+                        if (isset($parsedDoc['query'])) {
+                            parse_str($parsedDoc['query'], $queryParams);
+                            $doc_path = $queryParams['path'] ?? null;
+                        }
+                        if (!$doc_path) {
+                            if (strpos($document_url, config('app.url')) === false && strpos($document_url, 'file/proxy') === false && strpos($document_url, Storage::url('')) === false) {
+                                $doc_path = $document_url;
+                            } else {
+                                $doc_path = str_replace(Storage::url(''), '', $parsedDoc['path'] ?? '');
+                            }
+                        }
+                    } else {
+                        $doc_path = $document_url;
                     }
                 }
                 
@@ -314,11 +332,12 @@ class EventController extends Controller
                     $folderPath = "{$catSlug}/{$evt->slug}/documents";
                 }
             }
-            $path = $file->store($folderPath);
+            $path = $file->store($folderPath, 'google');
             return response()->json([
                 'success' => true,
                 'name' => $file->getClientOriginalName(),
-                'url' => \App\Helpers\FileHelper::url($path)
+                'url' => \App\Helpers\FileHelper::url($path),
+                'path' => $path
             ]);
         }
 
@@ -333,6 +352,32 @@ class EventController extends Controller
             ->take(3)
             ->get();
         return view('admin.events.preview', compact('event', 'featuredEvents'));
+    }
+
+    public function previewIframe(Event $event)
+    {
+        $event->load([
+            'bannerImage',
+            'category',
+            'scheduleItems.speaker',
+            'speakers',
+            'galleryImages',
+            'videos',
+            'documents',
+        ]);
+
+        $newestEventsData = \Illuminate\Support\Facades\Cache::remember('newest_events', 300, function() {
+            return \App\Models\Event::with(['bannerImage', 'category'])
+                ->where('is_published', true)
+                ->orderBy('event_date', 'desc')
+                ->take(5)
+                ->get();
+        });
+
+        $previousEvent = null;
+        $nextEvent = null;
+
+        return view('events.show', compact('event', 'newestEventsData', 'previousEvent', 'nextEvent'));
     }
 
     public function edit(Event $event)
@@ -382,7 +427,7 @@ class EventController extends Controller
 
             $categorySlug = $event->category ? $event->category->slug : 'uncategorized';
             $folderPath = "{$categorySlug}/{$event->slug}/banners";
-            $path = $request->file('banner_image')->store($folderPath);
+            $path = $request->file('banner_image')->store($folderPath, 'google');
             $event->media()->create([
                 'type' => 'image',
                 'url' => $path,
@@ -392,8 +437,12 @@ class EventController extends Controller
 
         $event->save();
 
-        $event->speakers()->sync($request->input('speaker_ids', []));
-        $event->departments()->sync($request->input('department_ids', []));
+        if ($request->has('speaker_ids') || $request->has('has_speakers_field')) {
+            $event->speakers()->sync($request->input('speaker_ids', []));
+        }
+        if ($request->has('has_departments_field')) {
+            $event->departments()->sync($request->input('department_ids', []));
+        }
 
         ActivityLogger::log("đã cập nhật sự kiện: {$event->title}", route('admin.events.index'));
 

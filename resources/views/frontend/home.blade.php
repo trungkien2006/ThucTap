@@ -639,6 +639,13 @@
                     </template>
                 </div>
 
+                <div class="mt-6">
+                    <a :href="'{{ route('archive') }}?year=' + current.year" class="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold transition-all hover:scale-105"
+                       style="background:#FFE381; color:#1C1410;">
+                        Xem chi tiết năm <span x-text="current.year"></span> <i data-lucide="arrow-right" class="h-4 w-4"></i>
+                    </a>
+                </div>
+
                 <!-- Year tabs -->
                 <div class="mt-7 flex flex-wrap items-center gap-2">
                     <template x-for="(a,i) in archive" :key="a.year">

@@ -72,7 +72,7 @@ class MediaController extends Controller
                 $eventSlug = $event ? $event->slug : 'general';
                 $folderPath = "{$categorySlug}/{$eventSlug}/media";
 
-                $path = $file->store($folderPath);
+                $path = $file->store($folderPath, 'google');
 
                 $media = EventMedia::create([
                     'event_id' => $request->event_id,

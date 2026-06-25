@@ -24,19 +24,19 @@ class FileHelper
             return route('file.proxy', ['path' => $path]);
         }
 
-        $url = \Illuminate\Support\Facades\Cache::rememberForever('gdrive_url_' . md5($path), function() use ($path) {
-            try {
-                return Storage::url($path);
-            } catch (\Exception $e) {
-                // If it fails (e.g. file not found on Drive), return empty or fallback
-                return '';
-            }
-        });
-
-        if (empty($url)) {
-            return '';
+        $cacheKey = 'gdrive_url_' . md5($path);
+        if (\Illuminate\Support\Facades\Cache::has($cacheKey)) {
+            return \Illuminate\Support\Facades\Cache::get($cacheKey);
         }
 
-        return $url;
+        try {
+            $url = Storage::url($path);
+            if (!empty($url)) {
+                \Illuminate\Support\Facades\Cache::put($cacheKey, $url, now()->addHour());
+            }
+            return $url ?: '';
+        } catch (\Exception $e) {
+            return '';
+        }
     }
 }

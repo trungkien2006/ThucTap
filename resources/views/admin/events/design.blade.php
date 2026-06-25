@@ -26,8 +26,39 @@
             border-color: #e2e8f0 !important;
         }
 
-        /* Media library item */
-        .lib-item { transition: all 0.15s; cursor: pointer; }
+        /* Media library grid & items */
+        #mediaLibraryGrid {
+            display: grid !important;
+            grid-template-columns: repeat(4, 1fr) !important;
+            gap: 6px !important;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 2px;
+        }
+        .lib-item {
+            transition: border-color 0.15s;
+            cursor: pointer;
+            position: relative !important;
+            width: 100% !important;
+            height: 0 !important;
+            padding-bottom: 100% !important;
+            overflow: hidden !important;
+            border-radius: 8px;
+            border: 2px solid transparent;
+            background: #0f172a;
+        }
+        .lib-item > img,
+        .lib-item > video {
+            position: absolute !important;
+            top: 0 !important; left: 0 !important;
+            width: 100% !important; height: 100% !important;
+            object-fit: cover !important;
+        }
+        .lib-item > .lib-overlay {
+            position: absolute !important;
+            inset: 0 !important;
+            z-index: 5;
+        }
         .lib-item.selected { border-color: #f97316 !important; box-shadow: 0 0 0 2px rgba(249,115,22,0.4); }
 
         /* Tab active */
@@ -83,7 +114,7 @@
 
             <div class="space-y-5">
                 <!-- 1. General Info -->
-                <div id="sec-info" class="space-y-3 pt-1 transition-all rounded-lg p-2 -m-2">
+                <div id="sec-info" class="drawer-section space-y-3 pt-1 transition-all rounded-lg p-2 -m-2">
                     <h4 class="uni-section-title">1. Thông tin chung</h4>
                     <div class="space-y-2.5">
                         <div>
@@ -91,13 +122,7 @@
                             <input type="text" id="inTieuDe" value="{{ $event->title }}" oninput="syncData()" class="uni-input"/>
                         </div>
                         
-                        <div>
-                            <label class="uni-label text-brand-orange">Mẫu sự kiện</label>
-                            <select id="inEventTemplate" onchange="syncData()" class="uni-input font-bold border-brand-orange/30 focus:border-brand-orange bg-orange-50/30">
-                                <option value="1" {{ $event->event_template == 1 ? 'selected' : '' }}>Mẫu 1: Quảng bá bình thường</option>
-                                <option value="2" {{ $event->event_template == 2 ? 'selected' : '' }}>Mẫu 2: Quảng bá & Chia sẻ tài liệu</option>
-                            </select>
-                        </div>
+
 
                         <!-- Cấu hình chữ Tiêu đề -->
                         <div class="grid grid-cols-2 gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-200/60">
@@ -191,17 +216,9 @@
 
 
 
-                <!-- 2. Schedule -->
-                <div id="sec-timeline" class="space-y-3 pt-2 border-t border-slate-100 transition-all rounded-lg p-2 -m-2">
-                    <h4 class="uni-section-title">2. Lịch hoạt động cụ thể</h4>
-                    <textarea id="inLichHoatDong" rows="3" oninput="syncData()" class="uni-input text-[12px] leading-relaxed" placeholder="VD: 13:30 - Đón tiếp & Check-in&#10;14:00 - Bắt đầu chương trình&#10;16:00 - Tổng kết & Trao quà">{{ $event->scheduleItems->map(fn($s) => $s->start_time . ' - ' . $s->title)->implode("\n") }}</textarea>
-                </div>
-
-
-
                 <!-- 3. Media Library (Tabbed) -->
-                <div id="sec-media" class="space-y-3 pt-2 border-t border-slate-100 transition-all rounded-lg p-2 -m-2">
-                    <h4 class="uni-section-title">3. Thư viện Media</h4>
+                <div id="sec-media" class="drawer-section space-y-3 pt-2 border-slate-100 transition-all rounded-lg p-2 -m-2">
+                    <h4 class="uni-section-title">Thư viện Media</h4>
 
                     {{-- Active slot indicator --}}
                     <div id="activeSlotIndicator" class="hidden items-center gap-2 px-3 py-2 bg-orange-50 border border-orange-200 rounded-xl">
@@ -223,24 +240,30 @@
                     </div>
 
                     {{-- Tab: Library --}}
-                    <div id="tabPanelLibrary">
+                    <div id="tabPanelLibrary" class="flex flex-col gap-3">
                         @if(count($mediaLibrary) > 0)
-                        <div id="mediaLibraryGrid" class="grid grid-cols-3 gap-2 max-h-[220px] overflow-y-auto pr-1">
+                        <div class="flex justify-between items-center px-1 mt-1">
+                            <span class="text-[12px] font-medium text-slate-500">Đã tải lên {{ count($mediaLibrary) }} file</span>
+                            <select id="mediaFilter" onchange="filterMedia(this.value)" class="uni-input py-1 text-[11px] w-auto bg-white border-slate-200">
+                                <option value="all">Tất cả định dạng</option>
+                                <option value="image">Chỉ Hình ảnh</option>
+                                <option value="video">Chỉ Video</option>
+                            </select>
+                        </div>
+                        <div id="mediaLibraryGrid">
                             @foreach($mediaLibrary as $media)
-                            <div class="lib-item relative aspect-square rounded-xl overflow-hidden border-2 border-transparent bg-slate-900"
+                            <div class="lib-item"
                                  onclick="applyLibraryItem('{{ $media->full_url }}', '{{ $media->type }}', '{{ $media->url }}')"
                                  title="{{ $media->caption ?? basename($media->url) }}">
                                 @if($media->type === 'video')
-                                    <video src="{{ \App\Helpers\FileHelper::url($media->url) }}" class="w-full h-full object-cover"></video>
-                                    <div class="absolute inset-0 bg-black/30 flex items-center justify-center">
-                                        <span class="material-symbols-outlined text-white text-[24px]">play_circle</span>
+                                    <video src="{{ \App\Helpers\FileHelper::url($media->url) }}"></video>
+                                    <div class="lib-overlay" style="display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3);">
+                                        <span class="material-symbols-outlined" style="color:white;font-size:24px;">play_circle</span>
                                     </div>
                                 @else
-                                    <img src="{{ \App\Helpers\FileHelper::url($media->url) }}" class="w-full h-full object-cover" alt="">
+                                    <img src="{{ \App\Helpers\FileHelper::url($media->url) }}" alt="">
                                 @endif
-                                <div class="absolute inset-0 bg-black/0 hover:bg-black/30 transition-all flex items-center justify-center">
-                                    <span class="material-symbols-outlined text-white opacity-0 group-hover:opacity-100 text-[20px]">add_photo_alternate</span>
-                                </div>
+                                <div class="lib-overlay" style="background:rgba(0,0,0,0);transition:background 0.15s;"></div>
                             </div>
                             @endforeach
                         </div>
@@ -274,18 +297,6 @@
                     </div>
                 </div>
 
-                <!-- 4. Speaker -->
-                <div id="sec-speaker" class="space-y-3 pt-2 border-t border-slate-100 mb-4 transition-all rounded-lg p-2 -m-2">
-                    <h4 class="uni-section-title">4. Nhân sự đại diện</h4>
-                    <select id="inTenDienGia" onchange="syncData()" class="uni-input">
-                        <option value="" data-name="Chuyên gia Creative Director" data-photo="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80">-- Chọn diễn giả (Mặc định) --</option>
-                        @foreach($allSpeakers as $speaker)
-                            <option value="{{ $speaker->id }}" data-name="{{ $speaker->name }}" data-photo="{{ $speaker->photo_url ? asset($speaker->photo_url) : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80' }}" {{ $event->speakers->contains('id', $speaker->id) ? 'selected' : '' }}>
-                                {{ $speaker->name }} - {{ Str::limit($speaker->bio, 30) }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
             </div>
 
             <div class="mt-4 pt-4 border-t border-slate-100 space-y-2">
@@ -307,6 +318,14 @@
                             <span class="text-brand-orange font-normal text-[14px]">| Studio</span>
                         </span>
                     </a>
+                </div>
+                <div class="flex-1 flex justify-center items-center mx-4">
+                    <select id="inEventTemplate" onchange="syncData()" class="uni-input w-full max-w-[500px] font-bold border-brand-orange/30 focus:border-brand-orange bg-orange-50/30 text-brand-orange shadow-sm text-[12px] py-1.5 px-3 h-auto text-center">
+                        <option value="2" {{ $event->page_template == 2 || $event->page_template == 1 ? 'selected' : '' }}>Mẫu 1: Tiêu chuẩn</option>
+                        <option value="" disabled>Mẫu 2 (Sắp ra mắt)</option>
+                        <option value="" disabled>Mẫu 3 (Sắp ra mắt)</option>
+                        <option value="" disabled>Mẫu 4 (Sắp ra mắt)</option>
+                    </select>
                 </div>
                 <div class="flex items-center gap-3">
                     <!-- Step indicator mini -->
@@ -389,9 +408,9 @@
                                          data-slot="{{ $i }}" id="slot{{ $i }}">
                                         @if($hasMedia)
                                             @if($media->type === 'video')
-                                                <video src="{{ \App\Helpers\FileHelper::url($media->url) }}" class="w-full h-auto rounded-xl" autoplay loop muted playsinline></video>
+                                                <video src="{{ \App\Helpers\FileHelper::url($media->url) }}" data-path="{{ $media->url }}" class="w-full h-auto rounded-xl" autoplay loop muted playsinline></video>
                                             @else
-                                                <img src="{{ \App\Helpers\FileHelper::url($media->url) }}" class="w-full h-auto rounded-xl" alt=""/>
+                                                <img src="{{ \App\Helpers\FileHelper::url($media->url) }}" data-path="{{ $media->url }}" class="w-full h-auto rounded-xl" alt=""/>
                                             @endif
                                         @else
                                             <span class="material-symbols-outlined text-[22px]">add_photo_alternate</span>
@@ -458,16 +477,20 @@
                             </div>
                             @endfor
                         </div>
+                        <button onclick="addNewSlot()" class="mt-5 w-full py-2.5 border-2 border-dashed border-slate-300 hover:border-brand-orange text-slate-500 hover:text-brand-orange rounded-xl font-medium transition-colors flex items-center justify-center gap-2">
+                            <span class="material-symbols-outlined text-[20px]">add_circle</span>
+                            Thêm khối nội dung / ảnh
+                        </button>
                     </div>
                 </div>
 
                 <!-- Right Column -->
                 <div class="lg:col-span-4 space-y-6" style="position: sticky; top: 88px; align-self: start; height: max-content;">
                     <!-- Speaker Card -->
-                    <div onclick="openEditor('sec-speaker')" class="uni-card p-6 cursor-pointer hover:border-slate-300 transition-all group">
+                    <div class="uni-card p-6 transition-all relative">
                         <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
                             <span class="text-[13px] text-slate-500 font-medium">Diễn giả chính</span>
-                            <span class="material-symbols-outlined text-slate-400 group-hover:text-brand-orange transition-colors text-[18px]">edit</span>
+                            <button onclick="toggleSpeakerDropdown(event)" class="material-symbols-outlined text-slate-400 hover:text-brand-orange transition-colors text-[18px]">edit</button>
                         </div>
                         <div class="flex gap-4 items-center">
                             <div class="w-16 h-16 rounded-xl overflow-hidden shrink-0 border border-slate-200 shadow-inner bg-slate-50">
@@ -481,17 +504,46 @@
                                 <p class="text-[12px] text-slate-400 font-light">Nhấn để cấu hình nhân sự</p>
                             </div>
                         </div>
+
+                        <!-- Speaker Dropdown Menu -->
+                        <div id="speakerDropdown" class="hidden absolute top-[40px] right-0 w-[300px] z-[60] bg-white rounded-2xl shadow-xl border border-slate-200 flex flex-col max-h-[350px]">
+                            <div class="p-3 border-b border-slate-100">
+                                <div class="relative">
+                                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">search</span>
+                                    <input type="text" id="speakerSearchInput" placeholder="Tìm tên diễn giả..." onkeyup="filterSpeakers()" class="w-full pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-[12px] focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all">
+                                </div>
+                            </div>
+                            <div class="flex-1 overflow-y-auto p-2 space-y-1" id="speakerListContainer">
+                                <!-- Mặc định -->
+                                <div onclick="selectSpeaker('', 'Chuyên gia Creative Director', 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80')" class="speaker-item flex items-center gap-3 p-2 rounded-xl hover:bg-orange-50 cursor-pointer transition-all" data-name="chuyên gia creative director">
+                                    <div class="w-8 h-8 rounded-lg overflow-hidden shrink-0 bg-slate-100"><img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80" class="w-full h-full object-cover"></div>
+                                    <div>
+                                        <h4 class="text-[12px] font-bold text-primary">-- Mặc định --</h4>
+                                    </div>
+                                </div>
+                                @foreach($allSpeakers as $speaker)
+                                <div onclick="selectSpeaker('{{ $speaker->id }}', '{{ addslashes($speaker->name) }}', '{{ $speaker->photo_url ? asset($speaker->photo_url) : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80' }}')" class="speaker-item flex items-center gap-3 p-2 rounded-xl hover:bg-orange-50 cursor-pointer transition-all" data-name="{{ strtolower($speaker->name) }}">
+                                    <div class="w-8 h-8 rounded-lg overflow-hidden shrink-0 bg-slate-100">
+                                        <img src="{{ $speaker->photo_url ? asset($speaker->photo_url) : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80' }}" class="w-full h-full object-cover">
+                                    </div>
+                                    <div>
+                                        <h4 class="text-[12px] font-bold text-primary">{{ $speaker->name }}</h4>
+                                        <p class="text-[10px] text-slate-400 truncate max-w-[180px]">{{ Str::limit($speaker->bio, 30) }}</p>
+                                    </div>
+                                </div>
+                                @endforeach
+                            </div>
+                            <input type="hidden" id="inTenDienGia" value="{{ $event->speakers->first()?->id ?? '' }}">
+                        </div>
                     </div>
 
                     <!-- Schedule Card -->
-                    <div onclick="openEditor('sec-timeline')" class="uni-card p-5 cursor-pointer hover:border-slate-300 transition-all">
-                        <h4 class="text-[13px] font-bold text-primary mb-3 font-heading flex items-center gap-1.5">
-                            <span class="material-symbols-outlined text-[16px] text-brand-orange">format_list_bulleted</span>
-                            Lịch hoạt động sự kiện
+                    <div class="uni-card p-5 transition-all">
+                        <h4 class="text-[13px] font-bold text-primary mb-3 font-heading flex items-center justify-between">
+                            <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px] text-brand-orange">format_list_bulleted</span>Lịch hoạt động sự kiện</span>
+                            <span class="text-[10px] font-normal text-slate-400">Có thể sửa trực tiếp</span>
                         </h4>
-                        <div id="viewLichHoatDong" class="text-[12px] text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-100 whitespace-pre-line leading-relaxed">
-                            {{ $event->scheduleItems->map(fn($s) => $s->start_time . ' - ' . $s->title)->implode("\n") ?: "Chưa có lịch hoạt động" }}
-                        </div>
+                        <textarea id="inLichHoatDong" rows="5" oninput="syncData()" class="w-full text-[12px] text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all leading-relaxed resize-y" placeholder="VD: 13:30 - Đón tiếp & Check-in&#10;14:00 - Bắt đầu chương trình">{{ $event->scheduleItems->map(fn($s) => $s->start_time . ' - ' . $s->title)->implode("\n") }}</textarea>
                     </div>
 
                     <!-- Promoted Events: Newest -->
@@ -555,6 +607,8 @@
         </main>
     </div>
 
+
+
     <!-- Duplicate Upload Modal -->
     <div id="duplicateModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/50 backdrop-blur-sm">
         <div class="bg-white rounded-2xl w-[90%] max-w-[500px] p-6 shadow-2xl transform scale-95 transition-all" id="duplicateModalContent">
@@ -582,18 +636,28 @@
         // ── Drawer ──────────────────────────────────────────────
         function openEditor(sectionId = null) {
             document.body.classList.add('drawer-open');
+            const drawer = document.querySelector('.control-drawer');
+            
+            // Hide all sections
+            document.querySelectorAll('.drawer-section').forEach(el => el.classList.add('hidden'));
+            
             if (sectionId) {
-                setTimeout(() => {
-                    const targetNode = document.getElementById(sectionId);
-                    if (targetNode) {
-                        targetNode.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        targetNode.classList.add('bg-orange-50/70');
-                        setTimeout(() => targetNode.classList.remove('bg-orange-50/70'), 1000);
-                    }
-                }, 200);
+                const targetNode = document.getElementById(sectionId);
+                if (targetNode) {
+                    targetNode.classList.remove('hidden');
+                }
+                
+                if (sectionId === 'sec-media') {
+                    drawer.classList.add('wide');
+                } else {
+                    drawer.classList.remove('wide');
+                }
             }
         }
-        function closeEditor() { document.body.classList.remove('drawer-open'); }
+        function closeEditor() { 
+            document.body.classList.remove('drawer-open'); 
+            document.querySelector('.control-drawer').classList.remove('wide');
+        }
 
         // ── Tabs ─────────────────────────────────────────────────
         function switchTab(tab) {
@@ -790,34 +854,31 @@
 
                 if (data.success) {
                     // Add uploaded items to library grid
-                    const grid = document.getElementById('mediaLibraryGrid');
-                    if (!grid) {
-                        // If grid doesn't exist (was empty), recreate the panel
-                        document.getElementById('tabPanelLibrary').innerHTML = `<div id="mediaLibraryGrid" class="grid grid-cols-3 gap-2 max-h-[220px] overflow-y-auto pr-1"></div>`;
+                    let libGrid = document.getElementById('mediaLibraryGrid');
+                    if (!libGrid) {
+                        const panel = document.getElementById('tabPanelLibrary');
+                        panel.innerHTML = '<div id="mediaLibraryGrid"></div>';
+                        libGrid = document.getElementById('mediaLibraryGrid');
                     }
-                    const libGrid = document.getElementById('mediaLibraryGrid');
 
                     data.files.forEach(file => {
                         if (file.type === 'image' || file.type === 'video') {
                             const div = document.createElement('div');
-                            div.className = 'lib-item relative aspect-square rounded-xl overflow-hidden border-2 border-transparent bg-slate-900';
+                            div.className = 'lib-item';
                             div.title = file.caption;
                             div.onclick = () => applyLibraryItem(file.url, file.type, file.path);
-                            
+
                             let mediaHtml = '';
                             if (file.type === 'video') {
-                                mediaHtml = `<video src="${file.url}" class="w-full h-full object-cover"></video>
-                                             <div class="absolute inset-0 bg-black/30 flex items-center justify-center">
-                                                 <span class="material-symbols-outlined text-white text-[24px]">play_circle</span>
+                                mediaHtml = `<video src="${file.url}"></video>
+                                             <div class="lib-overlay" style="display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3);">
+                                                 <span class="material-symbols-outlined" style="color:white;font-size:24px;">play_circle</span>
                                              </div>`;
                             } else {
-                                mediaHtml = `<img src="${file.url}" class="w-full h-full object-cover" alt="">`;
+                                mediaHtml = `<img src="${file.url}" alt="">`;
                             }
 
-                            div.innerHTML = `${mediaHtml}
-                                <div class="absolute inset-0 bg-black/0 hover:bg-black/30 transition-all flex items-center justify-center">
-                                    <span class="material-symbols-outlined text-white opacity-0 hover:opacity-100 text-[20px]">add_photo_alternate</span>
-                                </div>`;
+                            div.innerHTML = mediaHtml + `<div class="lib-overlay" style="background:rgba(0,0,0,0);"></div>`;
                             libGrid.insertAdjacentElement('afterbegin', div);
                             existingMediaFilenames.push(file.caption);
                         }
@@ -838,7 +899,7 @@
 
                     // Auto-apply first image to active slot if any
                     if (activeSlotId && data.files.length > 0 && (data.files[0].type === 'image' || data.files[0].type === 'video')) {
-                        applyMediaToSlot(data.files[0].url, data.files[0].type);
+                        applyMediaToSlot(data.files[0].url, data.files[0].type, data.files[0].path);
                     }
                 }
             } catch (err) {
@@ -983,7 +1044,7 @@
                 const data = await resp.json();
                 if (data.success) {
                     // Update values
-                    document.getElementById('docFileUrl' + slotId).value = data.url;
+                    document.getElementById('docFileUrl' + slotId).value = data.path;
                     document.getElementById('docFileName' + slotId).value = data.name;
                     
                     // Show file info
@@ -1050,27 +1111,35 @@
                 media_slots: []
             };
 
-            for (let i = 1; i <= 4; i++) {
+            const slotWrappers = document.querySelectorAll('[data-slot-wrap]');
+            slotWrappers.forEach((wrapper) => {
+                const i = wrapper.getAttribute('data-slot-wrap');
                 const slot = document.getElementById('slot' + i);
                 const captionEl = document.getElementById('caption' + i);
                 const contentEl = document.getElementById('content' + i);
-                const docFileUrlVal = document.getElementById('docFileUrl' + i).value;
-                const docFileNameVal = document.getElementById('docFileName' + i).value;
-                const actionUrlVal = document.getElementById('actionUrl' + i).value;
-                const mediaEl = slot.querySelector('img, video');
+                const docFileUrlVal = document.getElementById('docFileUrl' + i) ? document.getElementById('docFileUrl' + i).value : '';
+                const docFileNameVal = document.getElementById('docFileName' + i) ? document.getElementById('docFileName' + i).value : '';
+                const actionUrlVal = document.getElementById('actionUrl' + i) ? document.getElementById('actionUrl' + i).value : '';
+                const mediaEl = slot ? slot.querySelector('img, video') : null;
                 
-                if ((mediaEl && mediaEl.src) || (contentEl && contentEl.value.trim() !== '') || docFileUrlVal || actionUrlVal) {
+                // For tinymce, get content properly if initialized
+                let textContent = contentEl ? contentEl.value : '';
+                if (window.tinymce && tinymce.get('content' + i)) {
+                    textContent = tinymce.get('content' + i).getContent();
+                }
+
+                if ((mediaEl && mediaEl.src) || (textContent && textContent.trim() !== '') || docFileUrlVal || actionUrlVal) {
                     formData.media_slots.push({
                         url: mediaEl && mediaEl.src ? mediaEl.src : '',
                         path: mediaEl ? mediaEl.getAttribute('data-path') : null,
                         caption: captionEl ? captionEl.value : '',
-                        content: contentEl ? contentEl.value : '',
+                        content: textContent,
                         document_url: docFileUrlVal,
                         document_name: docFileNameVal,
                         action_url: actionUrlVal
                     });
                 }
-            }
+            });
 
             try {
                 const resp = await fetch("{{ route('admin.events.save_design', $event) }}", {
@@ -1100,6 +1169,157 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => { syncData(); });
+    </script>
+
+    <!-- Speaker Modal & Dynamic Slots JS -->
+    <script>
+        // Media Filter JS
+        function filterMedia(type) {
+            const items = document.querySelectorAll('#mediaLibraryGrid .lib-item');
+            items.forEach(item => {
+                const itemType = item.querySelector('video') ? 'video' : 'image';
+                if (type === 'all' || type === itemType) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        // Speaker Dropdown JS
+        function toggleSpeakerDropdown(event) {
+            event.stopPropagation();
+            const dropdown = document.getElementById('speakerDropdown');
+            dropdown.classList.toggle('hidden');
+            if (!dropdown.classList.contains('hidden')) {
+                document.getElementById('speakerSearchInput').focus();
+            }
+        }
+
+        // Đóng dropdown khi click ra ngoài
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('speakerDropdown');
+            if (dropdown && !dropdown.classList.contains('hidden')) {
+                // Nếu click không nằm trong dropdown và không nằm trên nút mở dropdown
+                if (!dropdown.contains(event.target) && !event.target.closest('[onclick="toggleSpeakerDropdown(event)"]')) {
+                    dropdown.classList.add('hidden');
+                }
+            }
+        });
+
+        function filterSpeakers() {
+            const keyword = document.getElementById('speakerSearchInput').value.toLowerCase();
+            const items = document.querySelectorAll('.speaker-item');
+            items.forEach(item => {
+                const name = item.getAttribute('data-name');
+                if (name.includes(keyword)) {
+                    item.classList.remove('hidden');
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+        }
+
+        function selectSpeaker(id, name, photoUrl) {
+            document.getElementById('inTenDienGia').value = id;
+            document.getElementById('viewTenDienGia').textContent = name;
+            document.getElementById('viewAnhDienGia').src = photoUrl;
+            syncData();
+            document.getElementById('speakerDropdown').classList.add('hidden');
+        }
+
+        // Dynamic Slots JS
+        function addNewSlot() {
+            const container = document.getElementById('mediaSlots');
+            const currentSlots = container.querySelectorAll('[data-slot-wrap]');
+            let maxI = 0;
+            currentSlots.forEach(el => {
+                const id = parseInt(el.getAttribute('data-slot-wrap'));
+                if (id > maxI) maxI = id;
+            });
+            const newI = maxI + 1;
+
+            const slotHtml = `
+            <div class="flex flex-col gap-3 bg-slate-50/50 p-4 rounded-xl border border-slate-100 mt-6" data-slot-wrap="${newI}">
+                <textarea id="content${newI}" rows="3" placeholder="Nhập nội dung sự kiện cho đoạn này..."
+                       class="w-full text-[14px] px-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all resize-y"></textarea>
+                       
+                <div class="relative">
+                    <div onclick="activateSlot(${newI})"
+                         class="media-slot w-full h-32 bg-white hover:bg-slate-50 border-2 border-dashed border-slate-300 hover:border-brand-orange rounded-xl flex items-center justify-center gap-2 cursor-pointer text-slate-500 hover:text-brand-orange transition-all"
+                         data-slot="${newI}" id="slot${newI}">
+                        <span class="material-symbols-outlined text-[22px]">add_photo_alternate</span>
+                        <span class="text-[13px] font-medium">Thêm hình ảnh ${newI}</span>
+                    </div>
+                    <button onclick="removeSlot(${newI})" id="removeBtn${newI}"
+                            class="hidden absolute top-2 right-2 w-7 h-7 bg-white/90 hover:bg-red-500 hover:text-white text-slate-600 rounded-lg shadow items-center justify-center transition-all z-10"
+                            title="Gỡ ảnh">
+                        <span class="material-symbols-outlined text-[16px]">delete</span>
+                    </button>
+                </div>
+                <input type="text" id="caption${newI}" placeholder="Nhập ghi chú / mô tả cho ảnh ${newI}..."
+                       class="w-full text-[13px] px-3 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all" />
+
+                <div class="doc-upload-section bg-white border border-slate-200 rounded-xl p-3.5 space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[12px] font-bold text-slate-600 flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[16px] text-slate-500">attach_file</span> Tài liệu đính kèm
+                        </span>
+                        <input type="file" id="docFileInput${newI}" class="hidden" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip" onchange="uploadDocumentFile(${newI})"/>
+                        <button type="button" onclick="document.getElementById('docFileInput${newI}').click()" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-[11px] font-semibold transition-all">
+                            Tải file
+                        </button>
+                    </div>
+                    <div class="hidden flex items-center gap-2" id="docInfoWrap${newI}">
+                        <span class="material-symbols-outlined text-[16px] text-emerald-600">article</span>
+                        <a href="#" id="docLink${newI}" target="_blank" class="text-[12px] font-medium text-brand-orange hover:underline truncate max-w-[200px]"></a>
+                        <button type="button" onclick="removeDocumentFile(${newI})" class="text-red-500 hover:text-red-700 ml-auto flex items-center">
+                            <span class="material-symbols-outlined text-[16px]">close</span>
+                        </button>
+                    </div>
+                    <input type="hidden" id="docFileUrl${newI}" />
+                    <input type="hidden" id="docFileName${newI}" />
+                </div>
+
+                <div class="bg-white border border-slate-200 rounded-xl p-3.5 space-y-1">
+                    <label class="text-[12px] font-bold text-slate-600 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[16px] text-slate-500">link</span> Liên kết ngoài (URL)
+                    </label>
+                    <input type="text" id="actionUrl${newI}" placeholder="Nhập link liên kết..."
+                           class="w-full text-[13px] px-3 py-1.5 bg-slate-50/50 border border-slate-200 rounded-lg focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all"
+                           oninput="syncData()" />
+                </div>
+
+                <div class="mt-1 flex flex-wrap gap-2">
+                    <div id="docPreviewWrap${newI}" class="hidden flex items-center gap-1.5 bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-lg text-[12px] font-medium border border-emerald-200/50">
+                        <span class="material-symbols-outlined text-[16px]">article</span>
+                        <span id="docPreviewName${newI}"></span>
+                    </div>
+                    <div id="urlPreviewWrap${newI}" class="hidden flex items-center gap-1.5 bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg text-[12px] font-medium border border-blue-200/50">
+                        <span class="material-symbols-outlined text-[16px]">open_in_new</span>
+                        <span class="truncate max-w-[150px]" id="urlPreviewLink${newI}"></span>
+                    </div>
+                </div>
+            </div>`;
+
+            container.insertAdjacentHTML('beforeend', slotHtml);
+            
+            // Re-init tinymce for the new textarea if tinymce is available
+            if (window.tinymce) {
+                tinymce.init({
+                    selector: '#content' + newI,
+                    menubar: false,
+                    plugins: 'lists link code',
+                    toolbar: 'bold italic underline | bullist numlist | link | code',
+                    branding: false,
+                    setup: function(editor) {
+                        editor.on('change', function() {
+                            editor.save();
+                        });
+                    }
+                });
+            }
+        }
     </script>
 
     <!-- TinyMCE for rich text formatting -->

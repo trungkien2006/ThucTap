@@ -55,14 +55,6 @@ class Event extends Model
 
     // ── Accessors ──────────────────────────────────────
 
-    /**
-     * Computed status attribute used by views.
-     */
-    public function getStatusAttribute(): string
-    {
-        return $this->is_published ? 'published' : 'draft';
-    }
-
     // ── Core Relationships ─────────────────────────────
 
     public function category()

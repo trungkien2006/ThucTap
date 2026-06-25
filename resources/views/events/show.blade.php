@@ -159,7 +159,7 @@
 
                             <div class="flex flex-wrap gap-3 mt-4">
                                 {{-- Tài liệu đính kèm nếu có --}}
-                                @if($event->event_template == 2 && $block->document_url)
+                                @if($block->document_url)
                                     <div class="mb-6">
                                         <a href="{{ \App\Helpers\FileHelper::url($block->document_url) }}" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-semibold rounded-xl text-sm border border-emerald-200 transition-all">
                                             <span class="material-symbols-outlined text-lg">download</span>
@@ -329,17 +329,19 @@
                 </h4>
                 <div class="space-y-5">
                     @foreach($newestEvents as $newEv)
-                        <a href="{{ route('events.show', $newEv->slug) }}" class="flex gap-4 items-center group">
+                        <a href="{{ route('events.show', $newEv['slug']) }}" class="flex gap-4 items-center group">
                             <div class="w-20 h-14 rounded-lg overflow-hidden shrink-0 bg-slate-100 border border-slate-200">
-                                @if($newEv->bannerImage)
-                                    <img src="{{ \App\Helpers\FileHelper::url($newEv->bannerImage->url) }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform">
+                                @if(!empty($newEv['img']))
+                                    <img src="{{ $newEv['img'] }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform">
                                 @else
                                     <div class="w-full h-full bg-slate-200"></div>
                                 @endif
                             </div>
                             <div>
-                                <h5 class="text-[13px] font-bold text-[#1C1410] group-hover:text-[#07A0C3] transition-colors line-clamp-2 leading-snug">{{ $newEv->title }}</h5>
-                                <p class="text-[11px] text-[#7A6A52] mt-1">{{ $newEv->event_date->format('d/m/Y') }}</p>
+                                <h5 class="text-[13px] font-bold text-[#1C1410] group-hover:text-[#07A0C3] transition-colors line-clamp-2 leading-snug">{{ $newEv['title'] }}</h5>
+                                @if(!empty($newEv['category']))
+                                <p class="text-[11px] text-[#7A6A52] mt-1">{{ $newEv['category'] }}</p>
+                                @endif
                             </div>
                         </a>
                     @endforeach
@@ -356,20 +358,19 @@
                 </h4>
                 <div class="space-y-5">
                     @foreach($prominentEvents as $promEv)
-                        <a href="{{ route('events.show', $promEv->slug) }}" class="flex gap-4 items-center group">
+                        <a href="{{ route('events.show', $promEv['slug']) }}" class="flex gap-4 items-center group">
                             <div class="w-20 h-14 rounded-lg overflow-hidden shrink-0 bg-slate-100 border border-slate-200">
-                                @if($promEv->bannerImage)
-                                    <img src="{{ \App\Helpers\FileHelper::url($promEv->bannerImage->url) }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform">
+                                @if(!empty($promEv['img']))
+                                    <img src="{{ $promEv['img'] }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform">
                                 @else
                                     <div class="w-full h-full bg-slate-200"></div>
                                 @endif
                             </div>
                             <div>
-                                <h5 class="text-[13px] font-bold text-[#1C1410] group-hover:text-[#07A0C3] transition-colors line-clamp-2 leading-snug">{{ $promEv->title }}</h5>
-                                <div class="flex items-center gap-3 mt-1.5">
-                                    <span class="text-[11px] text-[#7A6A52] flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">visibility</span>{{ number_format($promEv->views_count) }}</span>
-                                    <span class="text-[11px] text-[#7A6A52] flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">favorite</span>{{ number_format($promEv->likes_count) }}</span>
-                                </div>
+                                <h5 class="text-[13px] font-bold text-[#1C1410] group-hover:text-[#07A0C3] transition-colors line-clamp-2 leading-snug">{{ $promEv['title'] }}</h5>
+                                @if(!empty($promEv['category']))
+                                <p class="text-[11px] text-[#7A6A52] mt-1">{{ $promEv['category'] }}</p>
+                                @endif
                             </div>
                         </a>
                     @endforeach

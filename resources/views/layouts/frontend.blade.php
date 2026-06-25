@@ -84,7 +84,7 @@
                     </div>
                 </div>
 
-                <a href="{{ route('home') }}#archive" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-sm font-semibold transition-colors {{ !$isHome ? 'text-[#7A6A52] hover:text-[#1C1410]' : '' }}"
+                <a href="{{ route('archive') }}" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-sm font-semibold transition-colors {{ request()->routeIs('archive') ? 'text-[#07A0C3]' : (!$isHome ? 'text-[#7A6A52] hover:text-[#1C1410]' : '') }}"
                    {!! $isHome ? ":class=\"scrolled ? 'text-[#7A6A52] hover:text-[#1C1410]' : 'text-white/80 hover:text-white'\"" : "" !!}>
                     Kho lưu trữ
                 </a>
@@ -129,7 +129,7 @@
                         @endforeach
                     @endif
                 </div>
-                <a href="{{ route('home') }}#archive" class="text-lg font-medium text-[#1C1410] hover:text-[#07A0C3]" @click="mobileOpen = false">Kho lưu trữ</a>
+                <a href="{{ route('archive') }}" class="text-lg font-medium text-[#1C1410] hover:text-[#07A0C3]" @click="mobileOpen = false">Kho lưu trữ</a>
                 <a href="{{ route('home') }}#contact" class="text-lg font-medium text-[#1C1410] hover:text-[#07A0C3]" @click="mobileOpen = false">Liên hệ</a>
             </nav>
         </div>
@@ -172,7 +172,7 @@
                     <h4 class="text-white font-bold mb-6 text-lg tracking-wide uppercase font-['Barlow']">Khám Phá</h4>
                     <ul class="space-y-4">
                         <li><a href="{{ route('home') }}#events" class="text-white/60 hover:text-[#E8C84A] text-sm transition-colors flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4"></i> Sự kiện nổi bật</a></li>
-                        <li><a href="{{ route('home') }}#archive" class="text-white/60 hover:text-[#E8C84A] text-sm transition-colors flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4"></i> Kho lưu trữ</a></li>
+                        <li><a href="{{ route('archive') }}" class="text-white/60 hover:text-[#E8C84A] text-sm transition-colors flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4"></i> Kho lưu trữ</a></li>
                         <li><a href="#" class="text-white/60 hover:text-[#E8C84A] text-sm transition-colors flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4"></i> Hướng dẫn tham gia</a></li>
                         <li><a href="#" class="text-white/60 hover:text-[#E8C84A] text-sm transition-colors flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4"></i> Câu hỏi thường gặp</a></li>
                     </ul>

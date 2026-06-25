@@ -55,22 +55,44 @@ class PublicEventController extends Controller
             session()->put('viewed_events.' . $event->id, true);
         }
 
-        $newestEvents = \Illuminate\Support\Facades\Cache::remember('newest_events', 300, function() {
+        $newestEventsData = \Illuminate\Support\Facades\Cache::remember('newest_events', 300, function() {
             return Event::with(['bannerImage', 'category'])
                 ->where('is_published', true)
                 ->orderBy('created_at', 'desc')
                 ->take(4)
-                ->get();
-        })->filter(function($e) use ($event) { return $e->id !== $event->id; })->take(3);
+                ->get()
+                ->map(fn($e) => [
+                    'id'       => $e->id,
+                    'slug'     => $e->slug,
+                    'title'    => $e->title,
+                    'category' => $e->category?->name,
+                    'img'      => $e->bannerImage ? \App\Helpers\FileHelper::url($e->bannerImage->url) : null,
+                ])
+                ->toArray();
+        });
+        $newestEvents = collect($newestEventsData)
+            ->filter(fn($e) => $e['id'] !== $event->id)
+            ->take(3);
 
-        $prominentEvents = \Illuminate\Support\Facades\Cache::remember('prominent_events', 300, function() {
+        $prominentEventsData = \Illuminate\Support\Facades\Cache::remember('prominent_events', 300, function() {
             return Event::with(['bannerImage', 'category'])
                 ->where('is_published', true)
                 ->orderBy('views_count', 'desc')
                 ->orderBy('likes_count', 'desc')
                 ->take(4)
-                ->get();
-        })->filter(function($e) use ($event) { return $e->id !== $event->id; })->take(3);
+                ->get()
+                ->map(fn($e) => [
+                    'id'       => $e->id,
+                    'slug'     => $e->slug,
+                    'title'    => $e->title,
+                    'category' => $e->category?->name,
+                    'img'      => $e->bannerImage ? \App\Helpers\FileHelper::url($e->bannerImage->url) : null,
+                ])
+                ->toArray();
+        });
+        $prominentEvents = collect($prominentEventsData)
+            ->filter(fn($e) => $e['id'] !== $event->id)
+            ->take(3);
 
         $previousEvent = Event::where('is_published', true)
             ->where('event_date', '<', $event->event_date)

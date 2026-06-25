@@ -84,9 +84,18 @@
                 <div class="md:col-span-2">
                     <label class="uni-label" for="department_ids">Khoa / Bộ phận (Có thể chọn nhiều)</label>
                     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mt-2">
+                        <input type="hidden" name="has_departments_field" value="1">
                         @foreach($departments as $dept)
                             <label class="relative block cursor-pointer group">
-                                <input type="checkbox" name="department_ids[]" value="{{ $dept->id }}" {{ (is_array(old('department_ids')) && in_array($dept->id, old('department_ids'))) || (!old('department_ids') && $event->departments->contains($dept->id)) ? 'checked' : '' }} class="peer sr-only">
+                                @php
+                                    $isChecked = false;
+                                    if (old('_token') !== null) {
+                                        $isChecked = is_array(old('department_ids')) && in_array($dept->id, old('department_ids'));
+                                    } else {
+                                        $isChecked = $event->departments->contains($dept->id);
+                                    }
+                                @endphp
+                                <input type="checkbox" name="department_ids[]" value="{{ $dept->id }}" {{ $isChecked ? 'checked' : '' }} class="peer sr-only">
                                 <div class="flex items-center justify-center px-3 py-2.5 border border-slate-200 rounded-xl bg-white text-[13px] font-semibold text-slate-600 transition-all duration-200 peer-checked:border-brand-orange peer-checked:bg-orange-50 peer-checked:text-brand-orange group-hover:border-brand-orange/50 shadow-sm text-center h-full">
                                     {{ $dept->name }}
                                 </div>

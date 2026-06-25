@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\DocumentController;
 use App\Http\Controllers\FrontendController;
 
 Route::get('/', [FrontendController::class, 'home'])->name('home');
+Route::get('/archive', [FrontendController::class, 'archive'])->name('archive');
 Route::get('/category/{slug}', [FrontendController::class, 'category'])->name('events.category');
 Route::get('/events/{slug}', [PublicEventController::class, 'show'])->name('events.show');
 Route::post('/events/{id}/like', [PublicEventController::class, 'like'])->name('events.like');
@@ -134,6 +135,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::post('events/{event}/save-design', [App\Http\Controllers\Admin\EventController::class, 'saveDesign'])->name('events.save_design');
     Route::post('events/upload-document', [App\Http\Controllers\Admin\EventController::class, 'uploadDocument'])->name('events.upload_document');
     Route::get('events/{event}/preview', [App\Http\Controllers\Admin\EventController::class, 'preview'])->name('events.preview');
+    Route::get('events/{event}/preview-iframe', [App\Http\Controllers\Admin\EventController::class, 'previewIframe'])->name('events.preview_iframe');
 
     // Event Categories
     Route::resource('categories', App\Http\Controllers\Admin\CategoryController::class);

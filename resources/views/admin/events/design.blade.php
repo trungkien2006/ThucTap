@@ -319,22 +319,22 @@
                         </span>
                     </a>
                 </div>
-                <div class="flex-1 flex justify-center items-center mx-4">
-                    <select id="inEventTemplate" onchange="syncData()" class="uni-input w-full max-w-[500px] font-bold border-brand-orange/30 focus:border-brand-orange bg-orange-50/30 text-brand-orange shadow-sm text-[12px] py-1.5 px-3 h-auto text-center">
-                        <option value="2" {{ $event->page_template == 2 || $event->page_template == 1 ? 'selected' : '' }}>Mẫu 1: Tiêu chuẩn</option>
-                        <option value="" disabled>Mẫu 2 (Sắp ra mắt)</option>
-                        <option value="" disabled>Mẫu 3 (Sắp ra mắt)</option>
-                        <option value="" disabled>Mẫu 4 (Sắp ra mắt)</option>
-                    </select>
+                <div class="flex-1 flex justify-start items-center mx-4">
+                    <a href="{{ route('admin.events.template', $event) }}" class="flex items-center gap-1.5 text-[12px] text-slate-500 hover:text-brand-orange font-medium bg-slate-50 hover:bg-orange-50 px-3 py-1.5 rounded-lg transition-colors border border-slate-200 hover:border-orange-200">
+                        <span class="material-symbols-outlined text-[16px]">arrow_back</span>
+                        Chọn mẫu khác
+                    </a>
                 </div>
                 <div class="flex items-center gap-3">
                     <!-- Step indicator mini -->
                     <div class="hidden md:flex items-center gap-2 mr-4">
                         <a href="{{ route('admin.events.edit', $event) }}" class="text-[12px] text-slate-400 hover:text-primary transition-colors">① Thông tin</a>
                         <span class="text-slate-300">→</span>
-                        <span class="text-[12px] text-primary font-semibold">② Thiết kế</span>
+                        <a href="{{ route('admin.events.template', $event) }}" class="text-[12px] text-slate-400 hover:text-primary transition-colors">② Chọn mẫu</a>
                         <span class="text-slate-300">→</span>
-                        <a href="{{ route('admin.events.preview', $event) }}" class="text-[12px] text-slate-400 hover:text-primary transition-colors">③ Xem trước</a>
+                        <span class="text-[12px] text-primary font-semibold">③ Thiết kế</span>
+                        <span class="text-slate-300">→</span>
+                        <a href="{{ route('admin.events.preview', $event) }}" class="text-[12px] text-slate-400 hover:text-primary transition-colors">④ Xem trước</a>
                     </div>
 
                     <button onclick="openEditor()" class="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-slate-800 text-white rounded-xl text-[13px] font-medium transition-all shadow-sm">

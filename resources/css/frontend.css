@@ -164,6 +164,11 @@
         opacity: 0;
         transform: translateY(18px);
         transition: opacity 550ms ease 200ms, transform 550ms ease 200ms;
+        display: -webkit-box;
+        -webkit-line-clamp: 4;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     .slide-desc {
         color: var(--white-70);

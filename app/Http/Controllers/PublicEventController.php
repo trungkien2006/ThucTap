@@ -104,7 +104,10 @@ class PublicEventController extends Controller
             ->orderBy('event_date', 'asc')
             ->first();
 
-        return view('events.show', compact('event', 'newestEvents', 'prominentEvents', 'previousEvent', 'nextEvent'));
+        // Template routing
+        $viewName = ($event->page_template == 2) ? 'events.show-template2' : 'events.show';
+
+        return view($viewName, compact('event', 'newestEvents', 'prominentEvents', 'previousEvent', 'nextEvent'));
     }
 
     public function like($event_id)

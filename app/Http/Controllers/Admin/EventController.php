@@ -127,13 +127,37 @@ class EventController extends Controller
 
         ActivityLogger::log("đã tạo sự kiện mới: {$event->title}", route('admin.events.index'));
 
-        // Redirect to design step (Step 2)
-        return redirect()->route('admin.events.design', $event)->with('success', 'Sự kiện đã được tạo. Hãy thiết kế giao diện!');
+        // Redirect to template selection step (Step 2)
+        return redirect()->route('admin.events.template', $event)->with('success', 'Sự kiện đã được tạo. Hãy chọn mẫu thiết kế!');
     }
 
     /**
      * Step 2: Design Studio
      */
+    public function template(Event $event)
+    {
+        $categories = Category::eventTypes()->get();
+        return view('admin.events.template-picker', compact('event', 'categories'));
+    }
+
+    public function saveTemplate(Request $request, Event $event)
+    {
+        $request->validate([
+            'page_template' => 'required|integer|in:1,2'
+        ]);
+        
+        $event->page_template = $request->page_template;
+        $event->save();
+        
+        return redirect()->route('admin.events.design', $event)
+            ->with('success', 'Đã chọn mẫu thiết kế thành công.');
+    }
+
+    public function templatePreview($templateId)
+    {
+        return view('admin.events.template-preview', compact('templateId'));
+    }
+
     public function design(Event $event)
     {
         $event->load('bannerImage', 'media', 'category', 'scheduleItems', 'speakers');
@@ -377,7 +401,10 @@ class EventController extends Controller
         $previousEvent = null;
         $nextEvent = null;
 
-        return view('events.show', compact('event', 'newestEventsData', 'previousEvent', 'nextEvent'));
+        // Template routing
+        $viewName = ($event->page_template == 2) ? 'events.show-template2' : 'events.show';
+
+        return view($viewName, compact('event', 'newestEventsData', 'previousEvent', 'nextEvent'));
     }
 
     public function edit(Event $event)

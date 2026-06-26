@@ -198,7 +198,7 @@
             <div class="border-2 border-dashed border-slate-200 rounded-xl p-6 flex flex-col items-center justify-center gap-2 bg-slate-50/30 hover:bg-slate-50 hover:border-brand-orange transition-all cursor-pointer relative">
                 <input type="file" id="banner_image" name="banner_image" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"/>
                 <span class="material-symbols-outlined text-[24px] text-brand-orange">cloud_upload</span>
-                <p class="text-[12px] font-medium text-primary">Chọn ảnh mới (tùy chọn)</p>
+                <p class="text-[12px] font-medium text-primary" id="banner_filename">Chọn ảnh mới (tùy chọn)</p>
                 @error('banner_image') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
             </div>
         </section>
@@ -213,9 +213,17 @@
                 <div>
                     <label class="uni-label" for="status">Trạng thái <span class="text-red-400">*</span></label>
                     <select class="uni-input" id="status" name="status" required>
-                        <option value="draft" {{ $event->status == 'draft' ? 'selected' : '' }}>Bản nháp</option>
-                        <option value="published" {{ $event->status == 'published' ? 'selected' : '' }}>Đã xuất bản</option>
-                        <option value="archived" {{ $event->status == 'archived' ? 'selected' : '' }}>Lưu trữ</option>
+                        @php
+                            $currentStatus = 'draft';
+                            if ($event->is_published) {
+                                $currentStatus = 'published';
+                            } else {
+                                $currentStatus = ($event->event_date && $event->event_date < now()) ? 'archived' : 'draft';
+                            }
+                        @endphp
+                        <option value="draft" {{ $currentStatus == 'draft' ? 'selected' : '' }}>Bản nháp</option>
+                        <option value="published" {{ $currentStatus == 'published' ? 'selected' : '' }}>Đã xuất bản</option>
+                        <option value="archived" {{ $currentStatus == 'archived' ? 'selected' : '' }}>Lưu trữ</option>
                     </select>
                 </div>
             </div>
@@ -388,11 +396,15 @@
     const bannerImageInput = document.getElementById('banner_image');
     const previewContainer = document.getElementById('preview_container');
     const bannerPreview = document.getElementById('banner_preview');
+    const bannerFilename = document.getElementById('banner_filename');
 
     if (bannerImageInput) {
         bannerImageInput.addEventListener('change', function(e) {
             const file = this.files[0];
             if (file) {
+                if (bannerFilename) {
+                    bannerFilename.textContent = file.name;
+                }
                 const reader = new FileReader();
                 reader.onload = function(event) {
                     bannerPreview.src = event.target.result;

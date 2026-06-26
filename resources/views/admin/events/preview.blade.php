@@ -8,20 +8,30 @@
             <div class="absolute top-5 left-[60px] right-[60px] h-[2px] bg-slate-100 z-0"></div>
             <div class="absolute top-5 left-[60px] h-[2px] bg-emerald-400 z-0" style="width: calc(100%)"></div>
 
-            <div class="step-indicator">
-                <div class="step-circle completed">
+            <!-- Step 1: Details -->
+            <div class="step-indicator" style="flex: 1; text-align: center; position: relative;">
+                <div class="step-circle completed w-8 h-8 rounded-full flex items-center justify-center bg-emerald-100 text-emerald-600 font-bold mx-auto mb-2 relative z-10">
                     <span class="material-symbols-outlined text-[18px]">check</span>
                 </div>
                 <span class="text-[11px] font-medium text-emerald-600">Thông tin</span>
             </div>
-            <div class="step-indicator">
-                <div class="step-circle completed">
+            <!-- Step 2: Choose Template -->
+            <div class="step-indicator" style="flex: 1; text-align: center; position: relative;">
+                <div class="step-circle completed w-8 h-8 rounded-full flex items-center justify-center bg-emerald-100 text-emerald-600 font-bold mx-auto mb-2 relative z-10">
+                    <span class="material-symbols-outlined text-[18px]">check</span>
+                </div>
+                <span class="text-[11px] font-medium text-emerald-600">Chọn mẫu</span>
+            </div>
+            <!-- Step 3: Design -->
+            <div class="step-indicator" style="flex: 1; text-align: center; position: relative;">
+                <div class="step-circle completed w-8 h-8 rounded-full flex items-center justify-center bg-emerald-100 text-emerald-600 font-bold mx-auto mb-2 relative z-10">
                     <span class="material-symbols-outlined text-[18px]">check</span>
                 </div>
                 <span class="text-[11px] font-medium text-emerald-600">Thiết kế</span>
             </div>
-            <div class="step-indicator">
-                <div class="step-circle active">3</div>
+            <!-- Step 4: Preview (Active) -->
+            <div class="step-indicator" style="flex: 1; text-align: center; position: relative;">
+                <div class="step-circle active w-8 h-8 rounded-full flex items-center justify-center bg-primary text-white font-bold mx-auto mb-2 relative z-10 text-[14px]">4</div>
                 <span class="text-[11px] font-semibold text-primary">Xem trước</span>
             </div>
         </div>

@@ -131,11 +131,14 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     // Events
     Route::post('events/{event}/archive', [App\Http\Controllers\Admin\EventController::class, 'archive'])->name('events.archive');
     Route::resource('events', App\Http\Controllers\Admin\EventController::class);
+    Route::get('events/{event}/template', [App\Http\Controllers\Admin\EventController::class, 'template'])->name('events.template');
+    Route::post('events/{event}/template', [App\Http\Controllers\Admin\EventController::class, 'saveTemplate'])->name('events.save_template');
     Route::get('events/{event}/design', [App\Http\Controllers\Admin\EventController::class, 'design'])->name('events.design');
     Route::post('events/{event}/save-design', [App\Http\Controllers\Admin\EventController::class, 'saveDesign'])->name('events.save_design');
     Route::post('events/upload-document', [App\Http\Controllers\Admin\EventController::class, 'uploadDocument'])->name('events.upload_document');
     Route::get('events/{event}/preview', [App\Http\Controllers\Admin\EventController::class, 'preview'])->name('events.preview');
     Route::get('events/{event}/preview-iframe', [App\Http\Controllers\Admin\EventController::class, 'previewIframe'])->name('events.preview_iframe');
+    Route::get('template-preview/{templateId}', [App\Http\Controllers\Admin\EventController::class, 'templatePreview'])->name('events.template_preview');
 
     // Event Categories
     Route::resource('categories', App\Http\Controllers\Admin\CategoryController::class);

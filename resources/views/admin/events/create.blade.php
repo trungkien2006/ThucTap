@@ -16,18 +16,23 @@
             <div class="absolute top-5 left-[60px] h-[2px] bg-primary z-0" style="width: calc(0%)"></div>
 
             <!-- Step 1: Details (Active) -->
-            <div class="step-indicator">
-                <div class="step-circle active">1</div>
+            <div class="step-indicator" style="flex: 1; text-align: center; position: relative;">
+                <div class="step-circle active w-8 h-8 rounded-full flex items-center justify-center bg-primary text-white font-bold mx-auto mb-2 relative z-10 text-[14px]">1</div>
                 <span class="text-[11px] font-semibold text-primary">Thông tin</span>
             </div>
-            <!-- Step 2: Design -->
-            <div class="step-indicator">
-                <div class="step-circle inactive">2</div>
+            <!-- Step 2: Choose Template -->
+            <div class="step-indicator" style="flex: 1; text-align: center; position: relative;">
+                <div class="step-circle inactive w-8 h-8 rounded-full flex items-center justify-center bg-slate-100 text-slate-400 font-bold mx-auto mb-2 relative z-10 text-[14px]">2</div>
+                <span class="text-[11px] font-medium text-slate-400">Chọn mẫu</span>
+            </div>
+            <!-- Step 3: Design -->
+            <div class="step-indicator" style="flex: 1; text-align: center; position: relative;">
+                <div class="step-circle inactive w-8 h-8 rounded-full flex items-center justify-center bg-slate-100 text-slate-400 font-bold mx-auto mb-2 relative z-10 text-[14px]">3</div>
                 <span class="text-[11px] font-medium text-slate-400">Thiết kế</span>
             </div>
-            <!-- Step 3: Preview -->
-            <div class="step-indicator">
-                <div class="step-circle inactive">3</div>
+            <!-- Step 4: Preview -->
+            <div class="step-indicator" style="flex: 1; text-align: center; position: relative;">
+                <div class="step-circle inactive w-8 h-8 rounded-full flex items-center justify-center bg-slate-100 text-slate-400 font-bold mx-auto mb-2 relative z-10 text-[14px]">4</div>
                 <span class="text-[11px] font-medium text-slate-400">Xem trước</span>
             </div>
         </div>
@@ -211,7 +216,7 @@
                 <div class="w-14 h-14 rounded-2xl bg-slate-100 flex items-center justify-center text-brand-orange">
                     <span class="material-symbols-outlined text-[28px]">cloud_upload</span>
                 </div>
-                <p class="text-[13px] font-semibold text-primary">Nhấn để tải ảnh bìa lên</p>
+                <p class="text-[13px] font-semibold text-primary" id="banner_filename">Nhấn để tải ảnh bìa lên</p>
                 <p class="text-[11px] text-slate-400">Khuyến nghị: 1200 x 480 pixels (PNG, JPG)</p>
                 @error('banner_image') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
             </div>
@@ -380,11 +385,15 @@
     const bannerImageInput = document.getElementById('banner_image');
     const previewContainer = document.getElementById('preview_container');
     const bannerPreview = document.getElementById('banner_preview');
+    const bannerFilename = document.getElementById('banner_filename');
 
     if (bannerImageInput) {
         bannerImageInput.addEventListener('change', function(e) {
             const file = this.files[0];
             if (file) {
+                if (bannerFilename) {
+                    bannerFilename.textContent = file.name;
+                }
                 const reader = new FileReader();
                 reader.onload = function(event) {
                     bannerPreview.src = event.target.result;

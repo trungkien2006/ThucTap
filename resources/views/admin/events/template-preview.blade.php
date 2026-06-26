@@ -23,7 +23,7 @@
     .tp1-section-title::before { content: ''; display: block; width: 4px; height: 24px; background: #f97316; border-radius: 4px; }
     
     .tp1-text { font-size: 16px; color: #475569; margin-bottom: 20px; }
-    .tp1-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+    .tp1-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; align-items: center; }
     .tp1-img { width: 100%; border-radius: 12px; object-fit: cover; aspect-ratio: 16/9; }
 </style>
 @endpush
@@ -45,19 +45,30 @@
     <div class="tp1-container">
         <div class="tp1-card">
             <h2 class="tp1-section-title">Giới thiệu sự kiện</h2>
-            <p class="tp1-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-            <p class="tp1-text">Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+            <p class="tp1-text">Trí tuệ nhân tạo (AI) đang định hình lại mọi khía cạnh của cuộc sống và công việc. Hội thảo "Trí tuệ nhân tạo tương lai" mang đến góc nhìn sâu sắc về các xu hướng AI đột phá nhất trong thập kỷ tới. Đây là cơ hội để các nhà nghiên cứu, kỹ sư và doanh nghiệp cùng thảo luận về cách AI tạo ra các giá trị bền vững và giải quyết những thách thức toàn cầu.</p>
+            <p class="tp1-text">Tham gia cùng chúng tôi để lắng nghe chia sẻ từ các chuyên gia hàng đầu, trải nghiệm các demo công nghệ trực tiếp và mở rộng mạng lưới quan hệ trong một môi trường sáng tạo và chuyên nghiệp.</p>
         </div>
         
         <div class="tp1-card">
-            <h2 class="tp1-section-title">Nội dung chương trình</h2>
+            <h2 class="tp1-section-title">Hoạt động nổi bật</h2>
             <div class="tp1-grid">
                 <div>
                     <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=800&q=80" class="tp1-img" alt="Content">
                 </div>
                 <div>
-                    <p class="tp1-text">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
-                    <a href="#" style="display:inline-block;padding:10px 20px;background:#f97316;color:white;border-radius:8px;text-decoration:none;font-weight:600;">Xem chi tiết</a>
+                    <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">Networking & Demo</h3>
+                    <p class="tp1-text">Bên cạnh các phiên thảo luận chuyên sâu, người tham dự sẽ có thời gian kết nối với các diễn giả và nhà đầu tư tại khu vực Networking. Trực tiếp trải nghiệm các mô hình AI ngôn ngữ lớn (LLM) và các robot tự hành do các startup nội địa phát triển ngay tại khu vực triển lãm.</p>
+                    <a href="#" style="display:inline-block;padding:10px 20px;background:#f97316;color:white;border-radius:8px;text-decoration:none;font-weight:600;">Đăng ký tham gia</a>
+                </div>
+            </div>
+            
+            <div class="tp1-grid" style="margin-top: 32px;">
+                <div>
+                    <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">Panel Discussion</h3>
+                    <p class="tp1-text">Phiên tọa đàm đặc biệt "Đạo đức trong kỷ nguyên AI" với sự góp mặt của các nhà hoạch định chính sách, kỹ sư AI và nhà nghiên cứu xã hội học. Cùng nhau tìm ra sự cân bằng giữa sự phát triển nhanh chóng của công nghệ và tính nhân bản, an toàn của con người.</p>
+                </div>
+                <div>
+                    <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=800&q=80" class="tp1-img" alt="Panel">
                 </div>
             </div>
         </div>
@@ -106,7 +117,7 @@
             <div class="tp2-card">
                 <div class="tp2-card-title">Lời ngỏ</div>
                 <p class="tp2-card-text">
-                    Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet.
+                    Mùa thu mang theo những gam màu ấm áp và cảm xúc sâu lắng. Triển lãm "Sắc Màu Mùa Thu" là nơi tôn vinh những tác phẩm hội họa đương đại lấy cảm hứng từ vẻ đẹp của thiên nhiên và con người trong thời khắc giao mùa. Hãy đến và cùng chúng tôi đắm chìm trong không gian nghệ thuật đầy chất thơ.
                 </p>
                 <div style="font-family:'Cormorant Garamond',serif;font-size:1.69rem;margin-bottom:4px;">Thời gian</div>
                 <div style="font-size:1.07rem;color:#6e7a6a;margin-bottom:20px;">Thứ Bảy, 12/10/2026<br>09:00 - 17:00</div>
@@ -117,11 +128,21 @@
                 <div class="tp2-story-left">
                     <h2 class="tp2-story-heading">Hành trình<br>cảm xúc</h2>
                     <p style="font-size:1.14rem;color:#6e7a6a;line-height:1.9;">
-                        Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur.
+                        Hơn 50 tác phẩm từ các nghệ sĩ trẻ tài năng được trưng bày theo một mạch cảm xúc xuyên suốt. Từ những bức tranh phong cảnh rực rỡ sắc vàng của lá mùa thu, đến những bức chân dung mang đậm suy tư và tĩnh lặng. Khán giả không chỉ xem tranh mà còn lắng nghe những câu chuyện đằng sau mỗi nét cọ, qua phần giao lưu trực tiếp với các tác giả.
                     </p>
                 </div>
                 <div class="tp2-story-right">
                     <img src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=800&q=80" class="tp2-story-img" alt="Art">
+                </div>
+            <div class="tp2-story-row" style="margin-top: 80px;">
+                <div class="tp2-story-left" style="display:flex; flex-direction:column; justify-content:center;">
+                    <img src="https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=800&q=80" class="tp2-story-img" style="aspect-ratio: 16/9;" alt="Art Workshop">
+                </div>
+                <div class="tp2-story-right">
+                    <h2 class="tp2-story-heading" style="font-size: 2.5rem;">Workshop: <br>Nét vẽ mùa thu</h2>
+                    <p style="font-size:1.14rem;color:#6e7a6a;line-height:1.9;">
+                        Trong khuôn khổ triển lãm, một buổi workshop nghệ thuật sẽ được tổ chức dành cho những ai đam mê hội họa. Bạn sẽ được hướng dẫn các kỹ thuật pha màu và tự tay tạo nên một bức tranh phong cảnh mùa thu cho riêng mình. Dụng cụ sẽ được ban tổ chức chuẩn bị sẵn sàng.
+                    </p>
                 </div>
             </div>
         </div>

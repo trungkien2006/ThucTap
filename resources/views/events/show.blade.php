@@ -142,7 +142,7 @@
 
                             @if($block->url)
                                 <figure class="my-6">
-                                    <div class="rounded-xl overflow-hidden bg-slate-100 shadow-sm max-w-2xl">
+                                    <div class="rounded-xl overflow-hidden bg-slate-100 shadow-sm max-w-2xl mx-auto">
                                         @if($block->type === 'video')
                                             <video src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="w-full h-auto rounded-xl" autoplay loop muted playsinline controls></video>
                                         @else
@@ -150,7 +150,7 @@
                                         @endif
                                     </div>
                                     @if($block->caption)
-                                    <figcaption class="mt-3 text-sm text-text-muted italic">
+                                    <figcaption class="mt-3 text-sm text-text-muted italic text-center">
                                         {{ $block->caption }}
                                     </figcaption>
                                     @endif

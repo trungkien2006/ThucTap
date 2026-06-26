@@ -320,6 +320,7 @@
                     </a>
                 </div>
                 <div class="flex-1 flex justify-start items-center mx-4">
+                    <input type="hidden" id="inEventTemplate" value="{{ $event->page_template ?? 1 }}">
                     <a href="{{ route('admin.events.template', $event) }}" class="flex items-center gap-1.5 text-[12px] text-slate-500 hover:text-brand-orange font-medium bg-slate-50 hover:bg-orange-50 px-3 py-1.5 rounded-lg transition-colors border border-slate-200 hover:border-orange-200">
                         <span class="material-symbols-outlined text-[16px]">arrow_back</span>
                         Chọn mẫu khác

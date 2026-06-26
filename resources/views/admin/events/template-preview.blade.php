@@ -58,7 +58,6 @@
                 <div>
                     <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">Networking & Demo</h3>
                     <p class="tp1-text">Bên cạnh các phiên thảo luận chuyên sâu, người tham dự sẽ có thời gian kết nối với các diễn giả và nhà đầu tư tại khu vực Networking. Trực tiếp trải nghiệm các mô hình AI ngôn ngữ lớn (LLM) và các robot tự hành do các startup nội địa phát triển ngay tại khu vực triển lãm.</p>
-                    <a href="#" style="display:inline-block;padding:10px 20px;background:#f97316;color:white;border-radius:8px;text-decoration:none;font-weight:600;">Đăng ký tham gia</a>
                 </div>
             </div>
             

@@ -25,7 +25,7 @@
     @php $isHome = request()->routeIs('home'); @endphp
     <!-- Header -->
     <header 
-        class="fixed inset-x-0 top-0 z-50 transition-all duration-500 {{ !$isHome ? 'backdrop-blur-xl border-b shadow-sm' : '' }}"
+        class="fixed inset-x-0 top-0 z-[100] transition-all duration-500 {{ !$isHome ? 'backdrop-blur-xl border-b shadow-sm' : '' }}"
         {!! $isHome ? ":class=\"scrolled ? 'backdrop-blur-xl border-b shadow-sm' : 'bg-transparent'\"" : "" !!}
         style="{{ !$isHome ? 'background:rgba(255,248,208,0.97);border-color:rgba(232,200,74,0.5);' : '' }}"
         {!! $isHome ? ":style=\"scrolled ? 'background:rgba(255,248,208,0.97);border-color:rgba(232,200,74,0.5);' : ''\"" : "" !!}
@@ -33,7 +33,7 @@
     >
         <div class="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-5 lg:px-10 relative">
             <a href="{{ route('home') }}#top" class="group flex items-center gap-2">
-                <span class="font-['Barlow'] text-2xl font-black uppercase tracking-tight transition-colors {{ !$isHome ? 'text-[#1C1410]' : '' }}" {!! $isHome ? ":class=\"scrolled ? 'text-[#1C1410]' : 'text-white'\"" : "" !!}>
+                <span class="font-['Inter'] text-2xl font-black uppercase tracking-tight transition-colors {{ !$isHome ? 'text-[#1C1410]' : '' }}" {!! $isHome ? ":class=\"scrolled ? 'text-[#1C1410]' : 'text-white'\"" : "" !!}>
                     Uni<span style="color:#E8C84A;">Event</span>
                 </span>
             </a>
@@ -66,14 +66,16 @@
                             <div class="grid grid-cols-2 gap-1">
                                 @if(isset($categories))
                                     @foreach($categories as $c)
-                                    <a href="{{ isset($c['slug']) ? route('events.category', $c['slug']) : '#' }}" class="group flex items-start justify-between rounded-xl px-4 py-3 transition-colors"
-                                       style="" onmouseover="this.style.background='rgba(255,227,129,0.3)'" onmouseout="this.style.background=''">
-                                        <div>
-                                            <div class="text-sm font-semibold text-[#1C1410]">{{ $c['name'] }}</div>
-                                            <div class="text-xs text-[#7A6A52]">{{ $c['desc'] }}</div>
-                                        </div>
-                                        <i data-lucide="arrow-up-right" class="h-4 w-4 text-[#07A0C3] opacity-0 transition-all group-hover:opacity-100"></i>
-                                    </a>
+                                        @if(strtolower(trim($c['name'])) !== 'khác')
+                                        <a href="{{ isset($c['slug']) ? route('events.category', $c['slug']) : '#' }}" class="group flex items-start justify-between rounded-xl px-4 py-3 transition-colors"
+                                           style="" onmouseover="this.style.background='rgba(255,227,129,0.3)'" onmouseout="this.style.background=''">
+                                            <div>
+                                                <div class="text-sm font-semibold text-[#1C1410]">{{ $c['name'] }}</div>
+                                                <div class="text-xs text-[#7A6A52]">{{ $c['desc'] }}</div>
+                                            </div>
+                                            <i data-lucide="arrow-up-right" class="h-4 w-4 text-[#07A0C3] opacity-0 transition-all group-hover:opacity-100"></i>
+                                        </a>
+                                        @endif
                                     @endforeach
                                 @endif
                             </div>
@@ -126,7 +128,9 @@
                 <div class="pl-4 border-l-2 border-gray-100 flex flex-col gap-3">
                     @if(isset($categories))
                         @foreach($categories as $c)
-                            <a href="{{ isset($c['slug']) ? route('events.category', $c['slug']) : '#' }}" class="text-sm text-[#7A6A52] hover:text-[#07A0C3]" @click="mobileOpen = false">{{ $c['name'] }}</a>
+                            @if(strtolower(trim($c['name'])) !== 'khác')
+                                <a href="{{ isset($c['slug']) ? route('events.category', $c['slug']) : '#' }}" class="text-sm text-[#7A6A52] hover:text-[#07A0C3]" @click="mobileOpen = false">{{ $c['name'] }}</a>
+                            @endif
                         @endforeach
                     @endif
                 </div>
@@ -148,7 +152,7 @@
                 <!-- Brand Info -->
                 <div class="lg:col-span-1">
                     <a href="{{ route('home') }}#top" class="inline-block mb-6">
-                        <span class="font-['Barlow'] text-3xl font-black uppercase tracking-tight text-white">
+                        <span class="font-['Inter'] text-3xl font-black uppercase tracking-tight text-white">
                             Uni<span style="color:#E8C84A;">Event</span>
                         </span>
                     </a>
@@ -170,7 +174,7 @@
 
                 <!-- Quick Links -->
                 <div>
-                    <h4 class="text-white font-bold mb-6 text-lg tracking-wide uppercase font-['Barlow']">Khám Phá</h4>
+                    <h4 class="text-white font-bold mb-6 text-lg tracking-wide uppercase font-['Inter']">Khám Phá</h4>
                     <ul class="space-y-4">
                         <li><a href="{{ route('home') }}#events" class="text-white/60 hover:text-[#E8C84A] text-sm transition-colors flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4"></i> Sự kiện nổi bật</a></li>
                         <li><a href="{{ route('archive') }}" class="text-white/60 hover:text-[#E8C84A] text-sm transition-colors flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4"></i> Kho lưu trữ</a></li>
@@ -181,7 +185,7 @@
 
                 <!-- Categories -->
                 <div>
-                    <h4 class="text-white font-bold mb-6 text-lg tracking-wide uppercase font-['Barlow']">Danh Mục</h4>
+                    <h4 class="text-white font-bold mb-6 text-lg tracking-wide uppercase font-['Inter']">Danh Mục</h4>
                     <ul class="space-y-4">
                         @if(isset($categories) && count($categories) > 0)
                             @foreach(array_slice($categories, 0, 4) as $c)
@@ -198,7 +202,7 @@
 
                 <!-- Contact -->
                 <div id="contact">
-                    <h4 class="text-white font-bold mb-6 text-lg tracking-wide uppercase font-['Barlow']">Liên Hệ</h4>
+                    <h4 class="text-white font-bold mb-6 text-lg tracking-wide uppercase font-['Inter']">Liên Hệ</h4>
                     <ul class="space-y-4">
                         <li class="flex items-start gap-3">
                             <i data-lucide="map-pin" class="w-5 h-5 text-[#E8C84A] shrink-0 mt-0.5"></i>

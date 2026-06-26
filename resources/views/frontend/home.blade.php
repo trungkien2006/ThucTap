@@ -47,7 +47,7 @@
         /* ─── State ─── */
         let current  = 0;
         let isAnim   = false;
-        const INTERVAL = 2000; // 2 seconds
+        const INTERVAL = 4000; // 4 seconds
 
         /* ─── Constants ─── */
         const MAX_CARDS = 4;
@@ -131,34 +131,31 @@
                 const sRect = sliderEl.getBoundingClientRect();
                 const cRect = targetCard.getBoundingClientRect();
 
-                const computedShadow = window.getComputedStyle(targetCard).boxShadow;
-
                 const clone = document.createElement('div');
+                
+                // Use clip-path to prevent aspect ratio stretching during expansion
+                const topInset = Math.max(0, cRect.top - sRect.top);
+                const leftInset = Math.max(0, cRect.left - sRect.left);
+                const bottomInset = Math.max(0, sRect.bottom - cRect.bottom);
+                const rightInset = Math.max(0, sRect.right - cRect.right);
+
                 clone.style.cssText =
                     'position:absolute;' +
-                    `top:${cRect.top - sRect.top}px;` +
-                    `left:${cRect.left - sRect.left}px;` +
-                    `width:${cRect.width}px;height:${cRect.height}px;` +
+                    'top:0;left:0;width:100%;height:100%;' +
                     `background-image:url('${slides[nextSlideIdx].image}');` +
                     'background-size:cover;background-position:center;' +
-                    `box-shadow:${computedShadow};` +
-                    'border-radius:20px;z-index:0;pointer-events:none;' +
-                    'transition:top 750ms cubic-bezier(0.4,0,0.2,1),' +
-                               'left 750ms cubic-bezier(0.4,0,0.2,1),' +
-                               'width 750ms cubic-bezier(0.4,0,0.2,1),' +
-                               'height 750ms cubic-bezier(0.4,0,0.2,1),' +
-                               'box-shadow 750ms cubic-bezier(0.4,0,0.2,1),' +
-                               'border-radius 750ms cubic-bezier(0.4,0,0.2,1);';
+                    'z-index:0;pointer-events:none;' +
+                    `clip-path: inset(${topInset}px ${rightInset}px ${bottomInset}px ${leftInset}px round 20px);` +
+                    `-webkit-clip-path: inset(${topInset}px ${rightInset}px ${bottomInset}px ${leftInset}px round 20px);` +
+                    'transition:clip-path 750ms cubic-bezier(0.4,0,0.2,1), -webkit-clip-path 750ms cubic-bezier(0.4,0,0.2,1);';
                 sliderEl.appendChild(clone);
 
                 bgLayers[prev].classList.remove('active');
                 bgLayers[prev].classList.add('leaving');
 
                 requestAnimationFrame(() => requestAnimationFrame(() => {
-                    clone.style.top = '0'; clone.style.left = '0';
-                    clone.style.width = '100%'; clone.style.height = '100%';
-                    clone.style.borderRadius = '0';
-                    clone.style.boxShadow = '0 0 0 0 rgba(255,227,129,0), 0 28px 72px rgba(0,0,0,0)';
+                    clone.style.clipPath = 'inset(0px 0px 0px 0px round 0px)';
+                    clone.style.webkitClipPath = 'inset(0px 0px 0px 0px round 0px)';
                 }));
 
                 setTimeout(() => {
@@ -176,27 +173,30 @@
             // 1. Record original positions
             const cards = Array.from(cardTrack.children);
             const firstRects = new Map();
-            cards.forEach(c => firstRects.set(c.dataset.index, c.getBoundingClientRect()));
+            cards.forEach(c => firstRects.set(parseInt(c.dataset.index), c.getBoundingClientRect()));
 
             // 2. Extract the clicked card from queue, keep others intact, push to end
             queue.splice(jumpQueueIndex, 1);
             queue.push(nextSlideIdx);
 
-            // 3. Rebuild track completely
-            cardTrack.innerHTML = '';
-            const count = Math.min(MAX_CARDS, queue.length);
-            for (let i = 0; i < count; i++) {
-                cardTrack.appendChild(makeCard(queue[i]));
-            }
+            // 3. Sync DOM efficiently (reuse existing elements)
+            const newCardsNeeded = queue.slice(0, MAX_CARDS);
+            Array.from(cardTrack.children).forEach(c => {
+                if (!newCardsNeeded.includes(parseInt(c.dataset.index))) c.remove();
+            });
+            newCardsNeeded.forEach(idx => {
+                let existing = Array.from(cardTrack.children).find(c => parseInt(c.dataset.index) === idx);
+                if (!existing) cardTrack.appendChild(makeCard(idx));
+                else cardTrack.appendChild(existing); // moves it to correct order
+            });
 
             // 4. Invert and Play (FLIP) for smooth sliding
             const newCards = Array.from(cardTrack.children);
             newCards.forEach(c => {
-                if (parseInt(c.dataset.index) === nextSlideIdx) {
-                    return; // Bỏ qua animation bay từ trái qua phải cho thẻ vừa click
-                }
+                const idx = parseInt(c.dataset.index);
+                if (idx === nextSlideIdx) return; // skip animation for the clicked card moving to background
 
-                const firstRect = firstRects.get(c.dataset.index);
+                const firstRect = firstRects.get(idx);
                 if (firstRect) {
                     const lastRect = c.getBoundingClientRect();
                     const dx = firstRect.left - lastRect.left;
@@ -237,7 +237,7 @@
             setTimeout(() => {
                 isAnim = false;
                 startTimer();
-            }, 800);
+            }, 600);
         }
 
         /* ─── Timer (Game Loop Pattern) ─── */
@@ -322,7 +322,7 @@
         @foreach($stats as $i => $s)
         <div data-aos="fade-up" data-aos-delay="{{ $i * 100 }}"
              class="flex flex-col items-center justify-center py-16 {{ $i < 3 ? 'border-r border-black/10' : '' }}">
-            <div class="font-['Barlow_Condensed'] text-6xl font-black text-[#1C1410] lg:text-7xl">
+            <div class="font-['Inter'] text-6xl font-black text-[#1C1410] lg:text-7xl">
                 <span x-data="{ count:0,target:{{ $s['value'] }},decimals:{{ $s['decimals'] }},started:false }"
                       x-init="
                         let observer = new IntersectionObserver(entries => {
@@ -364,7 +364,7 @@
                         <div class="h-7 w-1 rounded-full" style="background:#07A0C3;"></div>
                         <span class="text-xs font-bold uppercase tracking-[0.25em]" style="color:#07A0C3;">Featured Events</span>
                     </div>
-                    <h2 class="font-['Barlow_Condensed'] text-5xl font-black uppercase tracking-tight text-[#1C1410] lg:text-6xl">Sự kiện nổi bật</h2>
+                    <h2 class="font-['Inter'] text-5xl font-black uppercase tracking-tight text-[#1C1410] lg:text-6xl">Sự kiện nổi bật</h2>
                 </div>
                 <a href="#" class="hidden items-center gap-2 text-sm font-semibold lg:inline-flex transition-colors"
                    style="color:#07A0C3;" onmouseover="this.style.color='#04F06A'" onmouseout="this.style.color='#07A0C3'">
@@ -402,7 +402,7 @@
                     </div>
                     <div class="relative z-10 flex flex-1 flex-col justify-between p-5">
                         <div>
-                            <h3 class="font-['Barlow_Condensed'] text-2xl font-black uppercase leading-tight tracking-wide text-[#1C1410] transition-colors group-hover:text-[#07A0C3]">
+                            <h3 class="font-['Inter'] text-2xl font-black uppercase leading-tight tracking-wide text-[#1C1410] transition-colors group-hover:text-[#07A0C3]">
                                 <a href="{{ route('events.show', $ev['slug'] ?? '#') }}">
                                     {{ $ev['title'] }}
                                 </a>
@@ -427,7 +427,7 @@
                     <div class="relative flex items-center justify-between">
                         <div>
                             <div class="text-xs font-bold uppercase tracking-[0.25em] text-[#7A6A52]">Upcoming</div>
-                            <h3 class="font-['Barlow_Condensed'] mt-0.5 text-3xl font-black uppercase tracking-wide text-[#1C1410]">Sắp diễn ra</h3>
+                            <h3 class="font-['Inter'] mt-0.5 text-3xl font-black uppercase tracking-wide text-[#1C1410]">Sắp diễn ra</h3>
                         </div>
                         <div class="flex items-center gap-2 rounded-full bg-white/60 px-3 py-1.5 text-xs font-bold text-[#1C1410] backdrop-blur">
                             <span class="h-2 w-2 animate-pulse rounded-full" style="background:#07A0C3;"></span>Live
@@ -577,7 +577,7 @@
                     <div class="h-7 w-1 rounded-full" style="background:#FFE381;"></div>
                     <span class="text-xs font-bold uppercase tracking-[0.25em]" style="color:#FFE381;">Archive</span>
                 </div>
-                <h2 class="font-['Barlow_Condensed'] text-5xl font-black uppercase tracking-tight text-white lg:text-7xl">Kho lưu trữ sự kiện</h2>
+                <h2 class="font-['Inter'] text-5xl font-black uppercase tracking-tight text-white lg:text-7xl">Kho lưu trữ sự kiện</h2>
                 <p class="mt-3 max-w-md leading-relaxed" style="color:rgba(255,227,129,0.65);">
                     Từng năm. Từng đêm diễn. Từng ký ức được lưu lại để có thể sống lại bất cứ lúc nào.
                 </p>
@@ -602,14 +602,47 @@
 
         <div class="relative mt-14 grid grid-cols-1 gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
             <!-- Chữ số năm — Jasmine gradient -->
-            <div class="relative flex items-start z-10">
-                <div class="font-['Barlow_Condensed'] text-[28vw] font-black leading-[0.85] tracking-tighter lg:text-[18vw] pl-4 lg:pl-6 pr-4"
+            <div class="relative flex flex-col items-start justify-center gap-6 z-10 lg:pl-6">
+                <div class="font-['Inter'] text-[24vw] font-black leading-[0.85] tracking-tighter lg:text-[14vw] pl-4 lg:pl-0 pr-4"
                      style="-webkit-text-fill-color:transparent;-webkit-background-clip:text;background-clip:text;
                             background-image:linear-gradient(160deg,#FFE381 30%,#E8C84A 70%,#07A0C3 100%);"
                      x-text="current.year"
                      x-transition:enter="transition ease-out duration-500"
                      x-transition:enter-start="opacity-0 translate-y-10"
                      x-transition:enter-end="opacity-100 translate-y-0"></div>
+                     
+                <div class="pl-4 lg:pl-0 w-full">
+                    <div class="mb-8">
+                        <a :href="'{{ route('archive') }}?year=' + current.year" class="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold transition-all hover:scale-105"
+                           style="background:#FFE381; color:#1C1410;">
+                            Xem chi tiết năm <span x-text="current.year"></span> <i data-lucide="arrow-right" class="h-4 w-4"></i>
+                        </a>
+                    </div>
+
+                    <!-- Year tabs -->
+                    <div class="flex flex-wrap items-center gap-2">
+                        <template x-for="(a,i) in archive" :key="a.year">
+                            <button @click="dir=i>idx?1:-1;idx=i"
+                                class="rounded-full px-4 py-1.5 text-sm font-bold font-mono transition-all"
+                                :style="i===idx
+                                    ? 'background:#FFE381;color:#1C1410;box-shadow:0 4px 12px rgba(255,227,129,0.4);'
+                                    : 'background:rgba(255,227,129,0.08);color:rgba(255,227,129,0.45);'">
+                                <span x-text="a.year"></span>
+                            </button>
+                        </template>
+                    </div>
+
+                    <div class="mt-6 flex gap-3 lg:hidden">
+                        <button @click="go(-1)" :disabled="idx===0"
+                            class="grid h-11 w-11 place-items-center rounded-full border border-[#FFE381]/30 disabled:opacity-30">
+                            <i data-lucide="chevron-left" class="h-5 w-5 text-white"></i>
+                        </button>
+                        <button @click="go(1)" :disabled="idx===archive.length-1"
+                            class="grid h-11 w-11 place-items-center rounded-full border border-[#FFE381]/30 disabled:opacity-30">
+                            <i data-lucide="chevron-right" class="h-5 w-5 text-white"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <div>
@@ -624,7 +657,7 @@
                     <div class="absolute bottom-6 left-5 right-5">
                         <div class="mb-2 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.25em] text-[#1C1410]"
                              style="background:#FFE381;">✦ Featured event</div>
-                        <h3 class="font-['Barlow_Condensed'] text-3xl font-black uppercase tracking-wide text-white lg:text-4xl"
+                        <h3 class="font-['Inter'] text-3xl font-black uppercase tracking-wide text-white lg:text-4xl"
                             x-text="current.title"></h3>
                     </div>
                 </div>
@@ -639,36 +672,6 @@
                     </template>
                 </div>
 
-                <div class="mt-6">
-                    <a :href="'{{ route('archive') }}?year=' + current.year" class="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold transition-all hover:scale-105"
-                       style="background:#FFE381; color:#1C1410;">
-                        Xem chi tiết năm <span x-text="current.year"></span> <i data-lucide="arrow-right" class="h-4 w-4"></i>
-                    </a>
-                </div>
-
-                <!-- Year tabs -->
-                <div class="mt-7 flex flex-wrap items-center gap-2">
-                    <template x-for="(a,i) in archive" :key="a.year">
-                        <button @click="dir=i>idx?1:-1;idx=i"
-                            class="rounded-full px-4 py-1.5 text-sm font-bold font-mono transition-all"
-                            :style="i===idx
-                                ? 'background:#FFE381;color:#1C1410;box-shadow:0 4px 12px rgba(255,227,129,0.4);'
-                                : 'background:rgba(255,227,129,0.08);color:rgba(255,227,129,0.45);'">
-                            <span x-text="a.year"></span>
-                        </button>
-                    </template>
-                </div>
-
-                <div class="mt-6 flex gap-3 lg:hidden">
-                    <button @click="go(-1)" :disabled="idx===0"
-                        class="grid h-11 w-11 place-items-center rounded-full border border-[#FFE381]/30 disabled:opacity-30">
-                        <i data-lucide="chevron-left" class="h-5 w-5 text-white"></i>
-                    </button>
-                    <button @click="go(1)" :disabled="idx===archive.length-1"
-                        class="grid h-11 w-11 place-items-center rounded-full border border-[#FFE381]/30 disabled:opacity-30">
-                        <i data-lucide="chevron-right" class="h-5 w-5 text-white"></i>
-                    </button>
-                </div>
             </div>
         </div>
     </div>
@@ -695,7 +698,7 @@
                     <div class="h-7 w-1 rounded-full" style="background:#04F06A;"></div>
                     <span class="text-xs font-bold uppercase tracking-[0.25em]" style="color:#04B050;">Media</span>
                 </div>
-                <h2 class="font-['Barlow_Condensed'] text-4xl font-black uppercase tracking-tight text-[#1C1410] lg:text-5xl">Album & Recap</h2>
+                <h2 class="font-['Inter'] text-4xl font-black uppercase tracking-tight text-[#1C1410] lg:text-5xl">Album & Recap</h2>
             </div>
             <a href="#" class="group inline-flex items-center gap-1.5 text-sm font-semibold text-[#07A0C3] transition-colors hover:text-[#04F06A]">
                 Thư viện đầy đủ <i data-lucide="arrow-right" class="h-4 w-4 transition-transform group-hover:translate-x-1"></i>
@@ -736,7 +739,7 @@
                     <div class="flex-1 rounded-2xl p-6 flex flex-col justify-center relative overflow-hidden group" style="background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); box-shadow: 0 4px 20px rgba(255,200,60,0.15); border: 1px solid rgba(255, 227, 129, 0.5);">
                         <div class="mb-4 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.25em] text-[#1C1410]" style="background:#FFE381;" x-text="currentItem.type === 'video' ? 'Video' : 'Hình ảnh'"></div>
                         
-                        <h3 class="font-['Barlow_Condensed'] text-3xl font-black uppercase tracking-wide text-[#1C1410] leading-snug line-clamp-4" x-text="currentItem.title"></h3>
+                        <h3 class="font-['Inter'] text-3xl font-black uppercase tracking-wide text-[#1C1410] leading-snug line-clamp-4" x-text="currentItem.title"></h3>
                         
                         <div class="mt-4 flex items-center gap-2">
                             <div class="h-10 w-1 rounded-full" style="background:#04F06A;"></div>

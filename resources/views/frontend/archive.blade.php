@@ -109,7 +109,7 @@
                     <div class="h-7 w-1 rounded-full" style="background:#8A7320;"></div>
                     <span class="text-xs font-bold uppercase tracking-[0.25em]" style="color:#8A7320;">Archive</span>
                 </div>
-                <h2 class="font-['Barlow_Condensed'] text-5xl font-black uppercase tracking-tight text-[#1C1410] lg:text-7xl">Kho lưu trữ sự kiện</h2>
+                <h2 class="font-['Inter'] text-5xl font-black uppercase tracking-tight text-[#1C1410] lg:text-7xl">Kho lưu trữ sự kiện</h2>
                 <p class="mt-3 max-w-md leading-relaxed text-[#7A6A52]">
                     Khám phá các sự kiện đã qua, cùng với hình ảnh ghi niệm và tài liệu học thuật đính kèm.
                 </p>
@@ -118,118 +118,124 @@
 
         <!-- ── Unified Filter Bar ── -->
         <div data-aos="fade-up" data-aos-delay="100" 
-             class="relative z-50 mt-10 p-4 rounded-3xl flex flex-col lg:flex-row lg:items-center gap-4 border"
+             class="relative z-40 mt-10 p-4 rounded-3xl flex flex-col gap-4 border"
              style="background: #FFFFFF; border-color: #E8E2D5; box-shadow: 0 10px 30px rgba(28, 20, 16, 0.03);">
             
-            <!-- Search Keyword Input -->
-            <div class="flex-1 min-w-[200px] relative">
-                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                    <i data-lucide="search" class="h-4 w-4 text-[#7A6A52]/70"></i>
-                </span>
-                <input type="text" 
-                       x-model="filterSearch" 
-                       @input="resetIdx()"
-                       placeholder="Tìm kiếm theo tên hoặc nội dung sự kiện..." 
-                       class="w-full pl-10 pr-4 py-2.5 text-sm font-semibold rounded-2xl border transition-all placeholder-[#7A6A52]/50 text-[#1C1410] focus:ring-2 focus:ring-[#FFE381]/50 focus:border-[#FFE381] outline-none"
-                       style="background: #FFFDF9; border-color: #E8E2D5;">
-            </div>
-
-            <!-- Dropdowns & Action Controls -->
-            <div class="flex flex-wrap items-center gap-3">
-                <!-- Year Filter Dropdown -->
-                <div class="flex items-center gap-2 rounded-2xl px-4 py-2.5 border relative" 
-                     style="background: #FFFDF9; border-color: #E8E2D5;">
-                    <i data-lucide="calendar" class="h-4 w-4 shrink-0 text-[#8A7320]"></i>
-                    <span class="text-xs font-bold uppercase tracking-widest text-[#7A6A52] mr-1">Năm</span>
-                    <select x-model="filterYear" @change="resetIdx()"
-                            class="bg-transparent text-sm font-semibold focus:outline-none cursor-pointer pr-5">
-                        <option value="">Tất cả</option>
-                        <template x-for="yr in years" :key="yr">
-                            <option :value="yr" x-text="yr"></option>
-                        </template>
-                    </select>
-                    <i data-lucide="chevron-down" class="h-3 w-3 shrink-0 text-[#7A6A52] absolute right-3 pointer-events-none"></i>
+            <!-- Top Row: Search & Filters -->
+            <div class="flex flex-col lg:flex-row lg:items-center gap-4 w-full">
+                <!-- Search Keyword Input -->
+                <div class="flex-1 min-w-[200px] relative">
+                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                        <i data-lucide="search" class="h-4 w-4 text-[#7A6A52]/70"></i>
+                    </span>
+                    <input type="text" 
+                           x-model="filterSearch" 
+                           @input="resetIdx()"
+                           placeholder="Tìm kiếm theo tên hoặc nội dung sự kiện..." 
+                           class="w-full pl-10 pr-4 py-2.5 text-sm font-semibold rounded-2xl border transition-all placeholder-[#7A6A52]/50 text-[#1C1410] focus:ring-2 focus:ring-[#FFE381]/50 focus:border-[#FFE381] outline-none"
+                           style="background: #FFFDF9; border-color: #E8E2D5;">
                 </div>
 
-                <!-- Month Filter Dropdown -->
-                <div class="flex items-center gap-2 rounded-2xl px-4 py-2.5 border relative" 
-                     style="background: #FFFDF9; border-color: #E8E2D5;">
-                    <i data-lucide="calendar-days" class="h-4 w-4 shrink-0 text-[#07A0C3]"></i>
-                    <span class="text-xs font-bold uppercase tracking-widest text-[#7A6A52] mr-1">Tháng</span>
-                    <select x-model="filterMonth" @change="resetIdx()"
-                            class="bg-transparent text-sm font-semibold focus:outline-none cursor-pointer pr-5">
-                        <option value="">Tất cả</option>
-                        <template x-for="m in [1,2,3,4,5,6,7,8,9,10,11,12]" :key="m">
-                            <option :value="m" x-text="'Tháng ' + m"></option>
-                        </template>
-                    </select>
-                    <i data-lucide="chevron-down" class="h-3 w-3 shrink-0 text-[#7A6A52] absolute right-3 pointer-events-none"></i>
-                </div>
-
-                <!-- Category Filter Dropdown -->
-                <div class="flex items-center gap-2 rounded-2xl px-4 py-2.5 border relative" 
-                     style="background: #FFFDF9; border-color: #E8E2D5;">
-                    <i data-lucide="tag" class="h-4 w-4 shrink-0 text-[#04B050]"></i>
-                    <span class="text-xs font-bold uppercase tracking-widest text-[#7A6A52] mr-1">Loại</span>
-                    <select x-model="filterCategory" @change="resetIdx()"
-                            class="bg-transparent text-sm font-semibold focus:outline-none cursor-pointer pr-5">
-                        <option value="">Tất cả</option>
-                        <template x-for="cat in categories" :key="cat">
-                            <option :value="cat" x-text="cat"></option>
-                        </template>
-                    </select>
-                    <i data-lucide="chevron-down" class="h-3 w-3 shrink-0 text-[#7A6A52] absolute right-3 pointer-events-none"></i>
-                </div>
-
-                <!-- Attached File Filter Custom Multi-select Dropdown -->
-                <div class="relative" @click.away="showFileTypeDropdown = false">
-                    <div @click="showFileTypeDropdown = !showFileTypeDropdown"
-                         class="flex items-center gap-2 rounded-2xl px-4 py-2.5 border cursor-pointer select-none" 
+                <!-- Dropdowns & Action Controls -->
+                <div class="flex flex-wrap items-center gap-3">
+                    <!-- Year Filter Dropdown -->
+                    <div class="flex items-center gap-2 rounded-full px-4 py-2.5 border relative transition-all duration-300 hover:border-[#E8C84A] hover:bg-white hover:shadow-md cursor-pointer group" 
                          style="background: #FFFDF9; border-color: #E8E2D5;">
-                        <i data-lucide="paperclip" class="h-4 w-4 shrink-0 text-[#07A0C3]"></i>
-                        <span class="text-xs font-bold uppercase tracking-widest text-[#7A6A52] mr-1">Đính kèm</span>
-                        <span class="text-sm font-semibold text-[#1C1410] max-w-[100px] truncate" 
-                              x-text="filterFileTypes.length === 0 ? 'Tất cả' : (filterFileTypes.length + ' loại')"></span>
-                        <i data-lucide="chevron-down" class="h-3 w-3 shrink-0 text-[#7A6A52] transition-transform" :class="showFileTypeDropdown ? 'rotate-180' : ''"></i>
+                        <i data-lucide="calendar" class="h-4 w-4 shrink-0 text-[#8A7320] transition-transform group-hover:scale-110"></i>
+                        <span class="text-xs font-bold uppercase tracking-widest text-[#7A6A52] mr-1">Năm</span>
+                        <span class="text-sm font-semibold text-[#1C1410] min-w-[45px]" x-text="filterYear === '' ? 'Tất cả' : filterYear"></span>
+                        <i data-lucide="chevron-down" class="h-3 w-3 shrink-0 text-[#7A6A52] transition-colors group-hover:text-[#1C1410]"></i>
+                        <select x-model="filterYear" @change="resetIdx()"
+                                class="absolute inset-0 w-full h-full opacity-0 cursor-pointer appearance-none">
+                            <option value="">Tất cả</option>
+                            <template x-for="yr in years" :key="yr">
+                                <option :value="yr" x-text="yr"></option>
+                            </template>
+                        </select>
                     </div>
-                    
-                    <!-- Dropdown Checkbox list -->
-                    <div x-show="showFileTypeDropdown" 
-                         x-transition:enter="transition ease-out duration-150"
-                         x-transition:enter-start="opacity-0 scale-95 -translate-y-2"
-                         x-transition:enter-end="opacity-100 scale-100 translate-y-0"
-                         x-transition:leave="transition ease-in duration-100"
-                         x-transition:leave-start="opacity-100 scale-100 translate-y-0"
-                         x-transition:leave-end="opacity-0 scale-95 -translate-y-2"
-                         class="absolute right-0 mt-2 w-48 rounded-2xl border p-3.5 z-30 shadow-xl flex flex-col gap-2.5"
-                         style="background: #FFFFFF; border-color: #E8E2D5; display: none;">
+
+                    <!-- Month Filter Dropdown -->
+                    <div class="flex items-center gap-2 rounded-full px-4 py-2.5 border relative transition-all duration-300 hover:border-[#07A0C3] hover:bg-white hover:shadow-md cursor-pointer group" 
+                         style="background: #FFFDF9; border-color: #E8E2D5;">
+                        <i data-lucide="calendar-days" class="h-4 w-4 shrink-0 text-[#07A0C3] transition-transform group-hover:scale-110"></i>
+                        <span class="text-xs font-bold uppercase tracking-widest text-[#7A6A52] mr-1">Tháng</span>
+                        <span class="text-sm font-semibold text-[#1C1410] min-w-[60px]" x-text="filterMonth === '' ? 'Tất cả' : 'Tháng ' + filterMonth"></span>
+                        <i data-lucide="chevron-down" class="h-3 w-3 shrink-0 text-[#7A6A52] transition-colors group-hover:text-[#1C1410]"></i>
+                        <select x-model="filterMonth" @change="resetIdx()"
+                                class="absolute inset-0 w-full h-full opacity-0 cursor-pointer appearance-none">
+                            <option value="">Tất cả</option>
+                            <template x-for="m in [1,2,3,4,5,6,7,8,9,10,11,12]" :key="m">
+                                <option :value="m" x-text="'Tháng ' + m"></option>
+                            </template>
+                        </select>
+                    </div>
+
+                    <!-- Category Filter Dropdown -->
+                    <div class="flex items-center gap-2 rounded-full px-4 py-2.5 border relative transition-all duration-300 hover:border-[#04B050] hover:bg-white hover:shadow-md cursor-pointer group" 
+                         style="background: #FFFDF9; border-color: #E8E2D5;">
+                        <i data-lucide="tag" class="h-4 w-4 shrink-0 text-[#04B050] transition-transform group-hover:scale-110"></i>
+                        <span class="text-xs font-bold uppercase tracking-widest text-[#7A6A52] mr-1">Loại</span>
+                        <span class="text-sm font-semibold text-[#1C1410] min-w-[50px] truncate max-w-[80px]" x-text="filterCategory === '' ? 'Tất cả' : filterCategory"></span>
+                        <i data-lucide="chevron-down" class="h-3 w-3 shrink-0 text-[#7A6A52] transition-colors group-hover:text-[#1C1410]"></i>
+                        <select x-model="filterCategory" @change="resetIdx()"
+                                class="absolute inset-0 w-full h-full opacity-0 cursor-pointer appearance-none">
+                            <option value="">Tất cả</option>
+                            <template x-for="cat in categories" :key="cat">
+                                <option :value="cat" x-text="cat"></option>
+                            </template>
+                        </select>
+                    </div>
+
+                    <!-- Attached File Filter Custom Multi-select Dropdown -->
+                    <div class="relative" @click.away="showFileTypeDropdown = false">
+                        <div @click="showFileTypeDropdown = !showFileTypeDropdown"
+                             class="flex items-center gap-2 rounded-full px-4 py-2.5 border cursor-pointer select-none transition-all duration-300 hover:border-[#FF4D4D] hover:bg-white hover:shadow-md group" 
+                             style="background: #FFFDF9; border-color: #E8E2D5;">
+                            <i data-lucide="paperclip" class="h-4 w-4 shrink-0 text-[#FF4D4D] transition-transform group-hover:scale-110"></i>
+                            <span class="text-xs font-bold uppercase tracking-widest text-[#7A6A52] mr-1">Đính kèm</span>
+                            <span class="text-sm font-semibold text-[#1C1410] min-w-[45px] max-w-[100px] truncate" 
+                                  x-text="filterFileTypes.length === 0 ? 'Tất cả' : (filterFileTypes.length + ' loại')"></span>
+                            <i data-lucide="chevron-down" class="h-3 w-3 shrink-0 text-[#7A6A52] transition-transform group-hover:text-[#1C1410]" :class="showFileTypeDropdown ? 'rotate-180' : ''"></i>
+                        </div>
                         
-                        <label class="flex items-center gap-2.5 cursor-pointer text-xs font-bold text-[#7A6A52] hover:text-[#1C1410] select-none">
-                            <input type="checkbox" x-model="filterFileTypes" value="image" @change="resetIdx()"
-                                   class="w-4 h-4 rounded border-[#E8E2D5] text-[#FFE381] focus:ring-0 cursor-pointer accent-[#FFE381]">
-                            <span>🖼️ Hình ảnh</span>
-                        </label>
-                        <label class="flex items-center gap-2.5 cursor-pointer text-xs font-bold text-[#7A6A52] hover:text-[#1C1410] select-none">
-                            <input type="checkbox" x-model="filterFileTypes" value="video" @change="resetIdx()"
-                                   class="w-4 h-4 rounded border-[#E8E2D5] text-[#FFE381] focus:ring-0 cursor-pointer accent-[#FF4D4D]">
-                            <span>🎥 Video</span>
-                        </label>
-                        <label class="flex items-center gap-2.5 cursor-pointer text-xs font-bold text-[#7A6A52] hover:text-[#1C1410] select-none">
-                            <input type="checkbox" x-model="filterFileTypes" value="document" @change="resetIdx()"
-                                   class="w-4 h-4 rounded border-[#E8E2D5] text-[#FFE381] focus:ring-0 cursor-pointer accent-[#04B050]">
-                            <span>📄 Tài liệu & Văn bản</span>
-                        </label>
-                        <label class="flex items-center gap-2.5 cursor-pointer text-xs font-bold text-[#7A6A52] hover:text-[#1C1410] select-none">
-                            <input type="checkbox" x-model="filterFileTypes" value="archive" @change="resetIdx()"
-                                   class="w-4 h-4 rounded border-[#E8E2D5] text-[#FFE381] focus:ring-0 cursor-pointer accent-[#007ACC]">
-                            <span>🗜️ Tệp nén</span>
-                        </label>
+                        <!-- Dropdown Checkbox list -->
+                        <div x-show="showFileTypeDropdown" 
+                             x-transition:enter="transition ease-out duration-150"
+                             x-transition:enter-start="opacity-0 scale-95 -translate-y-2"
+                             x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                             x-transition:leave="transition ease-in duration-100"
+                             x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+                             x-transition:leave-end="opacity-0 scale-95 -translate-y-2"
+                             class="absolute right-0 mt-2 w-48 rounded-2xl border p-3.5 z-40 shadow-xl flex flex-col gap-2.5"
+                             style="background: #FFFFFF; border-color: #E8E2D5; display: none;">
+                            
+                            <label class="flex items-center gap-2.5 cursor-pointer text-xs font-bold text-[#7A6A52] hover:text-[#1C1410] select-none">
+                                <input type="checkbox" x-model="filterFileTypes" value="image" @change="resetIdx()"
+                                       class="w-4 h-4 rounded border-[#E8E2D5] text-[#FFE381] focus:ring-0 cursor-pointer accent-[#FFE381]">
+                                <span>🖼️ Hình ảnh</span>
+                            </label>
+                            <label class="flex items-center gap-2.5 cursor-pointer text-xs font-bold text-[#7A6A52] hover:text-[#1C1410] select-none">
+                                <input type="checkbox" x-model="filterFileTypes" value="video" @change="resetIdx()"
+                                       class="w-4 h-4 rounded border-[#E8E2D5] text-[#FFE381] focus:ring-0 cursor-pointer accent-[#FF4D4D]">
+                                <span>🎥 Video</span>
+                            </label>
+                            <label class="flex items-center gap-2.5 cursor-pointer text-xs font-bold text-[#7A6A52] hover:text-[#1C1410] select-none">
+                                <input type="checkbox" x-model="filterFileTypes" value="document" @change="resetIdx()"
+                                       class="w-4 h-4 rounded border-[#E8E2D5] text-[#FFE381] focus:ring-0 cursor-pointer accent-[#04B050]">
+                                <span>📄 Tài liệu & Văn bản</span>
+                            </label>
+                            <label class="flex items-center gap-2.5 cursor-pointer text-xs font-bold text-[#7A6A52] hover:text-[#1C1410] select-none">
+                                <input type="checkbox" x-model="filterFileTypes" value="archive" @change="resetIdx()"
+                                       class="w-4 h-4 rounded border-[#E8E2D5] text-[#FFE381] focus:ring-0 cursor-pointer accent-[#007ACC]">
+                                <span>🗜️ Tệp nén</span>
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Result Count & Clear Filter -->
-            <div class="flex items-center justify-between lg:justify-end gap-4 shrink-0 lg:ml-auto pt-3 lg:pt-0 border-t lg:border-t-0 border-[#E8E2D5]/50 w-full lg:w-auto">
+            <!-- Bottom Row: Result Count & Clear Filter -->
+            <div class="flex items-center justify-between gap-4 pt-3 border-t border-[#E8E2D5]/50 w-full">
                 <span class="text-xs font-semibold text-[#7A6A52]">
                     Tìm thấy <span class="font-bold text-[#1C1410]" x-text="filteredArchive.length"></span> sự kiện
                 </span>
@@ -267,7 +273,7 @@
                                           :style="idx === i ? 'background:rgba(28,20,16,0.1); color:#1C1410;' : 'background:rgba(122,106,82,0.1); color:#7A6A52;'"
                                           x-text="'NH ' + ev.year"></span>
                                 </div>
-                                <h4 class="font-['Barlow_Condensed'] text-lg font-bold uppercase tracking-wide truncate mt-0.5"
+                                <h4 class="font-['Inter'] text-lg font-bold uppercase tracking-wide truncate mt-0.5"
                                     :style="idx === i ? 'color:#1C1410;' : 'color:#1C1410;'"
                                     x-text="ev.title"></h4>
                             </div>
@@ -316,7 +322,7 @@
                                     <span x-text="'Tháng ' + current.month + '/' + current.event_year"></span>
                                 </span>
                             </div>
-                            <h3 class="font-['Barlow_Condensed'] text-2xl lg:text-3xl font-black uppercase tracking-wide text-[#1C1410] mt-2" x-text="current.title"></h3>
+                            <h3 class="font-['Inter'] text-2xl lg:text-3xl font-black uppercase tracking-wide text-[#1C1410] mt-2" x-text="current.title"></h3>
                             
                             <!-- Achievements/Metadata Row -->
                             <div class="flex flex-wrap gap-2 mt-3">

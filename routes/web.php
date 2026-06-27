@@ -10,6 +10,8 @@ use App\Http\Controllers\FrontendController;
 Route::get('/', [FrontendController::class, 'home'])->name('home');
 Route::get('/archive', [FrontendController::class, 'archive'])->name('archive');
 Route::get('/category/{slug}', [FrontendController::class, 'category'])->name('events.category');
+Route::get('/contact', [FrontendController::class, 'contact'])->name('contact');
+Route::post('/contact', [FrontendController::class, 'submitContact'])->name('contact.submit');
 Route::get('/events/{slug}', [PublicEventController::class, 'show'])->name('events.show');
 Route::post('/events/{id}/like', [PublicEventController::class, 'like'])->name('events.like');
 

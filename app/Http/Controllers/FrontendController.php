@@ -7,8 +7,46 @@ use App\Models\Event;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 
+use Illuminate\Support\Facades\Mail;
+
 class FrontendController extends Controller
 {
+    public function contact()
+    {
+        return view('frontend.contact');
+    }
+
+    public function submitContact(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'subject' => 'required|string|max:255',
+            'message' => 'required|string',
+        ]);
+
+        try {
+            // Note: Make sure MAIL_USERNAME is configured in .env
+            Mail::raw("Bạn nhận được một tin nhắn mới từ trang Liên hệ:\n\n" .
+                      "Họ tên: {$validated['name']}\n" .
+                      "Email: {$validated['email']}\n" .
+                      "Chủ đề: {$validated['subject']}\n" .
+                      "Nội dung:\n{$validated['message']}", function ($message) use ($validated) {
+                // To the site admin
+                $message->to(env('MAIL_FROM_ADDRESS', 'admin@example.com'))
+                        ->subject('Tin nhắn mới từ: ' . $validated['name']);
+                
+                // Reply-To the user who submitted the form
+                $message->replyTo($validated['email'], $validated['name']);
+            });
+
+            return redirect()->back()->with('success', 'Cảm ơn bạn! Tin nhắn của bạn đã được gửi thành công. Chúng tôi sẽ phản hồi sớm nhất có thể.');
+        } catch (\Exception $e) {
+            \Log::error('Error sending contact email: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Có lỗi xảy ra khi gửi tin nhắn. Vui lòng đảm bảo cấu hình Email (.env) đã chính xác.');
+        }
+    }
+
     public function home()
     {
         $data = \Illuminate\Support\Facades\Cache::remember('frontend_home_data', 300, function () {

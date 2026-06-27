@@ -406,6 +406,7 @@
     </div>
     @endif
 </section>
+@include('components.event-fab-menu', ['event' => $event])
 </div>
 @endsection
 

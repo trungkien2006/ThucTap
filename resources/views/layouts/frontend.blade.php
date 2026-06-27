@@ -22,7 +22,9 @@
 </head>
 <body class="frontend-body antialiased bg-paper text-ink relative" x-data="{ scrolled: false }" @scroll.window="scrolled = (window.pageYOffset > 40)">
     
-    @php $isHome = request()->routeIs('home'); @endphp
+    @php 
+        $isHome = request()->routeIs('home'); 
+    @endphp
     <!-- Header -->
     <header 
         class="fixed inset-x-0 top-0 z-50 transition-all duration-500 {{ !$isHome ? 'backdrop-blur-xl border-b shadow-sm' : '' }}"
@@ -64,6 +66,28 @@
                         <div class="overflow-hidden rounded-2xl p-3 shadow-[0_20px_60px_-20px_rgba(255,200,60,0.4)] backdrop-blur-xl"
                              style="background:rgba(255,248,208,0.98);border:1px solid rgba(232,200,74,0.4);">
                             <div class="grid grid-cols-2 gap-1">
+                                @php
+                                    if(!isset($categories)) {
+                                        $categories = \Illuminate\Support\Facades\Cache::remember('frontend_categories', 300, function () {
+                                            $dbCategories = \App\Models\Category::where('type', 'event_type')->whereNotIn('name', ['Other', 'Khác'])->get();
+                                            $vietnameseNames = [
+                                                'Conference' => 'Hội nghị',
+                                                'Workshop' => 'Hội thảo thực hành',
+                                                'Seminar' => 'Hội thảo chuyên đề',
+                                                'Cultural' => 'Văn hóa nghệ thuật',
+                                                'Sports' => 'Thể thao',
+                                                'Orientation' => 'Định hướng'
+                                            ];
+                                            return $dbCategories->map(function ($c) use ($vietnameseNames) {
+                                                return [
+                                                    'name' => $c->name,
+                                                    'slug' => $c->slug,
+                                                    'desc' => $vietnameseNames[$c->name] ?? 'Sự kiện'
+                                                ];
+                                            })->toArray();
+                                        });
+                                    }
+                                @endphp
                                 @if(isset($categories))
                                     @foreach($categories as $c)
                                     <a href="{{ isset($c['slug']) ? route('events.category', $c['slug']) : '#' }}" class="group flex items-start justify-between rounded-xl px-4 py-3 transition-colors"
@@ -89,7 +113,7 @@
                    {!! $isHome ? ":class=\"scrolled ? 'text-[#7A6A52] hover:text-[#1C1410]' : 'text-white/80 hover:text-white'\"" : "" !!}>
                     Kho lưu trữ
                 </a>
-                <a href="{{ route('home') }}#contact" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-sm font-semibold transition-colors {{ !$isHome ? 'text-[#7A6A52] hover:text-[#1C1410]' : '' }}"
+                <a href="{{ route('contact') }}" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-sm font-semibold transition-colors {{ request()->routeIs('contact') ? 'text-[#07A0C3]' : (!$isHome ? 'text-[#7A6A52] hover:text-[#1C1410]' : '') }}"
                    {!! $isHome ? ":class=\"scrolled ? 'text-[#7A6A52] hover:text-[#1C1410]' : 'text-white/80 hover:text-white'\"" : "" !!}>
                     Liên hệ
                 </a>
@@ -98,41 +122,83 @@
             <div class="hidden lg:block">
                 <a href="{{ route('home') }}#events"
                    class="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold text-[#1C1410] shadow-md transition-all hover:shadow-lg hover:scale-105"
-                   style="background:#FFE381;">
-                    Khám phá sự kiện
-                    <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
+                   style="background: #FFE381; border: 1px solid rgba(232,200,74,0.6);">
+                    Khám phá ngay
+                    <i data-lucide="arrow-right" class="h-4 w-4"></i>
                 </a>
             </div>
 
-            <button @click="mobileOpen = !mobileOpen" class="lg:hidden transition-colors {{ !$isHome ? 'text-ink' : '' }}" {!! $isHome ? ":class=\"scrolled ? 'text-ink' : 'text-white'\"" : "" !!} aria-label="Menu">
-                <i data-lucide="menu" x-show="!mobileOpen"></i>
-                <i data-lucide="x" x-show="mobileOpen" style="display: none;"></i>
+            <button class="lg:hidden text-[#1C1410] p-2" 
+                    {!! $isHome ? ":class=\"scrolled ? 'text-[#1C1410]' : 'text-white'\"" : "" !!}
+                    @click="mobileOpen = true">
+                <i data-lucide="menu" class="h-6 w-6"></i>
             </button>
         </div>
 
         <!-- Mobile Menu -->
-        <div x-show="mobileOpen" 
-             x-transition:enter="transition ease-out duration-300"
-             x-transition:enter-start="opacity-0 max-h-0"
-             x-transition:enter-end="opacity-100 max-h-screen"
-             x-transition:leave="transition ease-in duration-200"
-             x-transition:leave-start="opacity-100 max-h-screen"
-             x-transition:leave-end="opacity-0 max-h-0"
-             class="lg:hidden overflow-hidden bg-white border-t border-gray-100"
-             style="display: none;">
-            <nav class="flex flex-col px-6 py-4 space-y-4">
-                <a href="{{ route('home') }}#top" class="text-lg font-medium text-[#1C1410] hover:text-[#07A0C3]" @click="mobileOpen = false">Trang chủ</a>
-                <a href="{{ route('home') }}#events" class="text-lg font-medium text-[#1C1410] hover:text-[#07A0C3]" @click="mobileOpen = false">Sự kiện</a>
-                <div class="pl-4 border-l-2 border-gray-100 flex flex-col gap-3">
-                    @if(isset($categories))
-                        @foreach($categories as $c)
-                            <a href="{{ isset($c['slug']) ? route('events.category', $c['slug']) : '#' }}" class="text-sm text-[#7A6A52] hover:text-[#07A0C3]" @click="mobileOpen = false">{{ $c['name'] }}</a>
-                        @endforeach
-                    @endif
+        <div x-show="mobileOpen" style="display: none;" class="fixed inset-0 z-50 lg:hidden">
+            <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="mobileOpen = false"
+                 x-transition:enter="transition-opacity ease-linear duration-300"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="transition-opacity ease-linear duration-300"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"></div>
+            
+            <div class="absolute inset-y-0 right-0 w-full max-w-sm bg-[#FFFBEA] p-6 shadow-2xl flex flex-col"
+                 x-transition:enter="transition ease-in-out duration-300 transform"
+                 x-transition:enter-start="translate-x-full"
+                 x-transition:enter-end="translate-x-0"
+                 x-transition:leave="transition ease-in-out duration-300 transform"
+                 x-transition:leave-start="translate-x-0"
+                 x-transition:leave-end="translate-x-full">
+                
+                <div class="flex items-center justify-between mb-8">
+                    <span class="font-['Barlow'] text-2xl font-black uppercase tracking-tight text-[#1C1410]">
+                        Uni<span style="color:#E8C84A;">Event</span>
+                    </span>
+                    <button @click="mobileOpen = false" class="p-2 text-[#7A6A52] hover:text-[#1C1410] bg-white rounded-full shadow-sm">
+                        <i data-lucide="x" class="h-5 w-5"></i>
+                    </button>
                 </div>
-                <a href="{{ route('archive') }}" class="text-lg font-medium text-[#1C1410] hover:text-[#07A0C3]" @click="mobileOpen = false">Kho lưu trữ</a>
-                <a href="{{ route('home') }}#contact" class="text-lg font-medium text-[#1C1410] hover:text-[#07A0C3]" @click="mobileOpen = false">Liên hệ</a>
-            </nav>
+
+                <nav class="flex flex-col gap-4">
+                    <a href="{{ route('home') }}#top" @click="mobileOpen = false" class="flex items-center justify-between py-3 text-lg font-semibold text-[#1C1410] border-b border-[#E8C84A]/20">
+                        Trang chủ
+                        <i data-lucide="chevron-right" class="h-4 w-4 text-[#7A6A52]"></i>
+                    </a>
+                    
+                    <div x-data="{ expanded: false }" class="border-b border-[#E8C84A]/20 pb-3">
+                        <button @click="expanded = !expanded" class="flex w-full items-center justify-between py-3 text-lg font-semibold text-[#1C1410]">
+                            Danh mục sự kiện
+                            <i data-lucide="chevron-down" class="h-4 w-4 text-[#7A6A52] transition-transform" :class="expanded ? 'rotate-180' : ''"></i>
+                        </button>
+                        <div x-show="expanded" class="grid grid-cols-1 gap-2 pt-2 pb-2 pl-4">
+                            @if(isset($categories))
+                                @foreach($categories as $c)
+                                <a href="{{ isset($c['slug']) ? route('events.category', $c['slug']) : '#' }}" class="py-2 text-[#7A6A52] hover:text-[#07A0C3] font-medium" @click="mobileOpen = false">{{ $c['name'] }}</a>
+                                @endforeach
+                            @endif
+                        </div>
+                    </div>
+
+                    <a href="{{ route('archive') }}" @click="mobileOpen = false" class="flex items-center justify-between py-3 text-lg font-semibold text-[#1C1410] border-b border-[#E8C84A]/20">
+                        Kho lưu trữ
+                        <i data-lucide="chevron-right" class="h-4 w-4 text-[#7A6A52]"></i>
+                    </a>
+                    <a href="{{ route('contact') }}" @click="mobileOpen = false" class="flex items-center justify-between py-3 text-lg font-semibold {{ request()->routeIs('contact') ? 'text-[#07A0C3]' : 'text-[#1C1410]' }} border-b border-[#E8C84A]/20">
+                        Liên hệ
+                        <i data-lucide="chevron-right" class="h-4 w-4 text-[#7A6A52]"></i>
+                    </a>
+                </nav>
+
+                <div class="mt-auto pt-6">
+                    <a href="{{ route('home') }}#events" @click="mobileOpen = false" class="flex w-full items-center justify-center gap-2 rounded-xl py-4 text-center text-lg font-bold text-[#1C1410] shadow-md transition-transform active:scale-95" style="background: #FFE381;">
+                        Khám phá ngay
+                        <i data-lucide="arrow-right" class="h-5 w-5"></i>
+                    </a>
+                </div>
+            </div>
         </div>
     </header>
 
@@ -242,5 +308,9 @@
         });
     </script>
     @stack('scripts')
+    
+    @if(request()->is('events/*') || request()->is('admin/events/*/preview*') || request()->is('admin/template-preview/*'))
+        @include('components.event-fab-menu')
+    @endif
 </body>
 </html>

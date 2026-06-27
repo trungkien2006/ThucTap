@@ -13,7 +13,7 @@
                 <div class="h-7 w-1 rounded-full" style="background:#07A0C3;"></div>
                 <span class="text-xs font-bold uppercase tracking-[0.25em]" style="color:#07A0C3;">Danh mục</span>
             </div>
-            <h1 class="font-['Inter'] text-5xl font-black uppercase tracking-tight text-[#1C1410] lg:text-7xl">{{ $category->name }}</h1>
+            <h1 class="font-['Barlow_Condensed'] text-5xl font-black uppercase tracking-tight text-[#1C1410] lg:text-7xl">{{ $category->name }}</h1>
         </div>
 
         @if($newestEvent)
@@ -24,7 +24,7 @@
                         Mới nhất
                     </span>
                 </div>
-                <h2 class="font-['Inter'] text-3xl lg:text-5xl font-black uppercase leading-tight text-[#1C1410] transition-colors group-hover:text-[#07A0C3]">
+                <h2 class="font-['Barlow_Condensed'] text-3xl lg:text-5xl font-black uppercase leading-tight text-[#1C1410] transition-colors group-hover:text-[#07A0C3]">
                     <a href="{{ route('events.show', $newestEvent->slug) }}">{{ $newestEvent->title }}</a>
                 </h2>
                 <p class="mt-6 text-base text-[#7A6A52] leading-relaxed line-clamp-4">
@@ -51,7 +51,7 @@
         
         {{-- Left: Grid --}}
         <div>
-            <h3 class="font-['Inter'] text-3xl font-black uppercase text-[#1C1410] mb-8">Các sự kiện khác</h3>
+            <h3 class="font-['Barlow_Condensed'] text-3xl font-black uppercase text-[#1C1410] mb-8">Các sự kiện khác</h3>
             @if($otherEvents->count() > 0)
             <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
                 @foreach($otherEvents as $ev)
@@ -70,7 +70,7 @@
                     </div>
                     <div class="relative z-10 flex flex-1 flex-col justify-between p-5">
                         <div>
-                            <h4 class="font-['Inter'] text-xl font-black uppercase leading-tight tracking-wide text-[#1C1410] transition-colors group-hover:text-[#07A0C3]">
+                            <h4 class="font-['Barlow_Condensed'] text-xl font-black uppercase leading-tight tracking-wide text-[#1C1410] transition-colors group-hover:text-[#07A0C3]">
                                 <a href="{{ route('events.show', $ev->slug) }}">
                                     {{ $ev->title }}
                                 </a>
@@ -97,7 +97,7 @@
             <div class="overflow-hidden rounded-2xl shadow-xl" style="border:2px solid #FFE381; background:#FFF8D0;">
                 <div class="relative overflow-hidden px-6 py-5" style="background:#FFE381;">
                     <div class="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full opacity-30" style="background:#07A0C3;"></div>
-                    <h3 class="font-['Inter'] text-2xl font-black uppercase tracking-wide text-[#1C1410] relative z-10">Sự kiện nổi bật</h3>
+                    <h3 class="font-['Barlow_Condensed'] text-2xl font-black uppercase tracking-wide text-[#1C1410] relative z-10">Sự kiện nổi bật</h3>
                 </div>
                 
                 <div class="p-6 space-y-5">
@@ -136,7 +136,7 @@
     
     <div class="relative mx-auto max-w-[1400px] px-6 lg:px-10">
         <div class="mb-10 text-center">
-            <h2 class="font-['Inter'] text-4xl font-black uppercase tracking-tight text-[#1C1410]">Album {{ $category->name }}</h2>
+            <h2 class="font-['Barlow_Condensed'] text-4xl font-black uppercase tracking-tight text-[#1C1410]">Album {{ $category->name }}</h2>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -166,7 +166,7 @@
             <div class="lg:col-span-4 flex flex-col gap-4 h-[500px]">
                 <div class="flex-1 rounded-2xl p-6 flex flex-col justify-center relative overflow-hidden group" style="background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); box-shadow: 0 4px 20px rgba(255,200,60,0.15); border: 1px solid rgba(255, 227, 129, 0.5);">
                     <div class="mb-4 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.25em] text-[#1C1410]" style="background:#FFE381;" x-text="currentItem.type === 'video' ? 'Video' : 'Hình ảnh'"></div>
-                    <h3 class="font-['Inter'] text-3xl font-black uppercase tracking-wide text-[#1C1410] leading-snug line-clamp-4" x-text="currentItem.title"></h3>
+                    <h3 class="font-['Barlow_Condensed'] text-3xl font-black uppercase tracking-wide text-[#1C1410] leading-snug line-clamp-4" x-text="currentItem.title"></h3>
                     <div class="mt-4 flex items-center gap-2">
                         <div class="h-10 w-1 rounded-full" style="background:#04F06A;"></div>
                         <a :href="currentItem.event_url" class="text-sm font-semibold text-[#7A6A52] hover:text-[#07A0C3] transition-colors" x-text="currentItem.event_name"></a>

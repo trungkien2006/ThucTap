@@ -104,7 +104,7 @@
         <div class="lg:col-span-8 space-y-8">
             <!-- About / Description -->
             <div class="p-8 md:p-12 rounded-2xl shadow-sm transition-shadow" style="background:#FFF8D0; border:1px solid rgba(255,227,129,0.5);">
-            <h2 class="font-['Inter'] text-4xl font-black uppercase text-[#1C1410] mb-6">Giới thiệu sự kiện</h2>
+            <h2 class="font-['Barlow_Condensed'] text-4xl font-black uppercase text-[#1C1410] mb-6">Giới thiệu sự kiện</h2>
             @php
                 $isJsonDesc = false;
                 if (!empty($event->description)) {
@@ -188,7 +188,7 @@
             @if($event->scheduleItems->count() > 0)
             <div class="p-8 md:p-12 rounded-2xl border shadow-sm" style="background:#FFF8D0; border-color:rgba(255,227,129,0.5);">
             <div class="text-center mb-16">
-                <h2 class="font-['Inter'] text-4xl font-black uppercase text-[#1C1410] mb-4">Lịch trình sự kiện</h2>
+                <h2 class="font-['Barlow_Condensed'] text-4xl font-black uppercase text-[#1C1410] mb-4">Lịch trình sự kiện</h2>
                 <p class="text-[#7A6A52] max-w-2xl mx-auto">Chi tiết lịch trình diễn ra trong sự kiện.</p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
@@ -196,7 +196,7 @@
                 <div class="relative timeline-item">
                     <div class="timeline-dot w-8 h-8 rounded-full bg-[#07A0C3] text-white flex items-center justify-center font-bold mb-6 relative z-10">{{ $index + 1 }}</div>
                     <div class="font-label-lg text-[#07A0C3] mb-2 uppercase tracking-wide font-bold">{{ $item->start_time->format('H:i') }}</div>
-                    <h4 class="font-['Inter'] text-xl font-bold uppercase text-[#1C1410] mb-3">{{ $item->title }}</h4>
+                    <h4 class="font-['Barlow_Condensed'] text-xl font-bold uppercase text-[#1C1410] mb-3">{{ $item->title }}</h4>
                     @if($item->speaker)
                         <p class="text-[#7A6A52] font-body-sm">{{ $item->speaker->name }}</p>
                     @endif
@@ -275,7 +275,7 @@
                         <span class="material-symbols-outlined" data-icon="info">info</span>
                     </div>
                     <div>
-                        <h3 class="font-['Inter'] font-black uppercase text-2xl text-[#1C1410]">Thông tin sự kiện</h3>
+                        <h3 class="font-['Barlow_Condensed'] font-black uppercase text-2xl text-[#1C1410]">Thông tin sự kiện</h3>
                     </div>
                 </div>
                 <div class="space-y-3 text-sm">
@@ -312,7 +312,7 @@
                 </div>
                 <div>
                     <span class="text-[#07A0C3] text-[10px] font-bold uppercase tracking-widest block mb-0.5">Diễn giả chính</span>
-                    <h3 class="text-[16px] font-bold font-['Inter'] uppercase text-[#1C1410]">
+                    <h3 class="text-[16px] font-bold font-['Barlow_Condensed'] uppercase text-[#1C1410]">
                         {{ $event->speakers->first()->name }}
                     </h3>
                     <p class="text-[12px] text-[#7A6A52] font-light mt-0.5">{{ Str::limit($event->speakers->first()->bio, 100) }}</p>
@@ -323,7 +323,7 @@
             <!-- Promoted Events: Newest -->
             @if(isset($newestEvents) && $newestEvents->count() > 0)
             <div class="p-6 rounded-2xl border shadow-sm" style="background:#FFF8D0; border-color:rgba(255,227,129,0.5);">
-                <h4 class="text-[14px] font-['Inter'] uppercase font-bold text-[#1C1410] mb-4 flex items-center gap-2">
+                <h4 class="text-[14px] font-['Barlow_Condensed'] uppercase font-bold text-[#1C1410] mb-4 flex items-center gap-2">
                     <span class="material-symbols-outlined text-[18px] text-emerald-500">new_releases</span>
                     Sự kiện mới nhất
                 </h4>
@@ -352,7 +352,7 @@
             <!-- Promoted Events: Prominent -->
             @if(isset($prominentEvents) && $prominentEvents->count() > 0)
             <div class="p-6 rounded-2xl border shadow-sm" style="background:#FFF8D0; border-color:rgba(255,227,129,0.5);">
-                <h4 class="text-[14px] font-['Inter'] uppercase font-bold text-[#1C1410] mb-4 flex items-center gap-2">
+                <h4 class="text-[14px] font-['Barlow_Condensed'] uppercase font-bold text-[#1C1410] mb-4 flex items-center gap-2">
                     <span class="material-symbols-outlined text-[18px] text-amber-500">local_fire_department</span>
                     Sự kiện nổi bật
                 </h4>

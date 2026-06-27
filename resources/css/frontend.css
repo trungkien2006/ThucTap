@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;700;900&family=Montserrat:wght@400;700;900&family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;700;900&family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -23,7 +23,7 @@
   }
 
   .frontend-body h1, .frontend-body h2, .frontend-body h3, .frontend-body h4 {
-    font-family: "Inter", sans-serif;
+    font-family: "Barlow", sans-serif;
     letter-spacing: -0.01em;
   }
 }
@@ -125,7 +125,7 @@
         z-index: 5;
         display: flex;
         align-items: flex-end;
-        padding: 0 48px 60px;
+        padding: 0 48px 80px 48px;
     }
 
     .slide-info {
@@ -151,11 +151,10 @@
         flex-shrink: 0;
     }
     .slide-title {
-        font-family: 'Montserrat', sans-serif;
+        font-family: 'Barlow', sans-serif;
         font-weight: 900;
         font-size: clamp(52px, 6vw, 82px);
-        line-height: 1.25;
-        padding-top: 10px;
+        line-height: 0.95;
         color: var(--white);
         text-transform: uppercase;
         letter-spacing: -1px;
@@ -230,11 +229,11 @@
     .card-strip {
         position: absolute;
         right: 0;
-        top: 0; bottom: 0;
+        bottom: 80px;
         width: 900px;
         display: flex;
         align-items: flex-end;
-        padding: 90px 48px 60px 0;
+        padding: 0 48px 0 0;
         gap: 16px;
         overflow: hidden;
     }
@@ -246,18 +245,17 @@
     }
 
     .dest-card {
-        flex: 0 0 auto;
-        width: 200px;
+        flex: 0 0 200px;
         height: 510px;
         border-radius: 20px;
         overflow: hidden;
         cursor: pointer;
         position: relative;
-        transition: width 550ms cubic-bezier(0.4,0,0.2,1),
+        transition: flex-basis 550ms cubic-bezier(0.4,0,0.2,1),
                     box-shadow 350ms ease,
                     transform 350ms ease,
                     filter 350ms ease;
-        will-change: width, transform;
+        will-change: flex-basis, transform;
         filter: brightness(0.75) saturate(0.85);
     }
     .dest-card:hover {
@@ -266,7 +264,7 @@
     }
     /* Active card — leftmost, fully lit, widest, expand hint */
     .dest-card.active {
-        width: 360px;
+        flex: 0 0 360px;
         box-shadow: 0 0 0 2px var(--fpt-gold);
         cursor: zoom-in;
         filter: brightness(1) saturate(1.1);
@@ -278,7 +276,7 @@
     }
     @keyframes activeGlow {
         from { box-shadow: 0 0 0 2px rgba(255,227,129,0.8); }
-        to   { box-shadow: 0 0 0 3px rgba(255,227,129,1), 0 0 20px rgba(255,227,129,0.15); }
+        to   { box-shadow: 0 0 0 3px rgba(255,227,129,1), 0 0 40px rgba(255,227,129,0.25); }
     }
     .dest-card img {
         width: 100%; height: 100%;
@@ -305,7 +303,7 @@
         font-weight: 500;
     }
     .dest-card-name {
-        font-family: 'Inter', sans-serif;
+        font-family: 'Barlow', sans-serif;
         font-weight: 700;
         font-size: 22px;
         line-height: 1.15;

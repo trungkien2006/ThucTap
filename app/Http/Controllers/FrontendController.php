@@ -13,7 +13,7 @@ class FrontendController extends Controller
     {
         $data = \Illuminate\Support\Facades\Cache::remember('frontend_home_data', 300, function () {
             $dbCategories = \App\Models\Category::where('type', 'event_type')
-                ->where('name', '!=', 'Other')
+                ->whereNotIn('name', ['Other', 'Khác'])
                 ->get();
 
             $vietnameseNames = [
@@ -210,7 +210,7 @@ class FrontendController extends Controller
 
         // Get categories for navigation menu
         $dbCategories = \App\Models\Category::where('type', 'event_type')
-            ->where('name', '!=', 'Other')
+            ->whereNotIn('name', ['Other', 'Khác'])
             ->get();
         $vietnameseNames = [
             'Conference' => 'Hội nghị',
@@ -333,7 +333,7 @@ class FrontendController extends Controller
 
         // Get categories for navigation menu
         $dbCategories = \App\Models\Category::where('type', 'event_type')
-            ->where('name', '!=', 'Other')
+            ->whereNotIn('name', ['Other', 'Khác'])
             ->get();
         $vietnameseNames = [
             'Conference' => 'Hội nghị',

@@ -117,7 +117,11 @@ class EventController extends Controller
         if ($request->hasFile('banner_image')) {
             $categorySlug = $event->category ? $event->category->slug : 'uncategorized';
             $folderPath = "{$categorySlug}/{$event->slug}/banners";
-            $path = $request->file('banner_image')->store($folderPath, 'google');
+            try {
+                $path = $request->file('banner_image')->store($folderPath, 'google');
+            } catch (\Exception $e) {
+                $path = $request->file('banner_image')->store($folderPath, 'public');
+            }
             $event->media()->create([
                 'type' => 'image',
                 'url' => $path,
@@ -143,7 +147,7 @@ class EventController extends Controller
     public function saveTemplate(Request $request, Event $event)
     {
         $request->validate([
-            'page_template' => 'required|integer|in:1,2'
+            'page_template' => 'required|integer|in:1,2,3,4,5,6,7'
         ]);
         
         $event->page_template = $request->page_template;
@@ -356,7 +360,11 @@ class EventController extends Controller
                     $folderPath = "{$catSlug}/{$evt->slug}/documents";
                 }
             }
-            $path = $file->store($folderPath, 'google');
+            try {
+                $path = $file->store($folderPath, 'google');
+            } catch (\Exception $e) {
+                $path = $file->store($folderPath, 'public');
+            }
             return response()->json([
                 'success' => true,
                 'name' => $file->getClientOriginalName(),
@@ -402,7 +410,22 @@ class EventController extends Controller
         $nextEvent = null;
 
         // Template routing
-        $viewName = ($event->page_template == 2) ? 'events.show-template2' : 'events.show';
+        $pt = $event->page_template;
+        if ($pt == 2) {
+            $viewName = 'events.show-template2';
+        } elseif ($pt == 3) {
+            $viewName = 'events.show-template3';
+        } elseif ($pt == 4) {
+            $viewName = 'events.show-template4';
+        } elseif ($pt == 5) {
+            $viewName = 'events.show-template5';
+        } elseif ($pt == 6) {
+            $viewName = 'events.show-template6';
+        } elseif ($pt == 7) {
+            $viewName = 'events.show-template7';
+        } else {
+            $viewName = 'events.show';
+        }
 
         return view($viewName, compact('event', 'newestEventsData', 'previousEvent', 'nextEvent'));
     }
@@ -454,7 +477,11 @@ class EventController extends Controller
 
             $categorySlug = $event->category ? $event->category->slug : 'uncategorized';
             $folderPath = "{$categorySlug}/{$event->slug}/banners";
-            $path = $request->file('banner_image')->store($folderPath, 'google');
+            try {
+                $path = $request->file('banner_image')->store($folderPath, 'google');
+            } catch (\Exception $e) {
+                $path = $request->file('banner_image')->store($folderPath, 'public');
+            }
             $event->media()->create([
                 'type' => 'image',
                 'url' => $path,

@@ -124,6 +124,37 @@
 </style>
 @endpush
 
+@php
+    $titleStyles = [];
+    if (!empty($event->title_font_family)) {
+        $titleStyles[] = "font-family: '{$event->title_font_family}', sans-serif;";
+    }
+    if (!empty($event->title_font_size)) {
+        $titleStyles[] = "font-size: {$event->title_font_size}px;";
+    }
+    if (!empty($event->title_color)) {
+        $titleStyles[] = "color: {$event->title_color} !important;";
+    }
+    if (!empty($event->title_outline_width) && $event->title_outline_width != '0') {
+        $outlineColor = $event->title_outline_color ?? '#000000';
+        $titleStyles[] = "-webkit-text-stroke: {$event->title_outline_width}px {$outlineColor};";
+        $titleStyles[] = "text-shadow: 0px 2px 4px rgba(0,0,0,0.5);";
+    }
+    $titleStyleStr = implode(' ', $titleStyles);
+
+    $descStyles = [];
+    if (!empty($event->desc_font_family)) {
+        $descStyles[] = "font-family: '{$event->desc_font_family}', sans-serif;";
+    }
+    if (!empty($event->desc_font_size)) {
+        $descStyles[] = "font-size: {$event->desc_font_size}px;";
+    }
+    if (!empty($event->desc_color)) {
+        $descStyles[] = "color: {$event->desc_color} !important;";
+    }
+    $descStyleStr = implode(' ', $descStyles);
+@endphp
+
 @section('content')
 <div class="gw-wrapper">
 {{-- HERO --}}
@@ -140,7 +171,7 @@
         <div class="gw-hero-eyebrow">
             @if($event->category){{ $event->category->name }}@else Sự kiện @endif
         </div>
-        <div class="gw-hero-name">{{ $event->title }}</div>
+        <div class="gw-hero-name" style="{{ $titleStyleStr }}">{{ $event->title }}</div>
     </div>
     <div class="gw-hero-meta">
         <div class="gw-hero-date">{{ $event->event_date->format('d/m/Y') }}</div>
@@ -273,7 +304,7 @@
             @if(!$isJsonDesc && !empty(trim(strip_tags($event->description))))
             <div class="gw-story-row gw-fade-in">
                 <div class="gw-story-left" style="padding-top: 0;">
-                    <div class="gw-story-body">{!! nl2br(e($event->description)) !!}</div>
+                    <div class="gw-story-body" style="{{ $descStyleStr }}">{!! nl2br(e($event->description)) !!}</div>
                 </div>
                 <div class="gw-story-right">
                     @php $firstImg = $event->galleryImages->where('type','image')->first(); @endphp
@@ -406,7 +437,6 @@
     </div>
     @endif
 </section>
-@include('components.event-fab-menu', ['event' => $event])
 </div>
 @endsection
 

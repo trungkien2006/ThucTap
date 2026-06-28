@@ -20,7 +20,7 @@
         <div class="col-span-12 lg:col-span-8 bg-pure-white rounded-[24px] border border-outline-variant overflow-hidden event-card-hover group flex flex-col md:flex-row">
             <div class="md:w-1/2 relative h-64 md:h-auto overflow-hidden">
                 @if($featured->bannerImage)
-                    <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="{{ Storage::url($featured->bannerImage->url) }}" alt="{{ $featured->title }}"/>
+                    <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="{{ \App\Helpers\FileHelper::url($featured->bannerImage->url) }}" alt="{{ $featured->title }}"/>
                 @else
                     <div class="w-full h-full flex items-center justify-center bg-deep-navy group-hover:scale-105 transition-transform duration-700">
                         <span class="text-white opacity-50">No Image</span>
@@ -38,8 +38,8 @@
                     <p class="font-body-md text-body-md text-text-muted mb-6 line-clamp-3">{{ Str::limit(strip_tags($featured->description), 150) }}</p>
                     <div class="flex items-center gap-6 mb-8">
                         <div class="flex items-center gap-2">
-                            <span class="material-symbols-outlined text-text-muted">group</span>
-                            <span class="font-label-lg text-label-lg font-bold">{{ $featured->registrations->count() }} Registered</span>
+                            <span class="material-symbols-outlined text-text-muted">favorite</span>
+                            <span class="font-label-lg text-label-lg font-bold">{{ $featured->likes_count }} Likes</span>
                         </div>
                         <div class="flex items-center gap-2">
                             <span class="material-symbols-outlined text-text-muted">location_on</span>
@@ -77,7 +77,7 @@
         <div class="col-span-12 md:col-span-6 lg:col-span-4 bg-pure-white rounded-[24px] border border-outline-variant overflow-hidden event-card-hover group flex flex-col">
             <div class="h-48 overflow-hidden relative">
                 @if($event->bannerImage)
-                    <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 {{ $event->event_date < now() ? 'opacity-80 grayscale-[0.3]' : '' }}" src="{{ Storage::url($event->bannerImage->url) }}" alt="{{ $event->title }}"/>
+                    <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 {{ $event->event_date < now() ? 'opacity-80 grayscale-[0.3]' : '' }}" src="{{ \App\Helpers\FileHelper::url($event->bannerImage->url) }}" alt="{{ $event->title }}"/>
                 @else
                     <div class="w-full h-full flex items-center justify-center bg-surface-container-high group-hover:scale-110 transition-transform duration-500">
                         <span class="text-outline opacity-50">No Image</span>
@@ -96,8 +96,8 @@
                 <p class="font-body-sm text-body-sm text-text-muted mb-6 flex-1 line-clamp-2">{{ Str::limit(strip_tags($event->description), 100) }}</p>
                 <div class="flex items-center justify-between pt-6 border-t border-outline-variant">
                     <div class="flex items-center gap-2">
-                        <span class="material-symbols-outlined text-fpt-orange">group</span>
-                        <span class="font-label-lg text-label-lg font-bold text-deep-navy">{{ $event->registrations->count() }}</span>
+                        <span class="material-symbols-outlined text-fpt-orange">favorite</span>
+                        <span class="font-label-lg text-label-lg font-bold text-deep-navy">{{ $event->likes_count }}</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <a href="{{ route('events.show', $event->slug) }}" class="p-2 hover:bg-surface-container rounded-full text-text-muted transition-colors flex items-center justify-center" title="Preview"><span class="material-symbols-outlined">visibility</span></a>

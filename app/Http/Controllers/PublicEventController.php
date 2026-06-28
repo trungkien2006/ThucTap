@@ -10,7 +10,7 @@ class PublicEventController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Event::with('bannerImage', 'category', 'registrations')
+        $query = Event::with('bannerImage', 'category')
             ->published()
             ->upcoming()
             ->orderBy('event_date', 'asc');
@@ -55,7 +55,72 @@ class PublicEventController extends Controller
             session()->put('viewed_events.' . $event->id, true);
         }
 
-        return view('events.show', compact('event'));
+        $newestEventsData = \Illuminate\Support\Facades\Cache::remember('newest_events', 300, function() {
+            return Event::with(['bannerImage', 'category'])
+                ->where('is_published', true)
+                ->orderBy('created_at', 'desc')
+                ->take(4)
+                ->get()
+                ->map(fn($e) => [
+                    'id'       => $e->id,
+                    'slug'     => $e->slug,
+                    'title'    => $e->title,
+                    'category' => $e->category?->name,
+                    'img'      => $e->bannerImage ? \App\Helpers\FileHelper::url($e->bannerImage->url) : null,
+                ])
+                ->toArray();
+        });
+        $newestEvents = collect($newestEventsData)
+            ->filter(fn($e) => $e['id'] !== $event->id)
+            ->take(3);
+
+        $prominentEventsData = \Illuminate\Support\Facades\Cache::remember('prominent_events', 300, function() {
+            return Event::with(['bannerImage', 'category'])
+                ->where('is_published', true)
+                ->orderBy('views_count', 'desc')
+                ->orderBy('likes_count', 'desc')
+                ->take(4)
+                ->get()
+                ->map(fn($e) => [
+                    'id'       => $e->id,
+                    'slug'     => $e->slug,
+                    'title'    => $e->title,
+                    'category' => $e->category?->name,
+                    'img'      => $e->bannerImage ? \App\Helpers\FileHelper::url($e->bannerImage->url) : null,
+                ])
+                ->toArray();
+        });
+        $prominentEvents = collect($prominentEventsData)
+            ->filter(fn($e) => $e['id'] !== $event->id)
+            ->take(3);
+
+        $previousEvent = Event::where('is_published', true)
+            ->where('event_date', '<', $event->event_date)
+            ->orderBy('event_date', 'desc')
+            ->first();
+
+        $nextEvent = Event::where('is_published', true)
+            ->where('event_date', '>', $event->event_date)
+            ->orderBy('event_date', 'asc')
+            ->first();
+
+        // Template routing
+        $viewName = ($event->page_template == 2) ? 'events.show-template2' : 'events.show';
+
+        return view($viewName, compact('event', 'newestEvents', 'prominentEvents', 'previousEvent', 'nextEvent'));
+    }
+
+    public function like($event_id)
+    {
+        $event = Event::findOrFail($event_id);
+
+        if (!session()->has('liked_events.' . $event->id)) {
+            $event->increment('likes_count');
+            session()->put('liked_events.' . $event->id, true);
+            return response()->json(['success' => true, 'likes_count' => $event->likes_count]);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Bạn đã thích sự kiện này rồi', 'likes_count' => $event->likes_count]);
     }
 
     public function like($event_id)

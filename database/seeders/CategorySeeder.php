@@ -24,11 +24,13 @@ class CategorySeeder extends Seeder
         ];
 
         foreach ($eventTypes as $type) {
-            Category::create([
-                'name' => $type,
-                'slug' => \Illuminate\Support\Str::slug($type),
-                'type' => 'event_type',
-            ]);
+            Category::firstOrCreate(
+                ['slug' => \Illuminate\Support\Str::slug($type)],
+                [
+                    'name' => $type,
+                    'type' => 'event_type',
+                ]
+            );
         }
 
         // ── Departments ────────────────────────────────────
@@ -43,11 +45,13 @@ class CategorySeeder extends Seeder
         ];
 
         foreach ($departments as $dept) {
-            Category::create([
-                'name' => $dept,
-                'slug' => \Illuminate\Support\Str::slug($dept),
-                'type' => 'department',
-            ]);
+            Category::firstOrCreate(
+                ['slug' => \Illuminate\Support\Str::slug($dept)],
+                [
+                    'name' => $dept,
+                    'type' => 'department',
+                ]
+            );
         }
     }
 }

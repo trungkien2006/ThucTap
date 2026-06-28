@@ -1,229 +1,330 @@
-@extends('layouts.public')
+@extends('layouts.frontend')
 
 @section('content')
 
 @push('styles')
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-    .glass-card {
-        background: rgba(255, 255, 255, 0.8);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-    }
-    .timeline-dot::after {
-        content: '';
-        position: absolute;
-        left: 50%;
-        top: 100%;
-        width: 2px;
-        height: calc(100% + 1.5rem);
-        background: #e1e3e4;
-        transform: translateX(-50%);
-    }
-    .timeline-item:last-child .timeline-dot::after {
-        display: none;
+    .tp1-wrapper { font-family: 'Inter', sans-serif; background: #f8fafc; color: #0f172a; line-height: 1.6; }
+    .tp1-hero { height: 60vh; min-height: 400px; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-top: 72px; }
+    .tp1-hero-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .tp1-hero-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(15,23,42,0.2), rgba(15,23,42,0.8)); }
+    .tp1-hero-content { position: relative; z-index: 10; text-align: center; color: white; padding: 0 20px; max-width: 800px; }
+    .tp1-badge { background: #f97316; color: white; padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; text-transform: uppercase; margin-bottom: 16px; display: inline-block; }
+    .tp1-title { font-size: 48px; font-weight: 800; line-height: 1.2; margin-bottom: 16px; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+    .tp1-meta { display: flex; gap: 24px; justify-content: center; font-size: 15px; opacity: 0.9; }
+    .tp1-meta-item { display: flex; align-items: center; gap: 8px; }
+    
+    .tp1-container { max-width: 1140px; margin: 0 auto; padding: 60px 20px; }
+    .tp1-card { background: white; border-radius: 16px; padding: 40px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); margin-bottom: 40px; }
+    .tp1-section-title { font-size: 24px; font-weight: 700; color: #0f172a; margin-bottom: 24px; display: flex; align-items: center; gap: 12px; }
+    .tp1-section-title::before { content: ''; display: block; width: 4px; height: 24px; background: #f97316; border-radius: 4px; }
+    
+    .tp1-text { font-size: 16px; color: #475569; margin-bottom: 20px; }
+    .tp1-grid { display: grid; gap: 64px; align-items: center; }
+    .tp1-grid.left-img { grid-template-columns: 1.8fr 1fr; }
+    .tp1-grid.right-img { grid-template-columns: 1fr 1.8fr; }
+    .tp1-img { width: 100%; border-radius: 12px; object-fit: cover; aspect-ratio: 4/3; }
+
+    /* For Markdown and rich content */
+    .tp1-text img { max-width: 100%; border-radius: 12px; margin: 16px 0; }
+    .tp1-text a { color: #f97316; text-decoration: underline; }
+    
+    @media (max-width: 768px) {
+        .tp1-grid.left-img, .tp1-grid.right-img { grid-template-columns: 1fr; gap: 24px; }
+        .tp1-title { font-size: 32px; }
+        .tp1-meta { flex-direction: column; gap: 12px; }
     }
 </style>
 @endpush
 
-<!-- Hero Section -->
-<section class="relative h-[600px] min-h-[500px] flex items-center justify-center overflow-hidden rounded-[24px] mb-12 mt-4">
-    <div class="absolute inset-0 z-0">
+<div class="tp1-wrapper">
+    <!-- Hero Section -->
+    <div class="tp1-hero">
         @if($event->bannerImage)
-            <img class="w-full h-full object-cover brightness-[0.4]" src="{{ Storage::url($event->bannerImage->url) }}" alt="{{ $event->title }}"/>
+            <img src="{{ \App\Helpers\FileHelper::url($event->bannerImage->url) }}" class="tp1-hero-img" alt="{{ $event->title }}">
         @else
-            <div class="w-full h-full bg-deep-navy brightness-[0.8]"></div>
+            <div class="tp1-hero-img" style="background:#0f172a;"></div>
         @endif
-    </div>
-    <div class="relative z-10 w-full max-w-container-max px-margin-desktop text-center text-pure-white mt-16">
-        @if($event->category)
-            <span class="inline-block px-4 py-1.5 rounded-full bg-fpt-orange text-pure-white font-label-lg mb-6 tracking-wider uppercase">{{ $event->category->name }}</span>
-        @endif
-        <h1 class="font-display-lg text-display-lg mb-6 leading-tight max-w-4xl mx-auto">{{ $event->title }}</h1>
-        
-        <!-- Countdown Timer -->
-        @if($event->event_date > now())
-        <div class="flex justify-center gap-4 md:gap-8 mb-12" id="countdown" data-date="{{ $event->event_date->format('Y-m-d\TH:i:s') }}">
-            <div class="glass-card rounded-xl p-4 min-w-[100px]">
-                <div class="text-4xl md:text-5xl font-bold text-fpt-orange" id="days">00</div>
-                <div class="text-sm font-label-lg text-pure-white/90 uppercase">Days</div>
+        <div class="tp1-hero-overlay"></div>
+        <div class="tp1-hero-content">
+            @if($event->category)
+            <span class="tp1-badge">{{ $event->category->name }}</span>
+            @endif
+            <h1 class="tp1-title">{{ $event->title }}</h1>
+            <div class="tp1-meta">
+                <div class="tp1-meta-item"><span class="material-symbols-outlined">calendar_today</span> {{ $event->event_date->format('d/m/Y') }}</div>
+                @if($event->location)
+                <div class="tp1-meta-item"><span class="material-symbols-outlined">location_on</span> {{ $event->location }}</div>
+                @endif
             </div>
-            <div class="glass-card rounded-xl p-4 min-w-[100px]">
-                <div class="text-4xl md:text-5xl font-bold text-fpt-orange" id="hours">00</div>
-                <div class="text-sm font-label-lg text-pure-white/90 uppercase">Hours</div>
-            </div>
-            <div class="glass-card rounded-xl p-4 min-w-[100px]">
-                <div class="text-4xl md:text-5xl font-bold text-fpt-orange" id="minutes">00</div>
-                <div class="text-sm font-label-lg text-pure-white/90 uppercase">Mins</div>
-            </div>
-            <div class="glass-card rounded-xl p-4 min-w-[100px]">
-                <div class="text-4xl md:text-5xl font-bold text-fpt-orange" id="seconds">00</div>
-                <div class="text-sm font-label-lg text-pure-white/90 uppercase">Secs</div>
-            </div>
-        </div>
-        @endif
 
-        <div class="flex flex-col md:flex-row justify-center gap-4 mt-8">
-            <button id="like-btn" data-event-id="{{ $event->id }}" class="bg-surface-container/20 hover:bg-surface-container/40 backdrop-blur-md border border-white/20 text-pure-white px-8 py-3 rounded-full font-headline-md transition-all active:scale-95 shadow-lg flex items-center gap-2 {{ session()->has('liked_events.' . $event->id) ? 'text-red-400 border-red-400/50' : '' }}">
-                <span class="material-symbols-outlined {{ session()->has('liked_events.' . $event->id) ? 'text-red-400' : '' }} font-fill">favorite</span>
-                <span id="likes-count">{{ $event->likes_count }}</span> Lượt thích
-            </button>
-            <div class="bg-surface-container/20 backdrop-blur-md border border-white/20 text-pure-white px-8 py-3 rounded-full font-headline-md shadow-lg flex items-center gap-2">
-                <span class="material-symbols-outlined">visibility</span>
-                <span>{{ $event->views_count }}</span> Lượt xem
+            <!-- Countdown Timer -->
+            @if($event->event_date > now())
+            <div class="flex justify-center gap-4 mt-8" id="countdown-wrapper" data-date="{{ $event->event_date->format('Y-m-d\TH:i:s') }}">
+                <div class="bg-white/20 backdrop-blur-md rounded-xl p-3 min-w-[80px]">
+                    <div class="text-3xl font-bold text-white" id="days">00</div>
+                    <div class="text-[10px] font-bold text-white/80 uppercase">Ngày</div>
+                </div>
+                <div class="bg-white/20 backdrop-blur-md rounded-xl p-3 min-w-[80px]">
+                    <div class="text-3xl font-bold text-white" id="hours">00</div>
+                    <div class="text-[10px] font-bold text-white/80 uppercase">Giờ</div>
+                </div>
+                <div class="bg-white/20 backdrop-blur-md rounded-xl p-3 min-w-[80px]">
+                    <div class="text-3xl font-bold text-white" id="minutes">00</div>
+                    <div class="text-[10px] font-bold text-white/80 uppercase">Phút</div>
+                </div>
+                <div class="bg-white/20 backdrop-blur-md rounded-xl p-3 min-w-[80px]">
+                    <div class="text-3xl font-bold text-white" id="seconds">00</div>
+                    <div class="text-[10px] font-bold text-white/80 uppercase">Giây</div>
+                </div>
             </div>
+            @endif
         </div>
     </div>
-</section>
-
-<!-- Bento Grid Details Section -->
-<section class="max-w-container-max mx-auto py-12">
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
-        
-        <!-- About / Description -->
-        <div class="md:col-span-12 bg-pure-white p-8 md:p-12 rounded-2xl border border-outline-variant shadow-sm hover:shadow-md transition-shadow mb-8">
-            <h2 class="font-headline-lg text-headline-lg text-deep-navy mb-6">About This Event</h2>
-            <div class="text-on-surface-variant font-body-md leading-relaxed prose max-w-none">
-                {!! nl2br(e($event->description)) !!}
-            </div>
+    
+    <div class="tp1-container">
+        <!-- Giới thiệu sự kiện -->
+        @if(!empty($event->description))
+        <div class="tp1-card">
+            <h2 class="tp1-section-title">Giới thiệu sự kiện</h2>
+            @php
+                $isJsonDesc = false;
+                if (!empty($event->description)) {
+                    $descData = @json_decode($event->description, true);
+                    if (json_last_error() === JSON_ERROR_NONE && is_array($descData)) {
+                        $isJsonDesc = true;
+                    }
+                }
+            @endphp
+            @if(!$isJsonDesc)
+                <div class="tp1-text">
+                    {!! nl2br(e($event->description)) !!}
+                </div>
+            @endif
         </div>
+        @endif
 
-        <!-- Date & Time Card -->
-        <div class="md:col-span-4 bg-pure-white p-8 rounded-2xl border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
-            <div class="flex items-center gap-4 mb-6">
-                <div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center text-primary">
-                    <span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span>
-                </div>
-                <div>
-                    <h3 class="font-headline-md text-headline-md text-deep-navy">Date & Time</h3>
-                    <p class="text-text-muted font-body-sm">Mark your calendar</p>
-                </div>
-            </div>
-            <div class="space-y-4">
-                <div class="flex justify-between items-center py-3 border-b border-surface-container">
-                    <span class="text-on-surface-variant font-label-lg">Event Date</span>
-                    <span class="text-deep-navy font-bold">{{ $event->event_date->format('M d, Y') }}</span>
-                </div>
-                <div class="flex justify-between items-center py-3 border-b border-surface-container">
-                    <span class="text-on-surface-variant font-label-lg">Time</span>
-                    <span class="text-deep-navy font-bold">{{ $event->event_date->format('h:i A') }}</span>
-                </div>
-                <div class="flex justify-between items-center py-3">
-                    <span class="text-on-surface-variant font-label-lg">Status</span>
-                    @if($event->event_date > now())
-                        <span class="text-green-600 font-bold">Upcoming</span>
-                    @else
-                        <span class="text-gray-500 font-bold">Past Event</span>
-                    @endif
-                </div>
-            </div>
-        </div>
-
-        <!-- Location & Map Card -->
-        <div class="md:col-span-8 bg-pure-white rounded-2xl border border-outline-variant shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col md:flex-row">
-            <div class="p-8 md:w-1/2">
-                <div class="flex items-center gap-4 mb-6">
-                    <div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center text-primary">
-                        <span class="material-symbols-outlined" data-icon="location_on">location_on</span>
+        <!-- Hoạt động nổi bật (Gallery Blocks) -->
+        @if($event->galleryImages->count() > 0)
+        <div class="tp1-card">
+            <h2 class="tp1-section-title">Hoạt động nổi bật</h2>
+            
+            @foreach($event->galleryImages as $index => $block)
+            <div class="tp1-grid {{ $index % 2 == 0 ? 'left-img' : 'right-img' }}" style="{{ $index > 0 ? 'margin-top: 64px;' : '' }}">
+                @if($index % 2 == 0)
+                    <div>
+                        @if($block->url)
+                            @if($block->type === 'video')
+                                <video src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="tp1-img" autoplay loop muted playsinline controls></video>
+                            @else
+                                <img src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="tp1-img" alt="">
+                            @endif
+                        @endif
                     </div>
                     <div>
-                        <h3 class="font-headline-md text-headline-md text-deep-navy">Venue</h3>
-                        <p class="text-text-muted font-body-sm">Where it happens</p>
+                        @if($block->caption)
+                            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">{{ $block->caption }}</h3>
+                        @endif
+                        @if(!empty($block->content))
+                            <div class="tp1-text">{!! $block->content !!}</div>
+                        @endif
+                        
+                        {{-- Tài liệu và link nếu có --}}
+                        <div class="flex flex-wrap gap-2 mt-4">
+                            @if($block->document_url)
+                                <a href="{{ \App\Helpers\FileHelper::url($block->document_url) }}" target="_blank" class="inline-flex items-center gap-1 px-3 py-1.5 bg-orange-50 text-orange-600 rounded-lg text-sm font-medium hover:bg-orange-100 transition-colors border border-orange-100">
+                                    <span class="material-symbols-outlined text-[16px]">download</span> Tài liệu
+                                </a>
+                            @endif
+                            @if($block->action_url)
+                                <a href="{{ $block->action_url }}" target="_blank" class="inline-flex items-center gap-1 px-3 py-1.5 bg-slate-50 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-100 transition-colors border border-slate-200">
+                                    <span class="material-symbols-outlined text-[16px]">open_in_new</span> Liên kết
+                                </a>
+                            @endif
+                        </div>
                     </div>
-                </div>
-                <p class="text-on-surface-variant mb-6 font-body-md leading-relaxed font-bold text-xl">
-                    {{ $event->location }}
-                </p>
+                @else
+                    <div>
+                        @if($block->caption)
+                            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">{{ $block->caption }}</h3>
+                        @endif
+                        @if(!empty($block->content))
+                            <div class="tp1-text">{!! $block->content !!}</div>
+                        @endif
+                        
+                        {{-- Tài liệu và link nếu có --}}
+                        <div class="flex flex-wrap gap-2 mt-4">
+                            @if($block->document_url)
+                                <a href="{{ \App\Helpers\FileHelper::url($block->document_url) }}" target="_blank" class="inline-flex items-center gap-1 px-3 py-1.5 bg-orange-50 text-orange-600 rounded-lg text-sm font-medium hover:bg-orange-100 transition-colors border border-orange-100">
+                                    <span class="material-symbols-outlined text-[16px]">download</span> Tài liệu
+                                </a>
+                            @endif
+                            @if($block->action_url)
+                                <a href="{{ $block->action_url }}" target="_blank" class="inline-flex items-center gap-1 px-3 py-1.5 bg-slate-50 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-100 transition-colors border border-slate-200">
+                                    <span class="material-symbols-outlined text-[16px]">open_in_new</span> Liên kết
+                                </a>
+                            @endif
+                        </div>
+                    </div>
+                    <div>
+                        @if($block->url)
+                            @if($block->type === 'video')
+                                <video src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="tp1-img" autoplay loop muted playsinline controls></video>
+                            @else
+                                <img src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="tp1-img" alt="">
+                            @endif
+                        @endif
+                    </div>
+                @endif
             </div>
-            <div class="md:w-1/2 h-64 md:h-auto min-h-[300px] bg-surface-container-high relative">
-                <div class="absolute inset-0 bg-gray-200">
-                    <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAg2DFIzrPiE9eXGxlhrk8ScwLBwckgjmEZnhrE-ODdCkSyH1b-2ESSrPzi4nApCTbVdD0VvPajUX0fIoyIL6MGdFnydbyV2813F6U8sxnqLkHBzUOroOH7_I3FYJuzL4xhnEGzUasqtv9y1-haiTqsozTeCE__gZ_oedn5F9AEUZ7-39XQUI0PgWgM0X8RvkBK0DIZ4eTYKcWbVAquMrJjM8I1xeekmAgsoQY_EjyDZak8zIbyEjduy7RytBzqM_KFarHBFn8Va78" alt="Map"/>
-                </div>
-            </div>
+            @endforeach
         </div>
+        @endif
 
-        <!-- Agenda Timeline -->
+        <!-- Lịch trình sự kiện -->
         @if($event->scheduleItems->count() > 0)
-        <div class="md:col-span-12 bg-pure-white p-8 md:p-12 rounded-2xl border border-outline-variant shadow-sm mt-8">
-            <div class="text-center mb-16">
-                <h2 class="font-headline-lg text-headline-lg text-deep-navy mb-4">Event Agenda</h2>
-                <p class="text-text-muted max-w-2xl mx-auto">A comprehensive breakdown of the day's activities.</p>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+        <div class="tp1-card">
+            <h2 class="tp1-section-title">Lịch trình sự kiện</h2>
+            <div class="space-y-4">
                 @foreach($event->scheduleItems as $index => $item)
-                <div class="relative timeline-item">
-                    <div class="timeline-dot w-8 h-8 rounded-full bg-fpt-orange text-white flex items-center justify-center font-bold mb-6 relative z-10">{{ $index + 1 }}</div>
-                    <div class="font-label-lg text-fpt-orange mb-2 uppercase tracking-wide">{{ $item->start_time->format('H:i') }}</div>
-                    <h4 class="font-headline-md text-headline-md text-deep-navy mb-3">{{ $item->title }}</h4>
-                    @if($item->speaker)
-                        <p class="text-text-muted font-body-sm">{{ $item->speaker->name }}</p>
-                    @endif
+                <div class="flex gap-4 p-4 rounded-xl border border-slate-100 bg-slate-50">
+                    <div class="w-20 text-center shrink-0">
+                        <div class="text-[#f97316] font-bold text-lg">{{ $item->start_time->format('H:i') }}</div>
+                    </div>
+                    <div class="flex-1 border-l border-slate-200 pl-4">
+                        <h4 class="font-bold text-lg text-slate-800 mb-1">{{ $item->title }}</h4>
+                        @if($item->speaker)
+                            <p class="text-sm text-slate-500 flex items-center gap-1 mb-2"><span class="material-symbols-outlined text-[16px]">person</span> {{ $item->speaker->name }}</p>
+                        @endif
+                        @if($item->description)
+                            <p class="text-slate-600 text-sm">{{ $item->description }}</p>
+                        @endif
+                    </div>
                 </div>
                 @endforeach
             </div>
         </div>
         @endif
+        
+        <!-- Lượt thích & Xem -->
+        <div class="flex flex-wrap justify-center gap-4 mt-8">
+            <button id="like-btn" data-event-id="{{ $event->id }}" class="flex items-center gap-2 px-6 py-3 rounded-full font-bold transition-all shadow-sm {{ session()->has('liked_events.' . $event->id) ? 'bg-orange-50 text-[#f97316] border border-orange-200' : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50' }}">
+                <span class="material-symbols-outlined {{ session()->has('liked_events.' . $event->id) ? 'font-fill' : '' }}">favorite</span>
+                <span id="likes-count">{{ $event->likes_count }}</span> Lượt thích
+            </button>
+            <div class="flex items-center gap-2 px-6 py-3 rounded-full bg-white text-slate-700 border border-slate-200 shadow-sm font-bold">
+                <span class="material-symbols-outlined text-[#f97316]">visibility</span>
+                <span>{{ $event->views_count }}</span> Lượt xem
+            </div>
+        </div>
+        
+        <!-- Điều hướng Sự kiện Trước / Sau -->
+        @if(isset($previousEvent) || isset($nextEvent))
+        <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t border-slate-200">
+            <div>
+                @if(isset($previousEvent) && $previousEvent)
+                <a href="{{ route('events.show', $previousEvent->slug) }}" class="group block max-w-[280px] mr-auto">
+                    <div class="flex items-center text-slate-500 group-hover:text-[#f97316] transition-colors mb-3">
+                        <span class="material-symbols-outlined text-2xl -ml-1">arrow_left_alt</span>
+                        <div class="h-[2px] bg-current flex-1"></div>
+                    </div>
+                    <div class="w-full h-[154px] rounded-xl overflow-hidden bg-slate-100 shadow-sm border border-slate-200">
+                        @if($previousEvent->bannerImage)
+                            <img src="{{ \App\Helpers\FileHelper::url($previousEvent->bannerImage->url) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        @endif
+                    </div>
+                    <h4 class="mt-3 font-bold text-slate-800 group-hover:text-[#f97316] transition-colors line-clamp-2 text-left">{{ $previousEvent->title }}</h4>
+                </a>
+                @endif
+            </div>
+            <div class="text-right">
+                @if(isset($nextEvent) && $nextEvent)
+                <a href="{{ route('events.show', $nextEvent->slug) }}" class="group block max-w-[280px] ml-auto">
+                    <div class="flex items-center text-slate-500 group-hover:text-[#f97316] transition-colors mb-3">
+                        <div class="h-[2px] bg-current flex-1"></div>
+                        <span class="material-symbols-outlined text-2xl -mr-1">arrow_right_alt</span>
+                    </div>
+                    <div class="w-full h-[154px] rounded-xl overflow-hidden bg-slate-100 shadow-sm border border-slate-200">
+                        @if($nextEvent->bannerImage)
+                            <img src="{{ \App\Helpers\FileHelper::url($nextEvent->bannerImage->url) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        @endif
+                    </div>
+                    <h4 class="mt-3 font-bold text-slate-800 group-hover:text-[#f97316] transition-colors line-clamp-2 text-right">{{ $nextEvent->title }}</h4>
+                </a>
+                @endif
+            </div>
+        </div>
+        @endif
 
     </div>
-</section>
-
+</div>
 
 @push('scripts')
 <script>
     const dateStr = document.getElementById('countdown-wrapper')?.getAttribute('data-date');
-    const eventDate = new Date(dateStr).getTime();
+    if(dateStr) {
+        const eventDate = new Date(dateStr).getTime();
 
-    function updateCountdown() {
-        const now = new Date().getTime();
-        const distance = eventDate - now;
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = eventDate - now;
 
-        if (distance < 0) {
-            document.getElementById('countdown-wrapper').style.display = 'none';
-            return;
+            if (distance < 0) {
+                document.getElementById('countdown-wrapper').style.display = 'none';
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById('days').innerText = days.toString().padStart(2, '0');
+            document.getElementById('hours').innerText = hours.toString().padStart(2, '0');
+            document.getElementById('minutes').innerText = minutes.toString().padStart(2, '0');
+            document.getElementById('seconds').innerText = seconds.toString().padStart(2, '0');
         }
 
-        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-        document.getElementById('days').innerText = days.toString().padStart(2, '0');
-        document.getElementById('hours').innerText = hours.toString().padStart(2, '0');
-        document.getElementById('minutes').innerText = minutes.toString().padStart(2, '0');
-        document.getElementById('seconds').innerText = seconds.toString().padStart(2, '0');
-    }
-
-    if (document.getElementById('countdown-wrapper')) {
         setInterval(updateCountdown, 1000);
         updateCountdown();
     }
 
     // Like logic
-    document.getElementById('like-btn').addEventListener('click', function() {
-        const eventId = this.dataset.eventId;
-        const btn = this;
-        const countSpan = document.getElementById('likes-count');
+    const likeBtn = document.getElementById('like-btn');
+    if(likeBtn) {
+        likeBtn.addEventListener('click', function() {
+            const eventId = this.dataset.eventId;
+            const countSpan = document.getElementById('likes-count');
 
-        fetch(`/events/${eventId}/like`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                countSpan.innerText = data.likes_count;
-                btn.classList.add('text-red-400', 'border-red-400/50');
-                btn.querySelector('.material-symbols-outlined').classList.add('text-red-400');
-                btn.style.animation = 'pulse 0.5s ease-in-out';
-                setTimeout(() => btn.style.animation = '', 500);
-            } else {
-                alert(data.message);
-            }
-        })
-        .catch(error => console.error('Error:', error));
-    });
+            fetch(`/events/${eventId}/like`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    countSpan.innerText = data.likes_count;
+                    likeBtn.classList.remove('bg-white', 'text-slate-700', 'border-slate-200');
+                    likeBtn.classList.add('bg-orange-50', 'text-[#f97316]', 'border-orange-200');
+                    const icon = likeBtn.querySelector('.material-symbols-outlined');
+                    icon.classList.add('font-fill');
+                    
+                    likeBtn.style.animation = 'pulse 0.5s ease-in-out';
+                    setTimeout(() => likeBtn.style.animation = '', 500);
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    }
 </script>
 @endpush
+
+@include('components.event-fab-menu', ['event' => $event])
+
 @endsection

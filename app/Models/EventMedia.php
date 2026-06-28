@@ -13,6 +13,17 @@ class EventMedia extends Model
 
     protected $guarded = [];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (!$model->created_at) {
+                $model->created_at = now();
+            }
+        });
+    }
+
     protected function casts(): array
     {
         return [

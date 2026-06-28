@@ -3,176 +3,392 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Event;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
+
+use Illuminate\Support\Facades\Mail;
 
 class FrontendController extends Controller
 {
+    public function contact()
+    {
+        return view('frontend.contact');
+    }
+
+    public function submitContact(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'subject' => 'required|string|max:255',
+            'message' => 'required|string',
+        ]);
+
+        try {
+            // Note: Make sure MAIL_USERNAME is configured in .env
+            Mail::raw("Bạn nhận được một tin nhắn mới từ trang Liên hệ:\n\n" .
+                      "Họ tên: {$validated['name']}\n" .
+                      "Email: {$validated['email']}\n" .
+                      "Chủ đề: {$validated['subject']}\n" .
+                      "Nội dung:\n{$validated['message']}", function ($message) use ($validated) {
+                // To the site admin
+                $message->to(env('MAIL_FROM_ADDRESS', 'admin@example.com'))
+                        ->subject('Tin nhắn mới từ: ' . $validated['name']);
+                
+                // Reply-To the user who submitted the form
+                $message->replyTo($validated['email'], $validated['name']);
+            });
+
+            return redirect()->back()->with('success', 'Cảm ơn bạn! Tin nhắn của bạn đã được gửi thành công. Chúng tôi sẽ phản hồi sớm nhất có thể.');
+        } catch (\Exception $e) {
+            \Log::error('Error sending contact email: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Có lỗi xảy ra khi gửi tin nhắn. Vui lòng đảm bảo cấu hình Email (.env) đã chính xác.');
+        }
+    }
+
     public function home()
     {
-        $categories = [
-            ['name' => 'Workshop', 'desc' => 'Thực hành & sáng tạo'],
-            ['name' => 'Seminar', 'desc' => 'Học thuật chuyên sâu'],
-            ['name' => 'Talkshow', 'desc' => 'Đối thoại cảm hứng'],
-            ['name' => 'Cuộc thi', 'desc' => 'Tranh tài & vinh danh'],
-            ['name' => 'Tuyển sinh', 'desc' => 'Open day & tư vấn'],
-            ['name' => 'Lễ khai giảng', 'desc' => 'Khoảnh khắc trọng đại'],
-            ['name' => 'Hoạt động sinh viên', 'desc' => 'Cộng đồng & văn hóa'],
-        ];
+        $data = \Illuminate\Support\Facades\Cache::remember('frontend_home_data', 300, function () {
+            $dbCategories = \App\Models\Category::where('type', 'event_type')
+                ->whereNotIn('name', ['Other', 'Khác'])
+                ->get();
 
-        $featuredEvents = [
-            [
-                'title' => 'Design Forward — Workshop UI/UX 2026',
-                'date' => '12.07.2026',
-                'location' => 'Hội trường A, ĐH Bách Khoa',
-                'category' => 'Workshop',
-                'img' => asset('images/frontend/event-workshop.jpg'),
-            ],
-            [
-                'title' => 'Voices of Tomorrow — Talkshow khởi nghiệp',
-                'date' => '24.07.2026',
-                'location' => 'Nhà hát Lớn, TP. HCM',
-                'category' => 'Talkshow',
-                'img' => asset('images/frontend/event-talkshow.jpg'),
-            ],
-            [
-                'title' => 'CodeArena 2026 — Cuộc thi lập trình',
-                'date' => '08.08.2026',
-                'location' => 'Trung tâm Đổi mới Sáng tạo',
-                'category' => 'Cuộc thi',
-                'img' => asset('images/frontend/event-competition.jpg'),
-            ],
-            [
-                'title' => 'Lễ Khai Giảng Niên Khóa 2026–2027',
-                'date' => '05.09.2026',
-                'location' => 'Sân Trung Tâm',
-                'category' => 'Lễ khai giảng',
-                'img' => asset('images/frontend/event-ceremony.jpg'),
-            ],
-            [
-                'title' => 'AI & The Future — Seminar quốc tế',
-                'date' => '22.09.2026',
-                'location' => 'Auditorium B2',
-                'category' => 'Seminar',
-                'img' => asset('images/frontend/event-seminar.jpg'),
-            ],
-        ];
+            $vietnameseNames = [
+                'Conference' => 'Hội nghị',
+                'Workshop' => 'Hội thảo thực hành',
+                'Seminar' => 'Hội thảo chuyên đề',
+                'Cultural' => 'Văn hóa nghệ thuật',
+                'Sports' => 'Thể thao',
+                'Orientation' => 'Định hướng'
+            ];
 
-        $upcoming = [
-            ['name' => 'Open Day 2026', 'date' => '30 Jun', 'status' => 'Đang mở', 'open' => true],
-            ['name' => 'Workshop UI/UX', 'date' => '12 Jul', 'status' => 'Còn 24 chỗ', 'open' => true],
-            ['name' => 'Talkshow Khởi nghiệp', 'date' => '24 Jul', 'status' => 'Sắp mở', 'open' => false],
-            ['name' => 'CodeArena Vòng loại', 'date' => '08 Aug', 'status' => 'Đang mở', 'open' => true],
-            ['name' => 'Lễ Khai Giảng', 'date' => '05 Sep', 'status' => 'Theo lời mời', 'open' => false],
-        ];
+            $categories = $dbCategories->map(function ($c) use ($vietnameseNames) {
+                return [
+                    'name' => $c->name,
+                    'slug' => $c->slug,
+                    'desc' => $vietnameseNames[$c->name] ?? 'Sự kiện'
+                ];
+            })->toArray();
 
-        $archive = [
-            [
-                'year' => 2023,
-                'title' => 'Innovation Expo',
-                'img' => asset('images/frontend/archive-2023.jpg'),
-                'desc' => 'Triển lãm đổi mới sáng tạo đầu tiên do sinh viên tổ chức, hội tụ hơn 40 dự án từ 12 khoa, biến hành lang trường thành một thành phố tương lai thu nhỏ.',
-                'achievements' => ['42 dự án trưng bày', '6.500 lượt tham quan', 'Giải Bạc Sinh viên NCKH'],
-            ],
-            [
-                'year' => 2024,
-                'title' => 'University Debate Finals',
-                'img' => asset('images/frontend/archive-2024.jpg'),
-                'desc' => 'Vòng chung kết tranh biện liên trường — đêm của ngôn từ, lý lẽ và bản lĩnh. Khán phòng kín chỗ, hàng vạn lượt xem trực tuyến.',
-                'achievements' => ['32 đội tham dự', '12.000 lượt xem livestream', 'Phủ sóng 18 trường ĐH'],
-            ],
-            [
-                'year' => 2025,
-                'title' => 'UniFest — Mùa lễ hội âm nhạc',
-                'img' => asset('images/frontend/archive-2025.jpg'),
-                'desc' => 'Một đêm hè không ngủ. Sân khấu ngoài trời, đèn quét bầu trời, 15 nghìn người cùng hát một bài. Trở thành ký ức điện ảnh của niên khóa.',
-                'achievements' => ['15.000 người tham dự', '9 nghệ sĩ biểu diễn', 'Top trending mạng xã hội'],
-            ],
-            [
-                'year' => 2026,
-                'title' => 'AI Summit — Tương lai đã ở đây',
-                'img' => asset('images/frontend/archive-2026.jpg'),
-                'desc' => 'Diễn đàn AI sinh viên lớn nhất từ trước đến nay, với panel chuyên gia toàn cầu, trình diễn mô hình trực tiếp và cuộc thi hackathon 48 giờ.',
-                'achievements' => ['28 diễn giả quốc tế', '120 đội hackathon', 'Giải thưởng 500 triệu VND'],
-            ],
-        ];
 
-        $media = [
-            ['src' => asset('images/frontend/media-1.jpg'), 'type' => 'album', 'label' => 'Album · UniFest 2025'],
-            ['src' => asset('images/frontend/media-2.jpg'), 'type' => 'video', 'label' => 'Recap · Đêm Gala'],
-            ['src' => asset('images/frontend/media-3.jpg'), 'type' => 'album', 'label' => 'Album · Triển lãm SV'],
-            ['src' => asset('images/frontend/media-4.jpg'), 'type' => 'video', 'label' => 'Recap · Sports Day'],
-        ];
+            $dbFeatured = Event::with(['bannerImage', 'category'])
+                ->published()
+                ->orderByRaw('views_count + likes_count DESC')
+                ->take(6)
+                ->get();
+            $featuredEvents = $dbFeatured->map(function ($event) {
+                return [
+                    'slug'     => $event->slug,
+                    'title'    => $event->title,
+                    'date'     => $event->event_date->format('d.m.Y'),
+                    'location' => $event->location ?? 'Đang cập nhật',
+                    'summary'  => Str::limit(strip_tags($event->description), 100),
+                    'category' => $event->category ? $event->category->name : 'Sự kiện',
+                    'img'      => $event->bannerImage ? \App\Helpers\FileHelper::url($event->bannerImage->url) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80',
+                ];
+            })->toArray();
 
-        $stats = [
-            ['value' => 248, 'label' => 'Tổng sự kiện', 'suffix' => '+', 'decimals' => 0],
-            ['value' => 86, 'label' => 'Lượt tham gia', 'suffix' => 'K', 'decimals' => 0],
-            ['value' => 1.2, 'label' => 'Lượt xem', 'suffix' => 'M', 'decimals' => 1],
-            ['value' => 12, 'label' => 'Năm lưu trữ', 'suffix' => '', 'decimals' => 0],
-        ];
+            $dbUpcoming = Event::with(['bannerImage', 'galleryImages'])
+                ->published()
+                ->upcoming()
+                ->orderBy('event_date', 'asc')
+                ->take(5)
+                ->get();
+            $upcoming = $dbUpcoming->map(function ($event) {
+                $images = [];
+                if ($event->bannerImage) {
+                    $images[] = \App\Helpers\FileHelper::url($event->bannerImage->url);
+                }
+                foreach ($event->galleryImages->where('type', 'image')->take(2) as $gal) {
+                    $images[] = \App\Helpers\FileHelper::url($gal->url);
+                }
+                if (empty($images)) {
+                    $images[] = 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80';
+                }
+                return [
+                    'slug'    => $event->slug,
+                    'name'    => $event->title,
+                    'date'    => $event->event_date->format('d M'),
+                    'summary' => Str::limit(strip_tags($event->description), 80),
+                    'status'  => 'Sắp mở',
+                    'open'    => true,
+                    'images'  => array_values($images),
+                ];
+            })->toArray();
 
-        $slides = [
-            [
-                'id' => 3,
-                'eyebrow' => 'Sân khấu ngoài trời — Khu B',
-                'title' => 'Talkshow Khởi Nghiệp Sinh Viên',
-                'description' => 'Gặp gỡ và lắng nghe hành trình của các founder startup từ 22 tuổi đã gọi vốn thành công.',
-                'image' => 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80',
-                'tag' => 'Talkshow',
-                'cta_label' => 'Xem lịch trình',
-                'cta_url' => '#',
-            ],
-            [
-                'id' => 4,
-                'eyebrow' => 'Phòng hội thảo B2.01',
-                'title' => 'Seminar Nghiên Cứu Khoa Học',
-                'description' => 'Hội thảo nghiên cứu khoa học sinh viên cấp trường — nơi các đề tài xuất sắc được trình bày.',
-                'image' => 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=1600&q=80',
-                'tag' => 'Seminar',
-                'cta_label' => 'Nộp bài tham dự',
-                'cta_url' => '#',
-            ],
-            [
-                'id' => 5,
-                'eyebrow' => 'Toàn trường — Tất cả cơ sở',
-                'title' => 'Cuộc Thi Lập Trình 24H',
-                'description' => 'Hackathon xuyên đêm với chủ đề "EdTech for Tomorrow" — giải thưởng tổng lên đến 50 triệu đồng.',
-                'image' => 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1600&q=80',
-                'tag' => 'Cuộc thi',
-                'cta_label' => 'Đăng ký đội',
-                'cta_url' => '#',
-            ],
-            [
-                'id' => 6,
-                'eyebrow' => 'Nhà văn hóa sinh viên',
-                'title' => 'UniFest — Đêm Hội Âm Nhạc',
-                'description' => 'Lễ hội âm nhạc ngoài trời lớn nhất năm với 9 nghệ sĩ biểu diễn, sân khấu hoành tráng và ánh đèn rực rỡ.',
-                'image' => 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=1600&q=80',
-                'tag' => 'Lễ hội',
-                'cta_label' => 'Mua vé ngay',
-                'cta_url' => '#',
-            ],
-            [
-                'id' => 7,
-                'eyebrow' => 'Trung tâm Thể thao Đại học',
-                'title' => 'Ngày Hội Thể Thao Sinh Viên',
-                'description' => 'Giải thể thao liên khoa hàng năm với 15 bộ môn — nơi rèn luyện thể chất gặp tinh thần đồng đội.',
-                'image' => 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=1600&q=80',
-                'tag' => 'Thể thao',
-                'cta_label' => 'Xem lịch thi đấu',
-                'cta_url' => '#',
-            ],
-            [
-                'id' => 8,
-                'eyebrow' => 'Hội trường Lớn — Cơ sở B',
-                'title' => 'Triển Lãm Đồ Án Tốt Nghiệp 2026',
-                'description' => 'Trưng bày hơn 200 đồ án xuất sắc từ các sinh viên cuối khóa — cơ hội kết nối với doanh nghiệp và nhà tuyển dụng.',
-                'image' => 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&q=80',
-                'tag' => 'Triển lãm',
-                'cta_label' => 'Tham quan miễn phí',
-                'cta_url' => '#',
-            ],
-        ];
+            $archivedEvents = Event::with('bannerImage')
+                ->published()
+                ->where(function($q) {
+                    $q->where('status', 'archived')
+                      ->orWhere('event_date', '<', now());
+                })
+                ->orderBy('event_date', 'desc')
+                ->get();
+            
+            $archiveGroups = $archivedEvents->groupBy(function($event) {
+                return \Carbon\Carbon::parse($event->event_date)->year;
+            });
 
+            $archive = [];
+            foreach ($archiveGroups as $year => $events) {
+                $featured = $events->first();
+                $archive[] = [
+                    'year' => $year,
+                    'title' => 'Tổng kết năm ' . $year,
+                    'img' => $featured->bannerImage ? \App\Helpers\FileHelper::url($featured->bannerImage->url) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80',
+                    'desc' => 'Kho lưu trữ chứa ' . $events->count() . ' sự kiện đã diễn ra trong năm ' . $year . '. Từ hội thảo, hội nghị đến các hoạt động ngoại khóa.',
+                    'achievements' => [$events->count() . ' sự kiện đã tổ chức'],
+                ];
+            }
+            // Sort archive by year descending
+            usort($archive, function($a, $b) {
+                return $b['year'] <=> $a['year'];
+            });
+
+            $dbMedia = \App\Models\EventMedia::with('event')
+                ->whereHas('event', function($q) {
+                    $q->published();
+                })
+                ->whereIn('type', ['image', 'video'])
+                ->where('is_banner', false)
+                ->orderByRaw('(CASE WHEN caption IS NOT NULL AND caption != "" THEN 1 ELSE 0 END) DESC')
+                ->latest()
+                ->take(10)
+                ->get();
+
+            $media = $dbMedia->map(function ($m) {
+                $labelType = $m->type == 'video' ? 'Video' : 'Album';
+                $ext = strtoupper(pathinfo($m->url, PATHINFO_EXTENSION));
+                if (!$ext) $ext = $labelType;
+
+                return [
+                    'id' => $m->id,
+                    'src' => \App\Helpers\FileHelper::url($m->url),
+                    'type' => $m->type,
+                    'format' => $ext,
+                    'label' => $labelType . ' · ' . ($m->event ? $m->event->title : 'Sự kiện'),
+                    'title' => $m->caption ?: ($m->event ? $m->event->title : 'Sự kiện'),
+                    'event_name' => $m->event ? $m->event->title : '',
+                    'event_url' => $m->event ? route('events.show', $m->event->slug) : '#',
+                ];
+            })->toArray();
+
+            $totalEvents = Event::published()->count();
+            $totalViews = Event::published()->sum('views_count');
+            $totalLikes = Event::published()->sum('likes_count');
+            
+            $oldestEvent = Event::published()->min('event_date');
+            $yearsArchived = 0;
+            if ($oldestEvent) {
+                $yearsArchived = date('Y') - \Carbon\Carbon::parse($oldestEvent)->year + 1;
+            }
+
+            $formatStat = function($value) {
+                if ($value >= 1000000) return ['value' => round($value / 1000000, 1), 'suffix' => 'M', 'decimals' => 1];
+                if ($value >= 1000) return ['value' => round($value / 1000, 1), 'suffix' => 'K', 'decimals' => 1];
+                return ['value' => $value, 'suffix' => '', 'decimals' => 0];
+            };
+
+            $eStat = $formatStat($totalEvents);
+            $vStat = $formatStat($totalViews);
+            $lStat = $formatStat($totalLikes);
+
+            $stats = [
+                ['value' => $eStat['value'], 'label' => 'Tổng sự kiện', 'suffix' => $eStat['suffix'] ?: '+', 'decimals' => $eStat['decimals']],
+                ['value' => $lStat['value'], 'label' => 'Lượt yêu thích', 'suffix' => $lStat['suffix'], 'decimals' => $lStat['decimals']],
+                ['value' => $vStat['value'], 'label' => 'Lượt xem', 'suffix' => $vStat['suffix'], 'decimals' => $vStat['decimals']],
+                ['value' => max(1, $yearsArchived), 'label' => 'Năm hoạt động', 'suffix' => '', 'decimals' => 0],
+            ];
+
+            $dbSlides = Event::with(['bannerImage', 'category'])
+                ->published()
+                ->latest()
+                ->take(6)
+                ->get();
+            $slides = $dbSlides->map(function ($event, $index) {
+                return [
+                    'id'          => $event->id,
+                    'eyebrow'     => $event->location ?? 'Toàn trường',
+                    'title'       => $event->title,
+                    'description' => Str::limit(strip_tags($event->description), 120),
+                    'image'       => $event->bannerImage ? \App\Helpers\FileHelper::url($event->bannerImage->url) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80',
+                    'tag'         => $event->category ? $event->category->name : 'Sự kiện',
+                    'cta_label'   => 'Xem chi tiết',
+                    'cta_url'     => route('events.show', $event->slug),
+                ];
+            })->toArray();
+            // Fallback for slider if no events exist
+            if (empty($slides)) {
+                $slides = [
+                    [
+                        'id'          => 1,
+                        'eyebrow'     => 'Chưa có sự kiện',
+                        'title'       => 'Hệ thống đang được cập nhật',
+                        'description' => 'Vui lòng quay lại sau.',
+                        'image'       => 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80',
+                        'tag'         => 'Hệ thống',
+                        'cta_label'   => 'Trang chủ',
+                        'cta_url'     => '#',
+                    ]
+                ];
+            }
+
+            return compact('categories', 'featuredEvents', 'upcoming', 'archive', 'media', 'stats', 'slides');
+        });
+
+        extract($data);
 
         return view('frontend.home', compact('categories', 'featuredEvents', 'upcoming', 'archive', 'media', 'stats', 'slides'));
+    }
+
+    public function category($slug)
+    {
+        $category = \App\Models\Category::where('slug', $slug)->firstOrFail();
+
+        // Get categories for navigation menu
+        $dbCategories = \App\Models\Category::where('type', 'event_type')
+            ->whereNotIn('name', ['Other', 'Khác'])
+            ->get();
+        $vietnameseNames = [
+            'Conference' => 'Hội nghị',
+            'Workshop' => 'Hội thảo thực hành',
+            'Seminar' => 'Hội thảo chuyên đề',
+            'Cultural' => 'Văn hóa nghệ thuật',
+            'Sports' => 'Thể thao',
+            'Orientation' => 'Định hướng'
+        ];
+        $categories = $dbCategories->map(function ($c) use ($vietnameseNames) {
+            return [
+                'name' => $c->name,
+                'slug' => $c->slug,
+                'desc' => $vietnameseNames[$c->name] ?? 'Sự kiện'
+            ];
+        })->toArray();
+
+        // Newest event for the top section
+        $newestEvent = Event::with(['bannerImage'])
+            ->where('category_id', $category->id)
+            ->published()
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        // Other new events (excluding the newest one)
+        $query = Event::with(['bannerImage'])
+            ->where('category_id', $category->id)
+            ->published()
+            ->orderBy('created_at', 'desc');
+
+        if ($newestEvent) {
+            $query->where('id', '!=', $newestEvent->id);
+        }
+        $otherEvents = $query->paginate(10);
+
+        // Featured events for this category
+        $featuredEvents = Event::with(['bannerImage'])
+            ->where('category_id', $category->id)
+            ->published()
+            ->orderByRaw('views_count + likes_count DESC')
+            ->take(5)
+            ->get();
+
+        // Media for this category
+        $dbMedia = \App\Models\EventMedia::with('event')
+            ->whereHas('event', function($q) use ($category) {
+                $q->published()->where('category_id', $category->id);
+            })
+            ->whereIn('type', ['image', 'video'])
+            ->where('is_banner', false)
+            ->orderByRaw('(CASE WHEN caption IS NOT NULL AND caption != "" THEN 1 ELSE 0 END) DESC')
+            ->latest()
+            ->take(8)
+            ->get();
+
+        $media = $dbMedia->map(function ($m) {
+            return [
+                'id' => $m->id,
+                'src' => \App\Helpers\FileHelper::url($m->url),
+                'type' => $m->type,
+                'title' => $m->caption ?: ($m->event ? $m->event->title : 'Sự kiện'),
+                'event_name' => $m->event ? $m->event->title : '',
+                'event_url' => $m->event ? route('events.show', $m->event->slug) : '#',
+            ];
+        })->toArray();
+
+        return view('frontend.category', compact('category', 'categories', 'newestEvent', 'otherEvents', 'featuredEvents', 'media'));
+    }
+
+    public function archive(Request $request)
+    {
+        $selectedYear = $request->input('year');
+
+        $query = Event::with(['bannerImage', 'category', 'galleryImages', 'documents', 'speakers'])
+            ->published()
+            ->where(function($q) {
+                $q->where('status', 'archived')
+                  ->orWhere('event_date', '<', now());
+            })
+            ->orderBy('event_date', 'desc');
+
+        $events = $query->get();
+
+        $archive = $events->map(function ($event) {
+            return [
+                'id' => $event->id,
+                'event_year' => \Carbon\Carbon::parse($event->event_date)->year,
+                'year' => \Carbon\Carbon::parse($event->event_date)->year,
+                'month' => \Carbon\Carbon::parse($event->event_date)->format('m'),
+                'category' => $event->category ? $event->category->name : 'Sự kiện khác',
+                'title' => $event->title,
+                'date_str' => \Carbon\Carbon::parse($event->event_date)->format('d/m/Y'),
+                'desc' => Str::limit(strip_tags($event->description), 100),
+                'url' => route('events.show', $event->slug),
+                'img' => $event->bannerImage ? \App\Helpers\FileHelper::url($event->bannerImage->url) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80',
+                'achievements' => [],
+                'images' => $event->galleryImages->where('type', 'image')->map(function($media) {
+                    return ['url' => \App\Helpers\FileHelper::url($media->url), 'caption' => $media->caption];
+                })->values()->toArray(),
+                'videos' => $event->galleryImages->where('type', 'video')->map(function($media) {
+                    return ['url' => \App\Helpers\FileHelper::url($media->url), 'caption' => $media->caption];
+                })->values()->toArray(),
+                'documents' => $event->documents->map(function($doc) {
+                    return [
+                        'title' => $doc->title,
+                        'type' => strtolower(pathinfo($doc->file_path, PATHINFO_EXTENSION)) ?: 'pdf',
+                        'size' => round(\Illuminate\Support\Facades\Storage::exists($doc->file_path) ? \Illuminate\Support\Facades\Storage::size($doc->file_path) / 1024 : 0, 2) . ' KB',
+                        'url' => \App\Helpers\FileHelper::url($doc->file_path),
+                    ];
+                })->values()->toArray(),
+                'speakers' => $event->speakers->map(function($speaker) {
+                    return [
+                        'name' => $speaker->name,
+                        'role' => $speaker->role,
+                        'avatar' => $speaker->avatar ? \App\Helpers\FileHelper::url($speaker->avatar) : null,
+                    ];
+                })->values()->toArray(),
+            ];
+        })->toArray();
+
+        // Get categories for navigation menu
+        $dbCategories = \App\Models\Category::where('type', 'event_type')
+            ->whereNotIn('name', ['Other', 'Khác'])
+            ->get();
+        $vietnameseNames = [
+            'Conference' => 'Hội nghị',
+            'Workshop' => 'Hội thảo thực hành',
+            'Seminar' => 'Hội thảo chuyên đề',
+            'Cultural' => 'Văn hóa nghệ thuật',
+            'Sports' => 'Thể thao',
+            'Orientation' => 'Định hướng'
+        ];
+        $categories = $dbCategories->map(function ($c) use ($vietnameseNames) {
+            return [
+                'name' => $c->name,
+                'slug' => $c->slug,
+                'desc' => $vietnameseNames[$c->name] ?? 'Sự kiện'
+            ];
+        })->toArray();
+
+        return view('frontend.archive', compact('archive', 'categories', 'selectedYear'));
     }
 }

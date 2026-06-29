@@ -80,6 +80,7 @@
                 </div>
             </div>
             @endif
+
         </div>
     </div>
     
@@ -207,8 +208,8 @@
         </div>
         @endif
         
-        <!-- Lượt thích & Xem -->
-        <div class="flex flex-wrap justify-center gap-4 mt-8">
+        <!-- Tương tác & Chia sẻ -->
+        <div class="flex flex-wrap justify-center gap-4 mt-8" x-data="{ copied: false }">
             <button id="like-btn" data-event-id="{{ $event->id }}" class="flex items-center gap-2 px-6 py-3 rounded-full font-bold transition-all shadow-sm {{ session()->has('liked_events.' . $event->id) ? 'bg-orange-50 text-[#f97316] border border-orange-200' : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50' }}">
                 <span class="material-symbols-outlined {{ session()->has('liked_events.' . $event->id) ? 'font-fill' : '' }}">favorite</span>
                 <span id="likes-count">{{ $event->likes_count }}</span> Lượt thích
@@ -217,6 +218,17 @@
                 <span class="material-symbols-outlined text-[#f97316]">visibility</span>
                 <span>{{ $event->views_count }}</span> Lượt xem
             </div>
+            
+            <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}" target="_blank" 
+               class="flex items-center gap-2 bg-[#1877F2] text-white px-6 py-3 rounded-full font-bold shadow-[0_4px_12px_rgba(24,119,242,0.3)] hover:scale-105 transition-transform">
+                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                Chia sẻ
+            </a>
+            <button @click="navigator.clipboard.writeText(window.location.href); copied=true; setTimeout(()=>copied=false, 2000)" 
+                    class="relative flex items-center gap-2 bg-white text-slate-700 border border-slate-200 px-6 py-3 rounded-full font-bold shadow-sm hover:bg-slate-50 transition-all">
+                <span class="material-symbols-outlined" style="font-size:18px;">link</span> Copy Link
+                <span x-show="copied" x-transition style="display:none;" class="absolute -top-10 left-1/2 -translate-x-1/2 bg-[#1C1410] text-white text-xs px-2.5 py-1.5 rounded shadow-lg pointer-events-none whitespace-nowrap">Đã sao chép!</span>
+            </button>
         </div>
         
         <!-- Điều hướng Sự kiện Trước / Sau -->

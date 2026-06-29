@@ -14,6 +14,15 @@
             filterMonth: '',
             filterCategory: '',
             filterSearch: '',
+            searchInput: '',
+            _searchTimer: null,
+            debounceSearch(val) {
+                clearTimeout(this._searchTimer);
+                this._searchTimer = setTimeout(() => {
+                    this.filterSearch = val;
+                    this.resetIdx();
+                }, 300);
+            },
             filterFileTypes: [],
             showFileTypeDropdown: false,
             get years() {
@@ -127,8 +136,8 @@
                     <i data-lucide="search" class="h-4 w-4 text-[#7A6A52]/70"></i>
                 </span>
                 <input type="text" 
-                       x-model="filterSearch" 
-                       @input="resetIdx()"
+                       x-model="searchInput" 
+                       @input="debounceSearch($event.target.value)"
                        placeholder="Tìm kiếm theo tên hoặc nội dung sự kiện..." 
                        class="w-full pl-10 pr-4 py-2.5 text-sm font-semibold rounded-2xl border transition-all placeholder-[#7A6A52]/50 text-[#1C1410] focus:ring-2 focus:ring-[#FFE381]/50 focus:border-[#FFE381] outline-none"
                        style="background: #FFFDF9; border-color: #E8E2D5;">
@@ -239,7 +248,7 @@
         <div class="mt-4 flex justify-end"
              x-show="filterYear !== '' || filterMonth !== '' || filterCategory !== '' || filterSearch !== '' || filterFileTypes.length > 0"
              x-transition>
-            <button @click="filterYear=''; filterMonth=''; filterCategory=''; filterSearch=''; filterFileTypes=[]; resetIdx();"
+            <button @click="filterYear=''; filterMonth=''; filterCategory=''; filterSearch=''; searchInput=''; filterFileTypes=[]; resetIdx();"
                     class="text-xs font-bold px-3.5 py-2 rounded-2xl transition-all hover:opacity-90 flex items-center gap-1.5 shadow-sm"
                     style="background:#FFF3C4; color:#1C1410; border:1px solid #E8C84A;">
                 <i data-lucide="x" class="h-3.5 w-3.5"></i> Xóa lọc
@@ -248,7 +257,18 @@
 
         <div class="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-[400px_1fr] lg:gap-12">
             <!-- Left Column: Scrollable Event List -->
-            <div data-aos="fade-right" class="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+            <div data-aos="fade-right" class="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar relative" x-data="{ archiveReady: false }" x-init="setTimeout(() => archiveReady = true, 500)">
+                <style>
+                    @keyframes archiveShimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+                    .archive-skeleton { background: linear-gradient(90deg, rgba(232,226,213,0.5) 25%, rgba(255,253,249,0.8) 50%, rgba(232,226,213,0.5) 75%); background-size: 200% 100%; animation: archiveShimmer 1.5s infinite; }
+                </style>
+                <div x-show="!archiveReady" class="space-y-4 absolute inset-0 z-10 w-full" style="background:transparent;">
+                    <template x-for="i in 4">
+                        <div class="w-full rounded-2xl h-[98px] archive-skeleton border border-[#E8E2D5]/50 bg-white"></div>
+                    </template>
+                </div>
+                
+                <div x-show="archiveReady" style="display: none;" class="space-y-4" x-transition:enter="transition-opacity ease-out duration-300">
                 <template x-for="(ev, i) in filteredArchive" :key="ev.id || i">
                     <button @click="idx = i; activeTab = 'images'"
                             class="w-full text-left rounded-2xl p-4 flex gap-4 transition-all duration-300 border focus:outline-none"
@@ -258,7 +278,7 @@
                         
                         <!-- Cover Image Thumbnail -->
                         <div class="w-16 h-16 rounded-xl overflow-hidden shrink-0 bg-[#1C1410]/5 border border-[#E8E2D5]/50">
-                            <img :src="ev.img" class="w-full h-full object-cover" />
+                            <img :src="ev.img" loading="lazy" class="w-full h-full object-cover" />
                         </div>
                         
                         <div class="flex flex-col justify-between overflow-hidden flex-1">
@@ -292,11 +312,12 @@
                 <div x-show="filteredArchive.length === 0" class="text-center py-12 text-[#7A6A52]/70 text-sm">
                     <i data-lucide="search-x" class="h-10 w-10 mx-auto mb-3 text-[#7A6A52]/50"></i>
                     <p class="font-semibold">Không tìm thấy sự kiện nào phù hợp.</p>
-                    <button @click="filterYear=''; filterMonth=''; filterCategory=''; filterSearch=''; resetIdx();" 
+                    <button @click="filterYear=''; filterMonth=''; filterCategory=''; filterSearch=''; searchInput=''; resetIdx();" 
                             class="mt-3 text-xs underline font-bold text-[#07A0C3] hover:text-[#04B050] transition-colors">
                         Xóa bộ lọc
                     </button>
                 </div>
+                </div> <!-- End archiveReady div -->
             </div>
 
             <!-- Right Column: Detail Viewer Pane (Read-Only) -->
@@ -308,7 +329,7 @@
                     <!-- Event Header -->
                     <div class="flex flex-col md:flex-row gap-6 pb-6 border-b border-[#E8E2D5]">
                         <div class="w-full md:w-48 h-32 rounded-xl overflow-hidden shrink-0 bg-[#1C1410]/5 border border-[#E8E2D5]/50">
-                            <img :src="current.img" class="w-full h-full object-cover" />
+                            <img :src="current.img" loading="lazy" class="w-full h-full object-cover" />
                         </div>
                         <div>
                             <div class="inline-flex items-center gap-2 flex-wrap">
@@ -362,7 +383,7 @@
                                 <template x-for="(img, idxImg) in current.images" :key="'img-'+idxImg">
                                     <div class="group relative aspect-video rounded-xl overflow-hidden cursor-pointer border border-[#E8E2D5] bg-black/5"
                                          @click="lightboxImg = img.url; lightboxCaption = img.caption; lightboxVideo = null;">
-                                        <img :src="img.url" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                                        <img :src="img.url" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                                         <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3 animate-fade-in">
                                             <p class="text-[10px] text-white/90 truncate font-semibold w-full" x-text="img.caption"></p>
                                         </div>
@@ -379,7 +400,7 @@
                                                 <i data-lucide="play" class="h-4 w-4 fill-current translate-x-0.5"></i>
                                             </div>
                                         </div>
-                                        <img src="https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=500&q=80" class="w-full h-full object-cover" />
+                                        <img src="https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=500&q=80" loading="lazy" class="w-full h-full object-cover" />
                                         <div class="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/85 to-transparent z-20">
                                             <p class="text-[9px] text-white/95 truncate font-semibold" x-text="vid.caption"></p>
                                         </div>

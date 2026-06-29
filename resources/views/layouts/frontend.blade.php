@@ -20,7 +20,19 @@
     @vite(['resources/css/app.css', 'resources/css/frontend.css', 'resources/js/app.js'])
     @stack('styles')
 </head>
-<body class="frontend-body antialiased bg-paper text-ink relative" x-data="{ scrolled: false }" @scroll.window="scrolled = (window.pageYOffset > 40)">
+<body class="frontend-body antialiased bg-paper text-ink relative" 
+      x-data="{ 
+          scrolled: false, 
+          scrollPercent: 0, 
+          showBackToTop: false 
+      }" 
+      @scroll.window="
+          scrolled = (window.scrollY > 40);
+          let h = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+          scrollPercent = h > 0 ? (window.scrollY / h) * 100 : 0;
+          showBackToTop = window.scrollY > 400;
+      ">
+    
     
     @php 
         $isHome = request()->routeIs('home'); 
@@ -312,5 +324,25 @@
     @if(request()->is('events/*') || request()->is('admin/events/*/preview*') || request()->is('admin/template-preview/*'))
         @include('components.event-fab-menu')
     @endif
+    <!-- Back to Top Button -->
+    <button id="backToTopBtn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})"
+            class="fixed bottom-8 right-6 z-[9999] flex h-12 w-12 items-center justify-center rounded-full shadow-[0_4px_12px_rgba(232,200,74,0.4)] transition-all hover:scale-110 active:scale-95 opacity-0 translate-y-4 pointer-events-none"
+            style="background: #FFE381; color: #1C1410; border: 1px solid rgba(232,200,74,0.6); transition: all 0.3s ease;">
+        <i data-lucide="chevron-up" class="h-6 w-6"></i>
+    </button>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var backToTopBtn = document.getElementById('backToTopBtn');
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 400) {
+                    backToTopBtn.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+                    backToTopBtn.classList.add('opacity-100', 'translate-y-0');
+                } else {
+                    backToTopBtn.classList.remove('opacity-100', 'translate-y-0');
+                    backToTopBtn.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+                }
+            });
+        });
+    </script>
 </body>
 </html>

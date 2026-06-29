@@ -379,7 +379,19 @@
                 </a>
             </div>
 
-            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            <div x-data="{ loaded: false }" x-init="setTimeout(() => { loaded = true }, 500)">
+                <style>
+                    @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+                    .skeleton-shimmer { background: linear-gradient(90deg, rgba(232,226,213,0.5) 25%, rgba(255,253,249,0.8) 50%, rgba(232,226,213,0.5) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+                </style>
+                <!-- Skeleton Loading -->
+                <div x-show="!loaded" class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                    @for($k = 0; $k < count($featuredEvents); $k++)
+                    <div class="rounded-2xl h-[350px] w-full skeleton-shimmer"></div>
+                    @endfor
+                </div>
+                <!-- Actual Content -->
+                <div x-show="loaded" style="display: none;" x-transition:enter="transition-opacity ease-out duration-500" class="grid grid-cols-1 gap-6 sm:grid-cols-2">
                 @foreach($featuredEvents as $i => $ev)
                 <article data-aos="fade-up" data-aos-delay="{{ $i * 60 }}"
                          x-data="{ animClass: '' }"
@@ -415,12 +427,17 @@
                                 </a>
                             </h3>
                             <div class="mt-3 flex flex-col gap-1.5 text-sm text-[#7A6A52]">
+                                <div class="flex items-center gap-1.5 text-xs font-semibold">
+                                    <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+                                    <span>{{ $ev['date'] }}</span>
+                                </div>
                                 <p class="line-clamp-3">{{ $ev['summary'] ?? '' }}</p>
                             </div>
                         </div>
                     </div>
                 </article>
                 @endforeach
+                </div>
             </div>
         </div>
 
@@ -462,6 +479,10 @@
                                 <div style="width:50%;padding-right:16px;" class="flex flex-col items-end justify-start text-right">
                                     <div class="mb-3">
                                         <a href="{{ route('events.show', $u['slug'] ?? '#') }}" class="mt-0.5 text-sm font-black uppercase text-[#1C1410] leading-snug hover:text-[#07A0C3] transition-colors inline-block">{{ $u['name'] }}</a>
+                                        <div class="flex items-center gap-1.5 mt-1 text-[#07A0C3] text-xs font-bold justify-end">
+                                            <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+                                            <span>{{ $u['date'] }}</span>
+                                        </div>
                                         <p class="mt-2 text-xs text-[#7A6A52] line-clamp-2">{{ $u['summary'] ?? '' }}</p>
                                     </div>
                                     @if(isset($u['images']) && count($u['images']) > 0)
@@ -493,6 +514,10 @@
                                 <div style="width:50%;padding-left:16px;" class="flex flex-col items-start justify-start text-left">
                                     <div class="mb-3">
                                         <a href="{{ route('events.show', $u['slug'] ?? '#') }}" class="mt-0.5 text-sm font-black uppercase text-[#1C1410] leading-snug hover:text-[#07A0C3] transition-colors inline-block">{{ $u['name'] }}</a>
+                                        <div class="flex items-center gap-1.5 mt-1 text-[#07A0C3] text-xs font-bold justify-start">
+                                            <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+                                            <span>{{ $u['date'] }}</span>
+                                        </div>
                                         <p class="mt-2 text-xs text-[#7A6A52] line-clamp-2">{{ $u['summary'] ?? '' }}</p>
                                     </div>
                                     @if(isset($u['images']) && count($u['images']) > 0)

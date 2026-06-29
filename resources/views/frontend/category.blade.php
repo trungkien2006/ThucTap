@@ -53,7 +53,19 @@
         <div>
             <h3 class="font-['Barlow_Condensed'] text-3xl font-black uppercase text-[#1C1410] mb-8">Các sự kiện khác</h3>
             @if($otherEvents->count() > 0)
-            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            <div x-data="{ loaded: false }" x-init="setTimeout(() => { loaded = true }, 500)">
+                <style>
+                    @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+                    .skeleton-shimmer { background: linear-gradient(90deg, rgba(232,226,213,0.5) 25%, rgba(255,253,249,0.8) 50%, rgba(232,226,213,0.5) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+                </style>
+                <!-- Skeleton Loading -->
+                <div x-show="!loaded" class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                    @for($k = 0; $k < count($otherEvents); $k++)
+                    <div class="rounded-2xl h-[350px] w-full skeleton-shimmer"></div>
+                    @endfor
+                </div>
+                <!-- Actual Content -->
+                <div x-show="loaded" style="display: none;" x-transition:enter="transition-opacity ease-out duration-500" class="grid grid-cols-1 gap-6 sm:grid-cols-2">
                 @foreach($otherEvents as $ev)
                 <article class="group relative flex flex-col overflow-hidden rounded-2xl transition-all duration-500 hover:-translate-y-1"
                          style="background:#FFF8D0; box-shadow:0 2px 16px rgba(255,227,129,0.4);"
@@ -76,12 +88,17 @@
                                 </a>
                             </h4>
                             <div class="mt-3 flex flex-col gap-1.5 text-sm text-[#7A6A52]">
+                                <div class="flex items-center gap-1.5 text-xs font-semibold">
+                                    <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+                                    <span>{{ $ev->event_date->format('d.m.Y') }}</span>
+                                </div>
                                 <p class="line-clamp-3">{{ Str::limit(strip_tags($ev->description), 100) }}</p>
                             </div>
                         </div>
                     </div>
                 </article>
                 @endforeach
+                </div>
             </div>
             
             <div class="mt-10">
@@ -108,6 +125,9 @@
                         </div>
                         <div>
                             <h5 class="text-[14px] font-bold text-[#1C1410] group-hover:text-[#07A0C3] transition-colors line-clamp-2 leading-snug">{{ $fEv->title }}</h5>
+                            <div class="flex items-center gap-2 mt-1">
+                                <span class="text-[11px] text-[#07A0C3] font-bold flex items-center gap-1"><i data-lucide="calendar" class="w-3 h-3"></i> {{ $fEv->event_date->format('d/m/Y') }}</span>
+                            </div>
                             <div class="flex items-center gap-3 mt-1.5">
                                 <span class="text-[11px] text-[#7A6A52] flex items-center gap-1"><i data-lucide="eye" class="w-3 h-3"></i> {{ number_format($fEv->views_count) }}</span>
                                 <span class="text-[11px] text-[#7A6A52] flex items-center gap-1"><i data-lucide="heart" class="w-3 h-3"></i> {{ number_format($fEv->likes_count) }}</span>

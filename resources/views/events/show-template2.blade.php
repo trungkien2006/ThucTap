@@ -199,7 +199,8 @@
             <div style="margin-top:36px;">
                 <a href="#gw-reactions" class="gw-btn">Tham gia ngay</a>
             </div>
-            @else
+            @endif
+            @if(!($event->event_date > now()))
             <div style="margin-top:36px;">
                 <span style="font-size:1.07rem;color:#9aa09a;letter-spacing:0.1em;text-transform:uppercase;">Sự kiện đã kết thúc</span>
             </div>
@@ -374,7 +375,7 @@
 
 {{-- REACTIONS --}}
 <section class="gw-section" style="padding:48px 24px;" id="gw-reactions">
-    <div class="gw-reactions">
+    <div class="gw-reactions" style="flex-wrap: wrap;" x-data="{ copied: false }">
         <button id="like-btn" data-event-id="{{ $event->id }}"
                 class="gw-like-btn {{ session()->has('liked_events.' . $event->id) ? 'liked' : '' }}">
             <span class="material-symbols-outlined" style="font-size:23px;">favorite</span>
@@ -384,6 +385,18 @@
             <span class="material-symbols-outlined" style="font-size:23px;">visibility</span>
             <span>{{ $event->views_count }}</span> Lượt xem
         </div>
+        
+        <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}" target="_blank" 
+           class="gw-btn" style="background:#1877F2; display:flex; align-items:center; gap:8px;">
+           <svg class="w-4 h-4 fill-current" style="width:16px;height:16px;" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+           Chia sẻ
+        </a>
+        <button @click="navigator.clipboard.writeText(window.location.href); copied=true; setTimeout(()=>copied=false, 2000)" 
+                class="gw-btn" style="background:#eaecf0; color:#3d4438 !important; border:1px solid #c8cfc6; display:flex; align-items:center; gap:8px; position:relative;">
+            <svg class="w-4 h-4" style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+            Copy Link
+            <span x-show="copied" x-transition style="display:none; position:absolute; top:-40px; left:50%; transform:translateX(-50%); background:#3d4438; color:#fff; font-size:12px; padding:4px 8px; border-radius:4px; white-space:nowrap; text-transform:none; letter-spacing:normal; box-shadow:0 4px 12px rgba(0,0,0,0.1);">Đã sao chép!</span>
+        </button>
     </div>
     @if(isset($previousEvent) || isset($nextEvent))
     <div style="max-width:860px;margin:48px auto 0;display:grid;grid-template-columns:1fr 1fr;gap:24px;">

@@ -79,34 +79,34 @@
                              style="background:rgba(255,248,208,0.98);border:1px solid rgba(232,200,74,0.4);">
                             <div class="grid grid-cols-2 gap-1">
                                 @php
-                                    if(!isset($categories)) {
-                                        $categories = \Illuminate\Support\Facades\Cache::remember('frontend_categories', 300, function () {
+                                    if(!isset($navCategories)) {
+                                        $navCategories = \Illuminate\Support\Facades\Cache::remember('frontend_categories_en_vi', 300, function () {
                                             $dbCategories = \App\Models\Category::where('type', 'event_type')->whereNotIn('name', ['Other', 'Khác'])->get();
-                                            $vietnameseNames = [
-                                                'Conference' => 'Hội nghị',
-                                                'Workshop' => 'Hội thảo thực hành',
-                                                'Seminar' => 'Hội thảo chuyên đề',
-                                                'Cultural' => 'Văn hóa nghệ thuật',
-                                                'Sports' => 'Thể thao',
-                                                'Orientation' => 'Định hướng'
+                                            $englishNames = [
+                                                'Hội nghị' => 'Conference',
+                                                'Hội thảo' => 'Workshop',
+                                                'Chuyên đề' => 'Seminar',
+                                                'Văn hóa' => 'Cultural',
+                                                'Thể thao' => 'Sports',
+                                                'Định hướng' => 'Orientation'
                                             ];
-                                            return $dbCategories->map(function ($c) use ($vietnameseNames) {
+                                            return $dbCategories->map(function ($c) use ($englishNames) {
                                                 return [
-                                                    'name' => $c->name,
-                                                    'slug' => $c->slug,
-                                                    'desc' => $vietnameseNames[$c->name] ?? 'Sự kiện'
+                                                    'vi_name' => $c->name,
+                                                    'en_name' => $englishNames[$c->name] ?? ucfirst($c->slug),
+                                                    'slug' => $c->slug
                                                 ];
                                             })->toArray();
                                         });
                                     }
                                 @endphp
-                                @if(isset($categories))
-                                    @foreach($categories as $c)
+                                @if(isset($navCategories))
+                                    @foreach($navCategories as $c)
                                     <a href="{{ isset($c['slug']) ? route('events.category', $c['slug']) : '#' }}" class="group flex items-start justify-between rounded-xl px-4 py-3 transition-colors"
                                        style="" onmouseover="this.style.background='rgba(255,227,129,0.3)'" onmouseout="this.style.background=''">
                                         <div>
-                                            <div class="text-sm font-semibold text-[#1C1410]">{{ $c['name'] }}</div>
-                                            <div class="text-xs text-[#7A6A52]">{{ $c['desc'] }}</div>
+                                            <div class="text-sm font-semibold text-[#1C1410]">{{ $c['en_name'] }}</div>
+                                            <div class="text-xs text-[#7A6A52]">{{ $c['vi_name'] }}</div>
                                         </div>
                                         <i data-lucide="arrow-up-right" class="h-4 w-4 text-[#07A0C3] opacity-0 transition-all group-hover:opacity-100"></i>
                                     </a>

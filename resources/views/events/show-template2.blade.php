@@ -246,11 +246,9 @@
 @endif
 
 {{-- FULL WIDTH PHOTO --}}
-@if($event->galleryImages->where('type','image')->count() > 0)
-@php $pb = $event->galleryImages->where('type','image')->first(); @endphp
+@php $pb = $event->subBannerImage; @endphp
 @if($pb && $pb->url)
 <div><img src="{{ \App\Helpers\FileHelper::url($pb->url) }}" alt="{{ $event->title }}" class="gw-full-photo"></div>
-@endif
 @endif
 
 {{-- STORY / DESCRIPTION --}}
@@ -289,7 +287,7 @@
 
             {{-- Remaining blocks --}}
             @php 
-                $skipCount = ($firstImg && $firstImg->url) ? 1 : 0;
+                $skipCount = 0;
                 $remainingBlocks = $event->galleryImages->skip($skipCount)->take(5); 
             @endphp
             @foreach($remainingBlocks as $block)

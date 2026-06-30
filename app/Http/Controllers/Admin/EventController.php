@@ -204,6 +204,8 @@ class EventController extends Controller
             'desc_color' => 'nullable|string',
             'desc_font_family' => 'nullable|string',
             
+            'sub_banner_path' => 'nullable|string',
+            
             'media_slots' => 'nullable|array',
         ]);
 
@@ -259,6 +261,36 @@ class EventController extends Controller
                         'title' => trim($parts[1]),
                     ]);
                 }
+            }
+        }
+
+        // Process sub banner
+        if ($request->has('sub_banner_path')) {
+            $event->media()->where('is_recap', true)->delete();
+            if (!empty($request->sub_banner_path)) {
+                
+                $path = $request->sub_banner_path;
+                
+                // Trích xuất path nếu URL được truyền vào
+                if (strpos($path, 'http://') === 0 || strpos($path, 'https://') === 0) {
+                    $parsed = parse_url($path);
+                    if (isset($parsed['query'])) {
+                        parse_str($parsed['query'], $queryParams);
+                        $path = $queryParams['path'] ?? $path;
+                    }
+                    if ($path == $request->sub_banner_path) {
+                        if (strpos($path, config('app.url')) !== false || strpos($path, 'file/proxy') !== false || strpos($path, Storage::url('')) !== false) {
+                            $path = str_replace(Storage::url(''), '', $parsed['path'] ?? '');
+                        }
+                    }
+                }
+                
+                $event->media()->create([
+                    'type' => 'image',
+                    'url' => $path,
+                    'is_banner' => false,
+                    'is_recap' => true,
+                ]);
             }
         }
 
@@ -343,7 +375,7 @@ class EventController extends Controller
     public function uploadDocument(Request $request)
     {
         $request->validate([
-            'file' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,txt,zip|max:20480', // Max 20MB
+            'file' => 'required|file|max:20480', // Max 20MB
         ]);
 
         if ($request->hasFile('file')) {
@@ -474,7 +506,7 @@ class EventController extends Controller
         ActivityLogger::log("đã cập nhật sự kiện: {$event->title}", route('admin.events.index'));
 
         if ($request->input('redirect_to') === 'design') {
-            return redirect()->route('admin.events.design', $event)->with('success', 'Lưu thay đổi thành công. Hãy thiết kế giao diện!');
+            return redirect()->route('admin.events.template', $event)->with('success', 'Lưu thay đổi thành công. Hãy chọn mẫu thiết kế!');
         }
 
         return redirect()->route('admin.events.index')->with('success', 'Cập nhật sự kiện thành công.');

@@ -55,4 +55,19 @@ Lệnh này sẽ tạo một shortcut (symlink) từ `public/storage` trỏ tớ
 
 - **Lỗi 404 cho hình ảnh:** Kiểm tra xem bạn đã chạy lệnh `php artisan storage:link` chưa. Xóa thư mục `public/storage` (nếu có lỗi symlink) và chạy lại lệnh.
 - **Ảnh bị thay đổi trên Google Drive nhưng web không cập nhật:** Do web đang dùng ảnh lưu trong bộ nhớ đệm. Bạn chỉ cần vào thư mục `storage/app/public` và xóa ảnh cũ, hệ thống sẽ tự động lên Drive lấy lại bản mới nhất.
-- **Lỗi Unauthorized / Invalid Token:** Kiểm tra lại `GOOGLE_DRIVE_REFRESH_TOKEN`. Token có thể đã hết hạn hoặc bị thu hồi.
+- **Lỗi 401 Unauthorized / Invalid Token (CREDENTIALS_MISSING):** Xảy ra khi `GOOGLE_DRIVE_REFRESH_TOKEN` bị thiếu, sai hoặc đã bị Google thu hồi (token ở chế độ Testing của Google sẽ tự hết hạn sau 7 ngày). Trưởng nhóm cần làm mới Token theo hướng dẫn bên dưới và gửi lại cho cả nhóm.
+
+---
+
+## Dành cho Trưởng nhóm: Cách lấy lại Refresh Token mới (Khi bị lỗi 401)
+
+Nếu dự án của bạn trên Google Cloud Console đang ở trạng thái **"Testing"**, Refresh Token sẽ tự động hết hạn sau 7 ngày. Khi nhóm báo lỗi `401 Request is missing required authentication credential`, bạn (Trưởng nhóm) cần lấy token mới theo các bước sau:
+
+1. Truy cập [Google OAuth 2.0 Playground](https://developers.google.com/oauthplayground/).
+2. Nhấn vào biểu tượng **Bánh răng (OAuth 2.0 configuration)** ở góc trên bên phải.
+3. Tích chọn **"Use your own OAuth credentials"**.
+4. Nhập `OAuth Client ID` và `OAuth Client secret` của bạn vào 2 ô tương ứng. (Phải là thông tin trên Google Cloud Console của bạn).
+5. Đóng bảng cài đặt, nhìn sang cột bên trái (Step 1), cuộn xuống tìm mục **Drive API v3** và chọn quyền: `https://www.googleapis.com/auth/drive`
+6. Nhấn nút **Authorize APIs**, đăng nhập bằng tài khoản Google chứa thư mục Drive của bạn và bấm Allow (Cho phép).
+7. Tại mục Step 2, bấm nút **Exchange authorization code for tokens**.
+8. Cuối cùng, copy dòng `Refresh token` hiện ra ở khung bên phải và dán vào file `.env` của bạn, đồng thời gửi cho các thành viên trong nhóm để họ cập nhật lại file `.env` của họ.

@@ -29,9 +29,9 @@
         /* Media library grid & items */
         #mediaLibraryGrid {
             display: grid !important;
-            grid-template-columns: repeat(4, 1fr) !important;
+            grid-template-columns: repeat(3, 1fr) !important;
             gap: 6px !important;
-            max-height: 400px;
+            max-height: 500px;
             overflow-y: auto;
             padding-right: 2px;
         }
@@ -98,7 +98,8 @@
         }
     </style>
 </head>
-<body class="overflow-x-clip pt-[64px]">
+<body class="overflow-x-hidden pt-[64px] bg-slate-900">
+    <div id="topErrorBanner" class="hidden fixed top-[64px] left-0 w-full z-50 bg-red-100 text-red-600 px-4 py-3 text-center font-medium text-[14px] border-b border-red-200 shadow-sm transition-all"></div>
     <div class="app-layout">
         <!-- ─── Control Drawer (Left Panel) ─── -->
         <aside class="control-drawer overflow-y-auto p-6 shadow-drawer">
@@ -211,10 +212,8 @@
                                 </div>
                             </div>
                         </div>
+                        </div>
                     </div>
-                </div>
-
-
 
                 <!-- 3. Media Library (Tabbed) -->
                 <div id="sec-media" class="drawer-section space-y-3 pt-2 border-slate-100 transition-all rounded-lg p-2 -m-2">
@@ -381,6 +380,31 @@
                         </p>
                     </div>
 
+                    <!-- Banner Phụ cho Mẫu 2 -->
+                    <div id="subBannerSection" class="uni-card p-6" style="{{ ($event->page_template ?? 1) == 2 ? '' : 'display: none;' }}">
+                        <div class="flex items-center justify-between mb-5 border-b border-slate-100 pb-3">
+                            <h3 class="text-[18px] font-bold text-brand-orange font-heading flex items-center gap-2">
+                                <span class="material-symbols-outlined">panorama</span> Banner ngang (Dành riêng Mẫu 2)
+                            </h3>
+                            <span class="text-[11px] text-slate-400">Ảnh trải dài hiển thị dưới giới thiệu sự kiện</span>
+                        </div>
+                        <div class="flex flex-col items-center justify-center gap-3 w-full">
+                            <div class="w-full relative h-[200px] bg-slate-50 border-2 border-dashed border-slate-300 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-brand-orange hover:bg-orange-50 transition-all group overflow-hidden" onclick="document.getElementById('subBannerFileInput').click()">
+                                <img id="viewSubBanner" src="{{ $event->subBannerImage ? \App\Helpers\FileHelper::url($event->subBannerImage->url) : '' }}" class="absolute inset-0 w-full h-full object-cover {{ $event->subBannerImage ? '' : 'hidden' }}">
+                                <div class="relative z-10 flex flex-col items-center text-slate-500 group-hover:text-brand-orange {{ $event->subBannerImage ? 'opacity-0 hover:opacity-100 bg-white/90 p-4 rounded-xl shadow-lg' : '' }} transition-all">
+                                    <span class="material-symbols-outlined text-[32px]">add_photo_alternate</span>
+                                    <span class="text-[13px] font-medium mt-1" id="subBannerUploadText">{{ $event->subBannerImage ? 'Thay đổi ảnh banner' : 'Tải ảnh banner lên' }}</span>
+                                </div>
+                            </div>
+                            <input type="text" id="inSubBannerUrl" readonly class="hidden" value="{{ $event->subBannerImage ? \App\Helpers\FileHelper::url($event->subBannerImage->url) : '' }}" />
+                            <input type="hidden" id="inSubBannerPath" value="{{ $event->subBannerImage ? $event->subBannerImage->url : '' }}" />
+                            <input type="file" id="subBannerFileInput" accept="image/*" class="hidden" onchange="uploadSubBanner(this)" />
+                            <div class="text-[13px] font-bold text-brand-orange hidden flex items-center gap-1.5" id="subBannerUploading">
+                                <span class="material-symbols-outlined animate-spin align-middle text-[18px]">sync</span> Đang tải lên...
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Media Gallery -->
                     <div class="uni-card p-6">
                         <div class="flex items-center justify-between mb-5 border-b border-slate-100 pb-3">
@@ -396,83 +420,109 @@
                             @php 
                                 $media = $galleryMedia->get($i - 1); 
                                 $hasMedia = $media ? true : false;
+                                
+                                $templateId = $event->page_template ?? 1;
+                                $textOrder = '';
+                                $mediaOrder = '';
+                                
+                                if ($templateId == 1) {
+                                    // Zic-Zac
+                                    if ($i % 2 != 0) {
+                                        // Odd: Image Left (order-1), Text Right (order-2)
+                                        $textOrder = 'lg:order-2';
+                                        $mediaOrder = 'lg:order-1';
+                                    } else {
+                                        // Even: Text Left (order-1), Image Right (order-2)
+                                        $textOrder = 'lg:order-1';
+                                        $mediaOrder = 'lg:order-2';
+                                    }
+                                } else {
+                                    // Template 2 (and others): Text Left, Image Right
+                                    $textOrder = 'lg:order-1';
+                                    $mediaOrder = 'lg:order-2';
+                                }
                             @endphp
-                            <div class="flex flex-col gap-3 bg-slate-50/50 p-4 rounded-xl border border-slate-100" data-slot-wrap="{{ $i }}">
-                                {{-- Content --}}
-                                <textarea id="content{{ $i }}" rows="3" placeholder="Nhập nội dung sự kiện cho đoạn này..."
-                                       class="w-full text-[14px] px-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all resize-y">{{ $media ? $media->content : '' }}</textarea>
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-slate-50/50 p-6 rounded-xl border border-slate-100 items-start" data-slot-wrap="{{ $i }}">
+                                {{-- Column: Content --}}
+                                <div class="flex flex-col h-full w-full {{ $textOrder }}">
+                                    <textarea id="content{{ $i }}" rows="8" placeholder="Nhập nội dung sự kiện cho đoạn này..."
+                                           class="w-full text-[14px] px-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all resize-y h-full" style="min-height: 250px;">{{ $media ? $media->content : '' }}</textarea>
+                                </div>
                                        
-                                {{-- Image slot --}}
-                                <div class="relative">
-                                    <div onclick="activateSlot({{ $i }})"
-                                         class="media-slot w-full {{ $hasMedia ? 'h-auto' : 'h-32' }} bg-white hover:bg-slate-50 border-2 {{ $hasMedia ? '' : 'border-dashed' }} border-slate-300 hover:border-brand-orange rounded-xl flex items-center justify-center gap-2 cursor-pointer text-slate-500 hover:text-brand-orange transition-all {{ $hasMedia ? 'slot-filled' : '' }}"
-                                         data-slot="{{ $i }}" id="slot{{ $i }}">
-                                        @if($hasMedia)
-                                            @if($media->type === 'video')
-                                                <video src="{{ \App\Helpers\FileHelper::url($media->url) }}" data-path="{{ $media->url }}" class="w-full h-auto rounded-xl" autoplay loop muted playsinline></video>
+                                {{-- Column: Media --}}
+                                <div class="flex flex-col gap-3 w-full {{ $mediaOrder }}">
+                                    {{-- Image slot --}}
+                                    <div class="relative">
+                                        <div onclick="activateSlot({{ $i }})"
+                                             class="media-slot w-full {{ $hasMedia ? 'h-auto' : 'h-32' }} bg-white hover:bg-slate-50 border-2 {{ $hasMedia ? '' : 'border-dashed' }} border-slate-300 hover:border-brand-orange rounded-xl flex items-center justify-center gap-2 cursor-pointer text-slate-500 hover:text-brand-orange transition-all {{ $hasMedia ? 'slot-filled' : '' }}"
+                                             data-slot="{{ $i }}" id="slot{{ $i }}">
+                                            @if($hasMedia)
+                                                @if($media->type === 'video')
+                                                    <video src="{{ \App\Helpers\FileHelper::url($media->url) }}" data-path="{{ $media->url }}" class="w-full h-auto rounded-xl" autoplay loop muted playsinline></video>
+                                                @else
+                                                    <img src="{{ \App\Helpers\FileHelper::url($media->url) }}" data-path="{{ $media->url }}" class="w-full h-auto rounded-xl" alt=""/>
+                                                @endif
                                             @else
-                                                <img src="{{ \App\Helpers\FileHelper::url($media->url) }}" data-path="{{ $media->url }}" class="w-full h-auto rounded-xl" alt=""/>
+                                                <span class="material-symbols-outlined text-[22px]">add_photo_alternate</span>
+                                                <span class="text-[13px] font-medium">Thêm hình ảnh {{ $i }}</span>
                                             @endif
-                                        @else
-                                            <span class="material-symbols-outlined text-[22px]">add_photo_alternate</span>
-                                            <span class="text-[13px] font-medium">Thêm hình ảnh {{ $i }}</span>
-                                        @endif
-                                    </div>
-                                    {{-- Remove button (hidden until filled) --}}
-                                    <button onclick="removeSlot({{ $i }})" id="removeBtn{{ $i }}"
-                                            class="{{ $hasMedia ? 'flex' : 'hidden' }} absolute top-2 right-2 w-7 h-7 bg-white/90 hover:bg-red-500 hover:text-white text-slate-600 rounded-lg shadow items-center justify-center transition-all z-10"
-                                            title="Gỡ ảnh">
-                                        <span class="material-symbols-outlined text-[16px]">delete</span>
-                                    </button>
-                                </div>
-                                {{-- Caption --}}
-                                <input type="text" id="caption{{ $i }}" placeholder="Nhập ghi chú / mô tả cho ảnh {{ $i }}..."
-                                       class="w-full text-[13px] px-3 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all"
-                                       value="{{ $media ? $media->caption : '' }}" />
-
-                                {{-- Tài liệu đính kèm (Word, Zip...) --}}
-                                <div class="doc-upload-section bg-white border border-slate-200 rounded-xl p-3.5 space-y-2.5">
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-[12px] font-bold text-slate-600 flex items-center gap-1">
-                                            <span class="material-symbols-outlined text-[16px] text-slate-500">attach_file</span> Tài liệu đính kèm
-                                        </span>
-                                        <input type="file" id="docFileInput{{ $i }}" class="hidden" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip" onchange="uploadDocumentFile({{ $i }})"/>
-                                        <button type="button" onclick="document.getElementById('docFileInput{{ $i }}').click()" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-[11px] font-semibold transition-all">
-                                            Tải file (Word, Zip, PDF...)
+                                        </div>
+                                        {{-- Remove button (hidden until filled) --}}
+                                        <button onclick="removeSlot({{ $i }})" id="removeBtn{{ $i }}"
+                                                class="{{ $hasMedia ? 'flex' : 'hidden' }} absolute top-2 right-2 w-7 h-7 bg-white/90 hover:bg-red-500 hover:text-white text-slate-600 rounded-lg shadow items-center justify-center transition-all z-10"
+                                                title="Gỡ ảnh">
+                                            <span class="material-symbols-outlined text-[16px]">delete</span>
                                         </button>
                                     </div>
-                                    <div class="flex items-center gap-2 {{ $media && $media->document_url ? '' : 'hidden' }}" id="docInfoWrap{{ $i }}">
-                                        <span class="material-symbols-outlined text-[16px] text-emerald-600">article</span>
-                                        <a href="{{ $media && $media->document_url ? \App\Helpers\FileHelper::url($media->document_url) : '#' }}" id="docLink{{ $i }}" target="_blank" class="text-[12px] font-medium text-brand-orange hover:underline truncate max-w-[200px]">
-                                            {{ $media ? ($media->document_name ?? basename($media->document_url)) : '' }}
-                                        </a>
-                                        <button type="button" onclick="removeDocumentFile({{ $i }})" class="text-red-500 hover:text-red-700 ml-auto flex items-center">
-                                            <span class="material-symbols-outlined text-[16px]">close</span>
-                                        </button>
-                                    </div>
-                                    <input type="hidden" id="docFileUrl{{ $i }}" value="{{ $media ? $media->document_url : '' }}" />
-                                    <input type="hidden" id="docFileName{{ $i }}" value="{{ $media ? $media->document_name : '' }}" />
-                                </div>
+                                    {{-- Caption --}}
+                                    <input type="text" id="caption{{ $i }}" placeholder="Nhập ghi chú / mô tả cho ảnh {{ $i }}..."
+                                           class="w-full text-[13px] px-3 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all"
+                                           value="{{ $media ? $media->caption : '' }}" />
 
-                                {{-- URL liên kết ngoài --}}
-                                <div class="bg-white border border-slate-200 rounded-xl p-3.5 space-y-1">
-                                    <label class="text-[12px] font-bold text-slate-600 flex items-center gap-1">
-                                        <span class="material-symbols-outlined text-[16px] text-slate-500">link</span> Liên kết ngoài (URL)
-                                    </label>
-                                    <input type="text" id="actionUrl{{ $i }}" placeholder="Nhập link liên kết (VD: https://poly.edu.vn)..."
-                                           class="w-full text-[13px] px-3 py-1.5 bg-slate-50/50 border border-slate-200 rounded-lg focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all"
-                                           value="{{ $media ? $media->action_url : '' }}" oninput="syncData()" />
-                                </div>
-
-                                {{-- Preview tài liệu và URL ngay dưới caption --}}
-                                <div class="mt-1 flex flex-wrap gap-2">
-                                    <div id="docPreviewWrap{{ $i }}" class="flex items-center gap-1.5 bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-lg text-[12px] font-medium border border-emerald-200/50 {{ $media && $media->document_url ? '' : 'hidden' }}">
-                                        <span class="material-symbols-outlined text-[16px]">article</span>
-                                        <span id="docPreviewName{{ $i }}">{{ $media ? ($media->document_name ?? basename($media->document_url)) : '' }}</span>
+                                    {{-- Tài liệu đính kèm (Word, Zip...) --}}
+                                    <div class="doc-upload-section bg-white border border-slate-200 rounded-xl p-3.5 space-y-2.5">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-[12px] font-bold text-slate-600 flex items-center gap-1">
+                                                <span class="material-symbols-outlined text-[16px] text-slate-500">attach_file</span> Tài liệu đính kèm
+                                            </span>
+                                            <input type="file" id="docFileInput{{ $i }}" class="hidden" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip" onchange="uploadDocumentFile({{ $i }})"/>
+                                            <button type="button" onclick="document.getElementById('docFileInput{{ $i }}').click()" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-[11px] font-semibold transition-all">
+                                                Tải file (Word, Zip, PDF...)
+                                            </button>
+                                        </div>
+                                        <div class="flex items-center gap-2 {{ $media && $media->document_url ? '' : 'hidden' }}" id="docInfoWrap{{ $i }}">
+                                            <span class="material-symbols-outlined text-[16px] text-emerald-600">article</span>
+                                            <a href="{{ $media && $media->document_url ? \App\Helpers\FileHelper::url($media->document_url) : '#' }}" id="docLink{{ $i }}" target="_blank" class="text-[12px] font-medium text-brand-orange hover:underline truncate max-w-[200px]">
+                                                {{ $media ? ($media->document_name ?? basename($media->document_url)) : '' }}
+                                            </a>
+                                            <button type="button" onclick="removeDocumentFile({{ $i }})" class="text-red-500 hover:text-red-700 ml-auto flex items-center">
+                                                <span class="material-symbols-outlined text-[16px]">close</span>
+                                            </button>
+                                        </div>
+                                        <input type="hidden" id="docFileUrl{{ $i }}" value="{{ $media ? $media->document_url : '' }}" />
+                                        <input type="hidden" id="docFileName{{ $i }}" value="{{ $media ? $media->document_name : '' }}" />
                                     </div>
-                                    <div id="urlPreviewWrap{{ $i }}" class="flex items-center gap-1.5 bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg text-[12px] font-medium border border-blue-200/50 {{ $media && $media->action_url ? '' : 'hidden' }}">
-                                        <span class="material-symbols-outlined text-[16px]">open_in_new</span>
-                                        <span class="truncate max-w-[150px]" id="urlPreviewLink{{ $i }}">{{ $media ? $media->action_url : '' }}</span>
+
+                                    {{-- URL liên kết ngoài --}}
+                                    <div class="bg-white border border-slate-200 rounded-xl p-3.5 space-y-1">
+                                        <label class="text-[12px] font-bold text-slate-600 flex items-center gap-1">
+                                            <span class="material-symbols-outlined text-[16px] text-slate-500">link</span> Liên kết ngoài (URL)
+                                        </label>
+                                        <input type="text" id="actionUrl{{ $i }}" placeholder="Nhập link liên kết (VD: https://poly.edu.vn)..."
+                                               class="w-full text-[13px] px-3 py-1.5 bg-slate-50/50 border border-slate-200 rounded-lg focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all"
+                                               value="{{ $media ? $media->action_url : '' }}" oninput="syncData()" />
+                                    </div>
+
+                                    {{-- Preview tài liệu và URL ngay dưới caption --}}
+                                    <div class="mt-1 flex flex-wrap gap-2">
+                                        <div id="docPreviewWrap{{ $i }}" class="flex items-center gap-1.5 bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-lg text-[12px] font-medium border border-emerald-200/50 {{ $media && $media->document_url ? '' : 'hidden' }}">
+                                            <span class="material-symbols-outlined text-[16px]">article</span>
+                                            <span id="docPreviewName{{ $i }}">{{ $media ? ($media->document_name ?? basename($media->document_url)) : '' }}</span>
+                                        </div>
+                                        <div id="urlPreviewWrap{{ $i }}" class="flex items-center gap-1.5 bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg text-[12px] font-medium border border-blue-200/50 {{ $media && $media->action_url ? '' : 'hidden' }}">
+                                            <span class="material-symbols-outlined text-[16px]">open_in_new</span>
+                                            <span class="truncate max-w-[150px]" id="urlPreviewLink{{ $i }}">{{ $media ? $media->action_url : '' }}</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -915,6 +965,56 @@
             }
         }
 
+        async function uploadSubBanner(input) {
+            if (!input.files || input.files.length === 0) return;
+            const file = input.files[0];
+            const formData = new FormData();
+            formData.append('files[]', file);
+            formData.append('event_id', EVENT_ID);
+
+            const uploadingText = document.getElementById('subBannerUploading');
+            uploadingText.classList.remove('hidden');
+
+            try {
+                const resp = await fetch(MEDIA_STORE_URL, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': CSRF_TOKEN,
+                        'Accept': 'application/json',
+                    },
+                    body: formData,
+                });
+                
+                if (!resp.ok) throw new Error('Upload failed');
+                
+                const data = await resp.json();
+                if (data.success && data.files.length > 0) {
+                    const uploadedFile = data.files[0];
+                    document.getElementById('inSubBannerUrl').value = uploadedFile.url;
+                    document.getElementById('inSubBannerPath').value = uploadedFile.path;
+                    
+                    // Add to library for reuse if not already there
+                    let libGrid = document.getElementById('mediaLibraryGrid');
+                    if (libGrid) {
+                        const div = document.createElement('div');
+                        div.className = 'lib-item';
+                        div.title = uploadedFile.caption || file.name;
+                        div.onclick = () => applyLibraryItem(uploadedFile.url, uploadedFile.type, uploadedFile.path);
+                        div.innerHTML = `<img src="${uploadedFile.url}" alt=""><div class="lib-overlay" style="background:rgba(0,0,0,0);"></div>`;
+                        libGrid.insertAdjacentElement('afterbegin', div);
+                        document.getElementById('tabLibrary').textContent = `Kho Media (${document.querySelectorAll('.lib-item').length})`;
+                    }
+                    syncData();
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Có lỗi xảy ra khi tải ảnh lên.');
+            } finally {
+                uploadingText.classList.add('hidden');
+                input.value = '';
+            }
+        }
+
         // ── Drag & Drop on drop zone ──────────────────────────────
         const dropLabel = document.getElementById('dropZoneLabel');
         if (dropLabel) {
@@ -951,10 +1051,26 @@
             // Template toggle
             const template = document.getElementById('inEventTemplate').value;
             const docSections = document.querySelectorAll('.doc-upload-section');
+            const subBannerSection = document.getElementById('subBannerSection');
+
             if (template === '1') {
                 docSections.forEach(el => el.classList.add('hidden'));
+                if (subBannerSection) subBannerSection.style.display = 'none';
             } else {
                 docSections.forEach(el => el.classList.remove('hidden'));
+                if (subBannerSection) {
+                    subBannerSection.style.display = '';
+                    const subUrl = document.getElementById('inSubBannerUrl').value;
+                    const viewSubBanner = document.getElementById('viewSubBanner');
+                    if (subUrl && viewSubBanner) {
+                        viewSubBanner.src = subUrl;
+                        viewSubBanner.classList.remove('hidden');
+                        document.getElementById('subBannerUploadText').innerText = 'Thay đổi ảnh banner';
+                        viewSubBanner.nextElementSibling.classList.replace('opacity-100', 'opacity-0');
+                        viewSubBanner.nextElementSibling.classList.replace('bg-slate-50', 'bg-white/90');
+                        viewSubBanner.nextElementSibling.classList.add('hover:opacity-100');
+                    }
+                }
             }
 
             // Apply Tiêu đề style
@@ -1109,6 +1225,8 @@
                 desc_font_family: document.getElementById('inMoTaFontFamily').value,
                 event_template: document.getElementById('inEventTemplate').value,
                 
+                sub_banner_path: document.getElementById('inSubBannerPath') ? document.getElementById('inSubBannerPath').value : '',
+                
                 media_slots: []
             };
 
@@ -1156,7 +1274,22 @@
                 if (resp.ok) {
                     if (callback) callback();
                 } else {
-                    alert('Lỗi lưu cấu hình!');
+                    const errorData = await resp.json().catch(() => null);
+                    let errMsg = 'Lỗi lưu cấu hình!';
+                    if (resp.status === 422 && errorData && errorData.errors) {
+                        errMsg = Object.values(errorData.errors).flat().join(' ');
+                    } else if (errorData && errorData.message) {
+                        errMsg = errorData.message;
+                    }
+                    
+                    const errorBanner = document.getElementById('topErrorBanner');
+                    if (errorBanner) {
+                        errorBanner.innerText = errMsg;
+                        errorBanner.classList.remove('hidden');
+                        setTimeout(() => { errorBanner.classList.add('hidden'); }, 5000);
+                    } else {
+                        alert(errMsg);
+                    }
                 }
             } catch (e) {
                 console.error(e);
@@ -1240,65 +1373,80 @@
             });
             const newI = maxI + 1;
 
+            const templateId = document.getElementById('inEventTemplate') ? document.getElementById('inEventTemplate').value : '1';
+            let textOrder = 'lg:order-1';
+            let mediaOrder = 'lg:order-2';
+            
+            if (templateId == '1') {
+                if (newI % 2 !== 0) {
+                    textOrder = 'lg:order-2';
+                    mediaOrder = 'lg:order-1';
+                }
+            }
+
             const slotHtml = `
-            <div class="flex flex-col gap-3 bg-slate-50/50 p-4 rounded-xl border border-slate-100 mt-6" data-slot-wrap="${newI}">
-                <textarea id="content${newI}" rows="3" placeholder="Nhập nội dung sự kiện cho đoạn này..."
-                       class="w-full text-[14px] px-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all resize-y"></textarea>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-slate-50/50 p-6 rounded-xl border border-slate-100 mt-6 items-start" data-slot-wrap="${newI}">
+                <div class="flex flex-col h-full w-full ${textOrder}">
+                    <textarea id="content${newI}" rows="8" placeholder="Nhập nội dung sự kiện cho đoạn này..."
+                           class="w-full text-[14px] px-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all resize-y h-full" style="min-height: 250px;"></textarea>
+                </div>
                        
-                <div class="relative">
-                    <div onclick="activateSlot(${newI})"
-                         class="media-slot w-full h-32 bg-white hover:bg-slate-50 border-2 border-dashed border-slate-300 hover:border-brand-orange rounded-xl flex items-center justify-center gap-2 cursor-pointer text-slate-500 hover:text-brand-orange transition-all"
-                         data-slot="${newI}" id="slot${newI}">
-                        <span class="material-symbols-outlined text-[22px]">add_photo_alternate</span>
-                        <span class="text-[13px] font-medium">Thêm hình ảnh ${newI}</span>
-                    </div>
-                    <button onclick="removeSlot(${newI})" id="removeBtn${newI}"
-                            class="hidden absolute top-2 right-2 w-7 h-7 bg-white/90 hover:bg-red-500 hover:text-white text-slate-600 rounded-lg shadow items-center justify-center transition-all z-10"
-                            title="Gỡ ảnh">
-                        <span class="material-symbols-outlined text-[16px]">delete</span>
-                    </button>
-                </div>
-                <input type="text" id="caption${newI}" placeholder="Nhập ghi chú / mô tả cho ảnh ${newI}..."
-                       class="w-full text-[13px] px-3 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all" />
-
-                <div class="doc-upload-section bg-white border border-slate-200 rounded-xl p-3.5 space-y-2.5">
-                    <div class="flex items-center justify-between">
-                        <span class="text-[12px] font-bold text-slate-600 flex items-center gap-1">
-                            <span class="material-symbols-outlined text-[16px] text-slate-500">attach_file</span> Tài liệu đính kèm
-                        </span>
-                        <input type="file" id="docFileInput${newI}" class="hidden" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip" onchange="uploadDocumentFile(${newI})"/>
-                        <button type="button" onclick="document.getElementById('docFileInput${newI}').click()" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-[11px] font-semibold transition-all">
-                            Tải file
+                <div class="flex flex-col gap-3 w-full ${mediaOrder}">
+                    <div class="relative">
+                        <div onclick="activateSlot(${newI})"
+                             class="media-slot w-full h-32 bg-white hover:bg-slate-50 border-2 border-dashed border-slate-300 hover:border-brand-orange rounded-xl flex items-center justify-center gap-2 cursor-pointer text-slate-500 hover:text-brand-orange transition-all"
+                             data-slot="${newI}" id="slot${newI}">
+                            <span class="material-symbols-outlined text-[22px]">add_photo_alternate</span>
+                            <span class="text-[13px] font-medium">Thêm hình ảnh ${newI}</span>
+                        </div>
+                        <button onclick="removeSlot(${newI})" id="removeBtn${newI}"
+                                class="hidden absolute top-2 right-2 w-7 h-7 bg-white/90 hover:bg-red-500 hover:text-white text-slate-600 rounded-lg shadow items-center justify-center transition-all z-10"
+                                title="Gỡ ảnh">
+                            <span class="material-symbols-outlined text-[16px]">delete</span>
                         </button>
                     </div>
-                    <div class="hidden flex items-center gap-2" id="docInfoWrap${newI}">
-                        <span class="material-symbols-outlined text-[16px] text-emerald-600">article</span>
-                        <a href="#" id="docLink${newI}" target="_blank" class="text-[12px] font-medium text-brand-orange hover:underline truncate max-w-[200px]"></a>
-                        <button type="button" onclick="removeDocumentFile(${newI})" class="text-red-500 hover:text-red-700 ml-auto flex items-center">
-                            <span class="material-symbols-outlined text-[16px]">close</span>
-                        </button>
-                    </div>
-                    <input type="hidden" id="docFileUrl${newI}" />
-                    <input type="hidden" id="docFileName${newI}" />
-                </div>
+                    <input type="text" id="caption${newI}" placeholder="Nhập ghi chú / mô tả cho ảnh ${newI}..."
+                           class="w-full text-[13px] px-3 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all" />
 
-                <div class="bg-white border border-slate-200 rounded-xl p-3.5 space-y-1">
-                    <label class="text-[12px] font-bold text-slate-600 flex items-center gap-1">
-                        <span class="material-symbols-outlined text-[16px] text-slate-500">link</span> Liên kết ngoài (URL)
-                    </label>
-                    <input type="text" id="actionUrl${newI}" placeholder="Nhập link liên kết..."
-                           class="w-full text-[13px] px-3 py-1.5 bg-slate-50/50 border border-slate-200 rounded-lg focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all"
-                           oninput="syncData()" />
-                </div>
-
-                <div class="mt-1 flex flex-wrap gap-2">
-                    <div id="docPreviewWrap${newI}" class="hidden flex items-center gap-1.5 bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-lg text-[12px] font-medium border border-emerald-200/50">
-                        <span class="material-symbols-outlined text-[16px]">article</span>
-                        <span id="docPreviewName${newI}"></span>
+                    <div class="doc-upload-section bg-white border border-slate-200 rounded-xl p-3.5 space-y-2.5">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[12px] font-bold text-slate-600 flex items-center gap-1">
+                                <span class="material-symbols-outlined text-[16px] text-slate-500">attach_file</span> Tài liệu đính kèm
+                            </span>
+                            <input type="file" id="docFileInput${newI}" class="hidden" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip" onchange="uploadDocumentFile(${newI})"/>
+                            <button type="button" onclick="document.getElementById('docFileInput${newI}').click()" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-[11px] font-semibold transition-all">
+                                Tải file
+                            </button>
+                        </div>
+                        <div class="hidden flex items-center gap-2" id="docInfoWrap${newI}">
+                            <span class="material-symbols-outlined text-[16px] text-emerald-600">article</span>
+                            <a href="#" id="docLink${newI}" target="_blank" class="text-[12px] font-medium text-brand-orange hover:underline truncate max-w-[200px]"></a>
+                            <button type="button" onclick="removeDocumentFile(${newI})" class="text-red-500 hover:text-red-700 ml-auto flex items-center">
+                                <span class="material-symbols-outlined text-[16px]">close</span>
+                            </button>
+                        </div>
+                        <input type="hidden" id="docFileUrl${newI}" />
+                        <input type="hidden" id="docFileName${newI}" />
                     </div>
-                    <div id="urlPreviewWrap${newI}" class="hidden flex items-center gap-1.5 bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg text-[12px] font-medium border border-blue-200/50">
-                        <span class="material-symbols-outlined text-[16px]">open_in_new</span>
-                        <span class="truncate max-w-[150px]" id="urlPreviewLink${newI}"></span>
+
+                    <div class="bg-white border border-slate-200 rounded-xl p-3.5 space-y-1">
+                        <label class="text-[12px] font-bold text-slate-600 flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[16px] text-slate-500">link</span> Liên kết ngoài (URL)
+                        </label>
+                        <input type="text" id="actionUrl${newI}" placeholder="Nhập link liên kết..."
+                               class="w-full text-[13px] px-3 py-1.5 bg-slate-50/50 border border-slate-200 rounded-lg focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all"
+                               oninput="syncData()" />
+                    </div>
+
+                    <div class="mt-1 flex flex-wrap gap-2">
+                        <div id="docPreviewWrap${newI}" class="hidden flex items-center gap-1.5 bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-lg text-[12px] font-medium border border-emerald-200/50">
+                            <span class="material-symbols-outlined text-[16px]">article</span>
+                            <span id="docPreviewName${newI}"></span>
+                        </div>
+                        <div id="urlPreviewWrap${newI}" class="hidden flex items-center gap-1.5 bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg text-[12px] font-medium border border-blue-200/50">
+                            <span class="material-symbols-outlined text-[16px]">open_in_new</span>
+                            <span class="truncate max-w-[150px]" id="urlPreviewLink${newI}"></span>
+                        </div>
                     </div>
                 </div>
             </div>`;
@@ -1310,6 +1458,7 @@
                 tinymce.init({
                     selector: '#content' + newI,
                     menubar: false,
+                    min_height: 350,
                     plugins: 'lists link code',
                     toolbar: 'bold italic underline | bullist numlist | link | code',
                     branding: false,
@@ -1329,6 +1478,7 @@
         tinymce.init({
             selector: 'textarea[id^="content"]',
             menubar: false,
+            min_height: 350,
             plugins: 'lists link code',
             toolbar: 'bold italic underline | bullist numlist | link | code',
             branding: false,

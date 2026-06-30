@@ -235,7 +235,7 @@
             <div class="flex gap-3">
                 <button type="submit" name="redirect_to" value="design" class="btn-ghost border border-slate-200 flex items-center gap-1.5">
                     <span class="material-symbols-outlined text-[16px]">palette</span>
-                    Lưu & Thiết kế
+                    Lưu & Chọn Mẫu
                 </button>
                 <button type="submit" name="redirect_to" value="index" class="btn-primary flex items-center gap-2">
                     <span class="material-symbols-outlined text-[18px]">check</span>

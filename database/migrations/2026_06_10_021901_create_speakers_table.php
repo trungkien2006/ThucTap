@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('title')->nullable();
             $table->string('photo_url')->nullable();
+            $table->string('type')->default('guest');
+            $table->boolean('is_hidden')->default(false);
             $table->text('bio')->nullable();
         });
     }

@@ -26,11 +26,18 @@ return new class extends Migration
             $table->boolean('registration_open')->default(true);
             $table->integer('max_attendees')->nullable();
             $table->integer('views_count')->default(0);
+            $table->integer('likes_count')->default(0);
             $table->boolean('is_published')->default(false);
+            $table->string('status')->default('draft');
             $table->string('page_template')->nullable();
             $table->string('qr_code_path')->nullable();
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
+
+            $table->index('is_published');
+            $table->index('event_date');
+            $table->index('views_count');
+            $table->index('likes_count');
         });
     }
 

@@ -393,49 +393,66 @@
                 <!-- Actual Content -->
                 <div x-show="loaded" style="display: none;" x-transition:enter="transition-opacity ease-out duration-500" class="grid grid-cols-1 gap-6 sm:grid-cols-2">
                 @foreach($featuredEvents as $i => $ev)
-                <article data-aos="fade-up" data-aos-delay="{{ $i * 60 }}"
-                         x-data="{ animClass: '' }"
-                         @mouseenter="animClass = 'hover-anim-' + (Math.floor(Math.random() * 3) + 1)"
-                         @mouseleave="animClass = ''"
-                         :class="animClass"
-                         class="group relative flex flex-col overflow-hidden rounded-2xl transition-all duration-500 hover:-translate-y-1"
-                         style="background:#FFF8D0; box-shadow:0 2px 16px rgba(255,227,129,0.4);"
-                         onmouseover="this.style.boxShadow='0 12px 40px rgba(7,160,195,0.18)'"
-                         onmouseout="this.style.boxShadow='0 2px 16px rgba(255,227,129,0.4)'">
-                    
-                    <!-- Color Sweep Layer -->
-                    <div class="sweep-bg"></div>
-
-                    <div class="relative z-10 h-48 w-full shrink-0 overflow-hidden">
-                        <a href="{{ route('events.show', $ev['slug'] ?? '#') }}" class="block h-full w-full">
-                            <img src="{{ $ev['img'] }}" alt="{{ $ev['title'] }}" loading="lazy"
-                                 class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                        </a>
-                        <!-- Bottom accent bar -->
-                        <div class="absolute bottom-0 left-0 right-0 h-1" style="background:#FFE381;"></div>
-                        <!-- Category badge -->
-                        <div class="absolute left-3 top-3">
-                            <span class="rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-[#1C1410] shadow-md"
-                                  style="background:#FFE381;">{{ $ev['category'] }}</span>
+                <div data-aos="fade-up" data-aos-delay="{{ ($i % 3) * 100 }}" class="group flex flex-col rounded-3xl bg-white shadow-sm border border-[#E8E2D5] overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+                    <!-- Image -->
+                    <div class="relative h-64 overflow-hidden bg-slate-100">
+                        <img src="{{ $ev['img'] }}" 
+                             alt="{{ $ev['title'] }}" 
+                             class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105">
+                        
+                        <!-- Hover Description Overlay -->
+                        <div class="absolute inset-0 p-6 flex flex-col justify-center backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none" style="background-color: rgba(0,0,0,0.4);">
+                            <p class="text-white text-sm leading-relaxed line-clamp-7 font-medium drop-shadow-md">
+                                {{ $ev['summary'] }}
+                            </p>
                         </div>
-                    </div>
-                    <div class="relative z-10 flex flex-1 flex-col justify-between p-5">
-                        <div>
-                            <h3 class="font-['Barlow_Condensed'] text-2xl font-black uppercase leading-tight tracking-wide text-[#1C1410] transition-colors group-hover:text-[#07A0C3]">
-                                <a href="{{ route('events.show', $ev['slug'] ?? '#') }}">
-                                    {{ $ev['title'] }}
-                                </a>
-                            </h3>
-                            <div class="mt-3 flex flex-col gap-1.5 text-sm text-[#7A6A52]">
-                                <div class="flex items-center gap-1.5 text-xs font-semibold">
-                                    <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
-                                    <span>{{ $ev['date'] }}</span>
-                                </div>
-                                <p class="line-clamp-3">{{ $ev['summary'] ?? '' }}</p>
+                        
+                        @if($ev['category'])
+                        <div class="absolute top-4 left-4">
+                            <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider backdrop-blur-md bg-white/90 text-[#1C1410] shadow-sm">
+                                {{ $ev['category'] }}
+                            </span>
+                        </div>
+                        @endif
+                        
+                        <!-- Date badge -->
+                        <div class="absolute bottom-4 right-4 text-center bg-white/95 backdrop-blur-sm rounded-2xl p-2 min-w-[70px] shadow-lg border border-white/50 group-hover:-translate-y-1 transition-transform">
+                            <div class="text-[#07A0C3] font-black text-2xl leading-none">
+                                {{ explode('.', $ev['date'])[0] }}
+                            </div>
+                            <div class="text-[#1C1410] font-bold text-[10px] uppercase tracking-wider mt-1">
+                                Tháng {{ explode('.', $ev['date'])[1] }}
                             </div>
                         </div>
                     </div>
-                </article>
+
+                    <!-- Content -->
+                    <div class="flex flex-1 flex-col p-6 lg:p-8">
+                        <h3 class="mb-3 font-['Barlow_Condensed'] text-2xl font-black uppercase leading-tight tracking-tight text-[#1C1410] group-hover:text-[#07A0C3] transition-colors line-clamp-2">
+                            <a href="{{ route('events.show', $ev['slug']) }}">
+                                <span class="absolute inset-0"></span>
+                                {{ $ev['title'] }}
+                            </a>
+                        </h3>
+                        
+                        <!-- Footer / Metrics -->
+                        <div class="mt-auto flex items-center justify-between border-t border-[#E8E2D5]/50 pt-4">
+                            <div class="flex items-center gap-4 text-xs font-semibold text-[#7A6A52]">
+                                <div class="flex items-center gap-1.5" title="Lượt xem">
+                                    <i data-lucide="eye" class="h-4 w-4 text-[#07A0C3]"></i>
+                                    <span>{{ $ev['views_count'] ?? 0 }}</span>
+                                </div>
+                                <div class="flex items-center gap-1.5" title="Lượt thích">
+                                    <i data-lucide="heart" class="h-4 w-4 text-rose-500"></i>
+                                    <span>{{ $ev['likes_count'] ?? 0 }}</span>
+                                </div>
+                            </div>
+                            <span class="inline-flex items-center gap-1 text-sm font-bold text-[#1C1410] group-hover:text-[#07A0C3] transition-colors">
+                                Chi tiết <i data-lucide="arrow-right" class="h-4 w-4"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
                 @endforeach
                 </div>
             </div>

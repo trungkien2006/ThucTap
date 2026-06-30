@@ -86,6 +86,8 @@ class FrontendController extends Controller
                     'summary'  => Str::limit(strip_tags($event->description), 100),
                     'category' => $event->category ? $event->category->name : 'Sự kiện',
                     'img'      => $event->bannerImage ? \App\Helpers\FileHelper::url($event->bannerImage->url) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80',
+                    'views_count' => $event->views_count,
+                    'likes_count' => $event->likes_count,
                 ];
             })->toArray();
 

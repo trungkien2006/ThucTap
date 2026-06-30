@@ -162,6 +162,13 @@
                          alt="{{ $event->title }}" 
                          class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105">
                     
+                    <!-- Hover Description Overlay -->
+                    <div class="absolute inset-0 p-6 flex flex-col justify-center backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none" style="background-color: rgba(0,0,0,0.4);">
+                        <p class="text-white text-sm leading-relaxed line-clamp-7 font-medium drop-shadow-md">
+                            {{ Str::limit(strip_tags($event->description), 240) }}
+                        </p>
+                    </div>
+                    
                     @if($event->category)
                     <div class="absolute top-4 left-4">
                         <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider backdrop-blur-md bg-white/90 text-[#1C1410] shadow-sm">
@@ -190,9 +197,7 @@
                         </a>
                     </h3>
                     
-                    <p class="mb-6 flex-1 text-sm text-[#7A6A52] leading-relaxed line-clamp-3">
-                        {{ Str::limit(strip_tags($event->description), 150) }}
-                    </p>
+                    <!-- Description moved to image hover overlay -->
                     
                     <!-- Footer / Metrics -->
                     <div class="mt-auto flex items-center justify-between border-t border-[#E8E2D5]/50 pt-4">

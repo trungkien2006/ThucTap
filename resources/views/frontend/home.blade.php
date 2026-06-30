@@ -373,7 +373,7 @@
                     </div>
                     <h2 class="font-['Barlow_Condensed'] text-5xl font-black uppercase tracking-tight text-[#1C1410] lg:text-6xl">Sự kiện nổi bật</h2>
                 </div>
-                <a href="#" class="hidden items-center gap-2 text-sm font-semibold lg:inline-flex transition-colors"
+                <a href="{{ route('events.index') }}" class="hidden items-center gap-2 text-sm font-semibold lg:inline-flex transition-colors"
                    style="color:#07A0C3;" onmouseover="this.style.color='#04F06A'" onmouseout="this.style.color='#07A0C3'">
                     Xem tất cả <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
                 </a>

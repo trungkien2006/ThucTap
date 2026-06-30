@@ -194,15 +194,7 @@ class EventController extends Controller
             'speaker_id' => 'nullable|exists:speakers,id',
             'schedule_text' => 'nullable|string',
             
-            // New Styling Fields for Event Info
-            'title_font_size' => 'nullable|string',
-            'title_color' => 'nullable|string',
-            'title_outline_color' => 'nullable|string',
-            'title_outline_width' => 'nullable|string',
-            'title_font_family' => 'nullable|string',
-            'desc_font_size' => 'nullable|string',
-            'desc_color' => 'nullable|string',
-            'desc_font_family' => 'nullable|string',
+
             
             'sub_banner_path' => 'nullable|string',
             
@@ -231,15 +223,7 @@ class EventController extends Controller
         if ($request->has('academic_year')) $event->academic_year = $request->academic_year;
         if ($request->has('department_id')) $event->department_id = $request->department_id;
 
-        // Save new styling fields
-        if ($request->has('title_font_size')) $event->title_font_size = $request->title_font_size;
-        if ($request->has('title_color')) $event->title_color = $request->title_color;
-        if ($request->has('title_outline_color')) $event->title_outline_color = $request->title_outline_color;
-        if ($request->has('title_outline_width')) $event->title_outline_width = $request->title_outline_width;
-        if ($request->has('title_font_family')) $event->title_font_family = $request->title_font_family;
-        if ($request->has('desc_font_size')) $event->desc_font_size = $request->desc_font_size;
-        if ($request->has('desc_color')) $event->desc_color = $request->desc_color;
-        if ($request->has('desc_font_family')) $event->desc_font_family = $request->desc_font_family;
+
         if ($request->has('event_template')) $event->page_template = $request->event_template;
 
         $event->save();

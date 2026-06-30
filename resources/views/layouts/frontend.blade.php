@@ -59,7 +59,7 @@
                 </a>
                 
                 <div class="relative" @mouseenter="megaMenuOpen = true" @mouseleave="megaMenuOpen = false">
-                    <a href="{{ route('home') }}#events" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-sm font-semibold transition-colors {{ !$isHome ? 'text-[#7A6A52] hover:text-[#1C1410]' : '' }}"
+                    <a href="{{ route('events.index') }}" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-sm font-semibold transition-colors {{ request()->routeIs('events.index') ? 'text-[#07A0C3]' : (!$isHome ? 'text-[#7A6A52] hover:text-[#1C1410]' : '') }}"
                        {!! $isHome ? ":class=\"scrolled ? 'text-[#7A6A52] hover:text-[#1C1410]' : 'text-white/80 hover:text-white'\"" : "" !!}>
                         Sự kiện
                         <span class="ml-0.5 inline-block h-2 w-2 rounded-full" style="background:#07A0C3;"></span>
@@ -102,7 +102,7 @@
                                 @endphp
                                 @if(isset($navCategories))
                                     @foreach($navCategories as $c)
-                                    <a href="{{ isset($c['slug']) ? route('events.category', $c['slug']) : '#' }}" class="group flex items-start justify-between rounded-xl px-4 py-3 transition-colors"
+                                    <a href="{{ isset($c['slug']) ? route('events.index', ['category' => $c['slug']]) : '#' }}" class="group flex items-start justify-between rounded-xl px-4 py-3 transition-colors"
                                        style="" onmouseover="this.style.background='rgba(255,227,129,0.3)'" onmouseout="this.style.background=''">
                                         <div>
                                             <div class="text-sm font-semibold text-[#1C1410]">{{ $c['en_name'] }}</div>
@@ -113,10 +113,10 @@
                                     @endforeach
                                 @endif
                             </div>
-                            <div class="mt-2 flex items-center justify-between rounded-xl px-4 py-3 text-[#1C1410] font-semibold" style="background:#FFE381;">
+                            <a href="{{ route('events.index') }}" class="mt-2 flex items-center justify-between rounded-xl px-4 py-3 text-[#1C1410] font-semibold transition-colors hover:bg-[#FFE381]/80" style="background:#FFE381;">
                                 <span class="text-sm">Xem tất cả danh mục sự kiện</span>
                                 <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
-                            </div>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -132,7 +132,7 @@
             </nav>
 
             <div class="hidden lg:block">
-                <a href="{{ route('home') }}#events"
+                <a href="{{ route('events.index') }}"
                    class="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold text-[#1C1410] shadow-md transition-all hover:shadow-lg hover:scale-105"
                    style="background: #FFE381; border: 1px solid rgba(232,200,74,0.6);">
                     Khám phá ngay
@@ -188,7 +188,7 @@
                         <div x-show="expanded" class="grid grid-cols-1 gap-2 pt-2 pb-2 pl-4">
                             @if(isset($categories))
                                 @foreach($categories as $c)
-                                <a href="{{ isset($c['slug']) ? route('events.category', $c['slug']) : '#' }}" class="py-2 text-[#7A6A52] hover:text-[#07A0C3] font-medium" @click="mobileOpen = false">{{ $c['name'] }}</a>
+                                <a href="{{ isset($c['slug']) ? route('events.index', ['category' => $c['slug']]) : '#' }}" class="py-2 text-[#7A6A52] hover:text-[#07A0C3] font-medium" @click="mobileOpen = false">{{ $c['name'] }}</a>
                                 @endforeach
                             @endif
                         </div>
@@ -205,7 +205,7 @@
                 </nav>
 
                 <div class="mt-auto pt-6">
-                    <a href="{{ route('home') }}#events" @click="mobileOpen = false" class="flex w-full items-center justify-center gap-2 rounded-xl py-4 text-center text-lg font-bold text-[#1C1410] shadow-md transition-transform active:scale-95" style="background: #FFE381;">
+                    <a href="{{ route('events.index') }}" @click="mobileOpen = false" class="flex w-full items-center justify-center gap-2 rounded-xl py-4 text-center text-lg font-bold text-[#1C1410] shadow-md transition-transform active:scale-95" style="background: #FFE381;">
                         Khám phá ngay
                         <i data-lucide="arrow-right" class="h-5 w-5"></i>
                     </a>
@@ -250,7 +250,7 @@
                 <div>
                     <h4 class="text-white font-bold mb-6 text-lg tracking-wide uppercase font-['Barlow']">Khám Phá</h4>
                     <ul class="space-y-4">
-                        <li><a href="{{ route('home') }}#events" class="text-white/60 hover:text-[#E8C84A] text-sm transition-colors flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4"></i> Sự kiện nổi bật</a></li>
+                        <li><a href="{{ route('events.index') }}" class="text-white/60 hover:text-[#E8C84A] text-sm transition-colors flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4"></i> Sự kiện tổng hợp</a></li>
                         <li><a href="{{ route('archive') }}" class="text-white/60 hover:text-[#E8C84A] text-sm transition-colors flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4"></i> Kho lưu trữ</a></li>
                         <li><a href="#" class="text-white/60 hover:text-[#E8C84A] text-sm transition-colors flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4"></i> Hướng dẫn tham gia</a></li>
                         <li><a href="#" class="text-white/60 hover:text-[#E8C84A] text-sm transition-colors flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4"></i> Câu hỏi thường gặp</a></li>
@@ -263,7 +263,7 @@
                     <ul class="space-y-4">
                         @if(isset($categories) && count($categories) > 0)
                             @foreach(array_slice($categories, 0, 4) as $c)
-                            <li><a href="{{ isset($c['slug']) ? route('events.category', $c['slug']) : '#' }}" class="text-white/60 hover:text-[#E8C84A] text-sm transition-colors flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4"></i> {{ $c['name'] }}</a></li>
+                            <li><a href="{{ isset($c['slug']) ? route('events.index', ['category' => $c['slug']]) : '#' }}" class="text-white/60 hover:text-[#E8C84A] text-sm transition-colors flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4"></i> {{ $c['name'] }}</a></li>
                             @endforeach
                         @else
                             <li><a href="#" class="text-white/60 hover:text-[#E8C84A] text-sm transition-colors flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4"></i> Workshop</a></li>

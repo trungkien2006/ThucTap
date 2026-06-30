@@ -242,11 +242,59 @@ class FrontendController extends Controller
         return view('frontend.home', compact('categories', 'featuredEvents', 'upcoming', 'archive', 'media', 'stats', 'slides'));
     }
 
-    public function category($slug)
+    public function events(Request $request)
     {
-        $category = \App\Models\Category::where('slug', $slug)->firstOrFail();
+        $selectedCategory = $request->input('category');
+        $searchQuery = $request->input('search');
+        $selectedYear = $request->input('year');
+        $selectedMonth = $request->input('month');
+        $selectedStatus = $request->input('status');
 
-        // Get categories for navigation menu
+        $query = Event::with(['bannerImage', 'category'])
+            ->published()
+            ->orderBy('event_date', 'desc');
+
+        if ($selectedCategory) {
+            $query->whereHas('category', function($q) use ($selectedCategory) {
+                $q->where('slug', $selectedCategory);
+            });
+        }
+
+        if ($searchQuery) {
+            $query->where(function($q) use ($searchQuery) {
+                $q->where('title', 'like', '%' . $searchQuery . '%')
+                  ->orWhere('description', 'like', '%' . $searchQuery . '%')
+                  ->orWhere('location', 'like', '%' . $searchQuery . '%');
+            });
+        }
+
+        if ($selectedYear) {
+            $query->whereYear('event_date', $selectedYear);
+        }
+
+        if ($selectedMonth) {
+            $query->whereMonth('event_date', $selectedMonth);
+        }
+
+        if ($selectedStatus) {
+            if ($selectedStatus === 'upcoming') {
+                $query->where('event_date', '>=', now());
+            } elseif ($selectedStatus === 'completed') {
+                $query->where('event_date', '<', now());
+            }
+        }
+
+        $events = $query->paginate(16);
+
+        // Get unique years for filter
+        $availableYears = Event::published()
+            ->selectRaw('YEAR(event_date) as year')
+            ->distinct()
+            ->orderBy('year', 'desc')
+            ->pluck('year')
+            ->toArray();
+
+        // Get categories for navigation menu / filter
         $dbCategories = \App\Models\Category::where('type', 'event_type')
             ->whereNotIn('name', ['Other', 'Khác'])
             ->get();
@@ -266,56 +314,10 @@ class FrontendController extends Controller
             ];
         })->toArray();
 
-        // Newest event for the top section
-        $newestEvent = Event::with(['bannerImage'])
-            ->where('category_id', $category->id)
-            ->published()
-            ->orderBy('created_at', 'desc')
-            ->first();
-
-        // Other new events (excluding the newest one)
-        $query = Event::with(['bannerImage'])
-            ->where('category_id', $category->id)
-            ->published()
-            ->orderBy('created_at', 'desc');
-
-        if ($newestEvent) {
-            $query->where('id', '!=', $newestEvent->id);
-        }
-        $otherEvents = $query->paginate(10);
-
-        // Featured events for this category
-        $featuredEvents = Event::with(['bannerImage'])
-            ->where('category_id', $category->id)
-            ->published()
-            ->orderByRaw('views_count + likes_count DESC')
-            ->take(5)
-            ->get();
-
-        // Media for this category
-        $dbMedia = \App\Models\EventMedia::with('event')
-            ->whereHas('event', function($q) use ($category) {
-                $q->published()->where('category_id', $category->id);
-            })
-            ->whereIn('type', ['image', 'video'])
-            ->where('is_banner', false)
-            ->orderByRaw('(CASE WHEN caption IS NOT NULL AND caption != "" THEN 1 ELSE 0 END) DESC')
-            ->latest()
-            ->take(8)
-            ->get();
-
-        $media = $dbMedia->map(function ($m) {
-            return [
-                'id' => $m->id,
-                'src' => \App\Helpers\FileHelper::url($m->url),
-                'type' => $m->type,
-                'title' => $m->caption ?: ($m->event ? $m->event->title : 'Sự kiện'),
-                'event_name' => $m->event ? $m->event->title : '',
-                'event_url' => $m->event ? route('events.show', $m->event->slug) : '#',
-            ];
-        })->toArray();
-
-        return view('frontend.category', compact('category', 'categories', 'newestEvent', 'otherEvents', 'featuredEvents', 'media'));
+        return view('frontend.events', compact(
+            'events', 'categories', 'selectedCategory', 'searchQuery',
+            'availableYears', 'selectedYear', 'selectedMonth', 'selectedStatus'
+        ));
     }
 
     public function archive(Request $request)

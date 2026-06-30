@@ -122,96 +122,10 @@
                             <label class="uni-label">Tiêu đề sự kiện</label>
                             <input type="text" id="inTieuDe" value="{{ $event->title }}" oninput="syncData()" class="uni-input"/>
                         </div>
-                        
-
-
-                        <!-- Cấu hình chữ Tiêu đề -->
-                        <div class="grid grid-cols-2 gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-200/60">
-                            <div class="col-span-2 text-[11px] font-bold text-slate-500 uppercase tracking-wider">Định dạng chữ Tiêu đề</div>
-                            <div class="col-span-2">
-                                <label class="uni-label text-[10px] text-slate-400">Kiểu Font chữ</label>
-                                <select id="inTieuDeFontFamily" onchange="syncData()" class="uni-input py-1 text-[12px]">
-                                    <option value="Inter" {{ ($event->title_font_family ?? 'Inter') == 'Inter' ? 'selected' : '' }}>Inter (Không chân, Hiện đại)</option>
-                                    <option value="Be Vietnam Pro" {{ ($event->title_font_family ?? 'Inter') == 'Be Vietnam Pro' ? 'selected' : '' }}>Be Vietnam Pro (Mặc định)</option>
-                                    <option value="Montserrat" {{ ($event->title_font_family ?? 'Inter') == 'Montserrat' ? 'selected' : '' }}>Montserrat (Tròn trịa, Trẻ trung)</option>
-                                    <option value="Playfair Display" {{ ($event->title_font_family ?? 'Inter') == 'Playfair Display' ? 'selected' : '' }}>Playfair Display (Có chân, Sang trọng)</option>
-                                    <option value="Rowdies" {{ ($event->title_font_family ?? 'Inter') == 'Rowdies' ? 'selected' : '' }}>Rowdies (Đậm đà, Cá tính)</option>
-                                    <option value="Pacifico" {{ ($event->title_font_family ?? 'Inter') == 'Pacifico' ? 'selected' : '' }}>Pacifico (Nghệ thuật, Viết tay)</option>
-                                    <option value="Charm" {{ ($event->title_font_family ?? 'Inter') == 'Charm' ? 'selected' : '' }}>Charm (Mềm mại, Bay bướm)</option>
-                                    <option value="Arial" {{ ($event->title_font_family ?? 'Inter') == 'Arial' ? 'selected' : '' }}>Arial (Phổ biến)</option>
-                                    <option value="Times New Roman" {{ ($event->title_font_family ?? 'Inter') == 'Times New Roman' ? 'selected' : '' }}>Times New Roman (Cổ điển)</option>
-                                    <option value="Courier New" {{ ($event->title_font_family ?? 'Inter') == 'Courier New' ? 'selected' : '' }}>Courier New (Máy đánh chữ)</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="uni-label text-[10px] text-slate-400">Cỡ chữ</label>
-                                <select id="inTieuDeSize" onchange="syncData()" class="uni-input py-1 text-[12px]">
-                                    @for($size = 16; $size <= 72; $size += 2)
-                                        <option value="{{ $size }}" {{ ($event->title_font_size ?? '36') == $size ? 'selected' : '' }}>{{ $size }}px</option>
-                                    @endfor
-                                </select>
-                            </div>
-                            <div>
-                                <label class="uni-label text-[10px] text-slate-400">Màu chữ</label>
-                                <div class="flex items-center gap-1">
-                                    <input type="color" id="inTieuDeColor" value="{{ $event->title_color ?? '#ffffff' }}" oninput="document.getElementById('inTieuDeColorText').value = this.value; syncData()" class="w-8 h-8 rounded border border-slate-200 cursor-pointer p-0 bg-transparent shrink-0"/>
-                                    <input type="text" id="inTieuDeColorText" value="{{ $event->title_color ?? '#ffffff' }}" oninput="document.getElementById('inTieuDeColor').value = this.value; syncData()" class="uni-input py-1 px-1.5 text-[11px] font-mono w-full min-w-0"/>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="uni-label text-[10px] text-slate-400">Viền chữ</label>
-                                <select id="inTieuDeOutlineWidth" onchange="syncData()" class="uni-input py-1 text-[12px]">
-                                    <option value="0" {{ ($event->title_outline_width ?? '0') == '0' ? 'selected' : '' }}>Không viền</option>
-                                    <option value="1" {{ ($event->title_outline_width ?? '0') == '1' ? 'selected' : '' }}>1px</option>
-                                    <option value="2" {{ ($event->title_outline_width ?? '0') == '2' ? 'selected' : '' }}>2px</option>
-                                    <option value="3" {{ ($event->title_outline_width ?? '0') == '3' ? 'selected' : '' }}>3px</option>
-                                    <option value="4" {{ ($event->title_outline_width ?? '0') == '4' ? 'selected' : '' }}>4px</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="uni-label text-[10px] text-slate-400">Màu viền</label>
-                                <div class="flex items-center gap-1">
-                                    <input type="color" id="inTieuDeOutlineColor" value="{{ $event->title_outline_color ?? '#000000' }}" oninput="document.getElementById('inTieuDeOutlineColorText').value = this.value; syncData()" class="w-8 h-8 rounded border border-slate-200 cursor-pointer p-0 bg-transparent shrink-0"/>
-                                    <input type="text" id="inTieuDeOutlineColorText" value="{{ $event->title_outline_color ?? '#000000' }}" oninput="document.getElementById('inTieuDeOutlineColor').value = this.value; syncData()" class="uni-input py-1 px-1.5 text-[11px] font-mono w-full min-w-0"/>
-                                </div>
-                            </div>
-                        </div>
 
                         <div>
                             <label class="uni-label">Mô tả tóm tắt</label>
                             <textarea id="inMoTa" rows="2" oninput="syncData()" class="uni-input">{{ $event->description }}</textarea>
-                        </div>
-
-                        <!-- Cấu hình chữ Mô tả -->
-                        <div class="grid grid-cols-2 gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-200/60">
-                            <div class="col-span-2 text-[11px] font-bold text-slate-500 uppercase tracking-wider">Định dạng chữ Mô tả</div>
-                            <div class="col-span-2">
-                                <label class="uni-label text-[10px] text-slate-400">Kiểu Font chữ</label>
-                                <select id="inMoTaFontFamily" onchange="syncData()" class="uni-input py-1 text-[12px]">
-                                    <option value="Inter" {{ ($event->desc_font_family ?? 'Inter') == 'Inter' ? 'selected' : '' }}>Inter (Không chân, Hiện đại)</option>
-                                    <option value="Be Vietnam Pro" {{ ($event->desc_font_family ?? 'Inter') == 'Be Vietnam Pro' ? 'selected' : '' }}>Be Vietnam Pro (Mặc định)</option>
-                                    <option value="Montserrat" {{ ($event->desc_font_family ?? 'Inter') == 'Montserrat' ? 'selected' : '' }}>Montserrat (Tròn trịa, Trẻ trung)</option>
-                                    <option value="Playfair Display" {{ ($event->desc_font_family ?? 'Inter') == 'Playfair Display' ? 'selected' : '' }}>Playfair Display (Có chân, Sang trọng)</option>
-                                    <option value="Arial" {{ ($event->desc_font_family ?? 'Inter') == 'Arial' ? 'selected' : '' }}>Arial (Phổ biến)</option>
-                                    <option value="Times New Roman" {{ ($event->desc_font_family ?? 'Inter') == 'Times New Roman' ? 'selected' : '' }}>Times New Roman (Cổ điển)</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="uni-label text-[10px] text-slate-400">Cỡ chữ</label>
-                                <select id="inMoTaSize" onchange="syncData()" class="uni-input py-1 text-[12px]">
-                                    @for($size = 12; $size <= 32; $size += 1)
-                                        <option value="{{ $size }}" {{ ($event->desc_font_size ?? '14') == $size ? 'selected' : '' }}>{{ $size }}px</option>
-                                    @endfor
-                                </select>
-                            </div>
-                            <div>
-                                <label class="uni-label text-[10px] text-slate-400">Màu chữ</label>
-                                <div class="flex items-center gap-1">
-                                    <input type="color" id="inMoTaColor" value="{{ $event->desc_color ?? '#475569' }}" oninput="document.getElementById('inMoTaColorText').value = this.value; syncData()" class="w-8 h-8 rounded border border-slate-200 cursor-pointer p-0 bg-transparent shrink-0"/>
-                                    <input type="text" id="inMoTaColorText" value="{{ $event->desc_color ?? '#475569' }}" oninput="document.getElementById('inMoTaColor').value = this.value; syncData()" class="uni-input py-1 px-1.5 text-[11px] font-mono w-full min-w-0"/>
-                                </div>
-                            </div>
-                        </div>
                         </div>
                     </div>
 
@@ -1073,36 +987,8 @@
                 }
             }
 
-            // Apply Tiêu đề style
-            const titleSize = document.getElementById('inTieuDeSize').value;
-            const titleColor = document.getElementById('inTieuDeColor').value;
-            const titleOutlineWidth = document.getElementById('inTieuDeOutlineWidth').value;
-            const titleOutlineColor = document.getElementById('inTieuDeOutlineColor').value;
-            const titleFontFamily = document.getElementById('inTieuDeFontFamily').value;
-
-            titleEl.style.fontSize = titleSize + 'px';
-            titleEl.style.color = titleColor;
-            titleEl.style.fontFamily = `'${titleFontFamily}', sans-serif`;
-            if (titleOutlineWidth && titleOutlineWidth !== '0') {
-                titleEl.style.webkitTextStrokeWidth = titleOutlineWidth + 'px';
-                titleEl.style.webkitTextStrokeColor = titleOutlineColor;
-                titleEl.style.textShadow = `0px 2px 4px rgba(0,0,0,0.5)`;
-            } else {
-                titleEl.style.webkitTextStrokeWidth = '0px';
-                titleEl.style.textShadow = 'none';
-            }
-
             const descEl = document.getElementById('viewMoTa');
             descEl.innerText = document.getElementById('inMoTa').value;
-
-            // Apply Mô tả style
-            const descSize = document.getElementById('inMoTaSize').value;
-            const descColor = document.getElementById('inMoTaColor').value;
-            const descFontFamily = document.getElementById('inMoTaFontFamily').value;
-
-            descEl.style.fontSize = descSize + 'px';
-            descEl.style.color = descColor;
-            descEl.style.fontFamily = `'${descFontFamily}', sans-serif`;
 
             document.getElementById('viewLichHoatDong').innerText = document.getElementById('inLichHoatDong').value;
             
@@ -1214,15 +1100,6 @@
                 speaker_id: document.getElementById('inTenDienGia').value,
                 schedule_text: document.getElementById('inLichHoatDong').value,
                 
-                // Styles
-                title_font_size: document.getElementById('inTieuDeSize').value,
-                title_color: document.getElementById('inTieuDeColor').value,
-                title_outline_color: document.getElementById('inTieuDeOutlineColor').value,
-                title_outline_width: document.getElementById('inTieuDeOutlineWidth').value,
-                title_font_family: document.getElementById('inTieuDeFontFamily').value,
-                desc_font_size: document.getElementById('inMoTaSize').value,
-                desc_color: document.getElementById('inMoTaColor').value,
-                desc_font_family: document.getElementById('inMoTaFontFamily').value,
                 event_template: document.getElementById('inEventTemplate').value,
                 
                 sub_banner_path: document.getElementById('inSubBannerPath') ? document.getElementById('inSubBannerPath').value : '',

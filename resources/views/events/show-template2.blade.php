@@ -195,14 +195,73 @@
                 <div class="gw-info-value">{{ $event->category->name }}</div>
             </div>
             @endif
-            @if($event->event_date > now())
+            @php
+                $isArchived = ($event->status === 'archived') || ($event->event_date <= now());
+            @endphp
+
+            @if(!$isArchived)
+            {{-- COUNTDOWN TIMER --}}
             <div style="margin-top:36px;">
-                <a href="#gw-reactions" class="gw-btn">Tham gia ngay</a>
+                <div style="font-size:0.78rem;letter-spacing:0.25em;text-transform:uppercase;color:#6e7a6a;margin-bottom:14px;font-family:'DM Sans',sans-serif;">
+                    Sự kiện bắt đầu sau
+                </div>
+                <div id="gw-countdown" style="display:flex;gap:12px;justify-content:center;align-items:flex-end;" data-target="{{ $event->event_date->toIso8601String() }}">
+                    <div style="text-align:center;">
+                        <div id="gw-cd-days" style="font-family:'Cormorant Garamond',serif;font-size:3rem;font-weight:600;color:#3d4438;line-height:1;">00</div>
+                        <div style="font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:#9aa09a;margin-top:4px;">Ngày</div>
+                    </div>
+                    <div style="font-family:'Cormorant Garamond',serif;font-size:2.4rem;color:#5d7a5c;line-height:1;padding-bottom:0.3rem;">:</div>
+                    <div style="text-align:center;">
+                        <div id="gw-cd-hours" style="font-family:'Cormorant Garamond',serif;font-size:3rem;font-weight:600;color:#3d4438;line-height:1;">00</div>
+                        <div style="font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:#9aa09a;margin-top:4px;">Giờ</div>
+                    </div>
+                    <div style="font-family:'Cormorant Garamond',serif;font-size:2.4rem;color:#5d7a5c;line-height:1;padding-bottom:0.3rem;">:</div>
+                    <div style="text-align:center;">
+                        <div id="gw-cd-mins" style="font-family:'Cormorant Garamond',serif;font-size:3rem;font-weight:600;color:#3d4438;line-height:1;">00</div>
+                        <div style="font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:#9aa09a;margin-top:4px;">Phút</div>
+                    </div>
+                    <div style="font-family:'Cormorant Garamond',serif;font-size:2.4rem;color:#5d7a5c;line-height:1;padding-bottom:0.3rem;">:</div>
+                    <div style="text-align:center;">
+                        <div id="gw-cd-secs" style="font-family:'Cormorant Garamond',serif;font-size:3rem;font-weight:600;color:#5d7a5c;line-height:1;">00</div>
+                        <div style="font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:#9aa09a;margin-top:4px;">Giây</div>
+                    </div>
+                </div>
+                <script>
+                (function(){
+                    var target = new Date(document.getElementById('gw-countdown').dataset.target).getTime();
+                    function pad(n){ return n < 10 ? '0'+n : n; }
+                    function tick(){
+                        var now = Date.now();
+                        var diff = target - now;
+                        if(diff <= 0){
+                            document.getElementById('gw-cd-days').textContent = '00';
+                            document.getElementById('gw-cd-hours').textContent = '00';
+                            document.getElementById('gw-cd-mins').textContent = '00';
+                            document.getElementById('gw-cd-secs').textContent = '00';
+                            return;
+                        }
+                        var d = Math.floor(diff / 86400000);
+                        var h = Math.floor((diff % 86400000) / 3600000);
+                        var m = Math.floor((diff % 3600000) / 60000);
+                        var s = Math.floor((diff % 60000) / 1000);
+                        document.getElementById('gw-cd-days').textContent = pad(d);
+                        document.getElementById('gw-cd-hours').textContent = pad(h);
+                        document.getElementById('gw-cd-mins').textContent = pad(m);
+                        document.getElementById('gw-cd-secs').textContent = pad(s);
+                    }
+                    tick();
+                    setInterval(tick, 1000);
+                })();
+                </script>
             </div>
-            @endif
-            @if(!($event->event_date > now()))
-            <div style="margin-top:36px;">
-                <span style="font-size:1.07rem;color:#9aa09a;letter-spacing:0.1em;text-transform:uppercase;">Sự kiện đã kết thúc</span>
+            @else
+            {{-- ARCHIVED / ENDED --}}
+            <div style="margin-top:36px;display:flex;flex-direction:column;align-items:center;gap:10px;">
+                <div style="display:inline-flex;align-items:center;gap:8px;padding:10px 24px;background:#f0f0ee;border:1px solid #c8ccc6;border-radius:2px;">
+                    <svg style="width:16px;height:16px;flex-shrink:0;" fill="none" stroke="#9aa09a" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+                    <span style="font-size:0.88rem;color:#9aa09a;letter-spacing:0.15em;text-transform:uppercase;font-family:'DM Sans',sans-serif;">Sự kiện đã kết thúc</span>
+                </div>
+                <span style="font-size:0.82rem;color:#b8bcb8;font-family:'DM Sans',sans-serif;">Kết thúc ngày {{ $event->event_date->format('d/m/Y') }}</span>
             </div>
             @endif
         </div>

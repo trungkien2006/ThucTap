@@ -135,7 +135,7 @@
                     @forelse($mostViewed as $i => $event)
                         <div class="flex items-center gap-3 most-viewed-item">
                             <span
-                                class="text-[11px] font-mono w-4 text-muted-foreground">{{ str_pad($i + 1, 2, '0', STR_PAD_LEFT) }}</span>
+                                class="text-[11px] font-mono w-4 text-muted-foreground">{{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}</span>
                             <div class="flex-1 min-w-0">
                                 <div class="text-xs font-medium truncate">{{ $event->title }}</div>
                                 <div class="h-1 mt-1 bg-muted rounded-full overflow-hidden">

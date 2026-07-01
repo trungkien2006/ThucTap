@@ -23,7 +23,7 @@ Route::get('/dashboard', function () {
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     // Dashboard
     Route::get('/', function () {
-        $stats = \Illuminate\Support\Facades\Cache::remember('admin_dashboard_stats', 300, function () {
+        $stats = \Illuminate\Support\Facades\Cache::remember('admin_dashboard_stats_v2', 300, function () {
             $totalViews = \App\Models\Event::sum('views_count') ?? 0;
             $totalLikes = \App\Models\Event::sum('likes_count') ?? 0;
             $totalEvents = \App\Models\Event::count();

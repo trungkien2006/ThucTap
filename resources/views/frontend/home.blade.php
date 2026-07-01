@@ -2,10 +2,10 @@
 
 @section('content')
 
-{{-- ════════════════════════════════════════
+{{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
      HERO SLIDER
      Overlay ấm — jasmine tint thay vì lạnh xanh
-════════════════════════════════════════════ --}}
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
 <section id="top" class="relative h-[100svh] w-full overflow-hidden" style="background:#1C1410;">
 
     
@@ -200,7 +200,7 @@
             const newCards = Array.from(cardTrack.children);
             newCards.forEach(c => {
                 if (parseInt(c.dataset.index) === nextSlideIdx) {
-                    return; // Bỏ qua animation bay từ trái qua phải cho thẻ vừa click
+                    return; // Bá» qua animation bay từ trái qua phải cho thẻ vừa click
                 }
 
                 const firstRect = firstRects.get(c.dataset.index);
@@ -316,305 +316,243 @@
     </script>
 </section>
 
-{{-- ════════════════════════════════════════
-     STATS — Nền Jasmine đậm, accent xanh
-     Cầu nối từ slider tối → body ấm
-════════════════════════════════════════════ --}}
-<section class="relative overflow-hidden" style="background:#FFE381;">
-    <div class="pointer-events-none absolute inset-0">
-        <div class="absolute right-0 top-0 h-64 w-64 rounded-full opacity-20 blur-3xl" style="background:#07A0C3;"></div>
-        <div class="absolute left-0 bottom-0 h-48 w-48 rounded-full opacity-15 blur-2xl" style="background:#04F06A;"></div>
-    </div>
-    <div class="relative mx-auto grid max-w-[1400px] grid-cols-2 lg:grid-cols-4">
-        @foreach($stats as $i => $s)
-        <div data-aos="fade-up" data-aos-delay="{{ $i * 100 }}"
-             class="flex flex-col items-center justify-center py-16 {{ $i < 3 ? 'border-r border-black/10' : '' }}">
-            <div class="font-['Barlow_Condensed'] text-6xl font-black text-[#1C1410] lg:text-7xl">
-                <span x-data="{ count:0,target:{{ $s['value'] }},decimals:{{ $s['decimals'] }},started:false }"
-                      x-init="
-                        let observer = new IntersectionObserver(entries => {
-                            if (entries[0].isIntersecting && !started) {
-                                started = true;
-                                let step = target/60;
-                                let t = setInterval(() => {
-                                    count += step;
-                                    if (count >= target) { count = target; clearInterval(t); }
-                                }, 30);
-                                observer.disconnect();
-                            }
-                        });
-                        observer.observe($el);
-                      "
-                      x-text="decimals?count.toFixed(decimals):Math.round(count).toLocaleString()">0</span>{{ $s['suffix'] }}
-            </div>
-            <div class="mt-2 h-1 w-10 rounded-full" style="background:#07A0C3;"></div>
-            <div class="mt-2 text-xs font-bold uppercase tracking-[0.25em] text-[#1C1410]/60">{{ $s['label'] }}</div>
-        </div>
-        @endforeach
-    </div>
-</section>
+{{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+     FEATURED EVENTS + UPCOMING — Ná»n kem Jasmine nhạt
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
+    <div id="events-sticky-wrapper" class="-mt-8 lg:-mt-12 relative z-30" style="background: #FFFBEA;">
+        <section id="events" class="relative z-20"
+            style="position: -webkit-sticky; position: sticky; background:#FFFBEA; top: 70px;">
 
-{{-- ════════════════════════════════════════
-     FEATURED EVENTS + UPCOMING — Nền kem Jasmine nhạt
-════════════════════════════════════════════ --}}
-<section id="events" class="relative py-24 lg:py-32" style="background:#FFFBEA;">
-    <!-- Horizontal accent line top -->
-    <div class="absolute inset-x-0 top-0 h-0.5" style="background:#FFE381;"></div>
+            <div id="categories-section" class="relative z-[15] pt-2 pb-8 lg:pt-4 lg:pb-10" style="background:#FFFBEA;">
+                <div class="mx-auto w-full max-w-[1400px] px-6 lg:px-10">
 
-    <div class="mx-auto grid max-w-[1400px] grid-cols-1 gap-8 px-6 lg:grid-cols-[1fr_460px] lg:gap-10 lg:px-10 xl:grid-cols-[1fr_500px]">
-
-        {{-- ── Featured Events ── --}}
-        <div>
-            <div data-aos="fade-up" class="mb-10 flex items-end justify-between">
-                <div>
-                    <div class="flex items-center gap-3 mb-2">
-                        <div class="h-7 w-1 rounded-full" style="background:#07A0C3;"></div>
-                        <span class="text-xs font-bold uppercase tracking-[0.25em]" style="color:#07A0C3;">Featured Events</span>
+                <div class="mb-8 text-center event-category-title" style="opacity: 0;">
+                    <h2
+                        class="font-barlow-condensed text-4xl font-black uppercase tracking-tight text-[#1C1410] lg:text-5xl">
+                        Danh mục sự kiện
+                    </h2>
+                    <div class="mt-3 flex justify-center">
+                        <div class="h-1.5 w-12 rounded-full" style="background:#07A0C3;"></div>
                     </div>
-                    <h2 class="font-['Barlow_Condensed'] text-5xl font-black uppercase tracking-tight text-[#1C1410] lg:text-6xl">Sự kiện nổi bật</h2>
                 </div>
-                <a href="{{ route('events.index') }}" class="hidden items-center gap-2 text-sm font-semibold lg:inline-flex transition-colors"
-                   style="color:#07A0C3;" onmouseover="this.style.color='#04F06A'" onmouseout="this.style.color='#07A0C3'">
-                    Xem tất cả <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
-                </a>
-            </div>
 
-            <div x-data="{ loaded: false }" x-init="setTimeout(() => { loaded = true }, 500)">
-                <style>
-                    @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
-                    .skeleton-shimmer { background: linear-gradient(90deg, rgba(232,226,213,0.5) 25%, rgba(255,253,249,0.8) 50%, rgba(232,226,213,0.5) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
-                </style>
-                <!-- Skeleton Loading -->
-                <div x-show="!loaded" class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                    @for($k = 0; $k < count($featuredEvents); $k++)
-                    <div class="rounded-2xl h-[350px] w-full skeleton-shimmer"></div>
-                    @endfor
-                </div>
-                <!-- Actual Content -->
-                <div x-show="loaded" style="display: none;" x-transition:enter="transition-opacity ease-out duration-500" class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                @foreach($featuredEvents as $i => $ev)
-                <div data-aos="fade-up" data-aos-delay="{{ ($i % 3) * 100 }}" class="group flex flex-col rounded-3xl bg-white shadow-sm border border-[#E8E2D5] overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
-                    <!-- Image -->
-                    <div class="relative h-64 overflow-hidden bg-slate-100">
-                        <img src="{{ $ev['img'] }}" 
-                             alt="{{ $ev['title'] }}" 
-                             class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105">
-                        
-                        <!-- Hover Description Overlay -->
-                        <div class="absolute inset-0 p-6 flex flex-col justify-center backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none" style="background-color: rgba(0,0,0,0.4);">
-                            <p class="text-white text-sm leading-relaxed line-clamp-7 font-medium drop-shadow-md">
-                                {{ $ev['summary'] }}
-                            </p>
-                        </div>
-                        
-                        @if($ev['category'])
-                        <div class="absolute top-4 left-4">
-                            <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider backdrop-blur-md bg-white/90 text-[#1C1410] shadow-sm">
-                                {{ $ev['category'] }}
-                            </span>
-                        </div>
-                        @endif
-                        
-                        <!-- Date badge -->
-                        <div class="absolute bottom-4 right-4 text-center bg-white/95 backdrop-blur-sm rounded-2xl p-2 min-w-[70px] shadow-lg border border-white/50 group-hover:-translate-y-1 transition-transform">
-                            <div class="text-[#07A0C3] font-black text-2xl leading-none">
-                                {{ explode('.', $ev['date'])[0] }}
-                            </div>
-                            <div class="text-[#1C1410] font-bold text-[10px] uppercase tracking-wider mt-1">
-                                Tháng {{ explode('.', $ev['date'])[1] }}
-                            </div>
-                        </div>
-                    </div>
+                @php
+                    $totalCount = 0;
+                    foreach ($categories as $c)
+                        $totalCount += $c['event_count'] ?? 0;
 
-                    <!-- Content -->
-                    <div class="flex flex-1 flex-col p-6 lg:p-8">
-                        <h3 class="mb-3 font-['Barlow_Condensed'] text-2xl font-black uppercase leading-tight tracking-tight text-[#1C1410] group-hover:text-[#07A0C3] transition-colors line-clamp-2">
-                            <a href="{{ route('events.show', $ev['slug']) }}">
-                                <span class="absolute inset-0"></span>
-                                {{ $ev['title'] }}
-                            </a>
-                        </h3>
-                        
-                        <!-- Footer / Metrics -->
-                        <div class="mt-auto flex items-center justify-between border-t border-[#E8E2D5]/50 pt-4">
-                            <div class="flex items-center gap-4 text-xs font-semibold text-[#7A6A52]">
-                                <div class="flex items-center gap-1.5" title="Lượt xem">
-                                    <i data-lucide="eye" class="h-4 w-4 text-[#07A0C3]"></i>
-                                    <span>{{ $ev['views_count'] ?? 0 }}</span>
+                    $catIcons = [
+                        'Conference' => 'mic',
+                        'Workshop' => 'wrench',
+                        'Seminar' => 'presentation',
+                        'Cultural' => 'palette',
+                        'Sports' => 'medal',
+                        'Orientation' => 'compass',
+                        'Other' => 'more-horizontal'
+                    ];
+
+                    $catImages = [
+                        'Conference' => 'images/categories/conference.jpg',
+                        'Workshop' => 'images/categories/workshop.jpg',
+                        'Seminar' => 'images/categories/seminar.jpg',
+                        'Cultural' => 'images/categories/cultural.jpg',
+                        'Sports' => 'images/categories/sports.jpg',
+                        'Orientation' => 'images/categories/orientation.jpg',
+                    ];
+
+                    $gridItems = [];
+                    foreach ($categories as $cat) {
+                        $gridItems[] = [
+                            'name' => $cat['name'],
+                            'slug' => $cat['slug'],
+                            'count' => $cat['event_count'] ?? 0,
+                            'icon' => $catIcons[$cat['name']] ?? 'folder',
+                            'image' => $catImages[$cat['name']] ?? null
+                        ];
+                    }
+                @endphp
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 max-w-[1200px] mx-auto">
+                    @foreach($gridItems as $idx => $item)
+                        <a href="{{ $item['slug'] ? route('events.index', ['category' => $item['slug']]) : '#events' }}"
+                            style="aspect-ratio: 16/9; min-height: 160px; opacity: 0;"
+                            class="event-category-card group relative block w-full rounded-2xl overflow-hidden {{ $item['image'] ? 'bg-gray-900' : 'bg-gray-200' }} shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+
+                            @if($item['image'])
+                                <!-- Background Image -->
+                                <img src="{{ asset($item['image']) }}" alt="{{ $item['name'] }}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                            @else
+                                <div class="absolute inset-0 w-full h-full bg-gray-200 flex items-center justify-center">
+                                    <i data-lucide="{{ $item['icon'] }}" class="w-12 h-12 text-gray-400"></i>
                                 </div>
-                                <div class="flex items-center gap-1.5" title="Lượt thích">
-                                    <i data-lucide="heart" class="h-4 w-4 text-rose-500"></i>
-                                    <span>{{ $ev['likes_count'] ?? 0 }}</span>
+                            @endif
+
+                            <!-- Category Name (Top Left Badge) -->
+                            <div class="absolute top-4 left-4 lg:top-6 lg:left-6 z-10">
+                                <div class="bg-paper px-4 py-2 lg:px-5 lg:py-2.5 rounded-xl border-2 border-black shadow-lg">
+                                    <h3 class="text-[#1C1410] text-lg lg:text-xl font-bold tracking-tight group-hover:text-[#07A0C3] transition-colors leading-tight">
+                                        {{ $item['name'] }}
+                                    </h3>
                                 </div>
                             </div>
-                            <span class="inline-flex items-center gap-1 text-sm font-bold text-[#1C1410] group-hover:text-[#07A0C3] transition-colors">
-                                Chi tiết <i data-lucide="arrow-right" class="h-4 w-4"></i>
-                            </span>
-                        </div>
-                    </div>
+                        </a>
+                    @endforeach
                 </div>
-                @endforeach
+
+                <!-- Decorative bottom — nằm ngoài vùng GSAP animation -->
+                <div class="mt-8 flex items-center justify-center gap-4 pointer-events-none select-none">
+                    <div class="h-px flex-1 max-w-[120px]" style="background: linear-gradient(to right, transparent, rgba(7,160,195,0.2));"></div>
+                    <span class="text-[10px] font-bold uppercase tracking-[0.3em]" style="color: rgba(122,106,82,0.3);">
+                        {{ $totalCount }} sự kiện đa dạng
+                    </span>
+                    <div class="h-px flex-1 max-w-[120px]" style="background: linear-gradient(to left, transparent, rgba(7,160,195,0.2));"></div>
                 </div>
             </div>
         </div>
-
-        {{-- ── Upcoming Events ── --}}
-        <aside id="home-events-aside" class="lg:sticky lg:top-28 lg:self-start" style="height: max-content;">
-            <div data-aos="fade-left" class="overflow-hidden rounded-2xl shadow-xl"
-                 style="border:2px solid #FFE381;">
-                {{-- Header Jasmine --}}
-                <div class="relative overflow-hidden px-6 py-6" style="background:#FFE381;">
-                    <div class="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full opacity-30" style="background:#07A0C3;"></div>
-                    <div class="relative flex items-center justify-between">
-                        <div>
-                            <div class="text-xs font-bold uppercase tracking-[0.25em] text-[#7A6A52]">Upcoming</div>
-                            <h3 class="font-['Barlow_Condensed'] mt-0.5 text-3xl font-black uppercase tracking-wide text-[#1C1410]">Sắp diễn ra</h3>
-                        </div>
-                        <div class="flex items-center gap-2 rounded-full bg-white/60 px-3 py-1.5 text-xs font-bold text-[#1C1410] backdrop-blur">
-                            <span class="h-2 w-2 animate-pulse rounded-full" style="background:#07A0C3;"></span>Live
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Body --}}
-                <div class="px-3 pt-12 pb-5" style="background:#FFFBEA;">
-                    <div class="relative py-2">
-                        <!-- Center Line -->
-                        <div class="absolute bottom-0 top-0 w-px" style="left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.12);"></div>
-
-                        <div class="-space-y-12 sm:-space-y-20">
-                            @foreach($upcoming as $i => $u)
-                            {{-- Row: full width flex, each half is exactly 50% --}}
-                            <div class="relative flex w-full items-start" style="min-height:88px;" data-aos="fade-up" data-aos-delay="{{ $i * 50 }}">
-
-                                <!-- Dot on center line -->
-                                <div class="absolute z-10 h-3.5 w-3.5 rounded-full"
-                                     style="left:50%;top:26px;transform:translate(-50%,-50%);border:3px solid #FFFBEA;{{ $u['open'] ? 'background:#07A0C3;' : 'background:#d1c9a8;' }}"></div>
-
-                                @if($i % 2 == 0)
-                                {{-- === LEFT side: text top, imgs bottom --}}
-                                <div style="width:50%;padding-right:16px;" class="flex flex-col items-end justify-start text-right">
-                                    <div class="mb-3">
-                                        <a href="{{ route('events.show', $u['slug'] ?? '#') }}" class="mt-0.5 text-sm font-black uppercase text-[#1C1410] leading-snug hover:text-[#07A0C3] transition-colors inline-block">{{ $u['name'] }}</a>
-                                        <div class="flex items-center gap-1.5 mt-1 text-[#07A0C3] text-xs font-bold justify-end">
-                                            <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
-                                            <span>{{ $u['date'] }}</span>
-                                        </div>
-                                        <p class="mt-2 text-xs text-[#7A6A52] line-clamp-2">{{ $u['summary'] ?? '' }}</p>
-                                    </div>
-                                    @if(isset($u['images']) && count($u['images']) > 0)
-                                    <div class="relative shrink-0" style="width:170px;height:120px;">
-                                        @if(count($u['images']) > 1)
-                                        <div style="position:absolute;left:0;top:0;width:140px;height:100px;z-index:1;">
-                                            <img src="{{ $u['images'][0] }}" style="position:absolute;left:0;top:8px;width:100%;height:100%;border-radius:12px;object-fit:cover;filter:blur(12px) saturate(1.5);opacity:0.6;transform:scale(0.92);">
-                                            <img src="{{ $u['images'][0] }}" style="position:absolute;left:0;top:0;width:100%;height:100%;border-radius:12px;object-fit:cover;box-shadow:0 1px 3px rgba(0,0,0,0.1);">
-                                        </div>
-                                        <div style="position:absolute;right:0;bottom:0;width:100px;height:70px;z-index:2;transition:transform .2s;"
-                                             onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'">
-                                            <img src="{{ $u['images'][1] }}" style="position:absolute;left:0;top:6px;width:100%;height:100%;border-radius:8px;object-fit:cover;filter:blur(10px) saturate(1.5);opacity:0.6;transform:scale(0.92);">
-                                            <img src="{{ $u['images'][1] }}" style="position:absolute;left:0;top:0;width:100%;height:100%;border-radius:8px;object-fit:cover;box-shadow:0 1px 3px rgba(0,0,0,0.1);">
-                                        </div>
-                                        @else
-                                        <div style="position:absolute;right:0;top:0;width:170px;height:119px;z-index:1;">
-                                            <img src="{{ $u['images'][0] }}" style="position:absolute;left:0;top:10px;width:100%;height:100%;border-radius:12px;object-fit:cover;filter:blur(14px) saturate(1.5);opacity:0.6;transform:scale(0.92);">
-                                            <img src="{{ $u['images'][0] }}" style="position:absolute;left:0;top:0;width:100%;height:100%;border-radius:12px;object-fit:cover;box-shadow:0 1px 3px rgba(0,0,0,0.1);">
-                                        </div>
-                                        @endif
-                                    </div>
-                                    @endif
-                                </div>
-                                <div style="width:50%;"></div>
-
-                                @else
-                                {{-- === RIGHT side: center | text top, imgs bottom --}}
-                                <div style="width:50%;"></div>
-                                <div style="width:50%;padding-left:16px;" class="flex flex-col items-start justify-start text-left">
-                                    <div class="mb-3">
-                                        <a href="{{ route('events.show', $u['slug'] ?? '#') }}" class="mt-0.5 text-sm font-black uppercase text-[#1C1410] leading-snug hover:text-[#07A0C3] transition-colors inline-block">{{ $u['name'] }}</a>
-                                        <div class="flex items-center gap-1.5 mt-1 text-[#07A0C3] text-xs font-bold justify-start">
-                                            <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
-                                            <span>{{ $u['date'] }}</span>
-                                        </div>
-                                        <p class="mt-2 text-xs text-[#7A6A52] line-clamp-2">{{ $u['summary'] ?? '' }}</p>
-                                    </div>
-                                    @if(isset($u['images']) && count($u['images']) > 0)
-                                    <div class="relative shrink-0" style="width:170px;height:120px;">
-                                        @if(count($u['images']) > 1)
-                                        <div style="position:absolute;right:0;top:0;width:140px;height:100px;z-index:1;">
-                                            <img src="{{ $u['images'][0] }}" style="position:absolute;left:0;top:8px;width:100%;height:100%;border-radius:12px;object-fit:cover;filter:blur(12px) saturate(1.5);opacity:0.6;transform:scale(0.92);">
-                                            <img src="{{ $u['images'][0] }}" style="position:absolute;left:0;top:0;width:100%;height:100%;border-radius:12px;object-fit:cover;box-shadow:0 1px 3px rgba(0,0,0,0.1);">
-                                        </div>
-                                        <div style="position:absolute;left:0;bottom:0;width:100px;height:70px;z-index:2;transition:transform .2s;"
-                                             onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'">
-                                            <img src="{{ $u['images'][1] }}" style="position:absolute;left:0;top:6px;width:100%;height:100%;border-radius:8px;object-fit:cover;filter:blur(10px) saturate(1.5);opacity:0.6;transform:scale(0.92);">
-                                            <img src="{{ $u['images'][1] }}" style="position:absolute;left:0;top:0;width:100%;height:100%;border-radius:8px;object-fit:cover;box-shadow:0 1px 3px rgba(0,0,0,0.1);">
-                                        </div>
-                                        @else
-                                        <div style="position:absolute;left:0;top:0;width:170px;height:119px;z-index:1;">
-                                            <img src="{{ $u['images'][0] }}" style="position:absolute;left:0;top:10px;width:100%;height:100%;border-radius:12px;object-fit:cover;filter:blur(14px) saturate(1.5);opacity:0.6;transform:scale(0.92);">
-                                            <img src="{{ $u['images'][0] }}" style="position:absolute;left:0;top:0;width:100%;height:100%;border-radius:12px;object-fit:cover;box-shadow:0 1px 3px rgba(0,0,0,0.1);">
-                                        </div>
-                                        @endif
-                                    </div>
-                                    @endif
-                                </div>
-                                @endif
-                            </div>
-                            @endforeach
-                        </div>
-                    </div>
-
-                    <a href="#"
-                       class="mt-14 mb-2 inline-flex w-full items-center justify-center gap-2 rounded-full py-3 text-sm font-bold transition-all hover:opacity-90"
-                       style="background:#FFE381; color:#1C1410; border:2px solid #E8C84A;">
-                        Xem lịch đầy đủ <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
-                    </a>
-                </div>
-            </div>
-        </aside>
+        
         <script>
             document.addEventListener('DOMContentLoaded', () => {
-                const homeAside = document.getElementById('home-events-aside');
-                if (homeAside) {
-                    const updateStickyHomeAside = () => {
-                        if (window.innerWidth >= 1024) { // lg breakpoint
-                            if (homeAside.offsetHeight > window.innerHeight - 130) {
-                                homeAside.style.top = 'auto';
-                                homeAside.style.bottom = '20px';
-                            } else {
-                                homeAside.style.top = '7rem'; // top-28 equivalent
-                                homeAside.style.bottom = 'auto';
-                            }
-                        } else {
-                            homeAside.style.top = '';
-                            homeAside.style.bottom = '';
+                if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+                    gsap.registerPlugin(ScrollTrigger);
+                    
+                    const tl = gsap.timeline({
+                        scrollTrigger: {
+                            trigger: "#events",
+                            start: "top 80%", 
+                            // Chỉ chạy 1 lần khi cuộn xuống, cuộn lên sẽ không bị ẩn đi gây rối mắt
+                            toggleActions: "play none none none", 
                         }
-                    };
-                    updateStickyHomeAside();
-                    window.addEventListener('resize', updateStickyHomeAside);
-                    if (typeof ResizeObserver !== 'undefined') {
-                        new ResizeObserver(updateStickyHomeAside).observe(homeAside);
-                    }
+                    });
+                    
+                    // Title fades in and slides up
+                    tl.fromTo('.event-category-title', 
+                        { opacity: 0, y: 30 }, 
+                        { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }
+                    )
+                    // Cards slide up smoothly instead of bouncing
+                    .fromTo('.event-category-card', 
+                        { opacity: 0, y: 40 }, 
+                        { opacity: 1, y: 0, duration: 0.6, stagger: 0.1, ease: "power3.out" }, 
+                        "-=0.3"
+                    );
                 }
             });
         </script>
+    </section>
+    <div style="height: 120vh;"></div>
     </div>
-</section>
 
-{{-- ════════════════════════════════════════
-     ARCHIVE — Nền ấm tối hơn (không lạnh navy)
-     Jasmine accent chủ đạo, xanh chỉ là detail
-════════════════════════════════════════════ --}}
-@php $archiveJson = json_encode($archive); @endphp
-<section id="archive" class="relative overflow-hidden py-24 lg:py-32"
-         style="background:linear-gradient(160deg,#2D1F0A 0%,#3D2A0E 50%,#1C2A10 100%);"
+    <!-- Tĩnh anchor để fix lỗi nhảy trang của trình duyệt do GSAP -->
+    <div id="master-wipe-anchor" style="scroll-margin-top: 72px;"></div>
+
+    <!-- MASTER WIPE CONTAINER -->
+    <div id="master-wipe-container"
+        style="display: grid; grid-template-columns: 1fr; width: 100%; overflow-x: hidden; position: relative; z-index: 30;">
+
+        <div style="grid-area: 1 / 1; width: 100%; height: 100%; z-index: 30;">
+            @include('frontend.upcoming')
+        </div>
+
+        <!-- FEATURED EVENTS WRAPPER -->
+        <div id="featured-events-wrapper"
+            style="grid-area: 1 / 1; width: 100%; height: 100%; z-index: 40; background: #FFFBEA; transform: translateX(100%);">
+            <section id="featured-events" class="relative z-10 h-full w-full pt-10 lg:pt-12 pb-16 overflow-hidden">
+                <div class="mx-auto max-w-[1400px] px-6 lg:px-10 h-full flex flex-col justify-start">
+                    <div class="mb-6 flex items-end justify-between shrink-0">
+                        <div>
+                            <div class="flex items-center gap-3 mb-2">
+                                <div class="h-7 w-1 rounded-full" style="background:#07A0C3;"></div>
+                                <span class="text-xs font-bold uppercase tracking-[0.25em]" style="color:#07A0C3;">Upcoming
+                                    Events</span>
+                            </div>
+                            <h2
+                                class="font-barlow-condensed text-5xl font-black uppercase tracking-tight text-[#1C1410] lg:text-6xl">
+                                Sự kiện sắp tới</h2>
+                        </div>
+                        <a href="#" class="hidden items-center gap-2 text-sm font-semibold lg:inline-flex transition-colors"
+                            style="color:#07A0C3;" onmouseover="this.style.color='#04F06A'"
+                            onmouseout="this.style.color='#07A0C3'">
+                            Xem tất cả <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
+                        </a>
+                    </div>
+
+                    <!-- HORIZONTAL CARDS CONTAINER -->
+                    <div id="featured-cards-viewport" class="flex-1 w-full min-h-[450px] overflow-hidden relative">
+                        <div id="featured-cards-container"
+                            class="flex gap-6 flex-nowrap absolute top-0 left-0 h-full items-center"
+                            style="width: max-content; padding-right: 2rem;">
+                            @foreach($featuredEvents as $i => $ev)
+                                <div class="shrink-0 featured-card-item rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
+                                    style="width: 350px; height: 400px; max-width: 85vw;">
+                                    <x-event-card :event="$ev" mode="grid" />
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tiltCards = document.querySelectorAll('.hover-tilt');
+            tiltCards.forEach(el => {
+                let rect = null;
+                el.addEventListener('mousemove', e => {
+                    if(!rect) rect = el.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    const deltaX = (x - centerX) / centerX;
+                    const deltaY = (y - centerY) / centerY;
+                    // Max tilt is 5 degrees
+                    el.style.transform = `rotateX(${-deltaY * 5}deg) rotateY(${deltaX * 5}deg) scale3d(1.02, 1.02, 1.02)`;
+                });
+                el.addEventListener('mouseleave', () => {
+                    rect = null; // Xóa cache khi chuột ra ngoài
+                    el.style.transform = 'rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+                    el.style.transition = 'transform 0.5s ease-out';
+                });
+                el.addEventListener('mouseenter', () => {
+                    rect = el.getBoundingClientRect(); // Cache lại rect
+                    el.style.transition = 'none';
+                });
+            });
+
+            // Sticky Categories Shadow Effect
+            if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+                gsap.registerPlugin(ScrollTrigger);
+                ScrollTrigger.create({
+                    trigger: '#categories-bar',
+                    start: 'top 73px',
+                    toggleClass: { targets: '#categories-bar', className: 'shadow-[0_10px_30px_-10px_rgba(0,0,0,0.1)]' }
+                });
+            }
+        });
+    </script>
+
+
+
+    {{-- ═════════════════════════════════════════════════════════════════════
+    ARCHIVE — Nền ấm tối hơn (không lạnh navy)
+    Jasmine accent chủ đạo, xanh chỉ là detail
+    ══════════════════════════════════════════════════════════════════════════════════════════  --}}
+    <div id="archive-delay-spacer"></div>
+    <div id="archive-sticky-wrapper" style="background: #2D1F0A; position: relative; z-index: 50;">
+    @php $archiveJson = json_encode($archive); @endphp
+<section id="archive" class="relative overflow-hidden py-12 lg:py-16"
+         style="position: -webkit-sticky; position: sticky; top: 72px; background:linear-gradient(160deg,#2D1F0A 0%,#3D2A0E 50%,#1C2A10 100%); z-index: 50;"
          x-data="{ idx:0, archive:{{ $archiveJson }}, dir:1, get current(){return this.archive[this.idx];}, go(d){this.dir=d;let n=this.idx+d;if(n>=0&&n<this.archive.length)this.idx=n;} }">
 
     <!-- Warm glow blobs -->
     <div class="pointer-events-none absolute inset-0 overflow-hidden">
-        <div class="absolute -left-32 top-1/4 h-[450px] w-[450px] rounded-full blur-[130px] opacity-25" style="background:#FFE381;"></div>
-        <div class="absolute -right-32 bottom-10 h-[350px] w-[350px] rounded-full blur-[130px] opacity-20" style="background:#07A0C3;"></div>
-        <div class="absolute left-1/2 bottom-0 h-40 w-[600px] -translate-x-1/2 rounded-full blur-[80px] opacity-15" style="background:#04F06A;"></div>
+        <div class="absolute -left-32 top-1/4 h-[450px] w-[450px] rounded-full blur-[130px] opacity-25" style="background:#FFE381; transform: translateZ(0); will-change: transform;"></div>
+        <div class="absolute -right-32 bottom-10 h-[350px] w-[350px] rounded-full blur-[130px] opacity-20" style="background:#07A0C3; transform: translateZ(0); will-change: transform;"></div>
+        <div class="absolute left-1/2 bottom-0 h-40 w-[600px] -translate-x-1/2 rounded-full blur-[80px] opacity-15" style="background:#04F06A; transform: translateZ(0); will-change: transform;"></div>
+        <!-- Thêm 1 blob trang trí phụ — giảm trống góc trên-phải -->
+        <div class="absolute right-1/4 top-10 h-[200px] w-[200px] rounded-full blur-[100px] opacity-10" style="background:#E8C84A; transform: translateZ(0); will-change: transform;"></div>
     </div>
     <!-- Top border Jasmine -->
     <div class="absolute inset-x-0 top-0 h-1.5" style="background:#FFE381;"></div>
@@ -626,7 +564,7 @@
                     <div class="h-7 w-1 rounded-full" style="background:#FFE381;"></div>
                     <span class="text-xs font-bold uppercase tracking-[0.25em]" style="color:#FFE381;">Archive</span>
                 </div>
-                <h2 class="font-['Barlow_Condensed'] text-5xl font-black uppercase tracking-tight text-white lg:text-7xl">Kho lưu trữ sự kiện</h2>
+                <h2 class="font-barlow-condensed text-5xl font-black uppercase tracking-tight text-white lg:text-7xl">Kho lưu trữ sự kiện</h2>
                 <p class="mt-3 max-w-md leading-relaxed" style="color:rgba(255,227,129,0.65);">
                     Từng năm. Từng đêm diễn. Từng ký ức được lưu lại để có thể sống lại bất cứ lúc nào.
                 </p>
@@ -652,7 +590,7 @@
         <div class="relative mt-14 grid grid-cols-1 gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
             <!-- Chữ số năm — Jasmine gradient & Buttons -->
             <div class="relative flex flex-col items-start z-10">
-                <div class="font-['Barlow_Condensed'] text-[28vw] font-black leading-[0.85] tracking-tighter lg:text-[18vw] pl-4 lg:pl-6 pr-4"
+                <div class="font-barlow-condensed text-[28vw] font-black leading-[0.85] tracking-tighter lg:text-[18vw] pl-4 lg:pl-6 pr-4"
                      style="-webkit-text-fill-color:transparent;-webkit-background-clip:text;background-clip:text;
                             background-image:linear-gradient(160deg,#FFE381 30%,#E8C84A 70%,#07A0C3 100%);"
                      x-text="current.year"
@@ -682,7 +620,7 @@
             </div>
 
             <div>
-                <div class="group relative h-[320px] overflow-hidden rounded-2xl lg:h-[420px]"
+                <div class="group relative h-[280px] overflow-hidden rounded-2xl lg:h-[360px]"
                      style="box-shadow:0 20px 60px rgba(255,227,129,0.15);">
                     <img :src="current.img" :alt="current.title" loading="lazy"
                          class="h-full w-full object-cover transition-transform duration-[1500ms] group-hover:scale-105" />
@@ -693,7 +631,7 @@
                     <div class="absolute bottom-6 left-5 right-5">
                         <div class="mb-2 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.25em] text-[#1C1410]"
                              style="background:#FFE381;">✦ Featured event</div>
-                        <h3 class="font-['Barlow_Condensed'] text-3xl font-black uppercase tracking-wide text-white lg:text-4xl"
+                        <h3 class="font-barlow-condensed text-3xl font-black uppercase tracking-wide text-white lg:text-4xl"
                             x-text="current.title"></h3>
                     </div>
                 </div>
@@ -723,13 +661,17 @@
             </div>
         </div>
     </div>
+    
+    <!-- Bottom border jasmine accent -->
+    <div class="absolute inset-x-0 bottom-0 h-1" style="background: linear-gradient(to right, transparent, rgba(255,227,129,0.4), transparent);"></div>
 </section>
 
-{{-- ════════════════════════════════════════
+{{-- ——————————————————————————————————————————————————————
      MEDIA — Nền Jasmine ấm, thoáng sáng
-════════════════════════════════════════════ --}}
+—————————————————————————————————————————————————————————— --}}
+<div id="media-sticky-wrapper" style="background: #FFF3C4; position: relative; z-index: 60;">
 @php $mediaJson = json_encode($media); @endphp
-<section class="relative overflow-hidden py-24 lg:py-32" style="background:#FFF3C4;"
+<section id="media" class="relative overflow-hidden py-8 lg:py-10" style="position: -webkit-sticky; position: sticky; top: 72px; background:#FFF3C4; z-index: 60;"
          x-data="mediaPlayer({{ $mediaJson }})" x-init="initPlayer()">
     <!-- Top Jasmine border -->
     <div class="absolute inset-x-0 top-0 h-1.5" style="background:#FFE381;"></div>
@@ -737,16 +679,18 @@
     <div class="pointer-events-none absolute inset-0 overflow-hidden">
         <div class="absolute right-0 top-0 h-80 w-80 rounded-full blur-[120px] opacity-30" style="background:#07A0C3;"></div>
         <div class="absolute -left-20 bottom-0 h-64 w-64 rounded-full blur-[100px] opacity-20" style="background:#04F06A;"></div>
+        <!-- Blob trang trí phụ — lấp khoảng trống giữa -->
+        <div class="absolute left-1/3 top-1/2 h-[180px] w-[180px] rounded-full blur-[100px] opacity-15" style="background:#FFE381;"></div>
     </div>
 
     <div class="relative mx-auto max-w-[1400px] px-6 lg:px-10">
-        <div data-aos="fade-up" class="flex items-end justify-between pb-10">
+        <div data-aos="fade-up" class="flex items-end justify-between pb-6">
             <div>
                 <div class="flex items-center gap-3 mb-2">
                     <div class="h-7 w-1 rounded-full" style="background:#04F06A;"></div>
                     <span class="text-xs font-bold uppercase tracking-[0.25em]" style="color:#04B050;">Media</span>
                 </div>
-                <h2 class="font-['Barlow_Condensed'] text-4xl font-black uppercase tracking-tight text-[#1C1410] lg:text-5xl">Album & Recap</h2>
+                <h2 class="font-barlow-condensed text-4xl font-black uppercase tracking-tight text-[#1C1410] lg:text-5xl">Album & Recap</h2>
             </div>
             <a href="#" class="group inline-flex items-center gap-1.5 text-sm font-semibold text-[#07A0C3] transition-colors hover:text-[#04F06A]">
                 Thư viện đầy đủ <i data-lucide="arrow-right" class="h-4 w-4 transition-transform group-hover:translate-x-1"></i>
@@ -756,7 +700,7 @@
         <template x-if="items.length > 0">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <!-- Left Side: Main Player -->
-                <div class="lg:col-span-8 bg-black rounded-2xl overflow-hidden relative" style="box-shadow:0 16px 50px rgba(7,160,195,0.15); height: 500px;">
+                <div class="lg:col-span-8 bg-black rounded-2xl overflow-hidden relative" style="box-shadow:0 16px 50px rgba(7,160,195,0.15); height: 380px;">
                     <template x-for="(item, index) in items" :key="index">
                         <div x-show="currentIndex === index" 
                              x-transition:enter="transition ease-out duration-700 transform"
@@ -782,12 +726,12 @@
                 </div>
 
                 <!-- Right Side: Info and Thumbnails -->
-                <div class="lg:col-span-4 flex flex-col gap-4 h-[500px]">
+                <div class="lg:col-span-4 flex flex-col gap-4 h-[380px]">
                     <!-- Top Info Box (2/3) -->
                     <div class="flex-1 rounded-2xl p-6 flex flex-col justify-center relative overflow-hidden group" style="background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); box-shadow: 0 4px 20px rgba(255,200,60,0.15); border: 1px solid rgba(255, 227, 129, 0.5);">
                         <div class="mb-4 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.25em] text-[#1C1410]" style="background:#FFE381;" x-text="currentItem.type === 'video' ? 'Video' : 'Hình ảnh'"></div>
                         
-                        <h3 class="font-['Barlow_Condensed'] text-3xl font-black uppercase tracking-wide text-[#1C1410] leading-snug line-clamp-4" x-text="currentItem.title"></h3>
+                        <h3 class="font-barlow-condensed text-3xl font-black uppercase tracking-wide text-[#1C1410] leading-snug line-clamp-4" x-text="currentItem.title"></h3>
                         
                         <div class="mt-4 flex items-center gap-2">
                             <div class="h-10 w-1 rounded-full" style="background:#04F06A;"></div>
@@ -911,6 +855,16 @@
             }));
         });
     </script>
+    
+    <!-- Bottom gradient line -->
+    <div class="absolute inset-x-0 bottom-0 h-1" style="background: linear-gradient(to right, transparent, rgba(4,240,106,0.3), rgba(7,160,195,0.3), transparent);"></div>
 </section>
+<div style="height: 40vh;"></div>
+</div>
+
+
+
+
 
 @endsection
+

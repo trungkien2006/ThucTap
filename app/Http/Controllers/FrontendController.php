@@ -91,7 +91,7 @@ class FrontendController extends Controller
                 ];
             })->toArray();
 
-            $dbUpcoming = Event::with(['bannerImage', 'galleryImages'])
+            $dbUpcoming = Event::with(['bannerImage', 'galleryImages', 'category'])
                 ->published()
                 ->upcoming()
                 ->orderBy('event_date', 'asc')
@@ -116,6 +116,8 @@ class FrontendController extends Controller
                     'status'  => 'Sắp mở',
                     'open'    => true,
                     'images'  => array_values($images),
+                    'category'=> $event->category->name ?? 'Sự kiện',
+                    'location'=> $event->location,
                 ];
             })->toArray();
 

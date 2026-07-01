@@ -190,15 +190,25 @@
 
         @php
             $nowTime = now();
-            $startingSoon = \App\Models\Event::where('is_published', true)
-                ->where('event_date', '>', $nowTime)
-                ->where('event_date', '<=', $nowTime->copy()->addMinutes(10))
-                ->get();
-            $runningEvents = \App\Models\Event::where('is_published', true)
-                ->where('event_date', '<=', $nowTime)
-                ->where('end_date', '>=', $nowTime)
-                ->get();
-            $notificationCount = $startingSoon->count() + $runningEvents->count();
+            $notifications = \Illuminate\Support\Facades\Cache::remember('admin_header_notifications', 60, function () use ($nowTime) {
+                $startingSoon = \App\Models\Event::where('is_published', true)
+                    ->where('event_date', '>', $nowTime)
+                    ->where('event_date', '<=', $nowTime->copy()->addMinutes(10))
+                    ->get();
+                $runningEvents = \App\Models\Event::where('is_published', true)
+                    ->where('event_date', '<=', $nowTime)
+                    ->where('end_date', '>=', $nowTime)
+                    ->get();
+                return [
+                    'startingSoon' => $startingSoon,
+                    'runningEvents' => $runningEvents,
+                    'count' => $startingSoon->count() + $runningEvents->count()
+                ];
+            });
+            
+            $startingSoon = $notifications['startingSoon'];
+            $runningEvents = $notifications['runningEvents'];
+            $notificationCount = $notifications['count'];
         @endphp
         <div class="flex items-center gap-2 md:gap-3">
             <!-- Semester Badge (Real-time Clock) -->

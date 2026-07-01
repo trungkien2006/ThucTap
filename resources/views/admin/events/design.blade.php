@@ -128,6 +128,7 @@
                             <textarea id="inMoTa" rows="2" oninput="syncData()" class="uni-input">{{ $event->description }}</textarea>
                         </div>
                     </div>
+                </div>
 
                 <!-- 3. Media Library (Tabbed) -->
                 <div id="sec-media" class="drawer-section space-y-3 pt-2 border-slate-100 transition-all rounded-lg p-2 -m-2">
@@ -166,7 +167,7 @@
                         <div id="mediaLibraryGrid">
                             @foreach($mediaLibrary as $media)
                             <div class="lib-item"
-                                 onclick="applyLibraryItem('{{ $media->full_url }}', '{{ $media->type }}', '{{ $media->url }}')"
+                                 onclick="applyLibraryItem('{{ $media->full_url }}', '{{ $media->type }}', '{{ $media->url }}', this)"
                                  title="{{ $media->caption ?? basename($media->url) }}">
                                 @if($media->type === 'video')
                                     <video src="{{ \App\Helpers\FileHelper::url($media->url) }}"></video>
@@ -617,6 +618,9 @@
                 } else {
                     drawer.classList.remove('wide');
                 }
+            } else {
+                document.querySelectorAll('.drawer-section').forEach(el => el.classList.remove('hidden'));
+                drawer.classList.remove('wide');
             }
         }
         function closeEditor() { 
@@ -694,7 +698,7 @@
         }
 
         // ── Library pick ─────────────────────────────────────────
-        function applyLibraryItem(url, type = 'image', path = null) {
+        function applyLibraryItem(url, type = 'image', path = null, el = null) {
             if (!activeSlotId) {
                 // Flash indicator to tell user to pick a slot
                 const indicator = document.getElementById('activeSlotIndicator');
@@ -712,7 +716,11 @@
             }
             // Highlight selected lib item
             document.querySelectorAll('.lib-item').forEach(i => i.classList.remove('selected'));
-            event.currentTarget && event.currentTarget.classList.add('selected');
+            if (el) {
+                el.classList.add('selected');
+            } else if (typeof event !== 'undefined' && event.currentTarget) {
+                event.currentTarget.classList.add('selected');
+            }
             applyMediaToSlot(url, type, path);
         }
 
@@ -831,7 +839,7 @@
                             const div = document.createElement('div');
                             div.className = 'lib-item';
                             div.title = file.caption;
-                            div.onclick = () => applyLibraryItem(file.url, file.type, file.path);
+                            div.onclick = function() { applyLibraryItem(file.url, file.type, file.path, this); };
 
                             let mediaHtml = '';
                             if (file.type === 'video') {
@@ -885,6 +893,7 @@
             const formData = new FormData();
             formData.append('files[]', file);
             formData.append('event_id', EVENT_ID);
+            formData.append('force_upload', 1);
 
             const uploadingText = document.getElementById('subBannerUploading');
             uploadingText.classList.remove('hidden');
@@ -894,15 +903,30 @@
                     method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': CSRF_TOKEN,
+                        'X-Requested-With': 'XMLHttpRequest',
                         'Accept': 'application/json',
                     },
                     body: formData,
                 });
                 
-                if (!resp.ok) throw new Error('Upload failed');
+                let data;
+                try {
+                    data = await resp.json();
+                } catch (e) {
+                    throw new Error('Máy chủ trả về phản hồi không hợp lệ (không phải JSON). Có thể do file quá nặng hoặc lỗi server.');
+                }
+
+                if (!resp.ok) {
+                    let errMsg = 'Lỗi tải ảnh lên.';
+                    if (resp.status === 422 && data && data.errors) {
+                        errMsg = Object.values(data.errors).flat().join(' ');
+                    } else if (data && data.message) {
+                        errMsg = data.message;
+                    }
+                    throw new Error(errMsg);
+                }
                 
-                const data = await resp.json();
-                if (data.success && data.files.length > 0) {
+                if (data.success && data.files && data.files.length > 0) {
                     const uploadedFile = data.files[0];
                     document.getElementById('inSubBannerUrl').value = uploadedFile.url;
                     document.getElementById('inSubBannerPath').value = uploadedFile.path;
@@ -913,7 +937,7 @@
                         const div = document.createElement('div');
                         div.className = 'lib-item';
                         div.title = uploadedFile.caption || file.name;
-                        div.onclick = () => applyLibraryItem(uploadedFile.url, uploadedFile.type, uploadedFile.path);
+                        div.onclick = function() { applyLibraryItem(uploadedFile.url, uploadedFile.type, uploadedFile.path, this); };
                         div.innerHTML = `<img src="${uploadedFile.url}" alt=""><div class="lib-overlay" style="background:rgba(0,0,0,0);"></div>`;
                         libGrid.insertAdjacentElement('afterbegin', div);
                         document.getElementById('tabLibrary').textContent = `Kho Media (${document.querySelectorAll('.lib-item').length})`;
@@ -922,7 +946,7 @@
                 }
             } catch (err) {
                 console.error(err);
-                alert('Có lỗi xảy ra khi tải ảnh lên.');
+                alert(err.message || 'Có lỗi xảy ra khi tải ảnh lên.');
             } finally {
                 uploadingText.classList.add('hidden');
                 input.value = '';
@@ -960,10 +984,12 @@
         // ── Real-time sync ────────────────────────────────────────
         function syncData() {
             const titleEl = document.getElementById('viewTieuDe');
-            titleEl.innerText = document.getElementById('inTieuDe').value;
+            const inTieuDe = document.getElementById('inTieuDe');
+            if (titleEl && inTieuDe) titleEl.innerText = inTieuDe.value;
 
             // Template toggle
-            const template = document.getElementById('inEventTemplate').value;
+            const inEventTemplate = document.getElementById('inEventTemplate');
+            const template = inEventTemplate ? inEventTemplate.value : '1';
             const docSections = document.querySelectorAll('.doc-upload-section');
             const subBannerSection = document.getElementById('subBannerSection');
 
@@ -974,44 +1000,55 @@
                 docSections.forEach(el => el.classList.remove('hidden'));
                 if (subBannerSection) {
                     subBannerSection.style.display = '';
-                    const subUrl = document.getElementById('inSubBannerUrl').value;
+                    const inSubBannerUrl = document.getElementById('inSubBannerUrl');
+                    const subUrl = inSubBannerUrl ? inSubBannerUrl.value : '';
                     const viewSubBanner = document.getElementById('viewSubBanner');
                     if (subUrl && viewSubBanner) {
                         viewSubBanner.src = subUrl;
                         viewSubBanner.classList.remove('hidden');
-                        document.getElementById('subBannerUploadText').innerText = 'Thay đổi ảnh banner';
-                        viewSubBanner.nextElementSibling.classList.replace('opacity-100', 'opacity-0');
-                        viewSubBanner.nextElementSibling.classList.replace('bg-slate-50', 'bg-white/90');
-                        viewSubBanner.nextElementSibling.classList.add('hover:opacity-100');
+                        const uploadText = document.getElementById('subBannerUploadText');
+                        if (uploadText) uploadText.innerText = 'Thay đổi ảnh banner';
+                        if (viewSubBanner.nextElementSibling) {
+                            viewSubBanner.nextElementSibling.classList.replace('opacity-100', 'opacity-0');
+                            viewSubBanner.nextElementSibling.classList.replace('bg-slate-50', 'bg-white/90');
+                            viewSubBanner.nextElementSibling.classList.add('hover:opacity-100');
+                        }
                     }
                 }
             }
 
             const descEl = document.getElementById('viewMoTa');
-            descEl.innerText = document.getElementById('inMoTa').value;
+            const inMoTa = document.getElementById('inMoTa');
+            if (descEl && inMoTa) descEl.innerText = inMoTa.value;
 
-            document.getElementById('viewLichHoatDong').innerText = document.getElementById('inLichHoatDong').value;
+            const viewLich = document.getElementById('viewLichHoatDong');
+            const inLich = document.getElementById('inLichHoatDong');
+            if (viewLich && inLich) viewLich.innerText = inLich.value;
             
             // Speaker
             const spkSelect = document.getElementById('inTenDienGia');
-            if(spkSelect) {
+            if(spkSelect && spkSelect.options && spkSelect.options.length > 0 && spkSelect.selectedIndex >= 0) {
                 const opt = spkSelect.options[spkSelect.selectedIndex];
-                document.getElementById('viewTenDienGia').innerText = opt.getAttribute('data-name');
-                const photoUrl = opt.getAttribute('data-photo');
-                if(photoUrl) document.getElementById('viewAnhDienGia').src = photoUrl;
+                const viewTen = document.getElementById('viewTenDienGia');
+                if (viewTen && opt) viewTen.innerText = opt.getAttribute('data-name') || '';
+                const photoUrl = opt ? opt.getAttribute('data-photo') : null;
+                const viewAnh = document.getElementById('viewAnhDienGia');
+                if(photoUrl && viewAnh) viewAnh.src = photoUrl;
             }
 
             // Sync URL previews
             for (let i = 1; i <= 4; i++) {
-                const actionUrlVal = document.getElementById('actionUrl' + i).value.trim();
+                const actionUrlEl = document.getElementById('actionUrl' + i);
+                if (!actionUrlEl) continue;
+                const actionUrlVal = actionUrlEl.value.trim();
                 const urlPreviewWrap = document.getElementById('urlPreviewWrap' + i);
                 const urlPreviewLink = document.getElementById('urlPreviewLink' + i);
                 
                 if (actionUrlVal) {
-                    urlPreviewWrap.classList.remove('hidden');
-                    urlPreviewLink.textContent = actionUrlVal;
+                    if (urlPreviewWrap) urlPreviewWrap.classList.remove('hidden');
+                    if (urlPreviewLink) urlPreviewLink.textContent = actionUrlVal;
                 } else {
-                    urlPreviewWrap.classList.add('hidden');
+                    if (urlPreviewWrap) urlPreviewWrap.classList.add('hidden');
                 }
             }
         }

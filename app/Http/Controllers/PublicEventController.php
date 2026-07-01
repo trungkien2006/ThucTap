@@ -105,7 +105,12 @@ class PublicEventController extends Controller
             ->first();
 
         // Template routing
-        $viewName = ($event->page_template == 2) ? 'events.show-template2' : 'events.show';
+        $templateId = $event->page_template ?: 1;
+        if ($templateId >= 1 && $templateId <= 7) {
+            $viewName = ($templateId == 1) ? 'events.show' : 'events.show-template' . $templateId;
+        } else {
+            $viewName = 'events.show-preset';
+        }
 
         return view($viewName, compact('event', 'newestEvents', 'prominentEvents', 'previousEvent', 'nextEvent'));
     }

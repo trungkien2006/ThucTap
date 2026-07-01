@@ -17,10 +17,13 @@ class FileHelper
             return $path;
         }
 
-        if (config('filesystems.default') === 'google') {
+        try {
             if (Storage::disk('public')->exists($path)) {
                 return asset('storage/' . $path);
             }
+        } catch (\Exception $e) {}
+
+        if (config('filesystems.default') === 'google') {
             return route('file.proxy', ['path' => $path]);
         }
 

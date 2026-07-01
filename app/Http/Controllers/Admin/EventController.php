@@ -117,7 +117,11 @@ class EventController extends Controller
         if ($request->hasFile('banner_image')) {
             $categorySlug = $event->category ? $event->category->slug : 'uncategorized';
             $folderPath = "{$categorySlug}/{$event->slug}/banners";
-            $path = $request->file('banner_image')->store($folderPath, 'google');
+            try {
+                $path = $request->file('banner_image')->store($folderPath, 'google');
+            } catch (\Exception $e) {
+                $path = $request->file('banner_image')->store($folderPath, 'public');
+            }
             $event->media()->create([
                 'type' => 'image',
                 'url' => $path,

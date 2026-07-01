@@ -49,6 +49,7 @@ class FrontendController extends Controller
 
     public function home()
     {
+        \Illuminate\Support\Facades\Cache::forget('frontend_home_data');
         $data = \Illuminate\Support\Facades\Cache::remember('frontend_home_data', 300, function () {
             $dbCategories = \App\Models\Category::where('type', 'event_type')
                 ->whereNotIn('name', ['Other', 'Khác'])

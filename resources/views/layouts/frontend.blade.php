@@ -382,10 +382,11 @@
         border-radius: 2px;
         pointer-events: none;
         background: #fff;
-        box-shadow: 0 0 2px currentColor;
         z-index: 0;
         animation: fall linear forwards;
+        /* Hardware acceleration */
         will-change: transform, opacity;
+        transform: translateZ(0);
     }
     @keyframes fall {
         0% { transform: translateY(0) rotate(var(--rot)); opacity: 0; }
@@ -408,7 +409,7 @@
                 if (sec) {
                     const c = document.createElement('div');
                     c.className = "falling-particles-layer pointer-events-none";
-                    c.style.cssText = "position: absolute !important; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; overflow: hidden;";
+                    c.style.cssText = "position: absolute !important; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; overflow: hidden; pointer-events: none;";
                     sec.insertBefore(c, sec.firstChild);
                     fallContainers.push(c);
                 }
@@ -418,26 +419,33 @@
         if (fallContainers.length === 0) return;
         
         const fallColors = ["#FFE381", "#07A0C3", "#04F06A", "#FF5722", "#E83A59"]; 
-        const maxParticles = 15; // Giảm tối đa số lượng hạt rơi xuống còn 15 để siêu mượt
+        const maxParticles = 10; 
         
-        function createFallingParticle() {
-            if (document.hidden) return; 
-            
-            // Tìm các container đang hiển thị
-            const visible = [];
-            fallContainers.forEach(c => {
-                const rect = c.parentElement.getBoundingClientRect();
-                if (rect.top < window.innerHeight && rect.bottom > 0) {
-                    visible.push({ container: c, rect: rect });
+        // Tối ưu hóa: Dùng IntersectionObserver thay vì getBoundingClientRect trong vòng lặp để biết container nào đang trong viewport
+        const visibleContainers = new Set();
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    visibleContainers.add(entry.target.querySelector('.falling-particles-layer'));
+                } else {
+                    visibleContainers.delete(entry.target.querySelector('.falling-particles-layer'));
                 }
             });
+        }, { threshold: 0.1 });
+        
+        targetSections.forEach(selector => {
+            const sec = document.querySelector(selector);
+            if (sec) observer.observe(sec);
+        });
+
+        function createFallingParticle() {
+            if (document.hidden || visibleContainers.size === 0) return; 
             
-            if (visible.length === 0) return;
+            // Lấy danh sách container đang active
+            const containers = Array.from(visibleContainers).filter(Boolean);
+            if (containers.length === 0) return;
             
-            // Chọn ngẫu nhiên 1 container
-            const target = visible[Math.floor(Math.random() * visible.length)];
-            const activeContainer = target.container;
-            const parentRect = target.rect;
+            const activeContainer = containers[Math.floor(Math.random() * containers.length)];
             
             if (activeContainer.childElementCount > maxParticles) return;
             
@@ -453,23 +461,21 @@
             p.style.width = (4 * scale) + "px";
             p.style.height = (12 * scale) + "px";
             
-            // Tính toán vị trí top tương đối so với vùng đang hiển thị của container
-            const viewportTop = -parentRect.top;
-            const startY = Math.max(0, viewportTop) - 20; 
+            // Đặt fixed top thay vì tính toán từ getBoundingClientRect liên tục
+            // Thiết lập giá trị tương đối vì container có CSS overflow: hidden
+            p.style.top = "-20px"; 
             
-            p.style.top = startY + "px";
-            
-            // CSS Animation thay vì JS để đảm bảo tương thích 100% mọi trình duyệt
             p.style.animationDuration = (Math.random() * 3 + 2) + "s";
             
-            activeContainer.appendChild(p);
+            // Xóa tự động bằng animationend, siêu mượt, không dùng setTimeout
+            p.addEventListener('animationend', () => {
+                p.remove();
+            }, { once: true });
             
-            setTimeout(() => {
-                if (p.parentNode) p.remove();
-            }, 6000);
+            activeContainer.appendChild(p);
         }
         
-        setInterval(createFallingParticle, 400); // Rơi chậm và thưa hơn (400ms/hạt)
+        setInterval(createFallingParticle, 800); 
     });
 </script>
 <!-- ========================================== -->
@@ -483,10 +489,10 @@
         border-radius: 50%;
         pointer-events: none;
         background: #fff !important; 
-        box-shadow: 0 0 2px currentColor; 
         animation: explode 2s cubic-bezier(0.1, 1, 0.2, 1) forwards; 
         z-index: 0;
         will-change: transform, opacity;
+        transform: translateZ(0); /* Hardware acceleration */
     }
     @keyframes explode {
         0% { transform: translate(0, 0) rotate(var(--rot)) scale(1); opacity: 1; }
@@ -503,15 +509,28 @@
         const targetSections = ['#spotlight', '#events', '#featured-events-wrapper', '#archive-sticky-wrapper'];
         let containers = [];
         
+        // Dùng IntersectionObserver cho pháo hoa để tránh lag từ getBoundingClientRect
+        const visibleFWContainers = new Set();
+        const fwObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    visibleFWContainers.add(entry.target.querySelector('.fireworks-layer'));
+                } else {
+                    visibleFWContainers.delete(entry.target.querySelector('.fireworks-layer'));
+                }
+            });
+        }, { threshold: 0.1 });
+        
         if (isHome) {
             targetSections.forEach(selector => {
                 const sec = document.querySelector(selector);
                 if (sec) {
                     const c = document.createElement('div');
                     c.className = "fireworks-layer pointer-events-none";
-                    c.style.cssText = "position: absolute !important; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; overflow: hidden;";
+                    c.style.cssText = "position: absolute !important; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; overflow: hidden; pointer-events: none;";
                     sec.insertBefore(c, sec.firstChild);
                     containers.push(c);
+                    fwObserver.observe(sec);
                 }
             });
             
@@ -530,77 +549,62 @@
         function explodeFirework() {
             if (document.hidden) return;
             
-            const visible = [];
-            containers.forEach(c => {
-                const parentRect = c.parentElement.getBoundingClientRect();
-                if (parentRect.top < window.innerHeight && parentRect.bottom > 0) {
-                    visible.push({ container: c, rect: parentRect });
-                }
-            });
-            
-            if (visible.length === 0) {
+            const activeContainers = Array.from(visibleFWContainers).filter(Boolean);
+            if (activeContainers.length === 0) {
                 scheduleNextFirework();
                 return;
             }
             
-            const target = visible[Math.floor(Math.random() * visible.length)];
-            const activeContainer = target.container;
+            const activeContainer = activeContainers[Math.floor(Math.random() * activeContainers.length)];
+            const x = Math.random() * 80 + 10; // 10vw -> 90vw (tránh bay ra ngoài)
+            const y = Math.random() * 50 + 10; // 10% -> 60% top
             
-            const x = Math.random() * window.innerWidth;
-            
-            // Tính toạ độ y tương đối với vùng nhìn thấy của container absolute
-            const viewportTop = -target.rect.top;
-            const visibleTop = Math.max(0, viewportTop);
-            const visibleBottom = Math.min(target.rect.height, viewportTop + window.innerHeight);
-            const y = visibleTop + Math.random() * (visibleBottom - visibleTop) * 0.7;
-            
-            const numSparks = Math.floor(Math.random() * 8 + 6); // Giảm cực độ số lượng tia pháo (6-14 tia)
+            const numSparks = Math.floor(Math.random() * 4 + 6); // Rất ít tia (6-9 tia)
             const burstColor = fwColors[Math.floor(Math.random() * fwColors.length)];
             const fragment = document.createDocumentFragment();
+            
+            let sparksAdded = 0;
             
             for (let i = 0; i < numSparks; i++) {
                 const spark = document.createElement("div");
                 spark.classList.add("firework-spark");
-                spark.style.left = x + "px";
-                spark.style.top = y + "px";
+                spark.style.left = x + "%";
+                spark.style.top = y + "%";
                 
                 const color = Math.random() > 0.15 ? burstColor : fwColors[Math.floor(Math.random() * fwColors.length)];
-                spark.style.color = color; 
+                spark.style.backgroundColor = color; // Đổi từ text color sang background color
                 
                 const angle = Math.random() * Math.PI * 2;
                 spark.style.setProperty('--rot', (angle + Math.PI/2) + 'rad');
                 
-                const distance = Math.random() * 300 + 100; 
+                const distance = Math.random() * 150 + 80; 
                 const tx = Math.cos(angle) * distance;
-                const ty = Math.sin(angle) * distance + (Math.random() * 250 + 150); 
+                const ty = Math.sin(angle) * distance + (Math.random() * 100 + 80); 
                 
                 spark.style.setProperty('--tx', tx + 'px');
                 spark.style.setProperty('--ty', ty + 'px');
                 
-                spark.style.animationDuration = (Math.random() * 0.8 + 1.2) + "s";
+                spark.style.animationDuration = (Math.random() * 0.5 + 1.2) + "s";
+                
+                // Dọn dẹp DOM cực kỳ tối ưu
+                spark.addEventListener('animationend', () => {
+                    spark.remove();
+                }, { once: true });
                 
                 fragment.appendChild(spark);
+                sparksAdded++;
             }
             
             activeContainer.appendChild(fragment);
-            
-            setTimeout(() => {
-                const sparks = activeContainer.querySelectorAll('.firework-spark');
-                sparks.forEach(s => {
-                    const animationName = getComputedStyle(s).animationName;
-                    if (animationName === 'none') s.remove();
-                });
-            }, 3000);
         }
         
         function scheduleNextFirework() {
             setTimeout(() => {
                 if (!document.hidden) {
                     explodeFirework();
-                    // Đã bỏ hoàn toàn nổ chùm (đôi) để giảm giật lag
                 }
                 scheduleNextFirework();
-            }, Math.random() * 1500 + 1000); // Pháo nổ rất thưa (1s - 2.5s mỗi quả)
+            }, Math.random() * 2000 + 1500); // Rất thưa 1.5s - 3.5s
         }
         
         setTimeout(scheduleNextFirework, 500);
@@ -612,9 +616,9 @@
 <!-- MAGIC BEE CURSOR                             -->
 <!-- ========================================== -->
 <style>
-    /* Đổi con trỏ chuột thành hình chú Ong vàng FPT */
+    /* Đổi con trỏ chuột thành hình chú Ong vàng FPT (Đã tối ưu bóng đổ để tránh lag) */
     body, a, button, [role="button"], input, select, textarea {
-        cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='32' height='32'><defs><filter id='shadow'><feDropShadow dx='1' dy='1' stdDeviation='1' flood-opacity='0.4'/></filter></defs><g filter='url(%23shadow)' transform='rotate(-15, 16, 16)'><ellipse cx='12' cy='10' rx='4' ry='6' fill='%23e2f1f8' opacity='0.9'/><ellipse cx='20' cy='10' rx='4' ry='6' fill='%23e2f1f8' opacity='0.9'/><ellipse cx='16' cy='18' rx='7' ry='10' fill='%23FFB800'/><path d='M9.5 16h13M10 20h12' stroke='%23111' stroke-width='2.5' stroke-linecap='round'/><circle cx='16' cy='8' r='4' fill='%23111'/><path d='M15 4c-1-2-2-2-2-2M17 4c1-2 2-2 2-2' stroke='%23111' stroke-width='1' fill='none' stroke-linecap='round'/><polygon points='14,27 18,27 16,31' fill='%23111'/></g></svg>") 16 16, auto !important;
+        cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='32' height='32'><g transform='rotate(-15, 16, 16)'><ellipse cx='12' cy='10' rx='4' ry='6' fill='%23e2f1f8' opacity='0.9'/><ellipse cx='20' cy='10' rx='4' ry='6' fill='%23e2f1f8' opacity='0.9'/><ellipse cx='16' cy='18' rx='7' ry='10' fill='%23FFB800'/><path d='M9.5 16h13M10 20h12' stroke='%23111' stroke-width='2.5' stroke-linecap='round'/><circle cx='16' cy='8' r='4' fill='%23111'/><path d='M15 4c-1-2-2-2-2-2M17 4c1-2 2-2 2-2' stroke='%23111' stroke-width='1' fill='none' stroke-linecap='round'/><polygon points='14,27 18,27 16,31' fill='%23111'/></g></svg>") 16 16, auto !important;
     }
 </style>
 @endif

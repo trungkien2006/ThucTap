@@ -49,7 +49,6 @@ class FrontendController extends Controller
 
     public function home()
     {
-        \Illuminate\Support\Facades\Cache::forget('frontend_home_data');
         $data = \Illuminate\Support\Facades\Cache::remember('frontend_home_data', 300, function () {
             $dbCategories = \App\Models\Category::where('type', 'event_type')
                 ->whereNotIn('name', ['Other', 'Khác'])
@@ -68,14 +67,17 @@ class FrontendController extends Controller
                 return [
                     'name' => $c->name,
                     'slug' => $c->slug,
-                    'desc' => $vietnameseNames[$c->name] ?? 'Sự kiện'
+                    'desc' => $vietnameseNames[$c->name] ?? $c->name,
+                    'image' => 'images/categories/' . $c->slug . '.jpg',
+                    'event_count' => \App\Models\Event::published()->where('category_id', $c->id)->count()
                 ];
             })->toArray();
 
 
             $dbFeatured = Event::with(['bannerImage', 'category'])
                 ->published()
-                ->orderByRaw('views_count + likes_count DESC')
+                ->where('created_at', '>=', now()->subMonths(3))
+                ->orderByRaw('(likes_count * 3) + views_count DESC')
                 ->take(6)
                 ->get();
             $featuredEvents = $dbFeatured->map(function ($event) {
@@ -92,7 +94,7 @@ class FrontendController extends Controller
                 ];
             })->toArray();
 
-            $dbUpcoming = Event::with(['bannerImage', 'galleryImages'])
+            $dbUpcoming = Event::with(['bannerImage', 'galleryImages', 'category'])
                 ->published()
                 ->upcoming()
                 ->orderBy('event_date', 'asc')
@@ -117,6 +119,8 @@ class FrontendController extends Controller
                     'status'  => 'Sắp mở',
                     'open'    => true,
                     'images'  => array_values($images),
+                    'category'=> $event->category->name ?? 'Sự kiện',
+                    'location'=> $event->location,
                 ];
             })->toArray();
 
@@ -206,6 +210,7 @@ class FrontendController extends Controller
 
             $dbSlides = Event::with(['bannerImage', 'category'])
                 ->published()
+                ->where('event_date', '<=', now())
                 ->latest()
                 ->take(6)
                 ->get();

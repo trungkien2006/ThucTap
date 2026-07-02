@@ -138,6 +138,8 @@ export default {
                 heading: ['"Hanken Grotesk"', 'sans-serif'],
                 body: ['"Inter"', 'sans-serif'],
                 sans: ['"Inter"', ...defaultTheme.fontFamily.sans],
+                barlow: ['"Barlow"', 'sans-serif'],
+                "barlow-condensed": ['"Barlow Condensed"', 'sans-serif'],
                 // Legacy compat
                 "headline-md": ['"Inter"'],
                 "headline-lg": ['"Inter"'],

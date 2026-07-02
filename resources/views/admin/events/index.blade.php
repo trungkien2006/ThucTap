@@ -100,7 +100,7 @@
             </div>
 
             {{-- Render Active Tags --}}
-            @if(count($selectedYearSemesters) > 0 || count($selectedCategories) > 0 || count($selectedDepartments) > 0)
+            @if(count($selectedSemesters) > 0 || count($selectedCategories) > 0 || count($selectedDepartments) > 0)
                 <div class="flex flex-wrap items-center gap-1.5 pt-2 border-t border-border/50">
                     <span class="text-[11px] font-semibold text-muted-foreground mr-1">Bộ lọc đang chọn:</span>
 

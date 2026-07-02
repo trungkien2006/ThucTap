@@ -36,13 +36,14 @@
             transition: background-color 0.15s, color 0.15s;
         }
         .sidebar-menu-btn.active {
-            background-color: var(--color-sidebar-accent, #f1f5f9);
-            color: var(--color-sidebar-accent-foreground, #0f172a);
+            background-color: var(--primary);
+            color: var(--primary-foreground);
             font-weight: 600;
+            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
         }
         .sidebar-menu-btn:hover:not(.active) {
-            background-color: var(--color-sidebar-accent, #f1f5f9);
-            color: var(--color-sidebar-accent-foreground, #0f172a);
+            background-color: var(--sidebar-accent, #f1f5f9);
+            color: var(--sidebar-accent-foreground, #0f172a);
         }
         
         /* Mobile Overlay styling */
@@ -85,7 +86,7 @@
                         <i data-lucide="layout-dashboard" class="h-5 w-5"></i>
                         <span>Tổng quan</span>
                     </a>
-                    <a href="{{ route('admin.events.index') }}" class="sidebar-menu-btn {{ request()->routeIs('admin.events.*') && !request()->routeIs('admin.events.create') && !request()->routeIs('admin.events.edit') && !request()->routeIs('admin.events.design') && !request()->routeIs('admin.events.preview') && !request()->routeIs('admin.events.show') ? 'active' : '' }}">
+                    <a href="{{ route('admin.events.index') }}" class="sidebar-menu-btn {{ request()->routeIs('admin.events.*') ? 'active' : '' }}">
                         <i data-lucide="calendar" class="h-5 w-5"></i>
                         <span>Sự kiện</span>
                     </a>

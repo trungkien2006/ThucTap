@@ -32,7 +32,7 @@
         @forelse($categories as $i => $category)
         <div class="bg-card rounded-lg border border-border p-4 shadow-none flex flex-col gap-3">
             <div class="flex items-start justify-between">
-                <div class="h-9 w-9 rounded-md bg-gradient-to-br grid place-items-center {{ $palettes[$i % count($palettes)] }}">
+                <div class="h-9 w-9 rounded-md bg-gradient-to-br grid place-items-center {{ $palettes[$category->id % count($palettes)] }}">
                     <i data-lucide="tag" class="h-4 w-4"></i>
                 </div>
                 <div class="flex items-center gap-1">

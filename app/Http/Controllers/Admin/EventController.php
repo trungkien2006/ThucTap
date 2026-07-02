@@ -143,7 +143,7 @@ class EventController extends Controller
     public function saveTemplate(Request $request, Event $event)
     {
         $request->validate([
-            'page_template' => 'required|integer|in:1,2'
+            'page_template' => 'required|integer|in:1,2,3'
         ]);
         
         $event->page_template = $request->page_template;
@@ -418,7 +418,12 @@ class EventController extends Controller
         $nextEvent = null;
 
         // Template routing
-        $viewName = ($event->page_template == 2) ? 'events.show-template2' : 'events.show';
+        $viewName = 'events.show';
+        if ($event->page_template == 2) {
+            $viewName = 'events.show-template2';
+        } elseif ($event->page_template == 3) {
+            $viewName = 'events.show-template3';
+        }
 
         return view($viewName, compact('event', 'newestEventsData', 'previousEvent', 'nextEvent'));
     }

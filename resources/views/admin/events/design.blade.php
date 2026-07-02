@@ -996,7 +996,7 @@
             if (template === '1') {
                 docSections.forEach(el => el.classList.add('hidden'));
                 if (subBannerSection) subBannerSection.style.display = 'none';
-            } else {
+            } else if (template === '2') {
                 docSections.forEach(el => el.classList.remove('hidden'));
                 if (subBannerSection) {
                     subBannerSection.style.display = '';
@@ -1015,6 +1015,9 @@
                         }
                     }
                 }
+            } else if (template === '3') {
+                docSections.forEach(el => el.classList.remove('hidden'));
+                if (subBannerSection) subBannerSection.style.display = 'none';
             }
 
             const descEl = document.getElementById('viewMoTa');

@@ -90,7 +90,7 @@
     </div>
 </div>
 
-@else
+@elseif($templateId == 2)
 {{-- BẢN PREVIEW MẪU 2 (GARDEN) --}}
 @push('styles')
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
@@ -272,6 +272,161 @@
                         <div class="gw-sticky-wrapper">
                             <img src="https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=800&q=80" class="gw-sticky-media" loading="lazy">
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+@elseif($templateId == 3)
+{{-- BẢN PREVIEW MẪU 3 (AIFUTURE / MINT GREEN) --}}
+@push('styles')
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+    /* ─── Template 3: AIFuture / Mint Green ─── */
+    .tp3-wrapper {
+        --tp3-primary: #006b5b;
+        --tp3-primary-container: rgba(0, 245, 212, 0.2);
+        --tp3-primary-light: #00f5d4;
+        --tp3-on-surface: #1b1c1a;
+        --tp3-on-surface-variant: #3a4a46;
+        --tp3-surface-container-lowest: #ffffff;
+        --tp3-surface-container: #efeeea;
+        --tp3-background: #faf9f5;
+        
+        background-color: var(--tp3-background);
+        color: var(--tp3-on-surface);
+        font-family: 'Inter', sans-serif;
+        font-size: 16px;
+        line-height: 24px;
+        overflow-x: hidden;
+        padding-top: 120px;
+        padding-bottom: 120px;
+    }
+    
+    body:has(.tp3-wrapper) { background-color: #faf9f5 !important; }
+
+    .tp3-container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+    
+    .tp3-headline-lg { font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(36px, 5vw, 48px); line-height: 1.2; font-weight: 700; letter-spacing: -0.01em; color: var(--tp3-on-surface); }
+    .tp3-headline-md { font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(24px, 4vw, 32px); line-height: 1.3; font-weight: 600; color: var(--tp3-on-surface); }
+    .tp3-body-lg { font-size: 18px; line-height: 28px; font-weight: 400; color: var(--tp3-on-surface-variant); }
+    .tp3-label-caps { font-family: 'Inter', sans-serif; font-size: 12px; line-height: 16px; letter-spacing: 0.08em; font-weight: 600; text-transform: uppercase; }
+    
+    .tp3-hero-badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 16px; border-radius: 999px; background: var(--tp3-primary-container); color: var(--tp3-primary); margin-bottom: 24px; }
+    .tp3-meta-row { display: flex; flex-wrap: wrap; gap: 32px; color: var(--tp3-on-surface-variant); font-size: 18px; margin-top: 24px; }
+    .tp3-meta-item { display: flex; align-items: center; gap: 8px; }
+    .tp3-meta-icon { color: var(--tp3-primary); }
+    
+    .tp3-grid { display: grid; grid-template-columns: 1fr; gap: 48px; margin-bottom: 120px; }
+    @media(min-width: 1024px) { .tp3-grid { grid-template-columns: 5fr 7fr; } }
+    .tp3-title-decor { display: flex; align-items: center; gap: 16px; margin-bottom: 32px; }
+    .tp3-title-decor::before { content: ''; display: block; width: 48px; height: 4px; background: var(--tp3-primary); border-radius: 99px; }
+    
+    .tp3-decor-card { position: relative; border-radius: 32px; overflow: hidden; border: 1px solid rgba(255,255,255,0.5); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); height: 500px; }
+    .tp3-decor-glow { position: absolute; inset: -16px; background: rgba(0, 107, 91, 0.1); filter: blur(24px); border-radius: 40px; transition: background 0.5s; z-index: 0; }
+    .tp3-decor-card-inner { position: relative; z-index: 1; height: 100%; }
+    .tp3-decor-img { width: 100%; height: 100%; object-fit: cover; }
+    .tp3-decor-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.4), transparent); }
+    
+    .tp3-activities { margin-bottom: 120px; }
+    .tp3-activities-header { text-align: center; margin-bottom: 64px; }
+    .tp3-activities-grid { display: grid; grid-template-columns: 1fr; gap: 32px; padding-bottom: 40px; }
+    @media(min-width: 768px) { .tp3-activities-grid { grid-template-columns: 1fr 1fr; gap: 24px; } }
+    
+    .tp3-card { background: var(--tp3-surface-container-lowest); border-radius: 24px; padding: 32px; box-shadow: 0 20px 40px rgba(0, 245, 212, 0.08); border: 1px solid transparent; transition: all 0.5s; display: flex; flex-direction: column; height: 100%; }
+    .tp3-card:hover { border-color: rgba(0, 107, 91, 0.2); transform: scale(1.02); }
+    .tp3-card-img-wrap { height: 256px; border-radius: 12px; overflow: hidden; margin-bottom: 32px; }
+    .tp3-card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.7s; }
+    .tp3-card:hover .tp3-card-img { transform: scale(1.1); }
+    
+    .tp3-card-title { color: var(--tp3-primary); margin-bottom: 16px; }
+    .tp3-card-desc { color: var(--tp3-on-surface-variant); margin-bottom: 32px; flex-grow: 1; }
+    
+    .tp3-tag { padding: 8px 16px; border-radius: 999px; background: var(--tp3-surface-container); color: var(--tp3-on-surface-variant); display: inline-flex; align-items: center; gap: 8px; font-weight: 600; text-decoration: none; }
+</style>
+@endpush
+
+<div class="tp3-wrapper">
+    <!-- Hero Header -->
+    <header class="tp3-container" style="margin-bottom: 80px;">
+        <div class="tp3-hero-badge">
+            <span class="material-symbols-outlined" style="font-size: 18px;">category</span>
+            <span class="tp3-label-caps">Công nghệ thông tin</span>
+        </div>
+        
+        <h1 class="tp3-headline-lg" style="max-width: 900px;">Hội thảo Trí tuệ nhân tạo tương lai</h1>
+        
+        <div class="tp3-meta-row">
+            <div class="tp3-meta-item">
+                <span class="material-symbols-outlined tp3-meta-icon">calendar_today</span>
+                24/12/2024 - 08:30
+            </div>
+            <div class="tp3-meta-item">
+                <span class="material-symbols-outlined tp3-meta-icon">location_on</span>
+                Trung tâm Hội nghị Quốc gia
+            </div>
+        </div>
+    </header>
+
+    <!-- Intro Grid -->
+    <section class="tp3-container">
+        <div class="tp3-grid">
+            <div style="display: flex; flex-direction: column; justify-content: center;">
+                <h2 class="tp3-headline-md tp3-title-decor">Giới thiệu sự kiện</h2>
+                <div class="tp3-body-lg tp3-content-block" style="line-height: 1.8;">
+                    <p style="margin-bottom: 16px;">Hội thảo Trí tuệ nhân tạo tương lai là sự kiện công nghệ thường niên quy tụ những chuyên gia hàng đầu trong lĩnh vực AI. Năm nay, chúng tôi tập trung vào sự giao thoa giữa trí tuệ nhân tạo và khả năng sáng tạo của con người, mở ra những góc nhìn mới về một kỷ nguyên công nghệ nhân văn.</p>
+                    <p>Với quy mô hơn 1000 người tham dự, sự kiện không chỉ là nơi chia sẻ kiến thức mà còn là không gian kết nối, thực hành các công cụ AI tiên tiến nhất hiện nay.</p>
+                </div>
+            </div>
+            
+            <div style="position: relative;">
+                <div class="tp3-decor-glow"></div>
+                <div class="tp3-decor-card">
+                    <div class="tp3-decor-card-inner">
+                        <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80" class="tp3-decor-img" alt="Hero">
+                        <div class="tp3-decor-overlay"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Activities -->
+    <section class="tp3-container tp3-activities">
+        <div class="tp3-activities-header">
+            <h2 class="tp3-headline-md">Hoạt động nổi bật</h2>
+            <p class="tp3-body-lg" style="max-width: 700px; margin: 16px auto 0;">Khám phá các hoạt động đặc sắc được thiết kế riêng để tối ưu hóa trải nghiệm học tập và kết nối của bạn.</p>
+        </div>
+        
+        <div class="tp3-activities-grid">
+            <div>
+                <div class="tp3-card">
+                    <div class="tp3-card-img-wrap">
+                        <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80" class="tp3-card-img" alt="">
+                    </div>
+                    <h3 class="tp3-headline-md tp3-card-title" style="font-size: 24px;">Khai mạc sự kiện</h3>
+                    <div class="tp3-card-desc tp3-body-lg" style="font-size: 16px;">
+                        Lễ khai mạc đầy cảm hứng với sự tham gia của các Keynote Speakers từ các tập đoàn công nghệ hàng đầu thế giới. Trải nghiệm trình diễn AI kết hợp nghệ thuật thị giác sống động.
+                    </div>
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <span class="tp3-tag tp3-label-caps"><span class="material-symbols-outlined" style="font-size: 16px;">description</span> Tài liệu</span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="transform: translateY(40px);">
+                <div class="tp3-card">
+                    <div class="tp3-card-img-wrap">
+                        <img src="https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=800&q=80" class="tp3-card-img" alt="">
+                    </div>
+                    <h3 class="tp3-headline-md tp3-card-title" style="font-size: 24px;">Workshop chuyên sâu</h3>
+                    <div class="tp3-card-desc tp3-body-lg" style="font-size: 16px;">
+                        Cơ hội thực hành trực tiếp cùng các chuyên gia. Bạn sẽ được hướng dẫn xây dựng các mô hình ngôn ngữ lớn (LLM) và ứng dụng Generative AI vào quy trình làm việc.
+                    </div>
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <span class="tp3-tag tp3-label-caps"><span class="material-symbols-outlined" style="font-size: 16px;">link</span> Đăng ký Demo</span>
                     </div>
                 </div>
             </div>

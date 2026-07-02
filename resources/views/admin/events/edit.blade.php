@@ -143,7 +143,10 @@
                                     <img src="{{ $photoUrl }}" class="w-8 h-8 rounded-full object-cover">
                                     <div>
                                         <p class="text-[13px] font-semibold text-primary speaker-name-text">{{ $speaker->name }}</p>
-                                        <p class="text-[11px] text-slate-400 speaker-title-text">{{ $speaker->title ?? 'Diễn giả' }}</p>
+                                        <p class="text-[11px] font-medium speaker-role-text mb-0.5 {{ $speaker->type === 'guest' ? '' : 'text-brand-orange' }}"
+                                           style="{{ $speaker->type === 'guest' ? 'color: #9333ea;' : '' }}">
+                                            {{ $speaker->type === 'guest' ? 'Khách mời' : 'Diễn giả' }}
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -161,17 +164,16 @@
                             <p class="text-[13px] text-slate-400">Chưa có diễn giả nào trong hệ thống.</p>
                             <button type="button" class="open-add-speaker-modal-btn inline-flex items-center gap-1.5 text-brand-orange text-[12px] font-semibold hover:underline mt-2">
                                 <span class="material-symbols-outlined text-[16px]">add_circle</span>
-                                Thêm diễn giả mới
+                                Thêm mới
                             </button>
                         </div>
                     @endforelse
                     
-                    <!-- Search Empty State -->
                     <div id="speaker_search_empty" class="hidden col-span-full py-6 text-center">
-                        <p class="text-[13px] text-slate-400">Không tìm thấy diễn giả nào khớp với từ khóa.</p>
+                        <p class="text-[13px] text-slate-400">Không tìm thấy kết quả nào khớp với từ khóa.</p>
                         <button type="button" class="open-add-speaker-modal-btn inline-flex items-center gap-1.5 text-brand-orange text-[12px] font-semibold hover:underline mt-2">
                             <span class="material-symbols-outlined text-[16px]">add_circle</span>
-                            Thêm diễn giả mới
+                            Thêm mới
                         </button>
                     </div>
                 </div>
@@ -520,7 +522,10 @@
                                     <img src="${photoUrl}" class="w-8 h-8 rounded-full object-cover">
                                     <div>
                                         <p class="text-[13px] font-semibold text-primary speaker-name-text">${sp.name}</p>
-                                        <p class="text-[11px] text-slate-400 speaker-title-text">${sp.title || 'Diễn giả'}</p>
+                                        <p class="text-[11px] font-medium speaker-role-text mb-0.5 ${sp.type === 'guest' ? '' : 'text-brand-orange'}"
+                                           style="${sp.type === 'guest' ? 'color: #9333ea;' : ''}">
+                                            ${sp.type === 'guest' ? 'Khách mời' : 'Diễn giả'}
+                                        </p>
                                     </div>
                                 </div>
                             </div>

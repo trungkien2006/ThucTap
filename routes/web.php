@@ -32,19 +32,6 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
             $totalSpeakers = \App\Models\Speaker::where('is_hidden', false)->count();
             $totalMedia = \App\Models\EventMedia::whereIn('type', ['image', 'video'])->count();
 
-            $upcomingEvents = \App\Models\Event::with('category')
-                ->where('is_published', true)
-                ->where('event_date', '>=', now())
-                ->orderBy('event_date', 'asc')
-                ->take(5)
-                ->get();
-
-            $mostViewed = \App\Models\Event::with('category')
-                ->where('is_published', true)
-                ->orderBy('views_count', 'desc')
-                ->take(5)
-                ->get();
-
             // 1. Calculate growth delta compared to last year
             $getGrowthDelta = function ($current, $previous) {
                 if ($previous == 0) {
@@ -117,10 +104,23 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
                     ->count();
             }
 
-            return compact('totalViews', 'totalLikes', 'totalEvents', 'upcomingEventsCount', 'completedEventsCount', 'totalSpeakers', 'totalMedia', 'upcomingEvents', 'mostViewed', 'deltas', 'eventsTrend', 'categoriesData', 'imagesTrend', 'videosTrend');
+            return compact('totalViews', 'totalLikes', 'totalEvents', 'upcomingEventsCount', 'completedEventsCount', 'totalSpeakers', 'totalMedia', 'deltas', 'eventsTrend', 'categoriesData', 'imagesTrend', 'videosTrend');
         });
 
         extract($stats);
+        
+        $upcomingEvents = \App\Models\Event::with('category')
+            ->where('is_published', true)
+            ->where('event_date', '>=', now())
+            ->orderBy('event_date', 'asc')
+            ->take(5)
+            ->get();
+
+        $mostViewed = \App\Models\Event::with('category')
+            ->where('is_published', true)
+            ->orderBy('views_count', 'desc')
+            ->take(5)
+            ->get();
         
         return view('admin.dashboard', compact(
             'totalViews', 'totalLikes', 'totalEvents', 'upcomingEventsCount',

@@ -195,7 +195,10 @@ class EventController extends Controller
             'location' => 'nullable|string',
             'academic_year' => 'nullable|string',
             'department_id' => 'nullable|exists:categories,id',
-            'speaker_id' => 'nullable|exists:speakers,id',
+            'speaker_ids' => 'nullable|array',
+            'speaker_ids.*' => 'exists:speakers,id',
+            'guest_ids' => 'nullable|array',
+            'guest_ids.*' => 'exists:speakers,id',
             'schedule_text' => 'nullable|string',
             
 
@@ -232,9 +235,18 @@ class EventController extends Controller
 
         $event->save();
 
-        if ($request->has('speaker_id') && $request->speaker_id) {
-            $event->speakers()->syncWithoutDetaching([$request->speaker_id]);
+        $syncData = [];
+        if ($request->has('speaker_ids') && is_array($request->speaker_ids)) {
+            foreach ($request->speaker_ids as $id) {
+                $syncData[$id] = ['role' => 'speaker'];
+            }
         }
+        if ($request->has('guest_ids') && is_array($request->guest_ids)) {
+            foreach ($request->guest_ids as $id) {
+                $syncData[$id] = ['role' => 'guest'];
+            }
+        }
+        $event->speakers()->sync($syncData);
 
         if ($request->has('schedule_text')) {
             $event->scheduleItems()->delete();

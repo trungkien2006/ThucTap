@@ -78,7 +78,7 @@ class FrontendController extends Controller
                 ->published()
                 ->where('created_at', '>=', now()->subMonths(3))
                 ->orderByRaw('(likes_count * 3) + views_count DESC')
-                ->take(6)
+                ->take(4)
                 ->get();
             $featuredEvents = $dbFeatured->map(function ($event) {
                 return [

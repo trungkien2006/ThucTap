@@ -149,7 +149,7 @@
     }
 
     .slide-info {
-        flex: 0 0 400px;
+        flex: 0 0 500px;
         margin-bottom: 50px;
     }
     .slide-eyebrow {
@@ -183,6 +183,10 @@
         opacity: 0;
         transform: translateY(18px);
         transition: opacity 550ms ease 200ms, transform 550ms ease 200ms;
+        display: -webkit-box;
+        -webkit-line-clamp: 5;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
     }
     .slide-desc {
         color: var(--white-70);
@@ -244,12 +248,15 @@
 
     .card-strip {
         position: absolute;
-        right: 0;
-        top: 0; bottom: 0;
+        right: 48px;
+        bottom: 50px;
+        left: auto;
+        top: auto;
         width: 900px;
+        max-width: calc(100vw - 600px);
         display: flex;
         align-items: center;
-        padding: 90px 48px 100px 0;
+        padding: 0;
         gap: 16px;
         overflow: hidden;
     }

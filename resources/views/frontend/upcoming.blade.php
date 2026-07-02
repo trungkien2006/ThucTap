@@ -121,14 +121,14 @@
             @if($hasEvents)
                 @foreach($upcoming as $idx => $u)
                     @php 
-                        $img = !empty($u['images']) ? $u['images'][0] : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80';
+                        $img = !empty($u['images']) ? $u['images'][0] : (!empty($u['img']) ? $u['img'] : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80');
                         $zIndex = $idx + 1;
                     @endphp
                     <div class="upcoming-panel text-[#1C1410]" style="z-index: {{ $zIndex }};" data-index="{{ $idx }}">
                         <!-- Center Image Frame -->
                         <div class="slide-image-frame pointer-events-auto">
                             <div tabindex="0" class="slide-image-inner bg-gray-200 relative group overflow-hidden cursor-pointer focus:outline-none"
-                                 x-data="{ active: 0, images: {{ json_encode(!empty($u['images']) ? $u['images'] : ['https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80']) }} }">
+                                 x-data="{ active: 0, images: {{ json_encode(!empty($u['images']) ? $u['images'] : (!empty($u['img']) ? [$u['img']] : ['https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80'])) }} }">
                                  
 <style>
     /* Custom CSS để đảm bảo hiệu ứng blur hoạt động 100% không phụ thuộc Tailwind JIT */

@@ -70,8 +70,8 @@ class PublicEventController extends Controller
                 ])
                 ->toArray();
         });
-        $newestEvents = collect($newestEventsData)
-            ->filter(fn($e) => $e['id'] !== $event->id)
+        $newestEvents = collect(is_array($newestEventsData) ? $newestEventsData : [])
+            ->filter(fn($e) => is_array($e) && isset($e['id']) && $e['id'] !== $event->id)
             ->take(3);
 
         $prominentEventsData = \Illuminate\Support\Facades\Cache::remember('prominent_events', 300, function() {
@@ -90,8 +90,8 @@ class PublicEventController extends Controller
                 ])
                 ->toArray();
         });
-        $prominentEvents = collect($prominentEventsData)
-            ->filter(fn($e) => $e['id'] !== $event->id)
+        $prominentEvents = collect(is_array($prominentEventsData) ? $prominentEventsData : [])
+            ->filter(fn($e) => is_array($e) && isset($e['id']) && $e['id'] !== $event->id)
             ->take(3);
 
         $previousEvent = Event::where('is_published', true)

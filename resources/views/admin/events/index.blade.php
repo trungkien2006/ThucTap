@@ -27,19 +27,11 @@
         $selectedCategories = array_filter(is_array(request('category_id')) ? request('category_id') : [request('category_id')]);
         $selectedDepartments = array_filter(is_array(request('department_id')) ? request('department_id') : [request('department_id')]);
 
-        // Build semester options from distinct events
-        $semesterOptions = \App\Models\Event::select('semester')
-            ->whereNotNull('semester')
-            ->distinct()
-            ->orderBy('semester')
-            ->get()
-            ->map(function ($e) use ($semestersMap) {
-                $semLabel = $semestersMap[$e->semester] ?? 'HK' . $e->semester;
-                return [
-                    'value' => $e->semester,
-                    'label' => 'Kỳ ' . ucfirst($semLabel),
-                ];
-            });
+        $semesterOptions = collect([
+            ['value' => '1', 'label' => 'Kỳ Fall'],
+            ['value' => '2', 'label' => 'Kỳ Spring'],
+            ['value' => '3', 'label' => 'Kỳ Summer'],
+        ]);
     @endphp
     <div class="bg-card rounded-lg border border-border p-4 shadow-none flex flex-col gap-4">
         <form method="GET" action="{{ route('admin.events.index') }}" id="filterForm" class="space-y-3 w-full">

@@ -121,11 +121,7 @@
             @if($hasEvents)
                 @foreach($upcoming as $idx => $u)
                     @php 
-<<<<<<< HEAD
-                        $img = !empty($u['images']) ? $u['images'][0] : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80';
-=======
                         $img = !empty($u['images']) ? $u['images'][0] : (!empty($u['img']) ? $u['img'] : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80');
->>>>>>> origin/main
                         $zIndex = $idx + 1;
                     @endphp
                     <div class="upcoming-panel text-[#1C1410]" style="z-index: {{ $zIndex }};" data-index="{{ $idx }}">

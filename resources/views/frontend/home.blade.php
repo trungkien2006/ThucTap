@@ -8,17 +8,10 @@
 
 @section('content')
 
-<<<<<<< HEAD
-{{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-     HERO SLIDER
-     Overlay ấm — jasmine tint thay vì lạnh xanh
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
-=======
 {{-- ======================================================================
      HERO SLIDER
-     Overlay ấm — jasmine tint thay vì lạnh xanh
+     Overlay ?m � jasmine tint thay v� l?nh xanh
 ====================================================================== --}}
->>>>>>> origin/main
 <section id="top" class="relative min-h-screen w-full overflow-hidden" style="background:#1C1410;">
 
     
@@ -329,13 +322,7 @@
     </script>
 </section>
 
-<<<<<<< HEAD
-{{-- â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• 
-     FEATURED EVENTS + UPCOMING — Ná» n kem Jasmine nhạt
-â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â•  --}}
-=======
-{{-- FEATURED EVENTS + UPCOMING — Nền kem Jasmine nhạt --}}
->>>>>>> origin/main
+{{-- FEATURED EVENTS + UPCOMING � N?n kem Jasmine nh?t --}}
     <div id="events-sticky-wrapper" class="relative z-30" style="background: #FFFBEA;">
         <section id="events" class="relative z-20"
             style="background:#FFFBEA;">

@@ -23,28 +23,39 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Storage::extend('google', function($app, $config) {
-            $client = new \Google\Client();
-            $client->setClientId($config['clientId']);
-            $client->setClientSecret($config['clientSecret']);
-            $client->refreshToken($config['refreshToken']);
-            
-            $service = new \Google\Service\Drive($client);
-            
-            $options = [];
-            if (isset($config['teamDriveId'])) {
-                $options['teamDriveId'] = $config['teamDriveId'];
+            try {
+                if (empty($config['clientId']) || empty($config['clientSecret']) || empty($config['refreshToken'])) {
+                    throw new \Exception("Google Drive credentials are not fully configured in .env");
+                }
+
+                $guzzleClient = new \GuzzleHttp\Client(['verify' => false]);
+                $client = new \Google\Client();
+                $client->setHttpClient($guzzleClient);
+                $client->setClientId($config['clientId']);
+                $client->setClientSecret($config['clientSecret']);
+                $client->refreshToken($config['refreshToken']);
+                
+                $service = new \Google\Service\Drive($client);
+                
+                $options = [];
+                if (isset($config['teamDriveId'])) {
+                    $options['teamDriveId'] = $config['teamDriveId'];
+                }
+                if (isset($config['folderId'])) {
+                    $options['sharedFolderId'] = $config['folderId'];
+                }
+                
+                $adapter = new GoogleDriveAdapter($service, null, $options);
+                
+                return new \Illuminate\Filesystem\FilesystemAdapter(
+                    new Filesystem($adapter),
+                    $adapter,
+                    $config
+                );
+            } catch (\Exception $e) {
+                \Log::warning("Google Drive client failed: " . $e->getMessage() . ". Falling back to local public disk.");
+                return Storage::disk('public');
             }
-            if (isset($config['folderId'])) {
-                $options['sharedFolderId'] = $config['folderId'];
-            }
-            
-            $adapter = new GoogleDriveAdapter($service, null, $options);
-            
-            return new \Illuminate\Filesystem\FilesystemAdapter(
-                new Filesystem($adapter),
-                $adapter,
-                $config
-            );
         });
     }
 }

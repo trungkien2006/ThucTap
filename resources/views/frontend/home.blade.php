@@ -1,11 +1,24 @@
 @extends('layouts.frontend')
 
+@if(!empty($slides) && isset($slides[0]))
+    @push('styles')
+        <link rel="preload" as="image" href="{{ $slides[0]['image'] }}">
+    @endpush
+@endif
+
 @section('content')
 
+<<<<<<< HEAD
 {{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
      HERO SLIDER
      Overlay ấm — jasmine tint thay vì lạnh xanh
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
+=======
+{{-- ======================================================================
+     HERO SLIDER
+     Overlay ấm — jasmine tint thay vì lạnh xanh
+====================================================================== --}}
+>>>>>>> origin/main
 <section id="top" class="relative min-h-screen w-full overflow-hidden" style="background:#1C1410;">
 
     
@@ -316,9 +329,13 @@
     </script>
 </section>
 
+<<<<<<< HEAD
 {{-- â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• 
      FEATURED EVENTS + UPCOMING — Ná» n kem Jasmine nhạt
 â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â•  --}}
+=======
+{{-- FEATURED EVENTS + UPCOMING — Nền kem Jasmine nhạt --}}
+>>>>>>> origin/main
     <div id="events-sticky-wrapper" class="relative z-30" style="background: #FFFBEA;">
         <section id="events" class="relative z-20"
             style="background:#FFFBEA;">
@@ -342,6 +359,7 @@
                         $totalCount += $c['event_count'] ?? 0;
 
                     $catIcons = [
+<<<<<<< HEAD
                         'Conference' => 'mic',
                         'Workshop' => 'wrench',
                         'Seminar' => 'presentation',
@@ -358,6 +376,24 @@
                         'Cultural' => 'images/categories/cultural.jpg',
                         'Sports' => 'images/categories/sports.jpg',
                         'Orientation' => 'images/categories/orientation.jpg',
+=======
+                        'conference' => 'mic',
+                        'workshop' => 'wrench',
+                        'seminar' => 'presentation',
+                        'cultural' => 'palette',
+                        'sports' => 'medal',
+                        'orientation' => 'compass',
+                        'other' => 'more-horizontal'
+                    ];
+
+                    $catImages = [
+                        'conference' => 'images/categories/conference.jpg',
+                        'workshop' => 'images/categories/workshop.jpg',
+                        'seminar' => 'images/categories/seminar.jpg',
+                        'cultural' => 'images/categories/cultural.jpg',
+                        'sports' => 'images/categories/sports.jpg',
+                        'orientation' => 'images/categories/orientation.jpg',
+>>>>>>> origin/main
                     ];
 
                     $gridItems = [];
@@ -366,8 +402,13 @@
                             'name' => $cat['name'],
                             'slug' => $cat['slug'],
                             'count' => $cat['event_count'] ?? 0,
+<<<<<<< HEAD
                             'icon' => $catIcons[$cat['name']] ?? 'folder',
                             'image' => $catImages[$cat['name']] ?? null
+=======
+                            'icon' => $catIcons[$cat['slug']] ?? 'folder',
+                            'image' => $catImages[$cat['slug']] ?? null
+>>>>>>> origin/main
                         ];
                     }
                 @endphp
@@ -462,7 +503,7 @@
         style="display: grid; grid-template-columns: 1fr; width: 100%; overflow-x: hidden; position: relative; z-index: 30;">
 
         <div style="grid-area: 1 / 1; width: 100%; height: 100%; z-index: 30;">
-            @include('frontend.upcoming')
+            @include('frontend.upcoming', ['upcoming' => $featuredEvents])
         </div>
 
         <!-- FEATURED EVENTS WRAPPER -->
@@ -489,13 +530,13 @@
                     </div>
 
                     <!-- HORIZONTAL CARDS CONTAINER -->
-                    <div id="featured-cards-viewport" class="flex-1 w-full min-h-[450px] overflow-hidden relative">
+                    <div id="featured-cards-viewport" class="flex-1 w-full min-h-[520px] overflow-hidden relative">
                         <div id="featured-cards-container"
                             class="flex gap-6 flex-nowrap absolute top-0 left-0 h-full items-center"
                             style="width: max-content; padding-right: 2rem;">
-                            @foreach($featuredEvents as $i => $ev)
+                            @foreach($upcoming as $i => $ev)
                                 <div class="shrink-0 featured-card-item rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
-                                    style="width: 350px; height: 400px; max-width: 85vw;">
+                                    style="width: 350px; height: 480px; max-width: 85vw;">
                                     <x-event-card :event="$ev" mode="grid" />
                                 </div>
                             @endforeach

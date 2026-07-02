@@ -70,8 +70,8 @@ class PublicEventController extends Controller
                 ])
                 ->toArray();
         });
-        $newestEvents = collect($newestEventsData)
-            ->filter(fn($e) => $e['id'] !== $event->id)
+        $newestEvents = collect(is_array($newestEventsData) ? $newestEventsData : [])
+            ->filter(fn($e) => is_array($e) && isset($e['id']) && $e['id'] !== $event->id)
             ->take(3);
 
         $prominentEventsData = \Illuminate\Support\Facades\Cache::remember('prominent_events', 300, function() {
@@ -90,8 +90,8 @@ class PublicEventController extends Controller
                 ])
                 ->toArray();
         });
-        $prominentEvents = collect($prominentEventsData)
-            ->filter(fn($e) => $e['id'] !== $event->id)
+        $prominentEvents = collect(is_array($prominentEventsData) ? $prominentEventsData : [])
+            ->filter(fn($e) => is_array($e) && isset($e['id']) && $e['id'] !== $event->id)
             ->take(3);
 
         $previousEvent = Event::where('is_published', true)
@@ -105,11 +105,11 @@ class PublicEventController extends Controller
             ->first();
 
         // Template routing
-        $viewName = 'events.show';
-        if ($event->page_template == 2) {
-            $viewName = 'events.show-template2';
-        } elseif ($event->page_template == 3) {
-            $viewName = 'events.show-template3';
+        $templateId = $event->page_template ?: 1;
+        if ($templateId >= 1 && $templateId <= 7) {
+            $viewName = ($templateId == 1) ? 'events.show' : 'events.show-template' . $templateId;
+        } else {
+            $viewName = 'events.show-preset';
         }
 
         return view($viewName, compact('event', 'newestEvents', 'prominentEvents', 'previousEvent', 'nextEvent'));

@@ -67,15 +67,18 @@ class FrontendController extends Controller
                 return [
                     'name' => $c->name,
                     'slug' => $c->slug,
-                    'desc' => $vietnameseNames[$c->name] ?? 'Sự kiện'
+                    'desc' => $vietnameseNames[$c->name] ?? $c->name,
+                    'image' => 'images/categories/' . $c->slug . '.jpg',
+                    'event_count' => \App\Models\Event::published()->where('category_id', $c->id)->count()
                 ];
             })->toArray();
 
 
             $dbFeatured = Event::with(['bannerImage', 'category'])
                 ->published()
-                ->orderByRaw('views_count + likes_count DESC')
-                ->take(6)
+                ->where('created_at', '>=', now()->subMonths(3))
+                ->orderByRaw('(likes_count * 3) + views_count DESC')
+                ->take(4)
                 ->get();
             $featuredEvents = $dbFeatured->map(function ($event) {
                 return [
@@ -207,6 +210,7 @@ class FrontendController extends Controller
 
             $dbSlides = Event::with(['bannerImage', 'category'])
                 ->published()
+                ->where('event_date', '<=', now())
                 ->latest()
                 ->take(6)
                 ->get();

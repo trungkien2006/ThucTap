@@ -70,7 +70,7 @@
         <div class="absolute inset-0 bg-[#1C1410]/60 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10"></div>
 
         <!-- 4. Hover State (Match Steam Card Style) -->
-        <div class="absolute inset-0 flex flex-col justify-start p-6 md:p-8 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-20 pointer-events-none">
+        <div class="absolute inset-0 px-6 pt-6 md:px-8 md:pt-8 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-20 pointer-events-none">
             <!-- Yellow Category / Tag -->
             <h3 class="font-black uppercase text-[15px] md:text-[17px] tracking-widest mb-3 drop-shadow-lg" style="color: #FFC107;">
                 {{ $category }}
@@ -78,12 +78,14 @@
             
             <!-- White Description Text -->
             <div class="text-white text-[15px] md:text-[17px] leading-relaxed drop-shadow-lg font-medium">
-                <strong class="block mb-2 text-[19px] md:text-[22px] font-black">{{ $name }}</strong>
-                <span class="line-clamp-4 text-white/95">{{ $summary }}</span>
+                <strong class="block mb-2 text-[19px] md:text-[22px] font-black line-clamp-3">{{ $name }}</strong>
+            </div>
+            <div class="text-white text-[15px] md:text-[17px] leading-relaxed drop-shadow-lg font-medium">
+                <span class="block line-clamp-4 text-white/95">{{ $summary }}</span>
             </div>
             
             <!-- Small details at bottom left (optional but helpful for events) -->
-            <div class="mt-auto pt-4 flex flex-col gap-2">
+            <div class="absolute bottom-[50px] left-6 right-6 md:left-8 md:right-8 flex flex-col gap-2 pointer-events-auto">
                 <div class="flex items-center gap-2 text-white/90 text-[14px] font-medium">
                     <i data-lucide="calendar" class="w-4 h-4"></i>
                     <span>{{ $date }}</span>

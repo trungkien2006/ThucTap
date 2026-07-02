@@ -7,6 +7,9 @@
     <meta name="description" content="@yield('meta_description', 'Khám phá, lưu giữ và sống lại những khoảnh khắc đáng nhớ của các sự kiện học đường qua trải nghiệm điện ảnh.')">
     
     <!-- Alpine.js is loaded via Vite (app.js) -->
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
     <!-- AOS CSS for scroll animations -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     
@@ -99,14 +102,14 @@
                 </a>
                 
                 <div class="relative" @mouseenter="megaMenuOpen = true" @mouseleave="megaMenuOpen = false">
-                    <a href="{{ route('home') }}#events" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-sm font-semibold transition-colors {{ !$isHome ? 'text-[#7A6A52] hover:text-[#1C1410]' : '' }}"
+                    <a href="{{ route('events.index') }}" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-sm font-semibold transition-colors {{ !$isHome ? 'text-[#7A6A52] hover:text-[#1C1410]' : '' }}"
                        {!! $isHome ? ":class=\"scrolled ? 'text-[#7A6A52] hover:text-[#1C1410]' : 'text-white/80 hover:text-white'\"" : "" !!}>
                         Sự kiện
                         <span class="ml-0.5 inline-block h-2 w-2 rounded-full" style="background:#07A0C3;"></span>
                     </a>
                     
                     <!-- Mega Menu -->
-                    <div x-show="megaMenuOpen" 
+                    <div x-show="megaMenuOpen" x-cloak
                          x-transition:enter="transition ease-out duration-200"
                          x-transition:enter-start="opacity-0 translate-y-2"
                          x-transition:enter-end="opacity-100 translate-y-0"
@@ -153,7 +156,7 @@
                                     @endforeach
                                 @endif
                             </div>
-                            <div class="mt-2 flex items-center justify-between rounded-xl px-4 py-3 text-[#1C1410] font-semibold" style="background:#FFE381;">
+                            <a href="{{ route('events.index') }}" class="mt-2 flex items-center justify-between rounded-xl px-4 py-3 text-[#1C1410] font-semibold transition-all hover:opacity-90" style="background:#FFE381;">
                                 <span class="text-sm">Xem tất cả danh mục sự kiện</span>
                                 <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
                             </div>

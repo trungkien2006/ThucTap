@@ -207,6 +207,53 @@
             </div>
         </div>
         @endif
+        <!-- Diễn giả & Khách mời -->
+        @php
+            $speakers = $event->speakers()->wherePivot('role', 'speaker')->get();
+            $guests = $event->speakers()->wherePivot('role', 'guest')->get();
+        @endphp
+        
+        @if($speakers->count() > 0)
+        <div class="tp1-card mb-6">
+            <h2 class="tp1-section-title text-center">Diễn giả tham gia</h2>
+            <div class="flex flex-wrap justify-center gap-6">
+                @foreach($speakers as $speaker)
+                <div class="flex flex-col items-center text-center p-6 rounded-xl border border-slate-100 bg-slate-50 hover:shadow-md transition-shadow w-full sm:w-[calc(50%-12px)] md:w-[calc(33.333%-16px)] max-w-[320px]">
+                    <img src="{{ $speaker->photo_url ? asset($speaker->photo_url) : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80' }}"
+                         alt="{{ $speaker->name }}" class="w-24 h-24 rounded-full object-cover mb-4 border-4 border-white shadow-sm">
+                    <h3 class="font-bold text-lg text-slate-800">{{ $speaker->name }}</h3>
+                    @if($speaker->title)
+                        <p class="text-sm text-[#f97316] font-medium mb-3">{{ $speaker->title }}</p>
+                    @endif
+                    @if($speaker->bio)
+                        <p class="text-sm text-slate-600">{{ $speaker->bio }}</p>
+                    @endif
+                </div>
+                @endforeach
+            </div>
+        </div>
+        @endif
+
+        @if($guests->count() > 0)
+        <div class="tp1-card">
+            <h2 class="tp1-section-title text-center">Khách mời đặc biệt</h2>
+            <div class="flex flex-wrap justify-center gap-6">
+                @foreach($guests as $guest)
+                <div class="flex flex-col items-center text-center p-6 rounded-xl border border-blue-100 bg-blue-50/50 hover:shadow-md transition-shadow w-full sm:w-[calc(50%-12px)] md:w-[calc(33.333%-16px)] max-w-[320px]">
+                    <img src="{{ $guest->photo_url ? asset($guest->photo_url) : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80' }}"
+                         alt="{{ $guest->name }}" class="w-24 h-24 rounded-full object-cover mb-4 border-4 border-white shadow-sm">
+                    <h3 class="font-bold text-lg text-slate-800">{{ $guest->name }}</h3>
+                    @if($guest->title)
+                        <p class="text-sm text-blue-600 font-medium mb-3">{{ $guest->title }}</p>
+                    @endif
+                    @if($guest->bio)
+                        <p class="text-sm text-slate-600">{{ $guest->bio }}</p>
+                    @endif
+                </div>
+                @endforeach
+            </div>
+        </div>
+        @endif
         
         <!-- Tương tác & Chia sẻ -->
         <div class="flex flex-wrap justify-center gap-4 mt-8" x-data="{ copied: false }">

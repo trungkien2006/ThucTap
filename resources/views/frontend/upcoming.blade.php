@@ -121,14 +121,18 @@
             @if($hasEvents)
                 @foreach($upcoming as $idx => $u)
                     @php 
+<<<<<<< HEAD
                         $img = !empty($u['images']) ? $u['images'][0] : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80';
+=======
+                        $img = !empty($u['images']) ? $u['images'][0] : (!empty($u['img']) ? $u['img'] : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80');
+>>>>>>> origin/main
                         $zIndex = $idx + 1;
                     @endphp
                     <div class="upcoming-panel text-[#1C1410]" style="z-index: {{ $zIndex }};" data-index="{{ $idx }}">
                         <!-- Center Image Frame -->
                         <div class="slide-image-frame pointer-events-auto">
                             <div tabindex="0" class="slide-image-inner bg-gray-200 relative group overflow-hidden cursor-pointer focus:outline-none"
-                                 x-data="{ active: 0, images: {{ json_encode(!empty($u['images']) ? $u['images'] : ['https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80']) }} }">
+                                 x-data="{ active: 0, images: {{ json_encode(!empty($u['images']) ? $u['images'] : (!empty($u['img']) ? [$u['img']] : ['https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80'])) }} }">
                                  
 <style>
     /* Custom CSS để đảm bảo hiệu ứng blur hoạt động 100% không phụ thuộc Tailwind JIT */
@@ -160,7 +164,7 @@
                                 <div class="absolute inset-0 bg-[#1C1410]/60 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-20"></div>
                                 
                                 <!-- Event Info Content (Hover State Match Steam Card Style) -->
-                                <div class="absolute inset-0 flex flex-col justify-start p-8 md:p-12 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-30 pointer-events-none">
+                                <div class="absolute inset-0 px-8 pt-8 md:px-12 md:pt-12 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-30 pointer-events-none">
                                     <!-- Yellow Category / Tag -->
                                     <h3 class="font-black uppercase text-[16px] md:text-[20px] tracking-widest mb-4 drop-shadow-lg" style="color: #FFC107;">
                                         {{ $u['category'] ?? 'Sự kiện' }}
@@ -168,12 +172,14 @@
                                     
                                     <!-- White Description Text -->
                                     <div class="text-white text-[16px] md:text-[18px] leading-relaxed drop-shadow-lg font-medium max-w-3xl">
-                                        <strong class="block mb-3 text-[28px] md:text-[40px] font-black leading-tight">{{ $u['name'] ?? $u['title'] ?? '' }}</strong>
-                                        <span class="line-clamp-4 text-white/95">{{ $u['summary'] ?? '' }}</span>
+                                        <strong class="block mb-3 text-[28px] md:text-[40px] font-black leading-tight line-clamp-3">{{ $u['name'] ?? $u['title'] ?? '' }}</strong>
+                                    </div>
+                                    <div class="text-white text-[16px] md:text-[18px] leading-relaxed drop-shadow-lg font-medium max-w-3xl">
+                                        <span class="block line-clamp-4 text-white/95">{{ $u['summary'] ?? '' }}</span>
                                     </div>
                                     
                                     <!-- Small details at bottom left -->
-                                    <div class="mt-auto pt-6 flex flex-col gap-3">
+                                    <div class="absolute bottom-[50px] left-8 right-8 md:left-12 md:right-12 flex flex-col gap-3 pointer-events-auto">
                                         <div class="flex items-center gap-3 text-white/90 text-[16px] font-medium">
                                             <i data-lucide="calendar" class="w-5 h-5"></i>
                                             <span>{{ $u['date'] }}</span>

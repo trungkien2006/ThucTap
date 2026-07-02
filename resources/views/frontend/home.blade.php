@@ -359,24 +359,6 @@
                         $totalCount += $c['event_count'] ?? 0;
 
                     $catIcons = [
-<<<<<<< HEAD
-                        'Conference' => 'mic',
-                        'Workshop' => 'wrench',
-                        'Seminar' => 'presentation',
-                        'Cultural' => 'palette',
-                        'Sports' => 'medal',
-                        'Orientation' => 'compass',
-                        'Other' => 'more-horizontal'
-                    ];
-
-                    $catImages = [
-                        'Conference' => 'images/categories/conference.jpg',
-                        'Workshop' => 'images/categories/workshop.jpg',
-                        'Seminar' => 'images/categories/seminar.jpg',
-                        'Cultural' => 'images/categories/cultural.jpg',
-                        'Sports' => 'images/categories/sports.jpg',
-                        'Orientation' => 'images/categories/orientation.jpg',
-=======
                         'conference' => 'mic',
                         'workshop' => 'wrench',
                         'seminar' => 'presentation',
@@ -393,7 +375,6 @@
                         'cultural' => 'images/categories/cultural.jpg',
                         'sports' => 'images/categories/sports.jpg',
                         'orientation' => 'images/categories/orientation.jpg',
->>>>>>> origin/main
                     ];
 
                     $gridItems = [];
@@ -402,13 +383,8 @@
                             'name' => $cat['name'],
                             'slug' => $cat['slug'],
                             'count' => $cat['event_count'] ?? 0,
-<<<<<<< HEAD
-                            'icon' => $catIcons[$cat['name']] ?? 'folder',
-                            'image' => $catImages[$cat['name']] ?? null
-=======
                             'icon' => $catIcons[$cat['slug']] ?? 'folder',
                             'image' => $catImages[$cat['slug']] ?? null
->>>>>>> origin/main
                         ];
                     }
                 @endphp

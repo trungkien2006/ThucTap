@@ -23,30 +23,28 @@
     @php
         // Build combined year+semester options from events
         $semestersMap = ['1' => 'fall', '2' => 'spring', '3' => 'summer'];
-        $selectedYearSemesters = array_filter(is_array(request('year_semester')) ? request('year_semester') : [request('year_semester')]);
+        $selectedSemesters = array_filter(is_array(request('semester')) ? request('semester') : [request('semester')]);
         $selectedCategories = array_filter(is_array(request('category_id')) ? request('category_id') : [request('category_id')]);
         $selectedDepartments = array_filter(is_array(request('department_id')) ? request('department_id') : [request('department_id')]);
 
-        // Build combined year_semester options from distinct event combos
-        $yearSemesterOptions = \App\Models\Event::select('academic_year', 'semester')
-            ->whereNotNull('academic_year')
+        // Build semester options from distinct events
+        $semesterOptions = \App\Models\Event::select('semester')
             ->whereNotNull('semester')
             ->distinct()
-            ->orderBy('academic_year', 'desc')
             ->orderBy('semester')
             ->get()
             ->map(function ($e) use ($semestersMap) {
                 $semLabel = $semestersMap[$e->semester] ?? 'HK' . $e->semester;
                 return [
-                    'value' => $e->semester . '_' . $e->academic_year,
-                    'label' => $semLabel . ' ' . $e->academic_year,
+                    'value' => $e->semester,
+                    'label' => 'Kỳ ' . ucfirst($semLabel),
                 ];
             });
     @endphp
     <div class="bg-card rounded-lg border border-border p-4 shadow-none flex flex-col gap-4">
         <form method="GET" action="{{ route('admin.events.index') }}" id="filterForm" class="space-y-3 w-full">
-            @foreach($selectedYearSemesters as $ys)
-                <input type="hidden" name="year_semester[]" value="{{ $ys }}" class="filter-input-year_semester">
+            @foreach($selectedSemesters as $sem)
+                <input type="hidden" name="semester[]" value="{{ $sem }}" class="filter-input-semester">
             @endforeach
             @foreach($selectedCategories as $c)
                 <input type="hidden" name="category_id[]" value="{{ $c }}" class="filter-input-category_id">
@@ -65,7 +63,7 @@
                     <i data-lucide="search" class="h-3.5 w-3.5"></i> Tìm
                 </button>
 
-                @if(request('search') || count($selectedYearSemesters) > 0 || count($selectedCategories) > 0 || count($selectedDepartments) > 0)
+                @if(request('search') || count($selectedSemesters) > 0 || count($selectedCategories) > 0 || count($selectedDepartments) > 0)
                     <a href="{{ route('admin.events.index') }}" class="inline-flex items-center justify-center rounded-lg text-xs font-medium border border-input bg-background h-9 px-3 hover:bg-accent transition-all gap-1">
                         <i data-lucide="x" class="h-3.5 w-3.5"></i> Xóa lọc
                     </a>
@@ -73,10 +71,10 @@
             </div>
 
             <div class="flex flex-wrap items-center gap-2">
-                <select onchange="addFilterTag('year_semester', this)" class="h-9 min-w-[220px] border border-input rounded-lg text-xs bg-background px-2.5 focus:outline-none focus:border-ring transition-all text-muted-foreground cursor-pointer">
-                    <option value="">+ Năm học & Học kỳ</option>
-                    @foreach($yearSemesterOptions as $opt)
-                        @if(!in_array($opt['value'], $selectedYearSemesters))
+                <select onchange="addFilterTag('semester', this)" class="h-9 min-w-[180px] border border-input rounded-lg text-xs bg-background px-2.5 focus:outline-none focus:border-ring transition-all text-muted-foreground cursor-pointer">
+                    <option value="">+ Học kỳ</option>
+                    @foreach($semesterOptions as $opt)
+                        @if(!in_array($opt['value'], $selectedSemesters))
                             <option value="{{ $opt['value'] }}">{{ $opt['label'] }}</option>
                         @endif
                     @endforeach
@@ -106,17 +104,14 @@
                 <div class="flex flex-wrap items-center gap-1.5 pt-2 border-t border-border/50">
                     <span class="text-[11px] font-semibold text-muted-foreground mr-1">Bộ lọc đang chọn:</span>
 
-                    @foreach($selectedYearSemesters as $ys)
+                    @foreach($selectedSemesters as $sem)
                         @php
-                            $parts = explode('_', $ys, 2);
-                            $semVal = $parts[0] ?? '';
-                            $yearVal = $parts[1] ?? '';
-                            $semLabel = $semestersMap[$semVal] ?? 'HK'.$semVal;
-                            $ysLabel = $semLabel . ' ' . $yearVal;
+                            $semLabel = $semestersMap[$sem] ?? 'HK'.$sem;
+                            $ysLabel = 'Kỳ ' . ucfirst($semLabel);
                         @endphp
                         <span class="inline-flex items-center gap-1 bg-primary/10 text-primary border border-primary/20 rounded-lg px-2.5 py-1 text-xs font-medium">
                             {{ $ysLabel }}
-                            <button type="button" onclick="removeFilterTag('year_semester', '{{ $ys }}')" class="hover:text-destructive transition-colors ml-0.5">
+                            <button type="button" onclick="removeFilterTag('semester', '{{ $sem }}')" class="hover:text-destructive transition-colors ml-0.5">
                                 <i data-lucide="x" class="h-3 w-3"></i>
                             </button>
                         </span>

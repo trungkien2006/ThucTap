@@ -26,20 +26,10 @@ class EventController extends Controller
             });
         }
 
-        if ($request->filled('year_semester')) {
-            $yearSemesters = array_filter(is_array($request->year_semester) ? $request->year_semester : [$request->year_semester]);
-            if (!empty($yearSemesters)) {
-                $query->where(function ($q) use ($yearSemesters) {
-                    foreach ($yearSemesters as $ys) {
-                        $parts = explode('_', $ys, 2);
-                        if (count($parts) === 2) {
-                            $q->orWhere(function ($sub) use ($parts) {
-                                $sub->where('semester', $parts[0])
-                                    ->where('academic_year', $parts[1]);
-                            });
-                        }
-                    }
-                });
+        if ($request->filled('semester')) {
+            $semesters = array_filter(is_array($request->semester) ? $request->semester : [$request->semester]);
+            if (!empty($semesters)) {
+                $query->whereIn('semester', $semesters);
             }
         }
 

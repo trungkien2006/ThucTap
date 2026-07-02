@@ -127,7 +127,7 @@
                     <div class="upcoming-panel text-[#1C1410]" style="z-index: {{ $zIndex }};" data-index="{{ $idx }}">
                         <!-- Center Image Frame -->
                         <div class="slide-image-frame pointer-events-auto">
-                            <div class="slide-image-inner bg-gray-200 relative group overflow-hidden"
+                            <div tabindex="0" class="slide-image-inner bg-gray-200 relative group overflow-hidden cursor-pointer focus:outline-none"
                                  x-data="{ active: 0, images: {{ json_encode(!empty($u['images']) ? $u['images'] : ['https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80']) }} }">
                                  
 <style>
@@ -203,8 +203,40 @@
                     <p class="font-medium text-2xl">Hiện chưa có sự kiện nào sắp diễn ra.</p>
                 </div>
             @endif
-
         </div>
+
+        <!-- THÊM MỚI — Navigation dots -->
+        @if($hasEvents && count($upcoming) > 1)
+        <div id="upcoming-dots" class="absolute bottom-6 md:bottom-8 left-0 right-0 z-40 flex justify-center gap-2 md:gap-3 pointer-events-none">
+            @foreach($upcoming as $idx => $u)
+                <div class="upcoming-dot h-2 rounded-full transition-all duration-500"
+                     data-dot="{{ $idx }}"
+                     style="width: {{ $idx === 0 ? '2rem' : '0.5rem' }}; background: {{ $idx === 0 ? '#FFE381' : 'rgba(122,106,82,0.3)' }};"></div>
+            @endforeach
+        </div>
+
+        <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const dots = document.querySelectorAll('.upcoming-dot');
+            const panels = document.querySelectorAll('.upcoming-panel');
+            if (!dots.length || !panels.length) return;
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const idx = entry.target.dataset.index;
+                        dots.forEach((d, i) => {
+                            d.style.width = String(i) === String(idx) ? '2rem' : '0.5rem';
+                            d.style.background = String(i) === String(idx) ? '#FFE381' : 'rgba(122,106,82,0.3)';
+                        });
+                    }
+                });
+            }, { threshold: 0.6 });
+
+            panels.forEach(p => observer.observe(p));
+        });
+        </script>
+        @endif
     </div>
 </section>
 

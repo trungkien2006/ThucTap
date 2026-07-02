@@ -6,7 +6,7 @@
      HERO SLIDER
      Overlay ấm — jasmine tint thay vì lạnh xanh
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
-<section id="top" class="relative h-[100svh] w-full overflow-hidden" style="background:#1C1410;">
+<section id="top" class="relative min-h-screen w-full overflow-hidden" style="background:#1C1410;">
 
     
     <div class="slider-wrapper" id="slider">
@@ -316,10 +316,10 @@
     </script>
 </section>
 
-{{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-     FEATURED EVENTS + UPCOMING — Ná»n kem Jasmine nhạt
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
-    <div id="events-sticky-wrapper" class="-mt-8 lg:-mt-12 relative z-30" style="background: #FFFBEA;">
+{{-- â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• 
+     FEATURED EVENTS + UPCOMING — Ná» n kem Jasmine nhạt
+â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â•  --}}
+    <div id="events-sticky-wrapper" class="relative z-30" style="background: #FFFBEA;">
         <section id="events" class="relative z-20"
             style="position: -webkit-sticky; position: sticky; background:#FFFBEA; top: 70px;">
 
@@ -393,6 +393,19 @@
                                     <h3 class="text-[#1C1410] text-lg lg:text-xl font-bold tracking-tight group-hover:text-[#07A0C3] transition-colors leading-tight">
                                         {{ $item['name'] }}
                                     </h3>
+                                </div>
+                            </div>
+
+                            <!-- Overlay gradient dưới thẻ (tạo chiều sâu) -->
+                            <div class="absolute inset-x-0 bottom-0 h-1/2 pointer-events-none transition-opacity duration-300 opacity-60 group-hover:opacity-100"
+                                 style="background: linear-gradient(to top, rgba(28,20,16,0.8) 0%, transparent 100%);"></div>
+
+                            <!-- Badge số lượng sự kiện góc dưới phải -->
+                            <div class="absolute bottom-4 right-4 z-10">
+                                <div class="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-bold shadow-sm transition-transform duration-300 group-hover:scale-105"
+                                     style="background: rgba(7,160,195,0.9); color: #fff; backdrop-filter: blur(4px);">
+                                    <i data-lucide="calendar" class="w-3 h-3"></i>
+                                    <span>{{ $item['count'] }} sự kiện</span>
                                 </div>
                             </div>
                         </a>
@@ -617,6 +630,25 @@
                         </button>
                     </template>
                 </div>
+
+                <!-- THÊM MỚI — Timeline mini strip, chèn sau phần year tabs trong cột trái -->
+                <div class="mt-10 pl-4 lg:pl-6 pr-4 hidden lg:block">
+                    <div class="relative border-l-2 space-y-4" style="border-color: rgba(255,227,129,0.2);">
+                        <template x-for="(a, i) in archive" :key="a.year">
+                            <div class="relative pl-5 cursor-pointer" @click="dir=i>idx?1:-1;idx=i">
+                                <!-- Timeline dot -->
+                                <div class="absolute -left-[5px] top-1.5 h-2 w-2 rounded-full transition-all duration-300"
+                                     :style="i === idx 
+                                        ? 'background:#FFE381; box-shadow:0 0 8px rgba(255,227,129,0.6); transform:scale(1.5);' 
+                                        : 'background:rgba(255,227,129,0.25);'"></div>
+                                
+                                <div class="text-xs font-bold font-mono transition-colors duration-300"
+                                     :style="i === idx ? 'color:#FFE381;' : 'color:rgba(255,227,129,0.35);'"
+                                     x-text="a.year + ' · ' + (a.achievements[0] || '')"></div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
             </div>
 
             <div>
@@ -637,6 +669,34 @@
                 </div>
 
                 <p class="mt-5 text-base leading-relaxed lg:text-lg" style="color:rgba(255,227,129,0.7);" x-text="current.desc"></p>
+
+                <!-- THÊM MỚI — Thêm thông tin chi tiết trên achievements, chèn sau <p class="mt-5 text-base..."> -->
+                <div class="mt-5 flex flex-wrap gap-4">
+                    <!-- Stat: Số sự kiện -->
+                    <div class="flex items-center gap-2">
+                        <div class="h-8 w-8 rounded-full flex items-center justify-center flex-shrink-0"
+                             style="background:rgba(255,227,129,0.12); border:1px solid rgba(255,227,129,0.25);">
+                            <i data-lucide="calendar-check" class="h-4 w-4" style="color:#FFE381;"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold uppercase tracking-widest" style="color:rgba(255,227,129,0.5);">Tổ chức</div>
+                            <div class="text-sm font-bold text-white" x-text="current.achievements[0]"></div>
+                        </div>
+                    </div>
+                    <!-- Separator -->
+                    <div class="h-auto w-px self-stretch" style="background:rgba(255,227,129,0.15);"></div>
+                    <!-- Stat: Năm hoạt động -->
+                    <div class="flex items-center gap-2">
+                        <div class="h-8 w-8 rounded-full flex items-center justify-center flex-shrink-0"
+                             style="background:rgba(7,160,195,0.12); border:1px solid rgba(7,160,195,0.25);">
+                            <i data-lucide="history" class="h-4 w-4" style="color:#07A0C3;"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold uppercase tracking-widest" style="color:rgba(7,160,195,0.5);">Năm hoạt động</div>
+                            <div class="text-sm font-bold text-white" x-text="current.year"></div>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
                     <template x-for="achieve in current.achievements" :key="achieve">
@@ -719,6 +779,19 @@
                         </div>
                     </template>
                     
+                    <!-- THÊM MỚI — Counter và label media, chèn trong player box, sau progress bar -->
+                    <div class="absolute top-4 left-4 z-20 flex items-center gap-2">
+                        <div class="flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold shadow-md"
+                             style="background:rgba(0,0,0,0.55); color:white; backdrop-filter:blur(6px);">
+                            <span x-text="currentIndex + 1"></span>
+                            <span style="color:rgba(255,255,255,0.4);">/</span>
+                            <span x-text="items.length"></span>
+                        </div>
+                        <div class="rounded-full px-3 py-1 text-xs font-bold shadow-md"
+                             style="background:rgba(255,227,129,0.85); color:#1C1410;"
+                             x-text="currentItem.type === 'video' ? '▶ Video' : '🖼 Ảnh'"></div>
+                    </div>
+
                     <!-- Progress Bar at the bottom of the player -->
                     <div class="absolute bottom-0 left-0 right-0 h-1.5 bg-black/50 z-20">
                         <div class="h-full bg-[#07A0C3] transition-all duration-100" :style="`width: ${progress}%`"></div>
@@ -736,6 +809,27 @@
                         <div class="mt-4 flex items-center gap-2">
                             <div class="h-10 w-1 rounded-full" style="background:#04F06A;"></div>
                             <a :href="currentItem.event_url" class="text-sm font-semibold text-[#7A6A52] hover:text-[#07A0C3] transition-colors" x-text="currentItem.event_name"></a>
+                        </div>
+
+                        <!-- THÊM MỚI — Nút xem tất cả + progress dots, chèn cuối info box bên phải -->
+                        <div class="mt-auto pt-3 flex items-center justify-between">
+                            <!-- Dots indicator -->
+                            <div class="flex gap-1.5 items-center">
+                                <template x-for="(item, i) in items.slice(0, Math.min(items.length, 8))" :key="i">
+                                    <div class="rounded-full transition-all duration-300"
+                                         :style="i === currentIndex 
+                                            ? 'width:1.25rem; height:0.35rem; background:#07A0C3;' 
+                                            : 'width:0.35rem; height:0.35rem; background:rgba(7,160,195,0.25);'"></div>
+                                </template>
+                                <span x-show="items.length > 8" class="text-[10px] font-bold ml-1" style="color:rgba(122,106,82,0.5);"
+                                      x-text="'+' + (items.length - 8)"></span>
+                            </div>
+                            <!-- Link xem thêm -->
+                            <a href="{{ route('events.index') }}" class="text-xs font-bold uppercase tracking-widest transition-colors"
+                               style="color:rgba(7,160,195,0.7);"
+                               onmouseover="this.style.color='#04F06A'" onmouseout="this.style.color='rgba(7,160,195,0.7)'">
+                                Xem tất cả &rarr;
+                            </a>
                         </div>
                     </div>
 

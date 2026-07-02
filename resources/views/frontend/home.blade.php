@@ -321,7 +321,7 @@
 â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â• â•  --}}
     <div id="events-sticky-wrapper" class="relative z-30" style="background: #FFFBEA;">
         <section id="events" class="relative z-20"
-            style="position: -webkit-sticky; position: sticky; background:#FFFBEA; top: 70px;">
+            style="background:#FFFBEA;">
 
             <div id="categories-section" class="relative z-[15] pt-2 pb-8 lg:pt-4 lg:pb-10" style="background:#FFFBEA;">
                 <div class="mx-auto w-full max-w-[1400px] px-6 lg:px-10">
@@ -452,7 +452,6 @@
             });
         </script>
     </section>
-    <div style="height: 120vh;"></div>
     </div>
 
     <!-- Tĩnh anchor để fix lỗi nhảy trang của trình duyệt do GSAP -->

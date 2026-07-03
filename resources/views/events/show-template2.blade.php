@@ -181,6 +181,13 @@
                 <div class="gw-info-value">
                     {{ $event->event_date->format('l, d/m/Y') }}<br>
                     {{ $event->event_date->format('H:i') }}
+                    @if($event->end_date)
+                        @if($event->event_date->isSameDay($event->end_date))
+                            - {{ $event->end_date->format('H:i') }}
+                        @else
+                            - {{ $event->end_date->format('H:i d/m/Y') }}
+                        @endif
+                    @endif
                 </div>
             </div>
             @if($event->location)

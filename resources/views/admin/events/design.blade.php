@@ -1431,7 +1431,7 @@
 </html>
 
 @php
-    $apData = $allSpeakers->map(fn($s) => ['id' => $s->id, 'name' => $s->name, 'bio' => Str::limit($s->bio, 30), 'photo' => $s->photo_url ? asset($s->photo_url) : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80'])->values()->toArray();
+    $apData = $allSpeakers->map(fn($s) => ['id' => $s->id, 'name' => $s->name, 'bio' => Str::limit($s->bio, 30), 'photo' => $s->photo_url ? asset($s->photo_url) : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80', 'type' => $s->type ?? 'speaker'])->values()->toArray();
     $ssData = $event->speakers->where('pivot.role', 'speaker')->values()->map(fn($s) => ['id' => $s->id, 'name' => $s->name, 'photo' => $s->photo_url ? asset($s->photo_url) : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80'])->toArray();
     $sgData = $event->speakers->where('pivot.role', 'guest')->values()->map(fn($s) => ['id' => $s->id, 'name' => $s->name, 'photo' => $s->photo_url ? asset($s->photo_url) : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80'])->toArray();
 @endphp
@@ -1457,8 +1457,9 @@
             },
 
             get filteredPersons() {
-                if (this.searchQuery === '') return this.allPersons;
-                return this.allPersons.filter(p => p.name.toLowerCase().includes(this.searchQuery.toLowerCase()));
+                let baseList = this.allPersons.filter(p => p.type === this.currentType);
+                if (this.searchQuery === '') return baseList;
+                return baseList.filter(p => p.name.toLowerCase().includes(this.searchQuery.toLowerCase()));
             },
 
             isSelected(id) {

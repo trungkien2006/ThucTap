@@ -725,6 +725,8 @@
         </div>
     </div>
     
+    <div class="h-[10vh]"></div>
+
     <!-- Bottom border jasmine accent -->
     <div class="absolute inset-x-0 bottom-0 h-1" style="background: linear-gradient(to right, transparent, rgba(255,227,129,0.4), transparent);"></div>
 </section>

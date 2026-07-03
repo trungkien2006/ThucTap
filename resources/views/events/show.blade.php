@@ -53,7 +53,17 @@
             @endif
             <h1 class="tp1-title">{{ $event->title }}</h1>
             <div class="tp1-meta">
-                <div class="tp1-meta-item"><span class="material-symbols-outlined">calendar_today</span> {{ $event->event_date->format('d/m/Y') }}</div>
+                <div class="tp1-meta-item">
+                    <span class="material-symbols-outlined">calendar_today</span> 
+                    {{ $event->event_date->format('d/m/Y H:i') }}
+                    @if($event->end_date)
+                        @if($event->event_date->isSameDay($event->end_date))
+                            - {{ $event->end_date->format('H:i') }}
+                        @else
+                            - {{ $event->end_date->format('d/m/Y H:i') }}
+                        @endif
+                    @endif
+                </div>
                 @if($event->location)
                 <div class="tp1-meta-item"><span class="material-symbols-outlined">location_on</span> {{ $event->location }}</div>
                 @endif

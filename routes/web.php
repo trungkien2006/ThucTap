@@ -23,105 +23,103 @@ Route::get('/dashboard', function () {
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     // Dashboard
     Route::get('/', function () {
-        $stats = \Illuminate\Support\Facades\Cache::remember('admin_dashboard_stats_v2', 300, function () {
-            $totalViews = \App\Models\Event::sum('views_count') ?? 0;
-            $totalLikes = \App\Models\Event::sum('likes_count') ?? 0;
-            $totalEvents = \App\Models\Event::count();
-            $upcomingEventsCount = \App\Models\Event::where('event_date', '>=', now())->count();
-            $completedEventsCount = \App\Models\Event::where('event_date', '<', now())->count();
-            $totalSpeakers = \App\Models\Speaker::where('is_hidden', false)->count();
-            $totalMedia = \App\Models\EventMedia::whereIn('type', ['image', 'video'])->count();
-
-            $upcomingEvents = \App\Models\Event::with('category')
-                ->where('is_published', true)
-                ->where('event_date', '>=', now())
-                ->orderBy('event_date', 'asc')
-                ->take(5)
-                ->get();
-
-            $mostViewed = \App\Models\Event::with('category')
-                ->where('is_published', true)
-                ->orderBy('views_count', 'desc')
-                ->take(5)
-                ->get();
-
-            // 1. Calculate growth delta compared to last year
-            $getGrowthDelta = function ($current, $previous) {
-                if ($previous == 0) {
-                    return $current > 0 ? '+100%' : '0%';
-                }
-                $diff = (($current - $previous) / $previous) * 100;
-                return ($diff >= 0 ? '+' : '') . round($diff, 1) . '%';
-            };
-
-            $deltas = [
-                'events' => $getGrowthDelta(
-                    \App\Models\Event::whereYear('created_at', now()->year)->count(),
-                    \App\Models\Event::whereYear('created_at', now()->subYear()->year)->count()
-                ),
-                'upcoming' => $getGrowthDelta(
-                    \App\Models\Event::where('event_date', '>=', now())->whereYear('event_date', now()->year)->count(),
-                    \App\Models\Event::where('event_date', '>=', now()->subYear())->whereYear('event_date', now()->subYear()->year)->count()
-                ),
-                'completed' => $getGrowthDelta(
-                    \App\Models\Event::where('event_date', '<', now())->whereYear('event_date', now()->year)->count(),
-                    \App\Models\Event::where('event_date', '<', now()->subYear())->whereYear('event_date', now()->subYear()->year)->count()
-                ),
-                'views' => $getGrowthDelta(
-                    \App\Models\Event::whereYear('created_at', now()->year)->sum('views_count'),
-                    \App\Models\Event::whereYear('created_at', now()->subYear()->year)->sum('views_count')
-                ),
-                'media' => $getGrowthDelta(
-                    \App\Models\EventMedia::whereIn('type', ['image', 'video'])->whereYear('created_at', now()->year)->count(),
-                    \App\Models\EventMedia::whereIn('type', ['image', 'video'])->whereYear('created_at', now()->subYear()->year)->count()
-                ),
-            ];
-
-            // 2. Fixed 1-year scope event trend
-            $eventsTrend = [];
-            for ($m = 1; $m <= 12; $m++) {
-                $eventsTrend[] = \App\Models\Event::whereYear('created_at', now()->year)
-                    ->whereMonth('created_at', $m)
-                    ->count();
-            }
-
-            // 3. Popular categories (created in the last 1 year)
-            $popularCategories = \App\Models\Category::eventTypes()
-                ->withCount(['events' => function ($q) {
-                    $q->where('created_at', '>=', now()->subYear());
-                }])
-                ->orderByDesc('events_count')
-                ->take(6)
-                ->get();
-
-            $colorsList = ['#546abf', '#66b2ff', '#62a152', '#e29b3e', '#cc66ff', '#94a3b8'];
-            $categoriesData = [];
-            foreach ($popularCategories as $i => $cat) {
-                $categoriesData[] = [
-                    'category' => $cat->name,
-                    'count' => $cat->events_count,
-                    'color' => $colorsList[$i % count($colorsList)]
-                ];
-            }
-
-            $imagesTrend = [];
-            $videosTrend = [];
-            for ($m = 1; $m <= 12; $m++) {
-                $imagesTrend[] = \App\Models\EventMedia::where('type', 'image')
-                    ->whereYear('created_at', now()->year)
-                    ->whereMonth('created_at', $m)
-                    ->count();
-                $videosTrend[] = \App\Models\EventMedia::where('type', 'video')
-                    ->whereYear('created_at', now()->year)
-                    ->whereMonth('created_at', $m)
-                    ->count();
-            }
-
-            return compact('totalViews', 'totalLikes', 'totalEvents', 'upcomingEventsCount', 'completedEventsCount', 'totalSpeakers', 'totalMedia', 'upcomingEvents', 'mostViewed', 'deltas', 'eventsTrend', 'categoriesData', 'imagesTrend', 'videosTrend');
-        });
-
-        extract($stats);
+        $currentYear = now()->year;
+        $lastYear = now()->subYear()->year;
         
+        $totalViews = \App\Models\Event::sum('views_count') ?? 0;
+        $totalLikes = \App\Models\Event::sum('likes_count') ?? 0;
+        $totalEvents = \App\Models\Event::count();
+        $upcomingEventsCount = \App\Models\Event::where('event_date', '>=', now())->count();
+        $completedEventsCount = \App\Models\Event::where('event_date', '<', now())->count();
+        $totalSpeakers = \App\Models\Speaker::where('is_hidden', false)->count();
+        $totalMedia = \App\Models\EventMedia::whereIn('type', ['image', 'video'])->count();
+
+        $upcomingEvents = \App\Models\Event::with('category')
+            ->where('is_published', true)
+            ->where('event_date', '>=', now())
+            ->orderBy('event_date', 'asc')
+            ->take(5)
+            ->get();
+
+        $mostViewed = \App\Models\Event::with('category')
+            ->where('is_published', true)
+            ->orderBy('views_count', 'desc')
+            ->take(5)
+            ->get();
+
+        $getGrowthDelta = function ($current, $previous) {
+            if ($previous == 0) {
+                return $current > 0 ? '+100%' : '0%';
+            }
+            $diff = (($current - $previous) / $previous) * 100;
+            return ($diff >= 0 ? '+' : '') . round($diff, 1) . '%';
+        };
+
+        $deltas = [
+            'events' => $getGrowthDelta(
+                \App\Models\Event::whereYear('created_at', $currentYear)->count(),
+                \App\Models\Event::whereYear('created_at', $lastYear)->count()
+            ),
+            'upcoming' => $getGrowthDelta(
+                \App\Models\Event::where('event_date', '>=', now())->whereYear('event_date', $currentYear)->count(),
+                \App\Models\Event::where('event_date', '>=', now()->subYear())->whereYear('event_date', $lastYear)->count()
+            ),
+            'completed' => $getGrowthDelta(
+                \App\Models\Event::where('event_date', '<', now())->whereYear('event_date', $currentYear)->count(),
+                \App\Models\Event::where('event_date', '<', now()->subYear())->whereYear('event_date', $lastYear)->count()
+            ),
+            'views' => $getGrowthDelta(
+                \App\Models\Event::whereYear('created_at', $currentYear)->sum('views_count'),
+                \App\Models\Event::whereYear('created_at', $lastYear)->sum('views_count')
+            ),
+            'media' => $getGrowthDelta(
+                \App\Models\EventMedia::whereIn('type', ['image', 'video'])->whereYear('created_at', $currentYear)->count(),
+                \App\Models\EventMedia::whereIn('type', ['image', 'video'])->whereYear('created_at', $lastYear)->count()
+            ),
+        ];
+
+        // Optimized: 1 query instead of 12
+        $eventsByMonth = \App\Models\Event::selectRaw('MONTH(created_at) as month, count(*) as count')
+            ->whereYear('created_at', $currentYear)
+            ->groupBy('month')
+            ->pluck('count', 'month')
+            ->toArray();
+        $eventsTrend = [];
+        for ($m = 1; $m <= 12; $m++) {
+            $eventsTrend[] = $eventsByMonth[$m] ?? 0;
+        }
+
+        $popularCategories = \App\Models\Category::eventTypes()
+            ->withCount(['events' => function ($q) {
+                $q->where('created_at', '>=', now()->subYear());
+            }])
+            ->orderByDesc('events_count')
+            ->take(6)
+            ->get();
+
+        $colorsList = ['#546abf', '#66b2ff', '#62a152', '#e29b3e', '#cc66ff', '#94a3b8'];
+        $categoriesData = [];
+        foreach ($popularCategories as $i => $cat) {
+            $categoriesData[] = [
+                'category' => $cat->name,
+                'count' => $cat->events_count,
+                'color' => $colorsList[$i % count($colorsList)]
+            ];
+        }
+
+        // Optimized: 1 query instead of 24
+        $mediaByMonth = \App\Models\EventMedia::selectRaw('type, MONTH(created_at) as month, count(*) as count')
+            ->whereIn('type', ['image', 'video'])
+            ->whereYear('created_at', $currentYear)
+            ->groupBy('type', 'month')
+            ->get();
+        $imagesTrend = [];
+        $videosTrend = [];
+        for ($m = 1; $m <= 12; $m++) {
+            $imagesTrend[] = $mediaByMonth->where('type', 'image')->where('month', $m)->first()->count ?? 0;
+            $videosTrend[] = $mediaByMonth->where('type', 'video')->where('month', $m)->first()->count ?? 0;
+        }
+
         return view('admin.dashboard', compact(
             'totalViews', 'totalLikes', 'totalEvents', 'upcomingEventsCount',
             'completedEventsCount', 'totalSpeakers', 'totalMedia',
@@ -164,6 +162,12 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
     Route::get('/profile/activity', [App\Http\Controllers\ProfileController::class, 'activity'])->name('profile.activity');
+
+    // Admin Users Management
+    Route::get('/users', [\App\Http\Controllers\Admin\AdminUserController::class, 'index'])->name('users.index');
+    Route::get('/users/create', [\App\Http\Controllers\Admin\AdminUserController::class, 'create'])->name('users.create');
+    Route::post('/users/create', [\App\Http\Controllers\Admin\AdminUserController::class, 'store'])->name('users.store');
+    Route::delete('/users/{user}', [\App\Http\Controllers\Admin\AdminUserController::class, 'destroy'])->name('users.destroy');
 });
 
 require __DIR__.'/auth.php';

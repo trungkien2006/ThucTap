@@ -295,8 +295,11 @@ class FrontendController extends Controller
         $events = $query->paginate(16);
 
         // Get unique years for filter
+        $driver = \Illuminate\Support\Facades\DB::connection()->getDriverName();
+        $yearExpression = $driver === 'sqlite' ? "strftime('%Y', event_date)" : "YEAR(event_date)";
+
         $availableYears = Event::published()
-            ->selectRaw('YEAR(event_date) as year')
+            ->selectRaw("$yearExpression as year")
             ->distinct()
             ->orderBy('year', 'desc')
             ->pluck('year')

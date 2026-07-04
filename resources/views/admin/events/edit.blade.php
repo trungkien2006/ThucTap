@@ -814,8 +814,8 @@
                 return response.json();
             })
             .then(data => {
-                if (data.success && data.guest) {
-                    const sp = data.guest;
+                if (data.success && data.speaker) {
+                    const sp = data.speaker;
                     
                     const photoUrl = sp.photo_url 
                         ? ((sp.photo_url.indexOf('http') === 0 || sp.photo_url.indexOf('/') === 0) ? sp.photo_url : `/storage/${sp.photo_url}`)

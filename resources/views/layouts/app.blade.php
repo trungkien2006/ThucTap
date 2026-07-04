@@ -121,6 +121,12 @@
                         <i data-lucide="files" class="h-5 w-5"></i>
                         <span>Tài liệu</span>
                     </a>
+                    @if(Auth::user()->isSuperAdmin())
+                        <a href="{{ route('admin.users.index') }}" class="sidebar-menu-btn {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+                            <i data-lucide="users" class="h-5 w-5"></i>
+                            <span>Quản lý Admin</span>
+                        </a>
+                    @endif
                 </div>
             </div>
         </nav>
@@ -142,6 +148,12 @@
                     <i data-lucide="chevron-up" class="h-3 w-3 text-muted-foreground"></i>
                 </button>
                 <div id="adminAvatarDropdown" class="absolute bottom-full left-0 right-0 mb-2 bg-white border border-border rounded-md shadow-lg py-1 hidden z-50">
+                    @if(Auth::user()->isSuperAdmin())
+                        <a href="{{ route('admin.users.create') }}" class="flex items-center px-3 py-2 text-xs text-foreground hover:bg-accent">
+                            <i data-lucide="user-plus" class="h-3.5 w-3.5 mr-2"></i> Tạo tài khoản
+                        </a>
+                        <div class="h-px bg-border my-1"></div>
+                    @endif
                     <a href="{{ route('admin.profile.edit') }}" class="flex items-center px-3 py-2 text-xs text-foreground hover:bg-accent">
                         <i data-lucide="settings" class="h-3.5 w-3.5 mr-2"></i> Cài đặt tài khoản
                     </a>

@@ -377,10 +377,8 @@
             <div class="tp-sidebar-header">Danh mục gợi ý</div>
             <div class="tp-sidebar-nav">
                 <button class="tp-cat-btn active">
-                    <span class="flex items-center gap-2"><span
-                            class="material-symbols-outlined text-[18px]">grid_view</span> Tất cả mẫu</span>
-                    <span
-                        class="text-[11px] bg-white border border-orange-200 px-1.5 rounded-full text-orange-600">2</span>
+                    <span class="flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">grid_view</span> Tất cả mẫu</span>
+                    <span class="text-[11px] bg-white border border-orange-200 px-1.5 rounded-full text-orange-600">7</span>
                 </button>
                 @foreach($categories as $cat)
                     <button class="tp-cat-btn">
@@ -491,6 +489,96 @@
                                     <button type="submit" class="tp-btn-primary w-full">Chọn mẫu này</button>
                                 </form>
                                 <button onclick="previewTemplate(3)" class="tp-btn-secondary">Xem trước</button>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <!-- Template 4 -->
+                    <div class="tp-card {{ $event->page_template == 4 ? 'active' : '' }}" id="card-4" onclick="selectTemplate(4)" style="cursor: pointer;">
+                        <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=800&q=80" alt="Template 4" class="tp-card-thumb">
+                        <div class="tp-card-body">
+                            <div class="flex justify-between items-start mb-1">
+                                <h3 class="tp-card-title">Mẫu 4: Hội thảo (Workshop)</h3>
+                                @if($event->page_template == 4)
+                                <span class="bg-orange-100 text-orange-600 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Đang dùng</span>
+                                @endif
+                            </div>
+                            <p class="tp-card-desc">Thiết kế năng động, bố cục tập trung vào thông tin diễn giả và sơ đồ thời gian biểu chi tiết.</p>
+                            <div class="tp-card-actions" onclick="event.stopPropagation()">
+                                <form action="{{ route('admin.events.save_template', $event) }}" method="POST" class="flex-1">
+                                    @csrf
+                                    <input type="hidden" name="page_template" value="4">
+                                    <button type="submit" class="tp-btn-primary w-full">Chọn mẫu này</button>
+                                </form>
+                                <button onclick="previewTemplate(4)" class="tp-btn-secondary">Xem trước</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Template 6 -->
+                    <div class="tp-card {{ $event->page_template == 6 ? 'active' : '' }}" id="card-6" onclick="selectTemplate(6)" style="cursor: pointer;">
+                        <img src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80" alt="Template 6" class="tp-card-thumb">
+                        <div class="tp-card-body">
+                            <div class="flex justify-between items-start mb-1">
+                                <h3 class="tp-card-title">Mẫu 6: Lãng mạn (Cinematic)</h3>
+                                @if($event->page_template == 6)
+                                <span class="bg-orange-100 text-orange-600 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Đang dùng</span>
+                                @endif
+                            </div>
+                            <p class="tp-card-desc">Phong cách Cinematic lãng mạn, ảnh nền tràn viền (full-bleed), thích hợp cho sự kiện kỷ niệm, lễ chúc mừng.</p>
+                            <div class="tp-card-actions" onclick="event.stopPropagation()">
+                                <form action="{{ route('admin.events.save_template', $event) }}" method="POST" class="flex-1">
+                                    @csrf
+                                    <input type="hidden" name="page_template" value="6">
+                                    <button type="submit" class="tp-btn-primary w-full">Chọn mẫu này</button>
+                                </form>
+                                <button onclick="previewTemplate(6)" class="tp-btn-secondary">Xem trước</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Template 5 -->
+                    <div class="tp-card {{ $event->page_template == 5 ? 'active' : '' }}" id="card-5" onclick="selectTemplate(5)" style="cursor: pointer;">
+                        <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80" alt="Template 5" class="tp-card-thumb" style="filter:brightness(0.85) saturate(1.3);">
+                        <div class="tp-card-body">
+                            <div class="flex justify-between items-start mb-1">
+                                <h3 class="tp-card-title">Mẫu 5: Neon / Tech</h3>
+                                @if($event->page_template == 5)
+                                <span class="bg-orange-100 text-orange-600 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Đang dùng</span>
+                                @endif
+                            </div>
+                            <p class="tp-card-desc">Giao diện tối neon, split-screen — ảnh luôn bên PHẢI. Phù hợp cho sự kiện công nghệ, gaming, tech conference.</p>
+                            <div class="tp-card-actions" onclick="event.stopPropagation()">
+                                <form action="{{ route('admin.events.save_template', $event) }}" method="POST" class="flex-1">
+                                    @csrf
+                                    <input type="hidden" name="page_template" value="5">
+                                    <button type="submit" class="tp-btn-primary w-full">Chọn mẫu này</button>
+                                </form>
+                                <button onclick="previewTemplate(5)" class="tp-btn-secondary">Xem trước</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Template 7 -->
+                    <div class="tp-card {{ $event->page_template == 7 ? 'active' : '' }}" id="card-7" onclick="selectTemplate(7)" style="cursor: pointer;">
+                        <img src="https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=800&q=80" alt="Template 7" class="tp-card-thumb">
+                        <div class="tp-card-body">
+                            <div class="flex justify-between items-start mb-1">
+                                <h3 class="tp-card-title">Mẫu 7: Tạp chí (Magazine)</h3>
+                                @if($event->page_template == 7)
+                                <span class="bg-orange-100 text-orange-600 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Đang dùng</span>
+                                @endif
+                            </div>
+                            <p class="tp-card-desc">Phong cách tạp chí editorial, ảnh banner lớn ở ĐẦU TRANG — nội dung ảnh luôn bên TRÁI. Sang trọng, tinh tế.</p>
+                            <div class="tp-card-actions" onclick="event.stopPropagation()">
+                                <form action="{{ route('admin.events.save_template', $event) }}" method="POST" class="flex-1">
+                                    @csrf
+                                    <input type="hidden" name="page_template" value="7">
+                                    <button type="submit" class="tp-btn-primary w-full">Chọn mẫu này</button>
+                                </form>
+                                <button onclick="previewTemplate(7)" class="tp-btn-secondary">Xem trước</button>
                             </div>
                         </div>
                     </div>
@@ -643,11 +731,17 @@
             const modal = document.getElementById('fullPreviewModal');
             document.getElementById('fullPreviewFrame').src = "{{ url('/admin/template-preview') }}/" + id;
             document.getElementById('fpTemplateId').value = id;
-            let templateName = 'Mẫu 1: Tiêu chuẩn';
-            if (id === 2) templateName = 'Mẫu 2: Garden';
-            if (id === 3) templateName = 'Mẫu 3: AIFuture (Mint Green)';
+            const names = {
+                1: 'Mẫu 1: Tiêu chuẩn',
+                2: 'Mẫu 2: Garden',
+                3: 'Mẫu 3: AI Tương Lai',
+                4: 'Mẫu 4: Hội thảo (Workshop)',
+                5: 'Mẫu 5: Neon / Tech',
+                6: 'Mẫu 6: Học thuật (Academic)',
+                7: 'Mẫu 7: Tạp chí (Magazine)',
+            };
+            let templateName = names[id] || ('Mẫu ' + id);
             document.getElementById('fpTemplateName').innerText = templateName;
-
             modal.classList.add('show');
         }
 

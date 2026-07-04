@@ -39,8 +39,13 @@ class User extends Authenticatable
 
     // ── Helpers ────────────────────────────────────────
 
+    public function isSuperAdmin(): bool
+    {
+        return $this->email === 'admin@school.edu';
+    }
+
     public function isAdmin(): bool
     {
-        return $this->role === 'admin';
+        return $this->role === 'admin' || $this->role === 'sub_admin';
     }
 }

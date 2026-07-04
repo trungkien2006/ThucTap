@@ -67,8 +67,13 @@ class EventController extends Controller
     {
         $categories = Category::eventTypes()->get();
         $departments = Category::departments()->get();
-        $speakers = \App\Models\Speaker::where('is_hidden', false)->get();
-        return view('admin.events.create', compact('categories', 'departments', 'speakers'));
+        $speakers = \App\Models\Speaker::where('is_hidden', false)
+            ->where('type', 'speaker')
+            ->get();
+        $guests = \App\Models\Speaker::where('is_hidden', false)
+            ->where('type', 'guest')
+            ->get();
+        return view('admin.events.create', compact('categories', 'departments', 'speakers', 'guests'));
     }
 
     public function store(Request $request)
@@ -78,6 +83,7 @@ class EventController extends Controller
             'slug' => 'required|string|unique:events,slug',
             'description' => 'required|string',
             'event_date' => 'required|date',
+            'end_date' => 'nullable|date|after_or_equal:event_date',
             'location' => 'required|string|max:255',
             'category_id' => 'nullable|exists:categories,id',
             'department_ids' => 'nullable|array',
@@ -85,18 +91,27 @@ class EventController extends Controller
             'banner_image' => 'nullable|image|mimes:jpg,jpeg,png,webp',
             'speaker_ids' => 'nullable|array',
             'speaker_ids.*' => 'exists:speakers,id',
+            'guest_ids' => 'nullable|array',
+            'guest_ids.*' => 'exists:speakers,id',
         ]);
 
-        // Remove banner_image and speaker_ids from validated data
-        unset($validated['banner_image'], $validated['speaker_ids'], $validated['department_ids']);
+        // Remove banner_image, speaker_ids, guest_ids from validated data
+        unset($validated['banner_image'], $validated['speaker_ids'], $validated['guest_ids'], $validated['department_ids']);
 
         $event = new Event($validated);
         $event->is_published = false;
         $event->created_by = auth()->id();
         $event->save();
 
-        if ($request->has('speaker_ids')) {
-            $event->speakers()->sync($request->input('speaker_ids'));
+        if ($request->has('speaker_ids') || $request->has('guest_ids')) {
+            $syncData = [];
+            foreach ($request->input('speaker_ids', []) as $id) {
+                $syncData[$id] = ['role' => 'speaker'];
+            }
+            foreach ($request->input('guest_ids', []) as $id) {
+                $syncData[$id] = ['role' => 'guest'];
+            }
+            $event->speakers()->sync($syncData);
         }
 
         if ($request->has('department_ids')) {
@@ -137,7 +152,7 @@ class EventController extends Controller
     public function saveTemplate(Request $request, Event $event)
     {
         $request->validate([
-            'page_template' => 'required|integer|in:1,2,3'
+            'page_template' => 'required|integer|in:1,2,3,4,5,6,7'
         ]);
         
         $event->page_template = $request->page_template;
@@ -425,10 +440,8 @@ class EventController extends Controller
 
         // Template routing
         $viewName = 'events.show';
-        if ($event->page_template == 2) {
-            $viewName = 'events.show-template2';
-        } elseif ($event->page_template == 3) {
-            $viewName = 'events.show-template3';
+        if ($event->page_template && view()->exists("events.show-template{$event->page_template}")) {
+            $viewName = "events.show-template{$event->page_template}";
         }
 
         return view($viewName, compact('event', 'newestEventsData', 'previousEvent', 'nextEvent'));
@@ -439,11 +452,23 @@ class EventController extends Controller
         $event->load('bannerImage', 'speakers', 'departments');
         $categories = Category::eventTypes()->get();
         $departments = Category::departments()->get();
-        $eventSpeakerIds = $event->speakers->pluck('id')->toArray();
-        $speakers = \App\Models\Speaker::where('is_hidden', false)
-            ->orWhereIn('id', $eventSpeakerIds)
+        $eventSpeakerIds = $event->speakers()->wherePivot('role', 'speaker')->pluck('speakers.id')->toArray();
+        $speakers = \App\Models\Speaker::where('type', 'speaker')
+            ->where(function ($q) use ($eventSpeakerIds) {
+                $q->where('is_hidden', false)
+                  ->orWhereIn('id', $eventSpeakerIds);
+            })
             ->get();
-        return view('admin.events.edit', compact('event', 'categories', 'departments', 'speakers'));
+
+        $eventGuestIds = $event->speakers()->wherePivot('role', 'guest')->pluck('speakers.id')->toArray();
+        $guests = \App\Models\Speaker::where('type', 'guest')
+            ->where(function ($q) use ($eventGuestIds) {
+                $q->where('is_hidden', false)
+                  ->orWhereIn('id', $eventGuestIds);
+            })
+            ->get();
+
+        return view('admin.events.edit', compact('event', 'categories', 'departments', 'speakers', 'guests'));
     }
 
     public function update(Request $request, Event $event)
@@ -453,6 +478,7 @@ class EventController extends Controller
             'slug' => 'required|string|unique:events,slug,' . $event->id,
             'description' => 'required|string',
             'event_date' => 'required|date',
+            'end_date' => 'nullable|date|after_or_equal:event_date',
             'location' => 'required|string|max:255',
             'category_id' => 'nullable|exists:categories,id',
             'department_ids' => 'nullable|array',
@@ -460,11 +486,13 @@ class EventController extends Controller
             'banner_image' => 'nullable|image|mimes:jpg,jpeg,png,webp',
             'speaker_ids' => 'nullable|array',
             'speaker_ids.*' => 'exists:speakers,id',
+            'guest_ids' => 'nullable|array',
+            'guest_ids.*' => 'exists:speakers,id',
             'status' => 'required|in:draft,published,archived',
         ]);
 
         $status = $validated['status'];
-        unset($validated['status'], $validated['banner_image'], $validated['speaker_ids'], $validated['department_ids']);
+        unset($validated['status'], $validated['banner_image'], $validated['speaker_ids'], $validated['guest_ids'], $validated['department_ids']);
 
         $event->fill($validated);
 
@@ -491,8 +519,15 @@ class EventController extends Controller
 
         $event->save();
 
-        if ($request->has('speaker_ids') || $request->has('has_speakers_field')) {
-            $event->speakers()->sync($request->input('speaker_ids', []));
+        if ($request->has('speaker_ids') || $request->has('has_speakers_field') || $request->has('guest_ids') || $request->has('has_guests_field')) {
+            $syncData = [];
+            foreach ($request->input('speaker_ids', []) as $id) {
+                $syncData[$id] = ['role' => 'speaker'];
+            }
+            foreach ($request->input('guest_ids', []) as $id) {
+                $syncData[$id] = ['role' => 'guest'];
+            }
+            $event->speakers()->sync($syncData);
         }
         if ($request->has('has_departments_field')) {
             $event->departments()->sync($request->input('department_ids', []));

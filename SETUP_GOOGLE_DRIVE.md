@@ -71,3 +71,4 @@ Nếu dự án của bạn trên Google Cloud Console đang ở trạng thái **
 6. Nhấn nút **Authorize APIs**, đăng nhập bằng tài khoản Google chứa thư mục Drive của bạn và bấm Allow (Cho phép).
 7. Tại mục Step 2, bấm nút **Exchange authorization code for tokens**.
 8. Cuối cùng, copy dòng `Refresh token` hiện ra ở khung bên phải và dán vào file `.env` của bạn, đồng thời gửi cho các thành viên trong nhóm để họ cập nhật lại file `.env` của họ.
+    

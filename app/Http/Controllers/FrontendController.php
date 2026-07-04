@@ -291,8 +291,11 @@ class FrontendController extends Controller
         $events = $query->paginate(16);
 
         // Get unique years for filter
+        $driver = \Illuminate\Support\Facades\DB::connection()->getDriverName();
+        $yearExpression = $driver === 'sqlite' ? "strftime('%Y', event_date)" : "YEAR(event_date)";
+
         $availableYears = Event::published()
-            ->selectRaw('YEAR(event_date) as year')
+            ->selectRaw("$yearExpression as year")
             ->distinct()
             ->orderBy('year', 'desc')
             ->pluck('year')
@@ -343,7 +346,7 @@ class FrontendController extends Controller
                 'id' => $event->id,
                 'event_year' => \Carbon\Carbon::parse($event->event_date)->year,
                 'year' => \Carbon\Carbon::parse($event->event_date)->year,
-                'month' => \Carbon\Carbon::parse($event->event_date)->format('m'),
+                'month' => \Carbon\Carbon::parse($event->event_date)->format('n'),
                 'category' => $event->category ? $event->category->name : 'Sự kiện khác',
                 'title' => $event->title,
                 'date_str' => \Carbon\Carbon::parse($event->event_date)->format('d/m/Y'),

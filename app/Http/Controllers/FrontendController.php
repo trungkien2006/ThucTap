@@ -296,10 +296,11 @@ class FrontendController extends Controller
 
         // Get unique years for filter
         $availableYears = Event::published()
-            ->selectRaw('YEAR(event_date) as year')
-            ->distinct()
-            ->orderBy('year', 'desc')
-            ->pluck('year')
+            ->pluck('event_date')
+            ->map(fn($date) => \Carbon\Carbon::parse($date)->year)
+            ->unique()
+            ->sortDesc()
+            ->values()
             ->toArray();
 
         // Get categories for navigation menu / filter

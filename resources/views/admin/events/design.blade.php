@@ -329,6 +329,11 @@
                             <span class="text-[11px] text-slate-400">Nhập nội dung sự kiện và chọn ảnh minh hoạ</span>
                         </div>
 
+                        <div id="t5WarningMsg" class="hidden mb-4 bg-blue-50 text-blue-700 p-3 rounded-lg text-[13px] border border-blue-200">
+                            <span class="material-symbols-outlined align-middle mr-1 text-[18px]">info</span>
+                            <b>Mẫu 5:</b> Chỉ ô nội dung đầu tiên được dùng làm "Nội dung thiệp mời". Các ô bên dưới chỉ dùng ảnh (nội dung chữ sẽ bị ẩn để phù hợp thiệp mời).
+                        </div>
+
                         <div class="space-y-6" id="mediaSlots">
                             @php $galleryMedia = $event->galleryImages->take(4)->values(); @endphp
                             @for($i = 1; $i <= 4; $i++)
@@ -357,15 +362,15 @@
                                     $mediaOrder = 'lg:order-2';
                                 }
                             @endphp
-                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-slate-50/50 p-6 rounded-xl border border-slate-100 items-start" data-slot-wrap="{{ $i }}">
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-slate-50/50 p-6 rounded-xl border border-slate-100 items-start media-slot-wrapper" data-slot-wrap="{{ $i }}">
                                 {{-- Column: Content --}}
-                                <div class="flex flex-col h-full w-full {{ $textOrder }}">
-                                    <textarea id="content{{ $i }}" rows="8" placeholder="Nhập nội dung sự kiện cho đoạn này..."
+                                <div class="flex flex-col h-full w-full {{ $textOrder }} media-text-col">
+                                    <textarea id="content{{ $i }}" rows="8" placeholder="{{ $i == 1 ? 'Nhập nội dung sự kiện cho đoạn này...' : 'Nhập nội dung sự kiện cho đoạn này...' }}"
                                            class="w-full text-[14px] px-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all resize-y h-full" style="min-height: 250px;">{{ $media ? $media->content : '' }}</textarea>
                                 </div>
                                        
                                 {{-- Column: Media --}}
-                                <div class="flex flex-col gap-3 w-full {{ $mediaOrder }}">
+                                <div class="flex flex-col gap-3 w-full {{ $mediaOrder }} media-upload-col">
                                     {{-- Image slot --}}
                                     <div class="relative">
                                         <div onclick="activateSlot({{ $i }})"
@@ -1013,11 +1018,15 @@
             const docSections = document.querySelectorAll('.doc-upload-section');
             const subBannerSection = document.getElementById('subBannerSection');
 
+            // Documents visibility
             if (template === '1') {
                 docSections.forEach(el => el.classList.add('hidden'));
-                if (subBannerSection) subBannerSection.style.display = 'none';
             } else {
                 docSections.forEach(el => el.classList.remove('hidden'));
+            }
+
+            // Sub Banner visibility (ONLY for Template 2)
+            if (template === '2') {
                 if (subBannerSection) {
                     subBannerSection.style.display = '';
                     const inSubBannerUrl = document.getElementById('inSubBannerUrl');
@@ -1035,7 +1044,38 @@
                         }
                     }
                 }
+            } else {
+                if (subBannerSection) subBannerSection.style.display = 'none';
             }
+
+            // Media slots layout based on template
+            const mediaWrappers = document.querySelectorAll('.media-slot-wrapper');
+            const t5WarningMsg = document.getElementById('t5WarningMsg');
+            
+            mediaWrappers.forEach((wrapper) => {
+                const slotId = wrapper.getAttribute('data-slot-wrap');
+                const textCol = wrapper.querySelector('.media-text-col');
+                
+                if (template === '5') {
+                    if (t5WarningMsg) t5WarningMsg.classList.remove('hidden');
+                    // For template 5, only slot 1 has text. Slots > 1 are just images.
+                    if (slotId !== '1') {
+                        if (textCol) textCol.style.display = 'none';
+                        wrapper.classList.remove('lg:grid-cols-2');
+                        wrapper.classList.add('grid-cols-1');
+                    } else {
+                        if (textCol) textCol.style.display = '';
+                        wrapper.classList.add('lg:grid-cols-2');
+                        wrapper.classList.remove('grid-cols-1');
+                    }
+                } else {
+                    if (t5WarningMsg) t5WarningMsg.classList.add('hidden');
+                    // Normal templates: all slots have text
+                    if (textCol) textCol.style.display = '';
+                    wrapper.classList.add('lg:grid-cols-2');
+                    wrapper.classList.remove('grid-cols-1');
+                }
+            });
 
             const descEl = document.getElementById('viewMoTa');
             const inMoTa = document.getElementById('inMoTa');
@@ -1323,13 +1363,13 @@
             }
 
             const slotHtml = `
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-slate-50/50 p-6 rounded-xl border border-slate-100 mt-6 items-start" data-slot-wrap="${newI}">
-                <div class="flex flex-col h-full w-full ${textOrder}">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-slate-50/50 p-6 rounded-xl border border-slate-100 mt-6 items-start media-slot-wrapper" data-slot-wrap="${newI}">
+                <div class="flex flex-col h-full w-full ${textOrder} media-text-col" ${templateId === '5' ? 'style="display:none;"' : ''}>
                     <textarea id="content${newI}" rows="8" placeholder="Nhập nội dung sự kiện cho đoạn này..."
                            class="w-full text-[14px] px-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all resize-y h-full" style="min-height: 250px;"></textarea>
                 </div>
                        
-                <div class="flex flex-col gap-3 w-full ${mediaOrder}">
+                <div class="flex flex-col gap-3 w-full ${mediaOrder} media-upload-col">
                     <div class="relative">
                         <div onclick="activateSlot(${newI})"
                              class="media-slot w-full h-32 bg-white hover:bg-slate-50 border-2 border-dashed border-slate-300 hover:border-brand-orange rounded-xl flex items-center justify-center gap-2 cursor-pointer text-slate-500 hover:text-brand-orange transition-all"
@@ -1389,7 +1429,13 @@
                 </div>
             </div>`;
 
-            container.insertAdjacentHTML('beforeend', slotHtml);
+            // If template is 5, we shouldn't use lg:grid-cols-2 for new slots.
+            let finalHtml = slotHtml;
+            if (templateId === '5') {
+                finalHtml = finalHtml.replace('lg:grid-cols-2', 'grid-cols-1');
+            }
+
+            container.insertAdjacentHTML('beforeend', finalHtml);
             
             // Re-init tinymce for the new textarea if tinymce is available
             if (window.tinymce) {

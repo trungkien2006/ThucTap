@@ -23,8 +23,7 @@
             @endforeach
         </div>
         {{-- Overlay --}}
-        <div class="slider-overlay"
-             style="background:linear-gradient(110deg,rgba(255,200,60,0.50) 0%,rgba(28,20,16,0.55) 50%,rgba(7,160,195,0.15) 100%);"></div>
+        <div class="slider-overlay" style="background: rgba(0,0,0,0.2);"></div>
         <div class="slider-content">
             <div class="slide-info is-active" id="slideInfo">
                 <div class="slide-eyebrow" id="slideEyebrow">{{ $slides[0]['eyebrow'] }}</div>

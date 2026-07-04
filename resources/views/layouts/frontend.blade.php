@@ -25,6 +25,10 @@
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 
     @vite(['resources/css/app.css', 'resources/css/frontend.css', 'resources/js/app.js'])
+    
+    <!-- SPA Pre-loaded CDN Scripts -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js" data-navigate-track></script>
+
     @stack('styles')
 </head>
 <body class="frontend-body antialiased bg-paper text-ink relative" x-data="{ scrolled: false }" @scroll.window="scrolled = (window.pageYOffset > 40)">
@@ -41,7 +45,7 @@
         x-data="{ mobileOpen: false, megaMenuOpen: false }"
     >
         <div class="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-5 lg:px-10 relative">
-            <a href="{{ route('home') }}#top" class="group relative flex items-center h-8 min-w-[240px]" x-data="{ showUni: true }" x-init="setInterval(() => { showUni = !showUni }, 3000)">
+            <a href="{{ route('home') }}#top" wire:navigate class="group relative flex items-center h-8 min-w-[240px]" x-data="{ showUni: true }" x-init="setInterval(() => { showUni = !showUni }, 3000)">
                 <style>
                     /* Smooth Top-to-Bottom Flow Transition */
                     @keyframes fluidIn {
@@ -96,13 +100,13 @@
             </a>
 
             <nav class="hidden items-center gap-1 lg:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-                <a href="{{ route('home') }}#top" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-sm font-semibold transition-colors {{ !$isHome ? 'text-[#7A6A52] hover:text-[#1C1410]' : '' }}"
+                <a href="{{ route('home') }}#top" wire:navigate class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-sm font-semibold transition-colors {{ !$isHome ? 'text-[#7A6A52] hover:text-[#1C1410]' : '' }}"
                    {!! $isHome ? ":class=\"scrolled ? 'text-[#7A6A52] hover:text-[#1C1410]' : 'text-white/80 hover:text-white'\"" : "" !!}>
                     Trang chủ
                 </a>
                 
                 <div class="relative" @mouseenter="megaMenuOpen = true" @mouseleave="megaMenuOpen = false">
-                    <a href="{{ route('events.index') }}" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-sm font-semibold transition-colors {{ !$isHome ? 'text-[#7A6A52] hover:text-[#1C1410]' : '' }}"
+                    <a href="{{ route('events.index') }}" wire:navigate class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-sm font-semibold transition-colors {{ !$isHome ? 'text-[#7A6A52] hover:text-[#1C1410]' : '' }}"
                        {!! $isHome ? ":class=\"scrolled ? 'text-[#7A6A52] hover:text-[#1C1410]' : 'text-white/80 hover:text-white'\"" : "" !!}>
                         Sự kiện
                         <span class="ml-0.5 inline-block h-2 w-2 rounded-full" style="background:#07A0C3;"></span>
@@ -145,7 +149,7 @@
                                 @endphp
                                 @if(isset($categories))
                                     @foreach($categories as $c)
-                                    <a href="{{ isset($c['slug']) ? route('events.index', ['category' => $c['slug']]) : '#' }}" class="group flex items-start justify-between rounded-xl px-4 py-3 transition-colors"
+                                    <a href="{{ isset($c['slug']) ? route('events.index', ['category' => $c['slug']]) : '#' }}" wire:navigate class="group flex items-start justify-between rounded-xl px-4 py-3 transition-colors"
                                        style="" onmouseover="this.style.background='rgba(255,227,129,0.3)'" onmouseout="this.style.background=''">
                                         <div>
                                             <div class="text-sm font-semibold text-[#1C1410]">{{ $c['name'] }}</div>
@@ -156,7 +160,7 @@
                                     @endforeach
                                 @endif
                             </div>
-                            <a href="{{ route('events.index') }}" class="mt-2 flex items-center justify-between rounded-xl px-4 py-3 text-[#1C1410] font-semibold transition-all hover:opacity-90" style="background:#FFE381;">
+                            <a href="{{ route('events.index') }}" wire:navigate class="mt-2 flex items-center justify-between rounded-xl px-4 py-3 text-[#1C1410] font-semibold transition-all hover:opacity-90" style="background:#FFE381;">
                                 <span class="text-sm">Xem tất cả danh mục sự kiện</span>
                                 <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
                             </a>
@@ -164,18 +168,18 @@
                     </div>
                 </div>
 
-                <a href="{{ route('archive') }}" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-sm font-semibold transition-colors {{ request()->routeIs('archive') ? 'text-[#07A0C3]' : (!$isHome ? 'text-[#7A6A52] hover:text-[#1C1410]' : '') }}"
+                <a href="{{ route('archive') }}" wire:navigate class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-sm font-semibold transition-colors {{ request()->routeIs('archive') ? 'text-[#07A0C3]' : (!$isHome ? 'text-[#7A6A52] hover:text-[#1C1410]' : '') }}"
                    {!! $isHome ? ":class=\"scrolled ? 'text-[#7A6A52] hover:text-[#1C1410]' : 'text-white/80 hover:text-white'\"" : "" !!}>
                     Kho lưu trữ
                 </a>
-                <a href="{{ route('contact') }}" class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-sm font-semibold transition-colors {{ request()->routeIs('contact') ? 'text-[#07A0C3]' : (!$isHome ? 'text-[#7A6A52] hover:text-[#1C1410]' : '') }}"
+                <a href="{{ route('contact') }}" wire:navigate class="inline-flex items-center gap-1 rounded-full px-4 py-2 text-sm font-semibold transition-colors {{ request()->routeIs('contact') ? 'text-[#07A0C3]' : (!$isHome ? 'text-[#7A6A52] hover:text-[#1C1410]' : '') }}"
                    {!! $isHome ? ":class=\"scrolled ? 'text-[#7A6A52] hover:text-[#1C1410]' : 'text-white/80 hover:text-white'\"" : "" !!}>
                     Liên hệ
                 </a>
             </nav>
 
             <div class="hidden lg:block">
-                <a href="{{ route('events.index') }}"
+                <a href="{{ route('events.index') }}" wire:navigate
                    class="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold text-[#1C1410] shadow-md transition-all hover:shadow-lg hover:scale-105"
                    style="background: #FFE381; border: 1px solid rgba(232,200,74,0.6);">
                     Khám phá ngay
@@ -218,7 +222,7 @@
                 </div>
 
                 <nav class="flex flex-col gap-4">
-                    <a href="{{ route('home') }}#top" @click="mobileOpen = false" class="flex items-center justify-between py-3 text-lg font-semibold text-[#1C1410] border-b border-[#E8C84A]/20">
+                    <a href="{{ route('home') }}#top" wire:navigate @click="mobileOpen = false" class="flex items-center justify-between py-3 text-lg font-semibold text-[#1C1410] border-b border-[#E8C84A]/20">
                         Trang chủ
                         <i data-lucide="chevron-right" class="h-4 w-4 text-[#7A6A52]"></i>
                     </a>
@@ -231,24 +235,24 @@
                         <div x-show="expanded" class="grid grid-cols-1 gap-2 pt-2 pb-2 pl-4">
                             @if(isset($categories))
                                 @foreach($categories as $c)
-                                <a href="{{ isset($c['slug']) ? route('events.index', ['category' => $c['slug']]) : '#' }}" class="py-2 text-[#7A6A52] hover:text-[#07A0C3] font-medium" @click="mobileOpen = false">{{ $c['name'] }}</a>
+                                <a href="{{ isset($c['slug']) ? route('events.index', ['category' => $c['slug']]) : '#' }}" wire:navigate class="py-2 text-[#7A6A52] hover:text-[#07A0C3] font-medium" @click="mobileOpen = false">{{ $c['name'] }}</a>
                                 @endforeach
                             @endif
                         </div>
                     </div>
 
-                    <a href="{{ route('archive') }}" @click="mobileOpen = false" class="flex items-center justify-between py-3 text-lg font-semibold text-[#1C1410] border-b border-[#E8C84A]/20">
+                    <a href="{{ route('archive') }}" wire:navigate @click="mobileOpen = false" class="flex items-center justify-between py-3 text-lg font-semibold text-[#1C1410] border-b border-[#E8C84A]/20">
                         Kho lưu trữ
                         <i data-lucide="chevron-right" class="h-4 w-4 text-[#7A6A52]"></i>
                     </a>
-                    <a href="{{ route('contact') }}" @click="mobileOpen = false" class="flex items-center justify-between py-3 text-lg font-semibold {{ request()->routeIs('contact') ? 'text-[#07A0C3]' : 'text-[#1C1410]' }} border-b border-[#E8C84A]/20">
+                    <a href="{{ route('contact') }}" wire:navigate @click="mobileOpen = false" class="flex items-center justify-between py-3 text-lg font-semibold {{ request()->routeIs('contact') ? 'text-[#07A0C3]' : 'text-[#1C1410]' }} border-b border-[#E8C84A]/20">
                         Liên hệ
                         <i data-lucide="chevron-right" class="h-4 w-4 text-[#7A6A52]"></i>
                     </a>
                 </nav>
 
                 <div class="mt-auto pt-6">
-                    <a href="{{ route('events.index') }}" @click="mobileOpen = false" class="flex w-full items-center justify-center gap-2 rounded-xl py-4 text-center text-lg font-bold text-[#1C1410] shadow-md transition-transform active:scale-95" style="background: #FFE381;">
+                    <a href="{{ route('events.index') }}" wire:navigate @click="mobileOpen = false" class="flex w-full items-center justify-center gap-2 rounded-xl py-4 text-center text-lg font-bold text-[#1C1410] shadow-md transition-transform active:scale-95" style="background: #FFE381;">
                         Khám phá ngay
                         <i data-lucide="arrow-right" class="h-5 w-5"></i>
                     </a>
@@ -297,9 +301,9 @@
                 <div>
                     <h4 class="text-white font-bold mb-6 text-lg tracking-wide uppercase font-barlow">Khám Phá</h4>
                     <ul class="space-y-4">
-                        <li><a href="{{ route('home') }}#master-wipe-anchor" class="text-white/60 hover:text-[#E8C84A] text-sm transition-colors flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4"></i> Sự kiện nổi bật</a></li>
-                        <li><a href="{{ route('archive') }}" class="text-white/60 hover:text-[#E8C84A] text-sm transition-colors flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4"></i> Kho lưu trữ</a></li>
-                        <li><a href="{{ route('contact') }}" class="text-white/60 hover:text-[#E8C84A] text-sm transition-colors flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4"></i> Liên hệ</a></li>
+                        <li><a href="{{ route('home') }}#master-wipe-anchor" wire:navigate class="text-white/60 hover:text-[#E8C84A] text-sm transition-colors flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4"></i> Sự kiện nổi bật</a></li>
+                        <li><a href="{{ route('archive') }}" wire:navigate class="text-white/60 hover:text-[#E8C84A] text-sm transition-colors flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4"></i> Kho lưu trữ</a></li>
+                        <li><a href="{{ route('contact') }}" wire:navigate class="text-white/60 hover:text-[#E8C84A] text-sm transition-colors flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4"></i> Liên hệ</a></li>
                     </ul>
                 </div>
 
@@ -309,7 +313,7 @@
                     <ul class="space-y-4">
                         @if(isset($categories) && count($categories) > 0)
                             @foreach(array_slice($categories, 0, 6) as $c)
-                            <li><a href="{{ isset($c['slug']) ? route('events.index', ['category' => $c['slug']]) : '#' }}" class="text-white/60 hover:text-[#E8C84A] text-sm transition-colors flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4"></i> {{ $c['name'] }}</a></li>
+                            <li><a href="{{ isset($c['slug']) ? route('events.index', ['category' => $c['slug']]) : '#' }}" wire:navigate class="text-white/60 hover:text-[#E8C84A] text-sm transition-colors flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4"></i> {{ $c['name'] }}</a></li>
                             @endforeach
                         @else
                             <li><a href="#" class="text-white/60 hover:text-[#E8C84A] text-sm transition-colors flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4"></i> Workshop</a></li>
@@ -355,17 +359,22 @@
     </footer>
 
     <!-- Initialize AOS -->
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            lucide.createIcons();
-            AOS.init({
-                once: true,
-                offset: 50,
-                duration: 800,
-                easing: 'ease-out-cubic',
-            });
-        });
+        function initFrontendScripts() {
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+            if (typeof AOS !== 'undefined') {
+                AOS.init({
+                    once: true,
+                    offset: 50,
+                    duration: 800,
+                    easing: 'ease-out-cubic',
+                });
+            }
+        }
+        document.addEventListener('DOMContentLoaded', initFrontendScripts);
+        document.addEventListener('livewire:navigated', initFrontendScripts);
     </script>
     @stack('scripts')
     
@@ -386,5 +395,6 @@
     }
 </style>
 @endif
+
 </body>
 </html>

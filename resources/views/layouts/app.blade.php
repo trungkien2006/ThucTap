@@ -16,6 +16,11 @@
     <script src="https://unpkg.com/lucide@latest"></script>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    
+    <!-- SPA Pre-loaded CDN Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" data-navigate-track></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.3/tinymce.min.js" referrerpolicy="origin" data-navigate-track></script>
+
     @stack('styles')
     
     <style>
@@ -72,7 +77,7 @@
         <!-- Sidebar Navigation -->
         <nav class="flex-1 overflow-y-auto p-3 space-y-4">
             
-            <a href="{{ route('home') }}" target="_blank" class="sidebar-menu-btn text-brand-orange hover:text-brand-orange hover:bg-orange-50 bg-orange-50/50 mb-2 border border-brand-orange/20">
+            <a href="{{ route('home') }}" target="_blank" class="sidebar-menu-btn text-brand-orange hover:text-brand-orange hover:bg-orange-50 bg-orange-50/50 mb-2 border border-brand-orange/20" wire:navigate>
                 <i data-lucide="globe" class="h-5 w-5"></i>
                 <span>Xem Website</span>
             </a>
@@ -81,27 +86,27 @@
             <div>
                 <p class="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground/70 px-3 mb-1.5">Chính</p>
                 <div class="space-y-0.5">
-                    <a href="{{ route('admin.dashboard') }}" class="sidebar-menu-btn {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                    <a href="{{ route('admin.dashboard') }}" wire:navigate class="sidebar-menu-btn {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                         <i data-lucide="layout-dashboard" class="h-5 w-5"></i>
                         <span>Tổng quan</span>
                     </a>
-                    <a href="{{ route('admin.events.index') }}" class="sidebar-menu-btn {{ request()->routeIs('admin.events.*') && !request()->routeIs('admin.events.create') && !request()->routeIs('admin.events.edit') && !request()->routeIs('admin.events.design') && !request()->routeIs('admin.events.preview') && !request()->routeIs('admin.events.show') ? 'active' : '' }}">
+                    <a href="{{ route('admin.events.index') }}" wire:navigate class="sidebar-menu-btn {{ request()->routeIs('admin.events.*') && !request()->routeIs('admin.events.create') && !request()->routeIs('admin.events.edit') && !request()->routeIs('admin.events.design') && !request()->routeIs('admin.events.preview') && !request()->routeIs('admin.events.show') ? 'active' : '' }}">
                         <i data-lucide="calendar" class="h-5 w-5"></i>
                         <span>Sự kiện</span>
                     </a>
-                    <a href="{{ route('admin.categories.index') }}" class="sidebar-menu-btn {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.categories.index') }}" wire:navigate class="sidebar-menu-btn {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
                         <i data-lucide="tag" class="h-5 w-5"></i>
                         <span>Danh mục sự kiện</span>
                     </a>
-                    <a href="{{ route('admin.departments.index') }}" class="sidebar-menu-btn {{ request()->routeIs('admin.departments.*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.departments.index') }}" wire:navigate class="sidebar-menu-btn {{ request()->routeIs('admin.departments.*') ? 'active' : '' }}">
                         <i data-lucide="building" class="h-5 w-5"></i>
                         <span>Khoa / Bộ phận</span>
                     </a>
-                    <a href="{{ route('admin.archive.index') }}" class="sidebar-menu-btn {{ request()->routeIs('admin.archive.*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.archive.index') }}" wire:navigate class="sidebar-menu-btn {{ request()->routeIs('admin.archive.*') ? 'active' : '' }}">
                         <i data-lucide="archive" class="h-5 w-5"></i>
                         <span>Lưu trữ sự kiện</span>
                     </a>
-                    <a href="{{ route('admin.speakers.index') }}" class="sidebar-menu-btn {{ request()->routeIs('admin.speakers.*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.speakers.index') }}" wire:navigate class="sidebar-menu-btn {{ request()->routeIs('admin.speakers.*') ? 'active' : '' }}">
                         <i data-lucide="mic" class="h-5 w-5"></i>
                         <span>Diễn giả / Khách mời</span>
                     </a>
@@ -112,16 +117,16 @@
             <div>
                 <p class="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground/70 px-3 mb-1.5">Nội dung</p>
                 <div class="space-y-0.5">
-                    <a href="{{ route('admin.media.index') }}" class="sidebar-menu-btn {{ request()->routeIs('admin.media.*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.media.index') }}" wire:navigate class="sidebar-menu-btn {{ request()->routeIs('admin.media.*') ? 'active' : '' }}">
                         <i data-lucide="image" class="h-5 w-5"></i>
                         <span>Thư viện Media</span>
                     </a>
-                    <a href="{{ route('admin.documents.index') }}" class="sidebar-menu-btn {{ request()->routeIs('admin.documents.*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.documents.index') }}" wire:navigate class="sidebar-menu-btn {{ request()->routeIs('admin.documents.*') ? 'active' : '' }}">
                         <i data-lucide="files" class="h-5 w-5"></i>
                         <span>Tài liệu</span>
                     </a>
                     @if(Auth::user()->isSuperAdmin())
-                        <a href="{{ route('admin.users.index') }}" class="sidebar-menu-btn {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+                        <a href="{{ route('admin.users.index') }}" wire:navigate class="sidebar-menu-btn {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
                             <i data-lucide="users" class="h-5 w-5"></i>
                             <span>Quản lý Admin</span>
                         </a>
@@ -148,15 +153,15 @@
                 </button>
                 <div id="adminAvatarDropdown" class="absolute bottom-full left-0 right-0 mb-2 bg-white border border-border rounded-md shadow-lg py-1 hidden z-50">
                     @if(Auth::user()->isSuperAdmin())
-                        <a href="{{ route('admin.users.create') }}" class="flex items-center px-3 py-2 text-xs text-foreground hover:bg-accent">
+                        <a href="{{ route('admin.users.create') }}" wire:navigate class="flex items-center px-3 py-2 text-xs text-foreground hover:bg-accent">
                             <i data-lucide="user-plus" class="h-3.5 w-3.5 mr-2"></i> Tạo tài khoản
                         </a>
                         <div class="h-px bg-border my-1"></div>
                     @endif
-                    <a href="{{ route('admin.profile.edit') }}" class="flex items-center px-3 py-2 text-xs text-foreground hover:bg-accent">
+                    <a href="{{ route('admin.profile.edit') }}" wire:navigate class="flex items-center px-3 py-2 text-xs text-foreground hover:bg-accent">
                         <i data-lucide="settings" class="h-3.5 w-3.5 mr-2"></i> Cài đặt tài khoản
                     </a>
-                    <a href="{{ route('admin.profile.activity') }}" class="flex items-center px-3 py-2 text-xs text-foreground hover:bg-accent">
+                    <a href="{{ route('admin.profile.activity') }}" wire:navigate class="flex items-center px-3 py-2 text-xs text-foreground hover:bg-accent">
                         <i data-lucide="history" class="h-3.5 w-3.5 mr-2"></i> Lịch sử hoạt động
                     </a>
                     <div class="h-px bg-border my-1"></div>
@@ -182,12 +187,12 @@
             <!-- Breadcrumbs -->
             <div class="hidden md:flex items-center text-xs text-muted-foreground gap-1 min-w-0">
                 <div class="flex items-center gap-1 min-w-0">
-                    <a href="{{ route('admin.dashboard') }}" class="hover:text-foreground">Home</a>
+                    <a href="{{ route('admin.dashboard') }}" wire:navigate class="hover:text-foreground">Home</a>
                     @if(isset($breadcrumbs) && is_array($breadcrumbs))
                         @foreach($breadcrumbs as $bc)
                             <i data-lucide="chevron-right" class="h-3 w-3 shrink-0"></i>
                             @if(isset($bc['route']))
-                                <a href="{{ $bc['route'] }}" class="hover:text-foreground truncate">{{ $bc['label'] }}</a>
+                                <a href="{{ $bc['route'] }}" wire:navigate class="hover:text-foreground truncate">{{ $bc['label'] }}</a>
                             @else
                                 <span class="text-foreground font-medium truncate">{{ $bc['label'] }}</span>
                             @endif
@@ -238,9 +243,9 @@
                 <div id="quickCreateDropdown" class="absolute right-0 top-full mt-1.5 w-48 bg-white border border-border rounded-md shadow-lg py-1 hidden z-50">
                     <div class="px-2.5 py-1.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Tạo nhanh</div>
                     <div class="h-px bg-border my-1"></div>
-                    <a href="{{ route('admin.events.create') }}" class="flex items-center px-2.5 py-1.5 text-xs text-foreground hover:bg-accent rounded-sm mx-1">Sự kiện mới</a>
-                    <a href="{{ route('admin.speakers.create') }}" class="flex items-center px-2.5 py-1.5 text-xs text-foreground hover:bg-accent rounded-sm mx-1">Diễn giả mới</a>
-                    <a href="{{ route('admin.media.index') }}" class="flex items-center px-2.5 py-1.5 text-xs text-foreground hover:bg-accent rounded-sm mx-1">Tải lên Media</a>
+                    <a href="{{ route('admin.events.create') }}" wire:navigate class="flex items-center px-2.5 py-1.5 text-xs text-foreground hover:bg-accent rounded-sm mx-1">Sự kiện mới</a>
+                    <a href="{{ route('admin.speakers.create') }}" wire:navigate class="flex items-center px-2.5 py-1.5 text-xs text-foreground hover:bg-accent rounded-sm mx-1">Diễn giả mới</a>
+                    <a href="{{ route('admin.media.index') }}" wire:navigate class="flex items-center px-2.5 py-1.5 text-xs text-foreground hover:bg-accent rounded-sm mx-1">Tải lên Media</a>
                 </div>
             </div>
 
@@ -304,7 +309,7 @@
             </div>
 
             <!-- Public site link -->
-            <a href="{{ route('home') }}" target="_blank" class="h-11 w-11 text-muted-foreground hover:text-foreground hover:bg-accent rounded-xl flex items-center justify-center transition-all" title="Xem trang công khai">
+            <a href="{{ route('home') }}" target="_blank" class="h-11 w-11 text-muted-foreground hover:text-foreground hover:bg-accent rounded-xl flex items-center justify-center transition-all" title="Xem trang công khai" wire:navigate>
                 <i data-lucide="external-link" class="h-5 w-5"></i>
             </a>
         </div>
@@ -332,15 +337,17 @@
     </main>
 
     <script>
-        // Initialize Lucide Icons
-        document.addEventListener('DOMContentLoaded', function() {
-            lucide.createIcons();
-        });
+        // Init setup that runs on initial page load AND after Livewire SPA navigations
+        function initAdminScripts() {
+            // Initialize Lucide Icons
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
 
-        // Sidebar Mobile Toggle
-        const sidebar = document.getElementById('sidebar');
-        const mobileSidebarToggle = document.getElementById('mobileSidebarToggle');
-        const mobileOverlay = document.getElementById('mobileOverlay');
+            // Sidebar Mobile Toggle
+            const sidebar = document.getElementById('sidebar');
+            const mobileSidebarToggle = document.getElementById('mobileSidebarToggle');
+            const mobileOverlay = document.getElementById('mobileOverlay');
 
         function openSidebar() {
             sidebar.classList.remove('-translate-x-full');
@@ -431,6 +438,11 @@
             updateClock();
             setInterval(updateClock, 1000);
         }
+        
+        } // End of initAdminScripts
+
+        document.addEventListener('DOMContentLoaded', initAdminScripts);
+        document.addEventListener('livewire:navigated', initAdminScripts);
     </script>
 
     @stack('scripts')

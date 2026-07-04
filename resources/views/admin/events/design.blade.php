@@ -1456,8 +1456,7 @@
         }
     </script>
 
-    <!-- TinyMCE for rich text formatting -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.3/tinymce.min.js" referrerpolicy="origin"></script>
+    @push('scripts')
     <script>
         tinymce.init({
             selector: 'textarea[id^="content"]',

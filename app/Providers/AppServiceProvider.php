@@ -22,6 +22,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        \Livewire\Livewire::forceAssetInjection();
+
+
         Storage::extend('google', function($app, $config) {
             try {
                 if (empty($config['clientId']) || empty($config['clientSecret']) || empty($config['refreshToken'])) {

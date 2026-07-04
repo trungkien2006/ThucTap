@@ -566,7 +566,19 @@
             </div>
         </div>
 
-        {{-- SECTION 3: COLLAGE GALLERY & HOST CONTACT --}}
+        {{-- SECTION 2.5: ADDITIONAL CONTENT (Media slot 1 text) --}}
+        @php
+            $firstMediaContent = $event->galleryImages->first()?->content;
+        @endphp
+        @if(!empty($firstMediaContent))
+        <div class="t5-card" style="padding-top: 0;">
+            <div class="t5-body-text text-left" style="{{ $descStyleStr }}">
+                {!! $firstMediaContent !!}
+            </div>
+        </div>
+        @endif
+
+        {{-- SECTION 3: COLLAGE GALLERY --}}
         @if($event->galleryImages->count() > 0)
         <div class="t5-card">
             <div class="t5-collage-grid">

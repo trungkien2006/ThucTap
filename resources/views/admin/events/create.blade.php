@@ -104,7 +104,7 @@
                 <span class="material-symbols-outlined text-primary text-[20px]">category</span>
                 <h3 class="text-[16px] font-bold text-primary font-heading">Phân loại & Giới hạn</h3>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
                     <label class="uni-label" for="category_id">Loại sự kiện <span class="text-red-400">*</span></label>
                     <select class="uni-input" id="category_id" name="category_id" required>
@@ -115,23 +115,37 @@
                     </select>
                     @error('category_id') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
                 </div>
-                <div class="md:col-span-2">
-                    <label class="uni-label" for="department_ids">Khoa / Bộ phận (Có thể chọn nhiều)</label>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mt-2">
-                        @foreach($departments as $dept)
-                            <label class="relative block cursor-pointer group">
-                                <input type="checkbox" name="department_ids[]" value="{{ $dept->id }}" {{ (is_array(old('department_ids')) && in_array($dept->id, old('department_ids'))) ? 'checked' : '' }} class="peer sr-only">
-                                <div class="flex items-center justify-center px-3 py-2.5 border border-slate-200 rounded-xl bg-white text-[13px] font-semibold text-slate-600 transition-all duration-200 peer-checked:border-brand-orange peer-checked:bg-orange-50 peer-checked:text-brand-orange group-hover:border-brand-orange/50 shadow-sm text-center h-full">
-                                    {{ $dept->name }}
-                                </div>
-                                <div class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-brand-orange text-white rounded-full flex items-center justify-center opacity-0 peer-checked:opacity-100 transition-all duration-200 transform scale-50 peer-checked:scale-100 shadow-md">
-                                    <span class="material-symbols-outlined text-[12px] font-bold">check</span>
-                                </div>
-                            </label>
-                        @endforeach
-                    </div>
-                    @error('department_ids') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
+                <div>
+                    @php
+                        $currentMonth = now()->month;
+                        $defaultSemester = ($currentMonth >= 1 && $currentMonth <= 4) ? '2' : (($currentMonth >= 5 && $currentMonth <= 8) ? '3' : '1');
+                    @endphp
+                    <label class="uni-label" for="semester">Học kỳ <span class="text-red-400">*</span></label>
+                    <select class="uni-input" id="semester" name="semester" required>
+                        <option value="">— Chọn học kỳ —</option>
+                        <option value="2" {{ old('semester', $defaultSemester) == '2' ? 'selected' : '' }}>Spring</option>
+                        <option value="3" {{ old('semester', $defaultSemester) == '3' ? 'selected' : '' }}>Summer</option>
+                        <option value="1" {{ old('semester', $defaultSemester) == '1' ? 'selected' : '' }}>Fall</option>
+                    </select>
+                    @error('semester') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
                 </div>
+            </div>
+            <div class="mt-5">
+                <label class="uni-label" for="department_ids">Khoa / Bộ phận (Có thể chọn nhiều)</label>
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mt-2">
+                    @foreach($departments as $dept)
+                        <label class="relative block cursor-pointer group">
+                            <input type="checkbox" name="department_ids[]" value="{{ $dept->id }}" {{ (is_array(old('department_ids')) && in_array($dept->id, old('department_ids'))) ? 'checked' : '' }} class="peer sr-only">
+                            <div class="flex items-center justify-center px-3 py-2.5 border border-slate-200 rounded-xl bg-white text-[13px] font-semibold text-slate-600 transition-all duration-200 peer-checked:border-brand-orange peer-checked:bg-orange-50 peer-checked:text-brand-orange group-hover:border-brand-orange/50 shadow-sm text-center h-full">
+                                {{ $dept->name }}
+                            </div>
+                            <div class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-brand-orange text-white rounded-full flex items-center justify-center opacity-0 peer-checked:opacity-100 transition-all duration-200 transform scale-50 peer-checked:scale-100 shadow-md">
+                                <span class="material-symbols-outlined text-[12px] font-bold">check</span>
+                            </div>
+                        </label>
+                    @endforeach
+                </div>
+                @error('department_ids') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
             </div>
         </section>
 

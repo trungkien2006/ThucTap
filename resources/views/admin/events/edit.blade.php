@@ -76,43 +76,59 @@
         <section class="uni-card p-6 space-y-5">
             <div class="flex items-center gap-2.5 border-b border-slate-100 pb-3">
                 <span class="material-symbols-outlined text-primary text-[20px]">category</span>
-                <h3 class="text-[16px] font-bold text-primary font-heading">Phân loại & Giới hạn</h3>
+                <h3 class="text-[16px] font-bold text-primary font-heading font-heading">Phân loại & Giới hạn</h3>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                    <label class="uni-label" for="category_id">Loại sự kiện</label>
-                    <select class="uni-input" id="category_id" name="category_id">
-                        <option value="">— Chọn —</option>
+                    <label class="uni-label" for="category_id">Loại sự kiện <span class="text-red-400">*</span></label>
+                    <select class="uni-input" id="category_id" name="category_id" required>
+                        <option value="">— Chọn loại —</option>
                         @foreach($categories as $cat)
                             <option value="{{ $cat->id }}" {{ old('category_id', $event->category_id) == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
                         @endforeach
                     </select>
+                    @error('category_id') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
                 </div>
-                <div class="md:col-span-2">
-                    <label class="uni-label" for="department_ids">Khoa / Bộ phận (Có thể chọn nhiều)</label>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mt-2">
-                        <input type="hidden" name="has_departments_field" value="1">
-                        @foreach($departments as $dept)
-                            <label class="relative block cursor-pointer group">
-                                @php
-                                    $isChecked = false;
-                                    if (old('_token') !== null) {
-                                        $isChecked = is_array(old('department_ids')) && in_array($dept->id, old('department_ids'));
-                                    } else {
-                                        $isChecked = $event->departments->contains($dept->id);
-                                    }
-                                @endphp
-                                <input type="checkbox" name="department_ids[]" value="{{ $dept->id }}" {{ $isChecked ? 'checked' : '' }} class="peer sr-only">
-                                <div class="flex items-center justify-center px-3 py-2.5 border border-slate-200 rounded-xl bg-white text-[13px] font-semibold text-slate-600 transition-all duration-200 peer-checked:border-brand-orange peer-checked:bg-orange-50 peer-checked:text-brand-orange group-hover:border-brand-orange/50 shadow-sm text-center h-full">
-                                    {{ $dept->name }}
-                                </div>
-                                <div class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-brand-orange text-white rounded-full flex items-center justify-center opacity-0 peer-checked:opacity-100 transition-all duration-200 transform scale-50 peer-checked:scale-100 shadow-md">
-                                    <span class="material-symbols-outlined text-[12px] font-bold">check</span>
-                                </div>
-                            </label>
-                        @endforeach
-                    </div>
+                <div>
+                    @php
+                        $currentMonth = now()->month;
+                        $defaultSemester = ($currentMonth >= 1 && $currentMonth <= 4) ? '2' : (($currentMonth >= 5 && $currentMonth <= 8) ? '3' : '1');
+                    @endphp
+                    <label class="uni-label" for="semester">Học kỳ <span class="text-red-400">*</span></label>
+                    <select class="uni-input" id="semester" name="semester" required>
+                        <option value="">— Chọn học kỳ —</option>
+                        <option value="2" {{ old('semester', $event->semester ?? $defaultSemester) == '2' ? 'selected' : '' }}>Spring</option>
+                        <option value="3" {{ old('semester', $event->semester ?? $defaultSemester) == '3' ? 'selected' : '' }}>Summer</option>
+                        <option value="1" {{ old('semester', $event->semester ?? $defaultSemester) == '1' ? 'selected' : '' }}>Fall</option>
+                    </select>
+                    @error('semester') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
                 </div>
+            </div>
+            <div class="mt-5">
+                <label class="uni-label" for="department_ids">Khoa / Bộ phận (Có thể chọn nhiều)</label>
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mt-2">
+                    <input type="hidden" name="has_departments_field" value="1">
+                    @foreach($departments as $dept)
+                        <label class="relative block cursor-pointer group">
+                            @php
+                                $isChecked = false;
+                                if (old('_token') !== null) {
+                                    $isChecked = is_array(old('department_ids')) && in_array($dept->id, old('department_ids'));
+                                } else {
+                                    $isChecked = $event->departments->contains($dept->id);
+                                }
+                            @endphp
+                            <input type="checkbox" name="department_ids[]" value="{{ $dept->id }}" {{ $isChecked ? 'checked' : '' }} class="peer sr-only">
+                            <div class="flex items-center justify-center px-3 py-2.5 border border-slate-200 rounded-xl bg-white text-[13px] font-semibold text-slate-600 transition-all duration-200 peer-checked:border-brand-orange peer-checked:bg-orange-50 peer-checked:text-brand-orange group-hover:border-brand-orange/50 shadow-sm text-center h-full">
+                                {{ $dept->name }}
+                            </div>
+                            <div class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-brand-orange text-white rounded-full flex items-center justify-center opacity-0 peer-checked:opacity-100 transition-all duration-200 transform scale-50 peer-checked:scale-100 shadow-md">
+                                <span class="material-symbols-outlined text-[12px] font-bold">check</span>
+                            </div>
+                        </label>
+                    @endforeach
+                </div>
+                @error('department_ids') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
             </div>
         </section>
 
@@ -150,10 +166,7 @@
                                     <img src="{{ $photoUrl }}" class="w-8 h-8 rounded-full object-cover">
                                     <div>
                                         <p class="text-[13px] font-semibold text-primary speaker-name-text">{{ $speaker->name }}</p>
-                                        <p class="text-[11px] font-medium speaker-role-text mb-0.5 {{ $speaker->type === 'guest' ? '' : 'text-brand-orange' }}"
-                                           style="{{ $speaker->type === 'guest' ? 'color: #9333ea;' : '' }}">
-                                            {{ $speaker->type === 'guest' ? 'Khách mời' : 'Diễn giả' }}
-                                        </p>
+                                        <p class="text-[11px] text-slate-400 speaker-title-text">{{ $speaker->title ?? 'Diễn giả' }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -171,16 +184,17 @@
                             <p class="text-[13px] text-slate-400">Chưa có diễn giả nào trong hệ thống.</p>
                             <button type="button" class="open-add-speaker-modal-btn inline-flex items-center gap-1.5 text-brand-orange text-[12px] font-semibold hover:underline mt-2">
                                 <span class="material-symbols-outlined text-[16px]">add_circle</span>
-                                Thêm mới
+                                Thêm diễn giả mới
                             </button>
                         </div>
                     @endforelse
                     
+                    <!-- Search Empty State -->
                     <div id="speaker_search_empty" class="hidden col-span-full py-6 text-center">
-                        <p class="text-[13px] text-slate-400">Không tìm thấy kết quả nào khớp với từ khóa.</p>
+                        <p class="text-[13px] text-slate-400">Không tìm thấy diễn giả nào khớp với từ khóa.</p>
                         <button type="button" class="open-add-speaker-modal-btn inline-flex items-center gap-1.5 text-brand-orange text-[12px] font-semibold hover:underline mt-2">
                             <span class="material-symbols-outlined text-[16px]">add_circle</span>
-                            Thêm mới
+                            Thêm diễn giả mới
                         </button>
                     </div>
                 </div>
@@ -645,10 +659,7 @@
                                     <img src="${photoUrl}" class="w-8 h-8 rounded-full object-cover">
                                     <div>
                                         <p class="text-[13px] font-semibold text-primary speaker-name-text">${sp.name}</p>
-                                        <p class="text-[11px] font-medium speaker-role-text mb-0.5 ${sp.type === 'guest' ? '' : 'text-brand-orange'}"
-                                           style="${sp.type === 'guest' ? 'color: #9333ea;' : ''}">
-                                            ${sp.type === 'guest' ? 'Khách mời' : 'Diễn giả'}
-                                        </p>
+                                        <p class="text-[11px] text-slate-400 speaker-title-text">${sp.title || 'Diễn giả'}</p>
                                     </div>
                                 </div>
                             </div>

@@ -41,7 +41,7 @@ class Category extends Model
 
     public function departmentEvents()
     {
-        return $this->hasMany(Event::class, 'department_id');
+        return $this->belongsToMany(Event::class, 'event_departments', 'department_id', 'event_id');
     }
 
     // ── Scopes ─────────────────────────────────────────

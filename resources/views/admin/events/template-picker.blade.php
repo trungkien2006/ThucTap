@@ -466,32 +466,7 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Template 3 -->
-                    <div class="tp-card {{ $event->page_template == 3 ? 'active' : '' }}" id="card-3"
-                        onclick="selectTemplate(3)" style="cursor: pointer;">
-                        <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80"
-                            alt="Template 3" class="tp-card-thumb">
-                        <div class="tp-card-body">
-                            <div class="flex justify-between items-start mb-1">
-                                <h3 class="tp-card-title">Mẫu 3: AI Tương Lai</h3>
-                                @if($event->page_template == 3)
-                                    <span
-                                        class="bg-orange-100 text-orange-600 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Đang
-                                        dùng</span>
-                                @endif
-                            </div>
-                            <p class="tp-card-desc">Phong cách hiện đại, ánh sáng tương lai với cấu trúc chuyên nghiệp. Phù hợp cho hội thảo công nghệ.</p>
-                            <div class="tp-card-actions" onclick="event.stopPropagation()">
-                                <form action="{{ route('admin.events.save_template', $event) }}" method="POST"
-                                    class="flex-1">
-                                    @csrf
-                                    <input type="hidden" name="page_template" value="3">
-                                    <button type="submit" class="tp-btn-primary w-full">Chọn mẫu này</button>
-                                </form>
-                                <button onclick="previewTemplate(3)" class="tp-btn-secondary">Xem trước</button>
-                            </div>
-                        </div>
-                    </div>
+
 
 
 

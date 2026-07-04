@@ -85,7 +85,7 @@ class EventController extends Controller
             'event_date' => 'required|date',
             'end_date' => 'nullable|date|after_or_equal:event_date',
             'location' => 'required|string|max:255',
-            'category_id' => 'nullable|exists:categories,id',
+            'category_id' => 'required|exists:categories,id',
             'department_ids' => 'nullable|array',
             'department_ids.*' => 'exists:categories,id',
             'banner_image' => 'nullable|image|mimes:jpg,jpeg,png,webp',
@@ -93,6 +93,7 @@ class EventController extends Controller
             'speaker_ids.*' => 'exists:speakers,id',
             'guest_ids' => 'nullable|array',
             'guest_ids.*' => 'exists:speakers,id',
+            'semester' => 'required|in:1,2,3',
         ]);
 
         // Remove banner_image, speaker_ids, guest_ids from validated data
@@ -480,7 +481,7 @@ class EventController extends Controller
             'event_date' => 'required|date',
             'end_date' => 'nullable|date|after_or_equal:event_date',
             'location' => 'required|string|max:255',
-            'category_id' => 'nullable|exists:categories,id',
+            'category_id' => 'required|exists:categories,id',
             'department_ids' => 'nullable|array',
             'department_ids.*' => 'exists:categories,id',
             'banner_image' => 'nullable|image|mimes:jpg,jpeg,png,webp',
@@ -489,6 +490,7 @@ class EventController extends Controller
             'guest_ids' => 'nullable|array',
             'guest_ids.*' => 'exists:speakers,id',
             'status' => 'required|in:draft,published,archived',
+            'semester' => 'required|in:1,2,3',
         ]);
 
         $status = $validated['status'];
@@ -581,23 +583,34 @@ class EventController extends Controller
             });
         }
 
-        if ($request->filled('academic_year')) {
-            $query->where('academic_year', $request->academic_year);
-        }
-
         if ($request->filled('semester')) {
-            $query->where('semester', $request->semester);
+            $semesters = array_filter(is_array($request->semester) ? $request->semester : [$request->semester]);
+            if (!empty($semesters)) {
+                $query->whereIn('semester', $semesters);
+            }
         }
 
         if ($request->filled('category_id')) {
-            $query->where('category_id', $request->category_id);
+            $categories = array_filter(is_array($request->category_id) ? $request->category_id : [$request->category_id]);
+            if (!empty($categories)) {
+                $query->whereIn('category_id', $categories);
+            }
+        }
+
+        if ($request->filled('department_id')) {
+            $depts = array_filter(is_array($request->department_id) ? $request->department_id : [$request->department_id]);
+            if (!empty($depts)) {
+                $query->whereHas('departments', function($q) use ($depts) {
+                    $q->whereIn('categories.id', $depts);
+                });
+            }
         }
 
         $events = $query->orderBy('event_date', 'desc')->get();
 
-        $academicYears = Event::select('academic_year')->whereNotNull('academic_year')->distinct()->pluck('academic_year');
         $categories = Category::eventTypes()->get();
+        $departments = Category::departments()->get();
 
-        return view('admin.archive.index', compact('events', 'academicYears', 'categories'));
+        return view('admin.archive.index', compact('events', 'categories', 'departments'));
     }
 }

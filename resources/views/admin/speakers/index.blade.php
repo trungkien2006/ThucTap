@@ -32,83 +32,53 @@
             </div>
         </div>
 
-        {{-- Speakers Grid --}}
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-            @forelse($speakers as $speaker)
-                <div class="bg-card rounded-lg border border-border p-4 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
-                    <div>
-                        {{-- Header Card --}}
-                        <div class="flex items-start gap-3 mb-3">
-                            <div class="h-12 w-12 shrink-0 rounded-full bg-gradient-to-br from-primary to-primary/60 text-primary-foreground grid place-items-center text-sm font-semibold overflow-hidden">
-                                @if($speaker->photo_url)
-                                    <img src="{{ $speaker->photo_url }}" alt="{{ $speaker->name }}" class="w-full h-full object-cover">
-                                @else
-                                    {{ collect(explode(' ', $speaker->name))->map(fn($w) => substr($w, 0, 1))->slice(0, 2)->implode('') }}
-                                @endif
-                            </div>
-                            <div class="min-w-0 flex-1">
-                                <div class="text-sm font-semibold truncate">{{ $speaker->name }}</div>
-                                @if($speaker->title)
-                                    <div class="text-[11px] text-muted-foreground truncate" title="{{ $speaker->title }}">{{ $speaker->title }}</div>
-                                @endif
-                                <div class="mt-1">
-                                    @if(($speaker->type ?? 'speaker') === 'guest')
-                                        <span class="inline-flex items-center h-5 px-1.5 rounded text-[10px] font-medium bg-amber-50 border border-amber-200 text-amber-600">Khách mời</span>
-                                    @else
-                                        <span class="inline-flex items-center h-5 px-1.5 rounded text-[10px] font-medium bg-blue-50 border border-blue-200 text-blue-600">Diễn giả</span>
-                                    @endif
-                                </div>
-                            </div>
+        {{-- Speakers & Guests Split Grid --}}
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            
+            {{-- Speakers Column --}}
+            <div>
+                <div class="flex items-center gap-2 mb-4 border-b border-border pb-2">
+                    <span class="w-1.5 h-5 bg-blue-500 rounded-full"></span>
+                    <h2 class="text-[16px] font-semibold tracking-tight text-foreground">Diễn giả</h2>
+                    <span class="ml-2 inline-flex items-center justify-center bg-muted text-muted-foreground text-[11px] font-semibold rounded-full h-5 px-2">
+                        {{ $speakers->filter(fn($s) => ($s->type ?? 'speaker') !== 'guest')->count() }}
+                    </span>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    @forelse($speakers->filter(fn($s) => ($s->type ?? 'speaker') !== 'guest') as $speaker)
+                        @include('admin.speakers._card', ['speaker' => $speaker])
+                    @empty
+                        <div class="col-span-full py-12 text-center bg-card rounded-lg border border-border shadow-sm">
+                            <i data-lucide="mic-off" class="h-8 w-8 text-muted-foreground/30 mx-auto mb-3"></i>
+                            <p class="text-sm text-muted-foreground mb-4">Chưa có diễn giả nào.</p>
                         </div>
-                        
-                        {{-- Bio --}}
-                        <p class="text-[11px] text-muted-foreground leading-relaxed line-clamp-2 mb-3">
-                            {{ $speaker->bio ?? 'Chưa có tiểu sử.' }}
-                        </p>
-                    </div>
+                    @endforelse
+                </div>
+            </div>
 
-                    {{-- Footer: Event count & Actions --}}
-                    <div class="flex items-center justify-between pt-3 border-t border-border mt-2">
-                        <span class="inline-flex items-center h-5 px-1.5 rounded text-[10px] font-medium bg-secondary text-secondary-foreground">
-                            {{ $speaker->events_count }} sự kiện
-                        </span>
-                        
-                        <div class="flex items-center gap-1">
-                            <a href="#" class="h-6 w-6 rounded flex items-center justify-center text-muted-foreground hover:bg-accent hover:text-foreground transition-all" title="LinkedIn">
-                                <i data-lucide="linkedin" class="h-3 w-3"></i>
-                            </a>
-                            <a href="#" class="h-6 w-6 rounded flex items-center justify-center text-muted-foreground hover:bg-accent hover:text-foreground transition-all" title="Twitter">
-                                <i data-lucide="twitter" class="h-3 w-3"></i>
-                            </a>
-                            <a href="#" class="h-6 w-6 rounded flex items-center justify-center text-muted-foreground hover:bg-accent hover:text-foreground transition-all" title="Website">
-                                <i data-lucide="globe" class="h-3 w-3"></i>
-                            </a>
-                            <span class="text-muted-foreground/30 mx-1 text-xs">|</span>
-                            <a href="{{ route('admin.speakers.edit', $speaker) }}" 
-                               class="h-7 w-7 rounded-md flex items-center justify-center text-muted-foreground hover:bg-accent hover:text-foreground transition-all" title="Sửa">
-                                <i data-lucide="pencil" class="h-3.5 w-3.5"></i>
-                            </a>
-                            <form action="{{ route('admin.speakers.destroy', $speaker) }}" method="POST" class="inline" 
-                                  onsubmit="return confirm('Bạn có chắc chắn muốn ẩn diễn giả này không?');">
-                                @csrf @method('DELETE')
-                                <button type="submit" 
-                                        class="h-7 w-7 rounded-md flex items-center justify-center text-muted-foreground hover:bg-red-50 hover:text-red-500 transition-all" title="Ẩn">
-                                    <i data-lucide="trash-2" class="h-3.5 w-3.5"></i>
-                                </button>
-                            </form>
+            {{-- Guests Column --}}
+            <div>
+                <div class="flex items-center gap-2 mb-4 border-b border-border pb-2">
+                    <span class="w-1.5 h-5 bg-amber-500 rounded-full"></span>
+                    <h2 class="text-[16px] font-semibold tracking-tight text-foreground">Khách mời</h2>
+                    <span class="ml-2 inline-flex items-center justify-center bg-muted text-muted-foreground text-[11px] font-semibold rounded-full h-5 px-2">
+                        {{ $speakers->filter(fn($s) => ($s->type ?? 'speaker') === 'guest')->count() }}
+                    </span>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    @forelse($speakers->filter(fn($s) => ($s->type ?? 'speaker') === 'guest') as $speaker)
+                        @include('admin.speakers._card', ['speaker' => $speaker])
+                    @empty
+                        <div class="col-span-full py-12 text-center bg-card rounded-lg border border-border shadow-sm">
+                            <i data-lucide="user-x" class="h-8 w-8 text-muted-foreground/30 mx-auto mb-3"></i>
+                            <p class="text-sm text-muted-foreground mb-4">Chưa có khách mời nào.</p>
                         </div>
-                    </div>
+                    @endforelse
                 </div>
-            @empty
-                <div class="col-span-full py-16 text-center bg-card rounded-lg border border-border shadow-sm">
-                    <i data-lucide="mic-off" class="h-10 w-10 text-muted-foreground/30 mx-auto mb-3"></i>
-                    <p class="text-sm text-muted-foreground mb-4">Chưa có diễn giả nào.</p>
-                    <a href="{{ route('admin.speakers.create') }}"
-                        class="inline-flex items-center gap-1.5 h-11 px-5 text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl transition-all">
-                        <i data-lucide="plus" class="h-5 w-5"></i> Thêm diễn giả đầu tiên
-                    </a>
-                </div>
-            @endforelse
+            </div>
+
         </div>
 
         {{-- Pagination --}}

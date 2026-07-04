@@ -14,37 +14,113 @@
     </div>
 
     {{-- Search & Filters --}}
-    <div class="bg-card rounded-lg border border-border p-3 shadow-none">
-        <form method="GET" action="{{ route('admin.archive.index') }}" class="flex flex-wrap items-center gap-2 w-full">
-            <div class="relative flex-1 min-w-[220px]">
-                <i data-lucide="search" class="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground"></i>
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Tìm kiếm sự kiện đã lưu trữ…" class="h-11 w-full rounded-xl border border-input pl-10 text-sm bg-background focus:outline-none focus:border-ring transition-all">
+    @php
+        $semestersMap = ['1' => 'Học kỳ Thu', '2' => 'Học kỳ Xuân', '3' => 'Học kỳ Hè'];
+        $selectedSemesters = array_filter(is_array(request('semester')) ? request('semester') : [request('semester')]);
+        $selectedCategories = array_filter(is_array(request('category_id')) ? request('category_id') : [request('category_id')]);
+        $selectedDepartments = array_filter(is_array(request('department_id')) ? request('department_id') : [request('department_id')]);
+
+        $semesterOptions = collect([
+            ['value' => '1', 'label' => 'Học kỳ Thu'],
+            ['value' => '2', 'label' => 'Học kỳ Xuân'],
+            ['value' => '3', 'label' => 'Học kỳ Hè'],
+        ]);
+    @endphp
+    <div class="bg-card rounded-lg border border-border p-4 shadow-none flex flex-col gap-4">
+        <form method="GET" action="{{ route('admin.archive.index') }}" id="filterForm" class="space-y-3 w-full">
+            @foreach($selectedSemesters as $sem)
+                <input type="hidden" name="semester[]" value="{{ $sem }}" class="filter-input-semester">
+            @endforeach
+            @foreach($selectedCategories as $c)
+                <input type="hidden" name="category_id[]" value="{{ $c }}" class="filter-input-category_id">
+            @endforeach
+            @foreach($selectedDepartments as $d)
+                <input type="hidden" name="department_id[]" value="{{ $d }}" class="filter-input-department_id">
+            @endforeach
+
+            <div class="flex flex-wrap items-center gap-2 w-full">
+                <div class="relative flex-1 min-w-[220px]">
+                    <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground"></i>
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Tìm kiếm sự kiện đã lưu trữ…" class="h-9 w-full rounded-lg border border-input pl-10 text-sm bg-background focus:outline-none focus:border-ring transition-all">
+                </div>
+
+                <button type="submit" class="inline-flex items-center justify-center rounded-lg text-xs font-medium bg-primary text-primary-foreground h-9 px-3 hover:bg-primary/90 transition-all gap-1">
+                    <i data-lucide="search" class="h-3.5 w-3.5"></i> Tìm
+                </button>
+
+                @if(request('search') || count($selectedSemesters) > 0 || count($selectedCategories) > 0 || count($selectedDepartments) > 0)
+                    <a href="{{ route('admin.archive.index') }}" class="inline-flex items-center justify-center rounded-lg text-xs font-medium border border-input bg-background h-9 px-3 hover:bg-accent transition-all gap-1">
+                        <i data-lucide="x" class="h-3.5 w-3.5"></i> Xóa lọc
+                    </a>
+                @endif
             </div>
-            
-            <select name="academic_year" onchange="this.form.submit()" class="h-11 border border-input rounded-xl text-sm bg-background px-3 focus:outline-none focus:border-ring transition-all text-muted-foreground">
-                <option value="">Tất cả Năm học</option>
-                @foreach($academicYears as $year)
-                    <option value="{{ $year }}" {{ request('academic_year') == $year ? 'selected' : '' }}>{{ $year }}</option>
-                @endforeach
-            </select>
 
-            <select name="semester" onchange="this.form.submit()" class="h-11 border border-input rounded-xl text-sm bg-background px-3 focus:outline-none focus:border-ring transition-all text-muted-foreground">
-                <option value="">Tất cả Học kỳ</option>
-                <option value="1" {{ request('semester') == '1' ? 'selected' : '' }}>Học kỳ Thu</option>
-                <option value="2" {{ request('semester') == '2' ? 'selected' : '' }}>Học kỳ Xuân</option>
-                <option value="3" {{ request('semester') == '3' ? 'selected' : '' }}>Học kỳ Hè</option>
-            </select>
+            <div class="flex flex-wrap items-center gap-2">
+                <select onchange="addFilterTag('semester', this)" class="h-9 min-w-[180px] border border-input rounded-lg text-xs bg-background px-2.5 focus:outline-none focus:border-ring transition-all text-muted-foreground cursor-pointer">
+                    <option value="">+ Học kỳ</option>
+                    @foreach($semesterOptions as $opt)
+                        @if(!in_array($opt['value'], $selectedSemesters))
+                            <option value="{{ $opt['value'] }}">{{ $opt['label'] }}</option>
+                        @endif
+                    @endforeach
+                </select>
 
-            <select name="category_id" onchange="this.form.submit()" class="h-11 border border-input rounded-xl text-sm bg-background px-3 focus:outline-none focus:border-ring transition-all text-muted-foreground">
-                <option value="">Tất cả Danh mục</option>
-                @foreach($categories as $cat)
-                    <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
-                @endforeach
-            </select>
+                <select onchange="addFilterTag('category_id', this)" class="h-9 min-w-[180px] border border-input rounded-lg text-xs bg-background px-2.5 focus:outline-none focus:border-ring transition-all text-muted-foreground cursor-pointer">
+                    <option value="">+ Danh mục</option>
+                    @foreach($categories as $cat)
+                        @if(!in_array($cat->id, $selectedCategories))
+                            <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                        @endif
+                    @endforeach
+                </select>
 
-            <button type="submit" class="inline-flex items-center justify-center rounded-xl text-xs font-semibold bg-primary text-primary-foreground h-11 px-4 hover:scale-[1.02] active:scale-[0.98] transition-all">Lọc</button>
-            @if(request('search') || request('academic_year') || request('semester') || request('category_id'))
-                <a href="{{ route('admin.archive.index') }}" class="inline-flex items-center justify-center rounded-xl text-xs font-semibold border border-input bg-background h-11 px-4 hover:bg-accent transition-all">Xóa lọc</a>
+                <select onchange="addFilterTag('department_id', this)" class="h-9 min-w-[180px] border border-input rounded-lg text-xs bg-background px-2.5 focus:outline-none focus:border-ring transition-all text-muted-foreground cursor-pointer">
+                    <option value="">+ Khoa</option>
+                    @foreach($departments as $dept)
+                        @if(!in_array($dept->id, $selectedDepartments))
+                            <option value="{{ $dept->id }}">{{ $dept->name }}</option>
+                        @endif
+                    @endforeach
+                </select>
+            </div>
+
+            {{-- Render Active Tags --}}
+            @if(count($selectedSemesters) > 0 || count($selectedCategories) > 0 || count($selectedDepartments) > 0)
+                <div class="flex flex-wrap items-center gap-1.5 pt-2 border-t border-border/50">
+                    <span class="text-[11px] font-semibold text-muted-foreground mr-1">Bộ lọc đang chọn:</span>
+
+                    @foreach($selectedSemesters as $sem)
+                        @php
+                            $ysLabel = $semestersMap[$sem] ?? 'HK'.$sem;
+                        @endphp
+                        <span class="inline-flex items-center gap-1 bg-primary/10 text-primary border border-primary/20 rounded-lg px-2.5 py-1 text-xs font-medium">
+                            {{ $ysLabel }}
+                            <button type="button" onclick="removeFilterTag('semester', '{{ $sem }}')" class="hover:text-destructive transition-colors ml-0.5">
+                                <i data-lucide="x" class="h-3 w-3"></i>
+                            </button>
+                        </span>
+                    @endforeach
+
+                    @foreach($selectedCategories as $c)
+                        @php $catModel = $categories->firstWhere('id', $c); @endphp
+                        <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-600 border border-emerald-200 rounded-lg px-2.5 py-1 text-xs font-medium">
+                            Danh mục: {{ $catModel->name ?? $c }}
+                            <button type="button" onclick="removeFilterTag('category_id', '{{ $c }}')" class="hover:text-destructive transition-colors ml-0.5">
+                                <i data-lucide="x" class="h-3 w-3"></i>
+                            </button>
+                        </span>
+                    @endforeach
+
+                    @foreach($selectedDepartments as $d)
+                        @php $deptModel = $departments->firstWhere('id', $d); @endphp
+                        <span class="inline-flex items-center gap-1 bg-amber-50 text-amber-600 border border-amber-200 rounded-lg px-2.5 py-1 text-xs font-medium">
+                            Khoa: {{ $deptModel->name ?? $d }}
+                            <button type="button" onclick="removeFilterTag('department_id', '{{ $d }}')" class="hover:text-destructive transition-colors ml-0.5">
+                                <i data-lucide="x" class="h-3 w-3"></i>
+                            </button>
+                        </span>
+                    @endforeach
+                </div>
             @endif
         </form>
     </div>
@@ -114,3 +190,37 @@
     @endif
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    function addFilterTag(name, selectElement) {
+        const val = selectElement.value;
+        if (!val) return;
+
+        const form = document.getElementById('filterForm');
+
+        // Add new hidden input
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = `${name}[]`;
+        input.value = val;
+        input.className = `filter-input-${name}`;
+        form.appendChild(input);
+
+        // Submit form
+        form.submit();
+    }
+
+    function removeFilterTag(name, value) {
+        const inputs = document.querySelectorAll(`.filter-input-${name}`);
+        inputs.forEach(input => {
+            if (input.value == value) {
+                input.remove();
+            }
+        });
+
+        // Submit form
+        document.getElementById('filterForm').submit();
+    }
+</script>
+@endpush

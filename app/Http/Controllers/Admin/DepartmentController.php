@@ -12,11 +12,15 @@ class DepartmentController extends Controller
 {
     public function index()
     {
-        $departments = Category::departments()->get()->map(function ($dept) {
-            $dept->events_count = \App\Models\Event::where('department_id', $dept->id)->count();
-            $dept->total_views = \App\Models\Event::where('department_id', $dept->id)->sum('views_count');
-            return $dept;
-        });
+        $departments = Category::departments()
+            ->withCount('departmentEvents as events_count')
+            ->withSum('departmentEvents as total_views', 'views_count')
+            ->get()
+            ->map(function ($dept) {
+                // Ensure total_views is at least 0 instead of null
+                $dept->total_views = $dept->total_views ?? 0;
+                return $dept;
+            });
 
         return view('admin.departments.index', compact('departments'));
     }

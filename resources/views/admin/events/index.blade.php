@@ -22,15 +22,15 @@
     {{-- Filters Card --}}
     @php
         // Build combined year+semester options from events
-        $semestersMap = ['1' => 'fall', '2' => 'spring', '3' => 'summer'];
+        $semestersMap = ['1' => 'Fall', '2' => 'Spring', '3' => 'Summer'];
         $selectedSemesters = array_filter(is_array(request('semester')) ? request('semester') : [request('semester')]);
         $selectedCategories = array_filter(is_array(request('category_id')) ? request('category_id') : [request('category_id')]);
         $selectedDepartments = array_filter(is_array(request('department_id')) ? request('department_id') : [request('department_id')]);
 
         $semesterOptions = collect([
-            ['value' => '1', 'label' => 'Kỳ Fall'],
-            ['value' => '2', 'label' => 'Kỳ Spring'],
-            ['value' => '3', 'label' => 'Kỳ Summer'],
+            ['value' => '1', 'label' => 'Fall'],
+            ['value' => '2', 'label' => 'Spring'],
+            ['value' => '3', 'label' => 'Summer'],
         ]);
     @endphp
     <div class="bg-card rounded-lg border border-border p-4 shadow-none flex flex-col gap-4">
@@ -98,8 +98,7 @@
 
                     @foreach($selectedSemesters as $sem)
                         @php
-                            $semLabel = $semestersMap[$sem] ?? 'HK'.$sem;
-                            $ysLabel = 'Kỳ ' . ucfirst($semLabel);
+                            $ysLabel = $semestersMap[$sem] ?? 'HK'.$sem;
                         @endphp
                         <span class="inline-flex items-center gap-1 bg-primary/10 text-primary border border-primary/20 rounded-lg px-2.5 py-1 text-xs font-medium">
                             {{ $ysLabel }}
@@ -143,20 +142,19 @@
                 <thead class="bg-muted/40 text-[11px] uppercase tracking-wide text-muted-foreground sticky top-0">
                     <tr>
                         <th class="text-left px-4 py-2 font-medium">Sự kiện</th>
-                        <th class="text-left px-3 py-2 font-medium">Danh mục</th>
-                        <th class="text-left px-3 py-2 font-medium">Khoa</th>
-                        <th class="text-left px-3 py-2 font-medium">Học kỳ - Năm học</th>
-                        <th class="text-left px-3 py-2 font-medium">Địa điểm</th>
-                        <th class="text-left px-3 py-2 font-medium">Ngày diễn ra</th>
-                        <th class="text-left px-3 py-2 font-medium">Trạng thái</th>
+                        <th class="text-center px-3 py-2 font-medium">Danh mục</th>
+                        <th class="text-center px-3 py-2 font-medium">Khoa</th>
+                        <th class="text-center px-3 py-2 font-medium">Học kỳ</th>
+                        <th class="text-center px-3 py-2 font-medium">Địa điểm</th>
+                        <th class="text-center px-3 py-2 font-medium">Ngày diễn ra</th>
+                        <th class="text-center px-3 py-2 font-medium">Trạng thái</th>
                         <th class="w-10 px-3 py-2"></th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($events as $event)
                     @php
-                        $semesterName = $event->semester == 1 ? 'fall' : ($event->semester == 2 ? 'spring' : 'summer');
-                        $yearStr = $event->academic_year ?? '2024-2025';
+                        $semesterName = $event->semester == 1 ? 'Fall' : ($event->semester == 2 ? 'Spring' : ($event->semester == 3 ? 'Summer' : '—'));
                         
                         $badgePalettes = [
                             'bg-blue-50 text-blue-700 border-blue-200',
@@ -168,33 +166,46 @@
                         ];
                         $catColorClass = $event->category ? $badgePalettes[$event->category->id % count($badgePalettes)] : 'border-border bg-background text-muted-foreground';
                     @endphp
-                    <tr class="border-t border-border hover:bg-muted/20">
+                    <tr class="border-t border-border hover:bg-muted/20 cursor-pointer clickable-row" data-href="{{ route('admin.events.show', $event) }}">
                         <td class="px-4 py-2.5">
                             <a href="{{ route('admin.events.show', $event) }}" class="font-medium truncate block hover:text-primary transition-colors">{{ $event->title }}</a>
                         </td>
-                        <td class="px-3 py-2.5">
+                        <td class="px-3 py-2.5 text-center">
                             <span class="inline-flex items-center h-5 px-1.5 rounded text-[10px] font-medium border {{ $catColorClass }}">{{ $event->category?->name ?? '—' }}</span>
                         </td>
-                        <td class="px-3 py-2.5 text-muted-foreground" title="{{ $event->departments->pluck('name')->implode(', ') }}">
-                            {{ $event->departments->count() > 0 ? $event->departments->first()->name . ($event->departments->count() > 1 ? '...' : '') : '—' }}
+                        <td class="px-3 py-2.5 text-muted-foreground text-center">
+                            @if($event->departments->count() > 0)
+                                <div class="flex flex-wrap items-center justify-center gap-1 max-w-[240px] mx-auto" title="{{ $event->departments->pluck('name')->implode(', ') }}">
+                                    @foreach($event->departments->take(1) as $dept)
+                                        <span class="inline-flex items-center h-5 px-1.5 rounded bg-muted/80 border border-border text-muted-foreground text-[10px] font-medium whitespace-nowrap">
+                                            {{ $dept->name }}
+                                        </span>
+                                    @endforeach
+                                    @if($event->departments->count() > 1)
+                                        <span class="inline-flex items-center h-5 px-1.5 rounded bg-primary/10 border border-primary/20 text-primary text-[10px] font-semibold whitespace-nowrap" title="{{ $event->departments->slice(1)->pluck('name')->implode(', ') }}">
+                                            +{{ $event->departments->count() - 1 }}
+                                        </span>
+                                    @endif
+                                </div>
+                            @else
+                                —
+                            @endif
                         </td>
-                        <td class="px-3 py-2.5 whitespace-nowrap text-muted-foreground">
-                            {{ $semesterName . ' ' . $yearStr }}
+                        <td class="px-3 py-2.5 whitespace-nowrap text-muted-foreground text-center">
+                            {{ $semesterName }}
                         </td>
-                        <td class="px-3 py-2.5 text-muted-foreground max-w-[180px] truncate" title="{{ $event->location ?? '—' }}">{{ $event->location ?? '—' }}</td>
-                        <td class="px-3 py-2.5 tabular-nums whitespace-nowrap">{{ $event->event_date->format('Y-m-d') }}</td>
-                        <td class="px-3 py-2.5">
+                        <td class="px-3 py-2.5 text-muted-foreground max-w-[180px] truncate text-center" title="{{ $event->location ?? '—' }}">{{ $event->location ?? '—' }}</td>
+                        <td class="px-3 py-2.5 tabular-nums whitespace-nowrap text-center">{{ $event->event_date->format('d-m-Y') }}</td>
+                        <td class="px-3 py-2.5 text-center">
                             @if($event->is_published)
                                 <span class="inline-flex items-center h-5 px-1.5 rounded text-[10px] font-medium bg-emerald-100 text-emerald-700">Đã xuất bản</span>
                             @else
-                                <span class="inline-flex items-center h-5 px-1.5 rounded text-[10px] font-medium bg-blue-100 text-blue-700">Sắp diễn ra</span>
+                                <span class="inline-flex items-center h-5 px-1.5 rounded text-[10px] font-medium bg-blue-100 text-blue-700">Bản nháp</span>
                             @endif
                         </td>
                         <td class="px-3 py-2.5">
                             <div class="flex items-center justify-end gap-1">
-                                <a href="{{ route('admin.events.show', $event) }}" class="h-9 w-9 rounded-lg flex items-center justify-center text-muted-foreground hover:bg-accent hover:text-foreground transition-all" title="Xem">
-                                    <i data-lucide="eye" class="h-4 w-4"></i>
-                                </a>
+
                                 <a href="{{ route('admin.events.edit', $event) }}" class="h-9 w-9 rounded-lg flex items-center justify-center text-muted-foreground hover:bg-accent hover:text-foreground transition-all" title="Sửa">
                                     <i data-lucide="pencil" class="h-4 w-4"></i>
                                 </a>
@@ -241,6 +252,17 @@
 
 @push('scripts')
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const rows = document.querySelectorAll('.clickable-row');
+        rows.forEach(row => {
+            row.addEventListener('click', function(e) {
+                if (e.target.closest('a') || e.target.closest('button') || e.target.closest('form')) {
+                    return;
+                }
+                window.location.href = this.dataset.href;
+            });
+        });
+    });
     function addFilterTag(name, selectElement) {
         const val = selectElement.value;
         if (!val) return;

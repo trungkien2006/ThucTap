@@ -50,10 +50,45 @@
         #mobileOverlay.show {
             display: block;
         }
+        /* Desktop Sidebar Toggle */
+        /* Desktop Sidebar Toggle - Mini Sidebar */
+        @media (min-width: 768px) {
+            .sidebar-collapsed #sidebar {
+                width: 70px;
+            }
+            .sidebar-collapsed #admin-header {
+                left: 70px;
+            }
+            .sidebar-collapsed #admin-main {
+                padding-left: 70px;
+            }
+            .sidebar-collapsed #sidebar .flex-col,
+            .sidebar-collapsed #sidebar span,
+            .sidebar-collapsed #sidebar p {
+                display: none;
+            }
+            .sidebar-collapsed .sidebar-menu-btn {
+                justify-content: center;
+                padding: 0;
+            }
+            .sidebar-collapsed .sidebar-menu-btn i {
+                margin-right: 0;
+            }
+            .sidebar-collapsed #sidebar .px-4 {
+                justify-content: center;
+                padding-left: 0;
+                padding-right: 0;
+            }
+        }
     </style>
 </head>
 <body class="overflow-x-clip bg-background text-foreground font-body admin-body">
-
+    <script>
+        // Check sidebar state before rendering to prevent flickering
+        if (localStorage.getItem('sidebar-collapsed') === 'true') {
+            document.body.classList.add('sidebar-collapsed');
+        }
+    </script>
     <!-- Mobile Overlay -->
     <div id="mobileOverlay" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 hidden md:hidden transition-opacity"></div>
 
@@ -173,10 +208,15 @@
     </aside>
 
     <!-- Top Header -->
-    <header class="fixed top-0 left-0 md:left-[240px] right-0 h-16 z-30 flex items-center gap-2 border-b border-border bg-background/95 backdrop-blur px-3 md:px-4 justify-between">
+    <header id="admin-header" class="sidebar-transition fixed top-0 left-0 md:left-[240px] right-0 h-16 z-30 flex items-center gap-2 border-b border-border bg-background/95 backdrop-blur px-3 md:px-4 justify-between">
         <div class="flex items-center gap-2 min-w-0">
             <!-- Mobile Toggle Button -->
             <button id="mobileSidebarToggle" class="md:hidden h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-accent rounded-xl flex items-center justify-center transition-all">
+                <i data-lucide="menu" class="h-5 w-5"></i>
+            </button>
+
+            <!-- Desktop Toggle Button -->
+            <button id="desktopSidebarToggle" class="hidden md:flex h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-accent rounded-xl items-center justify-center transition-all" title="Ẩn/Hiện Sidebar">
                 <i data-lucide="menu" class="h-5 w-5"></i>
             </button>
 
@@ -312,7 +352,7 @@
     </header>
 
     <!-- Main Content Wrapper -->
-    <main class="pt-16 md:pl-[240px] min-h-screen">
+    <main id="admin-main" class="sidebar-transition pt-16 md:pl-[240px] min-h-screen">
         <div class="p-4 md:p-6 lg:p-8 max-w-[1600px] mx-auto">
             @if(session('success'))
                 <div class="mb-4 bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-lg text-xs flex items-center gap-2 animate-fade-in shadow-sm">
@@ -354,6 +394,15 @@
 
         if (mobileSidebarToggle) mobileSidebarToggle.addEventListener('click', openSidebar);
         if (mobileOverlay) mobileOverlay.addEventListener('click', closeSidebar);
+
+        // Sidebar Desktop Toggle
+        const desktopSidebarToggle = document.getElementById('desktopSidebarToggle');
+        if (desktopSidebarToggle) {
+            desktopSidebarToggle.addEventListener('click', function() {
+                const isCollapsed = document.body.classList.toggle('sidebar-collapsed');
+                localStorage.setItem('sidebar-collapsed', isCollapsed);
+            });
+        }
 
         // Quick Create Dropdown Toggle
         const quickCreateBtn = document.getElementById('quickCreateBtn');

@@ -524,12 +524,33 @@
                     </div>
 
                     <!-- Schedule Card -->
-                    <div class="uni-card p-5 transition-all">
+                    <div class="uni-card p-5 transition-all" x-data="scheduleManager()">
                         <h4 class="text-[13px] font-bold text-primary mb-3 font-heading flex items-center justify-between">
                             <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px] text-brand-orange">format_list_bulleted</span>Lịch hoạt động sự kiện</span>
                             <span class="text-[10px] font-normal text-slate-400">Có thể sửa trực tiếp</span>
                         </h4>
-                        <textarea id="inLichHoatDong" rows="5" oninput="syncData()" class="w-full text-[12px] text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all leading-relaxed resize-y" placeholder="VD: 13:30 - Đón tiếp & Check-in&#10;14:00 - Bắt đầu chương trình">{{ $event->scheduleItems->map(fn($s) => $s->start_time . ' - ' . $s->title)->implode("\n") }}</textarea>
+                        
+                        <div class="space-y-2 mb-3">
+                            <template x-for="(item, index) in scheduleItems" :key="index">
+                                <div class="flex gap-2 items-start">
+                                    <input type="time" x-model="item.time" class="w-[90px] text-[13px] bg-slate-50 px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all mt-1">
+                                    <textarea x-model="item.title" rows="2" class="flex-1 text-[13px] bg-slate-50 px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all resize-y" placeholder="Nhập hoạt động (VD: Đón khách...)"></textarea>
+                                    <button @click="removeItem(index)" type="button" class="text-slate-400 hover:text-red-500 transition-colors p-1 mt-1" title="Xóa">
+                                        <span class="material-symbols-outlined text-[18px]">delete</span>
+                                    </button>
+                                </div>
+                            </template>
+                            
+                            <template x-if="scheduleItems.length === 0">
+                                <div class="text-center py-4 text-[12px] text-slate-400 border border-dashed border-slate-200 rounded-xl bg-slate-50/50">Chưa có lịch hoạt động nào.</div>
+                            </template>
+                        </div>
+                        
+                        <button @click="addItem()" type="button" class="w-full py-2 border border-dashed border-brand-orange/50 hover:bg-orange-50 text-brand-orange rounded-xl text-[12px] font-medium transition-colors flex items-center justify-center gap-1">
+                            <span class="material-symbols-outlined text-[18px]">add</span> Thêm hoạt động
+                        </button>
+
+                        <textarea id="inLichHoatDong" class="hidden" x-ref="hiddenInput">{{ $event->scheduleItems->map(fn($s) => \Carbon\Carbon::parse($s->start_time)->format('H:i') . ' - ' . $s->title)->implode("\n") }}</textarea>
                     </div>
 
                     <!-- Promoted Events: Newest -->
@@ -1496,6 +1517,47 @@
                     this.selectedGuests = this.selectedGuests.filter(p => p.id !== id);
                 }
             }
-        }))
+        }));
+
+        Alpine.data('scheduleManager', () => ({
+            scheduleItems: [],
+            
+            init() {
+                const initialText = this.$refs.hiddenInput.value;
+                if (initialText) {
+                    const lines = initialText.split('\n');
+                    lines.forEach(line => {
+                        const parts = line.split('-');
+                        if (parts.length >= 2) {
+                            this.scheduleItems.push({
+                                time: parts[0].trim(),
+                                title: parts.slice(1).join('-').trim()
+                            });
+                        }
+                    });
+                }
+
+                this.$watch('scheduleItems', (value) => {
+                    this.updateHiddenInput();
+                }, { deep: true });
+            },
+
+            updateHiddenInput() {
+                const text = this.scheduleItems
+                    .filter(item => item.time || item.title)
+                    .map(item => `${item.time} - ${item.title}`)
+                    .join('\n');
+                this.$refs.hiddenInput.value = text;
+                if (typeof syncData === 'function') syncData();
+            },
+
+            addItem() {
+                this.scheduleItems.push({ time: '', title: '' });
+            },
+
+            removeItem(index) {
+                this.scheduleItems.splice(index, 1);
+            }
+        }));
     });
 </script>

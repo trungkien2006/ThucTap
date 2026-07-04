@@ -75,9 +75,9 @@
             </h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 text-xs">
                 <div class="space-y-1">
-                    <span class="text-muted-foreground">Năm học & Học kỳ</span>
+                    <span class="text-muted-foreground">Học kỳ</span>
                     <p class="font-semibold text-foreground text-sm">
-                        {{ $event->academic_year ?? '—' }} @if($event->semester) ({{ $event->semester }}) @endif
+                        {{ $event->semester == 1 ? 'Fall' : ($event->semester == 2 ? 'Spring' : ($event->semester == 3 ? 'Summer' : '—')) }}
                     </p>
                 </div>
                 <div class="space-y-1">

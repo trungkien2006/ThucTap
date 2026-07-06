@@ -376,8 +376,55 @@
                 @endphp
 
                 <style>
-                    .scrollbar-none::-webkit-scrollbar { display: none; }
-                    .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+                    /* Cấu trúc Grid 3 cột mặc định trên máy tính (chưa thay đổi) */
+                    .category-desktop-grid {
+                        display: grid !important;
+                        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+                        gap: 24px !important;
+                        width: 100%;
+                    }
+                    .category-mobile-slider {
+                        display: none !important;
+                    }
+                    .category-mobile-dots {
+                        display: none !important;
+                    }
+
+                    @media (max-width: 1024px) {
+                        .category-desktop-grid {
+                            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                            gap: 16px !important;
+                        }
+                    }
+
+                    /* Cấu trúc Slider trượt ngang tự động chỉ kích hoạt trên di động */
+                    @media (max-width: 767px) {
+                        .category-desktop-grid {
+                            display: none !important;
+                        }
+                        .category-mobile-slider {
+                            display: flex !important;
+                            overflow-x: auto !important;
+                            scroll-snap-type: x mandatory !important;
+                            gap: 16px !important;
+                            width: 100% !important;
+                            padding-bottom: 8px !important;
+                            scroll-behavior: smooth !important;
+                            -ms-overflow-style: none !important;
+                            scrollbar-width: none !important;
+                        }
+                        .category-mobile-slider::-webkit-scrollbar {
+                            display: none !important;
+                        }
+                        .category-mobile-slide {
+                            flex-shrink: 0 !important;
+                            width: 100% !important;
+                            scroll-snap-align: center !important;
+                        }
+                        .category-mobile-dots {
+                            display: flex !important;
+                        }
+                    }
                 </style>
 
                 <div x-data="{ 
@@ -408,10 +455,10 @@
                      
                     <!-- Mobile Slider View (below md) -->
                     <div x-ref="sliderContainer" 
-                         class="flex md:hidden overflow-x-auto snap-x snap-mandatory scrollbar-none gap-4 w-full pb-2 scroll-smooth"
+                         class="category-mobile-slider"
                          @scroll.debounce.150ms="const container = $el; activeSlide = Math.round(container.scrollLeft / container.clientWidth)">
                         @foreach($gridItems as $idx => $item)
-                            <div class="w-full shrink-0 snap-center">
+                            <div class="category-mobile-slide">
                                 <a href="{{ $item['slug'] ? route('events.index', ['category' => $item['slug']]) : '#events' }}"
                                     style="aspect-ratio: 16/9; min-height: 160px; opacity: 1;"
                                     class="group relative block w-full rounded-2xl overflow-hidden {{ $item['image'] ? 'bg-gray-900' : 'bg-gray-200' }} shadow-sm hover:shadow-lg transition-all duration-300">
@@ -452,7 +499,7 @@
                     </div>
 
                     <!-- Mobile Indicator Dots -->
-                    <div class="flex md:hidden justify-center gap-1.5 mt-3">
+                    <div class="category-mobile-dots justify-center gap-1.5 mt-3">
                         <template x-for="i in totalSlides" :key="i-1">
                             <button @click="activeSlide = i-1; $refs.sliderContainer.scrollTo({ left: (i-1) * $refs.sliderContainer.clientWidth, behavior: 'smooth' })"
                                     class="h-1.5 rounded-full transition-all duration-300"
@@ -461,7 +508,7 @@
                     </div>
 
                     <!-- Desktop Grid View (md and above) -->
-                    <div class="hidden md:grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 w-full">
+                    <div class="category-desktop-grid">
                         @foreach($gridItems as $idx => $item)
                             <a href="{{ $item['slug'] ? route('events.index', ['category' => $item['slug']]) : '#events' }}"
                                 style="aspect-ratio: 16/9; min-height: 160px; opacity: 0;"

@@ -45,7 +45,7 @@
         x-data="{ mobileOpen: false, megaMenuOpen: false }"
     >
         <div class="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-5 lg:px-10 relative">
-            <a href="{{ route('home') }}#top" wire:navigate class="group relative flex items-center h-8 min-w-[240px]" x-data="{ showUni: true }" x-init="setInterval(() => { showUni = !showUni }, 3000)">
+            <a href="{{ route('home') }}#top" wire:navigate class="group relative flex items-center h-8 w-[160px] sm:w-[240px]" x-data="{ showUni: true }" x-init="setInterval(() => { showUni = !showUni }, 3000)">
                 <style>
                     /* Smooth Top-to-Bottom Flow Transition */
                     @keyframes fluidIn {
@@ -78,24 +78,23 @@
 
                 <!-- UniEvent Logo (Image + Fluid effect) -->
                 <div 
-                    class="absolute inset-y-0 left-0 flex items-center" 
+                    class="absolute inset-y-0 left-0 flex items-center w-[160px] sm:w-[240px] lg:w-[350px]" 
                     x-show="showUni"
                     x-transition:enter="fluid-in"
                     x-transition:leave="fluid-out"
-                    style="width: 350px;"
                 >
-                    <img src="{{ asset('images/unievent-logo.png') }}?v={{ time() }}" alt="UniEvent" style="height: 80px; width: auto; max-width: none; object-fit: contain; margin-left: -5px; filter: drop-shadow(0 4px 3px rgba(0,0,0,0.07));">
+                    <img src="{{ asset('images/unievent-logo.png') }}?v={{ time() }}" alt="UniEvent" class="h-10 sm:h-14 lg:h-20 w-auto max-w-none object-contain ml-[-5px] filter drop-shadow-[0_4px_3px_rgba(0,0,0,0.07)]">
                 </div>
 
                 <!-- FPT Polytechnic Logo (Fluid effect) -->
                 <div 
-                    class="absolute inset-y-0 left-0 flex items-center" 
+                    class="absolute inset-y-0 left-0 flex items-center w-[160px] sm:w-[240px] lg:w-[350px]" 
                     x-show="!showUni"
                     x-transition:enter="fluid-in"
                     x-transition:leave="fluid-out"
-                    style="display: none; width: 350px;"
+                    style="display: none;"
                 >
-                    <img src="{{ asset('images/fpt-polytechnic.png') }}?v={{ time() }}" alt="FPT Polytechnic" style="height: 110px; width: auto; max-width: none; object-fit: contain; margin-left: -20px; filter: drop-shadow(0 4px 3px rgba(0,0,0,0.07));">
+                    <img src="{{ asset('images/fpt-polytechnic.png') }}?v={{ time() }}" alt="FPT Polytechnic" class="h-14 sm:h-20 lg:h-28 w-auto max-w-none object-contain ml-[-12px] sm:ml-[-20px] filter drop-shadow-[0_4px_3px_rgba(0,0,0,0.07)]">
                 </div>
             </a>
 

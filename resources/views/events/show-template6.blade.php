@@ -340,6 +340,20 @@ body { background-color: #f1f5f9; }
     color: var(--school-muted);
     background: #e2e8f0;
 }
+
+@media (max-width: 768px) {
+    .w6-hero-bg { height: 300px; }
+    .w6-hero-content { position: relative; padding: 24px 16px; background: var(--school-primary); }
+    .w6-cd-bar { flex-direction: column; gap: 12px; text-align: center; }
+    .w6-content-wrap { padding: 24px 16px; }
+}
+@media (max-width: 480px) {
+    .w6-hero-bg { height: 220px; }
+    .w6-nav-events { grid-template-columns: 1fr; gap: 12px; }
+    .w6-sch-item { flex-direction: column; gap: 8px; }
+    .w6-bottom { flex-direction: column; width: 100%; }
+    .w6-bottom .w6-btn { width: 100%; justify-content: center; }
+}
 </style>
 @endpush
 

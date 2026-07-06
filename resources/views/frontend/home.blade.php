@@ -764,7 +764,7 @@
         <template x-if="items.length > 0">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <!-- Left Side: Main Player -->
-                <div class="lg:col-span-8 bg-black rounded-2xl overflow-hidden relative" style="box-shadow:0 16px 50px rgba(7,160,195,0.15); height: 380px;">
+                <div class="lg:col-span-8 bg-black rounded-2xl overflow-hidden relative h-[260px] sm:h-[340px] lg:h-[380px]" style="box-shadow:0 16px 50px rgba(7,160,195,0.15);">
                     <template x-for="(item, index) in items" :key="index">
                         <div x-show="currentIndex === index" 
                              x-transition:enter="transition ease-out duration-700 transform"
@@ -803,9 +803,9 @@
                 </div>
 
                 <!-- Right Side: Info and Thumbnails -->
-                <div class="lg:col-span-4 flex flex-col gap-4 h-[380px]">
+                <div class="lg:col-span-4 flex flex-col gap-4 h-auto lg:h-[380px]">
                     <!-- Top Info Box (2/3) -->
-                    <div class="flex-1 rounded-2xl p-6 flex flex-col justify-center relative overflow-hidden group" style="background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); box-shadow: 0 4px 20px rgba(255,200,60,0.15); border: 1px solid rgba(255, 227, 129, 0.5);">
+                    <div class="flex-1 rounded-2xl p-6 flex flex-col justify-center relative overflow-hidden group min-h-[180px] lg:min-h-0" style="background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); box-shadow: 0 4px 20px rgba(255,200,60,0.15); border: 1px solid rgba(255, 227, 129, 0.5);">
                         <div class="mb-4 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.25em] text-[#1C1410]" style="background:#FFE381;" x-text="currentItem.type === 'video' ? 'Video' : 'Hình ảnh'"></div>
                         
                         <h3 class="font-barlow-condensed text-3xl font-black uppercase tracking-wide text-[#1C1410] leading-snug line-clamp-4" x-text="currentItem.title"></h3>

@@ -121,6 +121,13 @@
                         </div>
                     @endforelse
                 </div>
+
+                {{-- Pagination --}}
+                @if($media->hasPages())
+                    <div class="flex justify-center mt-4">
+                        {{ $media->appends(request()->query())->links() }}
+                    </div>
+                @endif
             </div>
 
             {{-- Preview Panel --}}

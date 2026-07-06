@@ -399,29 +399,8 @@
                                            class="w-full text-[13px] px-3 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all"
                                            value="{{ $media ? $media->caption : '' }}" />
 
-                                    {{-- Tài liệu đính kèm (Word, Zip...) --}}
-                                    <div class="doc-upload-section bg-white border border-slate-200 rounded-xl p-3.5 space-y-2.5">
-                                        <div class="flex items-center justify-between">
-                                            <span class="text-[12px] font-bold text-slate-600 flex items-center gap-1">
-                                                <span class="material-symbols-outlined text-[16px] text-slate-500">attach_file</span> Tài liệu đính kèm
-                                            </span>
-                                            <input type="file" id="docFileInput{{ $i }}" class="hidden" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip" onchange="uploadDocumentFile({{ $i }})"/>
-                                            <button type="button" onclick="document.getElementById('docFileInput{{ $i }}').click()" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-[11px] font-semibold transition-all">
-                                                Tải file (Word, Zip, PDF...)
-                                            </button>
-                                        </div>
-                                        <div class="flex items-center gap-2 {{ $media && $media->document_url ? '' : 'hidden' }}" id="docInfoWrap{{ $i }}">
-                                            <span class="material-symbols-outlined text-[16px] text-emerald-600">article</span>
-                                            <a href="{{ $media && $media->document_url ? \App\Helpers\FileHelper::url($media->document_url) : '#' }}" id="docLink{{ $i }}" target="_blank" class="text-[12px] font-medium text-brand-orange hover:underline truncate max-w-[200px]">
-                                                {{ $media ? ($media->document_name ?? basename($media->document_url)) : '' }}
-                                            </a>
-                                            <button type="button" onclick="removeDocumentFile({{ $i }})" class="text-red-500 hover:text-red-700 ml-auto flex items-center">
-                                                <span class="material-symbols-outlined text-[16px]">close</span>
-                                            </button>
-                                        </div>
-                                        <input type="hidden" id="docFileUrl{{ $i }}" value="{{ $media ? $media->document_url : '' }}" />
-                                        <input type="hidden" id="docFileName{{ $i }}" value="{{ $media ? $media->document_name : '' }}" />
-                                    </div>
+                                    <input type="hidden" id="docFileUrl{{ $i }}" value="{{ $media ? $media->document_url : '' }}" />
+                                    <input type="hidden" id="docFileName{{ $i }}" value="{{ $media ? $media->document_name : '' }}" />
 
                                     {{-- URL liên kết ngoài --}}
                                     <div class="bg-white border border-slate-200 rounded-xl p-3.5 space-y-1">
@@ -433,12 +412,8 @@
                                                value="{{ $media ? $media->action_url : '' }}" oninput="syncData()" />
                                     </div>
 
-                                    {{-- Preview tài liệu và URL ngay dưới caption --}}
+                                    {{-- Preview URL ngay dưới caption --}}
                                     <div class="mt-1 flex flex-wrap gap-2">
-                                        <div id="docPreviewWrap{{ $i }}" class="flex items-center gap-1.5 bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-lg text-[12px] font-medium border border-emerald-200/50 {{ $media && $media->document_url ? '' : 'hidden' }}">
-                                            <span class="material-symbols-outlined text-[16px]">article</span>
-                                            <span id="docPreviewName{{ $i }}">{{ $media ? ($media->document_name ?? basename($media->document_url)) : '' }}</span>
-                                        </div>
                                         <div id="urlPreviewWrap{{ $i }}" class="flex items-center gap-1.5 bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg text-[12px] font-medium border border-blue-200/50 {{ $media && $media->action_url ? '' : 'hidden' }}">
                                             <span class="material-symbols-outlined text-[16px]">open_in_new</span>
                                             <span class="truncate max-w-[150px]" id="urlPreviewLink{{ $i }}">{{ $media ? $media->action_url : '' }}</span>
@@ -1113,66 +1088,7 @@
             }
         }
 
-        // ── Document Upload (AJAX) ────────────────────────────────
-        async function uploadDocumentFile(slotId) {
-            const fileInput = document.getElementById('docFileInput' + slotId);
-            if (!fileInput.files || fileInput.files.length === 0) return;
-            
-            const file = fileInput.files[0];
-            const formData = new FormData();
-            formData.append('file', file);
-            
-            // Show simple indicator
-            const linkEl = document.getElementById('docLink' + slotId);
-            linkEl.textContent = "Đang tải lên...";
-            document.getElementById('docInfoWrap' + slotId).classList.remove('hidden');
-            
-            try {
-                const resp = await fetch("{{ route('admin.events.upload_document') }}", {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Accept': 'application/json'
-                    },
-                    body: formData
-                });
-                
-                if (!resp.ok) {
-                    throw new Error("Lỗi tải file");
-                }
-                
-                const data = await resp.json();
-                if (data.success) {
-                    // Update values
-                    document.getElementById('docFileUrl' + slotId).value = data.path;
-                    document.getElementById('docFileName' + slotId).value = data.name;
-                    
-                    // Show file info
-                    linkEl.href = data.url;
-                    linkEl.textContent = data.name;
-                    
-                    // Update preview
-                    document.getElementById('docPreviewWrap' + slotId).classList.remove('hidden');
-                    document.getElementById('docPreviewName' + slotId).textContent = data.name;
-                } else {
-                    alert("Lỗi: " + (data.message || "Không thể tải lên file."));
-                    removeDocumentFile(slotId);
-                }
-            } catch (err) {
-                console.error(err);
-                alert("Lỗi tải lên tài liệu.");
-                removeDocumentFile(slotId);
-            } finally {
-                fileInput.value = '';
-            }
-        }
 
-        function removeDocumentFile(slotId) {
-            document.getElementById('docFileUrl' + slotId).value = '';
-            document.getElementById('docFileName' + slotId).value = '';
-            document.getElementById('docInfoWrap' + slotId).classList.add('hidden');
-            document.getElementById('docPreviewWrap' + slotId).classList.add('hidden');
-        }
 
         async function saveDesignThen(callback) {
             // Hiển thị Overlay Loading
@@ -1386,26 +1302,8 @@
                     <input type="text" id="caption${newI}" placeholder="Nhập ghi chú / mô tả cho ảnh ${newI}..."
                            class="w-full text-[13px] px-3 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all" />
 
-                    <div class="doc-upload-section bg-white border border-slate-200 rounded-xl p-3.5 space-y-2.5">
-                        <div class="flex items-center justify-between">
-                            <span class="text-[12px] font-bold text-slate-600 flex items-center gap-1">
-                                <span class="material-symbols-outlined text-[16px] text-slate-500">attach_file</span> Tài liệu đính kèm
-                            </span>
-                            <input type="file" id="docFileInput${newI}" class="hidden" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip" onchange="uploadDocumentFile(${newI})"/>
-                            <button type="button" onclick="document.getElementById('docFileInput${newI}').click()" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-[11px] font-semibold transition-all">
-                                Tải file
-                            </button>
-                        </div>
-                        <div class="hidden flex items-center gap-2" id="docInfoWrap${newI}">
-                            <span class="material-symbols-outlined text-[16px] text-emerald-600">article</span>
-                            <a href="#" id="docLink${newI}" target="_blank" class="text-[12px] font-medium text-brand-orange hover:underline truncate max-w-[200px]"></a>
-                            <button type="button" onclick="removeDocumentFile(${newI})" class="text-red-500 hover:text-red-700 ml-auto flex items-center">
-                                <span class="material-symbols-outlined text-[16px]">close</span>
-                            </button>
-                        </div>
-                        <input type="hidden" id="docFileUrl${newI}" />
-                        <input type="hidden" id="docFileName${newI}" />
-                    </div>
+                    <input type="hidden" id="docFileUrl${newI}" />
+                    <input type="hidden" id="docFileName${newI}" />
 
                     <div class="bg-white border border-slate-200 rounded-xl p-3.5 space-y-1">
                         <label class="text-[12px] font-bold text-slate-600 flex items-center gap-1">
@@ -1417,10 +1315,6 @@
                     </div>
 
                     <div class="mt-1 flex flex-wrap gap-2">
-                        <div id="docPreviewWrap${newI}" class="hidden flex items-center gap-1.5 bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-lg text-[12px] font-medium border border-emerald-200/50">
-                            <span class="material-symbols-outlined text-[16px]">article</span>
-                            <span id="docPreviewName${newI}"></span>
-                        </div>
                         <div id="urlPreviewWrap${newI}" class="hidden flex items-center gap-1.5 bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg text-[12px] font-medium border border-blue-200/50">
                             <span class="material-symbols-outlined text-[16px]">open_in_new</span>
                             <span class="truncate max-w-[150px]" id="urlPreviewLink${newI}"></span>

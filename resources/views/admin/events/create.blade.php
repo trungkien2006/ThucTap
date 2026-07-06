@@ -116,7 +116,7 @@
                     @error('category_id') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
                 </div>
                 <div class="md:col-span-2">
-                    <label class="uni-label" for="department_ids">Khoa / Bộ phận (Có thể chọn nhiều)</label>
+                    <label class="uni-label" for="department_ids">Chuyên ngành (Có thể chọn nhiều)</label>
                     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mt-2">
                         @foreach($departments as $dept)
                             <label class="relative block cursor-pointer group">

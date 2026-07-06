@@ -387,33 +387,7 @@ class EventController extends Controller
         return response()->json(['success' => true]);
     }
 
-    public function uploadDocument(Request $request)
-    {
-        $request->validate([
-            'file' => 'required|file|max:20480', // Max 20MB
-        ]);
 
-        if ($request->hasFile('file')) {
-            $file = $request->file('file');
-            $folderPath = 'documents';
-            if ($request->has('event_id')) {
-                $evt = \App\Models\Event::with('category')->find($request->event_id);
-                if ($evt) {
-                    $catSlug = $evt->category ? $evt->category->slug : 'uncategorized';
-                    $folderPath = "{$catSlug}/{$evt->slug}/documents";
-                }
-            }
-            $path = $file->store($folderPath, 'google');
-            return response()->json([
-                'success' => true,
-                'name' => $file->getClientOriginalName(),
-                'url' => \App\Helpers\FileHelper::url($path),
-                'path' => $path
-            ]);
-        }
-
-        return response()->json(['success' => false, 'message' => 'Lỗi upload file'], 400);
-    }
     public function preview(Event $event)
     {
         $event->load('bannerImage', 'media', 'category', 'scheduleItems', 'speakers');
@@ -434,7 +408,6 @@ class EventController extends Controller
             'speakers',
             'galleryImages',
             'videos',
-            'documents',
         ]);
 
         $newestEventsData = \Illuminate\Support\Facades\Cache::remember('newest_events', 300, function() {

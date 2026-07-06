@@ -738,9 +738,7 @@
                                     <div style="color: var(--soft); font-size: 13.5px; line-height: 1.7;">{!! $block->content !!}</div>
                                 @endif
                                 <div class="flex flex-wrap gap-2 mt-4">
-                                    @if($block->document_url)
-                                        <a href="{{ \App\Helpers\FileHelper::url($block->document_url) }}" target="_blank" class="t3-btn-outline" style="padding: 6px 14px; font-size: 12px; border-color: var(--blue); color: var(--blue); background: var(--blue-lt); border-radius: 6px; text-decoration: none;">Tài liệu</a>
-                                    @endif
+
                                     @if($block->action_url)
                                         <a href="{{ $block->action_url }}" target="_blank" class="t3-btn-primary" style="padding: 6px 14px; font-size: 12px; border-radius: 6px; text-decoration: none;">Liên kết</a>
                                     @endif
@@ -773,9 +771,7 @@
                                     <div style="color: var(--soft); font-size: 13.5px; line-height: 1.7;">{!! $block->content !!}</div>
                                 @endif
                                 <div class="flex flex-wrap gap-2 mt-4">
-                                    @if($block->document_url)
-                                        <a href="{{ \App\Helpers\FileHelper::url($block->document_url) }}" target="_blank" class="t3-btn-outline" style="padding: 6px 14px; font-size: 12px; border-color: var(--blue); color: var(--blue); background: var(--blue-lt); border-radius: 6px; text-decoration: none;">Tài liệu</a>
-                                    @endif
+
                                     @if($block->action_url)
                                         <a href="{{ $block->action_url }}" target="_blank" class="t3-btn-primary" style="padding: 6px 14px; font-size: 12px; border-radius: 6px; text-decoration: none;">Liên kết</a>
                                     @endif

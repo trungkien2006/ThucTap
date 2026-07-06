@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @php
-    $pageTitle = 'Khoa / Bộ phận';
-    $breadcrumbs = [['label' => 'Khoa / Bộ phận']];
+    $pageTitle = 'Chuyên ngành';
+    $breadcrumbs = [['label' => 'Chuyên ngành']];
 @endphp
 
 @section('content')
@@ -9,11 +9,11 @@
     {{-- Page Header --}}
     <div class="flex items-end justify-between flex-wrap gap-3">
         <div>
-            <h1 class="text-[22px] font-semibold tracking-tight">Khoa / Bộ phận</h1>
-            <p class="text-xs text-muted-foreground mt-0.5">Quản lý các khoa và bộ phận tổ chức sự kiện</p>
+            <h1 class="text-[22px] font-semibold tracking-tight">Chuyên ngành</h1>
+            <p class="text-xs text-muted-foreground mt-0.5">Quản lý các chuyên ngành tổ chức sự kiện</p>
         </div>
         <button onclick="document.getElementById('newDepartmentModal').classList.remove('hidden')" class="inline-flex items-center gap-1.5 h-11 px-5 text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl transition-all shadow-sm">
-            <i data-lucide="plus" class="h-5 w-5"></i> Khoa/Bộ phận mới
+            <i data-lucide="plus" class="h-5 w-5"></i> Chuyên ngành mới
         </button>
     </div>
 
@@ -43,6 +43,7 @@
             </div>
             <div>
                 <div class="text-sm font-semibold flex items-center gap-1.5">
+                    <span class="text-muted-foreground font-mono text-xs">#{{ ($departments->currentPage() - 1) * $departments->perPage() + $i + 1 }}</span>
                     <span>{{ $dept->name }}</span>
                 </div>
                 <div class="text-[11px] text-muted-foreground mt-0.5">Slug: /{{ Str::slug($dept->name) }}</div>
@@ -61,17 +62,24 @@
         @empty
         <div class="col-span-full py-12 text-center bg-card rounded-lg border border-border shadow-none">
             <i data-lucide="building" class="h-10 w-10 text-muted-foreground/30 mx-auto mb-3"></i>
-            <p class="text-sm text-muted-foreground">Chưa có khoa hoặc bộ phận nào.</p>
+            <p class="text-sm text-muted-foreground">Chưa có chuyên ngành nào.</p>
         </div>
         @endforelse
     </div>
+
+    {{-- Pagination --}}
+    @if($departments->hasPages())
+        <div class="flex justify-center mt-4">
+            {{ $departments->links() }}
+        </div>
+    @endif
 </div>
 
 {{-- New Department Modal --}}
 <div id="newDepartmentModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden">
     <div class="bg-card border border-border rounded-xl shadow-lg w-full max-w-md p-6 space-y-4">
         <div class="flex items-center justify-between">
-            <h3 class="text-sm font-bold text-foreground">Thêm khoa/bộ phận mới</h3>
+            <h3 class="text-sm font-bold text-foreground">Thêm chuyên ngành mới</h3>
             <button onclick="document.getElementById('newDepartmentModal').classList.add('hidden')" class="text-muted-foreground hover:text-foreground">
                 <i data-lucide="x" class="h-4 w-4"></i>
             </button>
@@ -79,7 +87,7 @@
         <form action="{{ route('admin.departments.store') }}" method="POST" class="space-y-4">
             @csrf
             <div class="space-y-2">
-                <label for="new_name" class="text-xs font-semibold text-foreground">Tên khoa / bộ phận</label>
+                <label for="new_name" class="text-xs font-semibold text-foreground">Tên chuyên ngành</label>
                 <input type="text" name="name" id="new_name" required class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring" />
             </div>
             <div class="flex justify-end gap-2.5 pt-4 border-t border-border">

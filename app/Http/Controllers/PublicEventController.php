@@ -46,7 +46,6 @@ class PublicEventController extends Controller
             'speakers',
             'galleryImages',
             'videos',
-            'documents',
         ])->where('slug', $slug)->published()->firstOrFail();
 
         // Tăng lượt xem với chống spam bằng Session

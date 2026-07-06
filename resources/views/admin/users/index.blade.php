@@ -33,7 +33,7 @@
             <table class="w-full text-left text-sm">
                 <thead>
                     <tr class="border-b border-border bg-muted/40">
-                        <th class="h-10 px-4 font-semibold text-xs text-muted-foreground w-12">#</th>
+                        <th class="h-10 px-4 font-semibold text-xs text-muted-foreground w-12">STT</th>
                         <th class="h-10 px-4 font-semibold text-xs text-muted-foreground">Họ và tên</th>
                         <th class="h-10 px-4 font-semibold text-xs text-muted-foreground">Email</th>
                         <th class="h-10 px-4 font-semibold text-xs text-muted-foreground">Quyền hạn</th>
@@ -44,7 +44,7 @@
                 <tbody class="divide-y divide-border">
                     @forelse($users as $index => $user)
                         <tr class="hover:bg-muted/30 transition-colors">
-                            <td class="p-4 text-xs">{{ $index + 1 }}</td>
+                            <td class="p-4 text-xs font-medium text-muted-foreground">{{ ($users->currentPage() - 1) * $users->perPage() + $index + 1 }}</td>
                             <td class="p-4">
                                 <div class="font-medium text-foreground text-xs">{{ $user->name }}</div>
                             </td>
@@ -79,5 +79,12 @@
             </table>
         </div>
     </div>
+
+    {{-- Pagination --}}
+    @if($users->hasPages())
+        <div class="flex justify-center mt-4">
+            {{ $users->links() }}
+        </div>
+    @endif
 </div>
 @endsection

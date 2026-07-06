@@ -33,15 +33,16 @@ class CategorySeeder extends Seeder
             );
         }
 
-        // ── Departments ────────────────────────────────────
+        // ── Chuyên ngành ───────────────────────────────────
         $departments = [
-            'Công nghệ thông tin',
-            'Quản trị kinh doanh',
-            'Thiết kế đồ hoạ',
-            'Ngôn ngữ Anh',
-            'Ngôn ngữ Nhật',
-            'Ngôn ngữ Hàn',
-            'Truyền thông đa phương tiện',
+            'Lập trình web',
+            'Digital Marketing',
+            'Marketing và bán hàng / Marketing & Sales',
+            'Quản lí vận tải và dịch vụ logistics',
+            'Công nghệ kĩ thuật điều khiển và tự động hóa',
+            'Thiết kế đồ họa',
+            'Tiếng Trung Quốc',
+            'Kế toán doanh nghiệp',
         ];
 
         foreach ($departments as $dept) {

@@ -365,15 +365,7 @@
                     @if(!$isJ)<div class="gw-story-body" style="margin-bottom:24px;">{!! $block->content !!}</div>@endif
                     @endif
 
-                    @if($block->document_url)
-                    <div style="margin-top:16px;">
-                        <a href="{{ \App\Helpers\FileHelper::url($block->document_url) }}" target="_blank"
-                           style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;background:#f4f4f2;border:1px solid rgba(61,68,56,0.2);border-radius:2px;font-size:1.04rem;color:#5d7a5c;text-decoration:none;">
-                            <span class="material-symbols-outlined" style="font-size:21px;">download</span>
-                            {{ $block->document_name ?? basename($block->document_url) }}
-                        </a>
-                    </div>
-                    @endif
+
                     @if($block->action_url)
                     <div style="margin-top:16px;">
                         <a href="{{ $block->action_url }}" target="_blank" class="gw-btn">

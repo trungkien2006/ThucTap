@@ -4,8 +4,8 @@
 <div class="max-w-2xl mx-auto space-y-6">
     <div class="flex items-center justify-between border-b border-border pb-4">
         <div>
-            <h1 class="text-xl font-bold text-foreground leading-tight">Chỉnh sửa Khoa / Bộ phận</h1>
-            <p class="text-xs text-muted-foreground mt-1">Cập nhật thông tin khoa hoặc bộ phận tổ chức sự kiện</p>
+            <h1 class="text-xl font-bold text-foreground leading-tight">Chỉnh sửa Chuyên ngành</h1>
+            <p class="text-xs text-muted-foreground mt-1">Cập nhật thông tin chuyên ngành tổ chức sự kiện</p>
         </div>
         <a href="{{ route('admin.departments.index') }}" class="inline-flex items-center justify-center rounded-md border border-input bg-background px-3 py-1.5 text-xs font-semibold hover:bg-accent hover:text-accent-foreground transition-all">Quay lại</a>
     </div>
@@ -17,7 +17,7 @@
 
             <!-- Name -->
             <div class="space-y-2">
-                <label for="name" class="text-xs font-semibold text-foreground">Tên khoa / bộ phận</label>
+                <label for="name" class="text-xs font-semibold text-foreground">Tên chuyên ngành</label>
                 <input type="text" name="name" id="name" value="{{ old('name', $department->name) }}" required class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" />
                 @error('name')
                     <span class="text-destructive text-[11px] font-medium">{{ $message }}</span>

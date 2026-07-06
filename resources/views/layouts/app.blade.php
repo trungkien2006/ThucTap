@@ -100,7 +100,7 @@
                     </a>
                     <a href="{{ route('admin.departments.index') }}" wire:navigate class="sidebar-menu-btn {{ request()->routeIs('admin.departments.*') ? 'active' : '' }}">
                         <i data-lucide="building" class="h-5 w-5"></i>
-                        <span>Khoa / Bộ phận</span>
+                        <span>Chuyên ngành</span>
                     </a>
                     <a href="{{ route('admin.archive.index') }}" wire:navigate class="sidebar-menu-btn {{ request()->routeIs('admin.archive.*') ? 'active' : '' }}">
                         <i data-lucide="archive" class="h-5 w-5"></i>
@@ -121,10 +121,7 @@
                         <i data-lucide="image" class="h-5 w-5"></i>
                         <span>Thư viện Media</span>
                     </a>
-                    <a href="{{ route('admin.documents.index') }}" wire:navigate class="sidebar-menu-btn {{ request()->routeIs('admin.documents.*') ? 'active' : '' }}">
-                        <i data-lucide="files" class="h-5 w-5"></i>
-                        <span>Tài liệu</span>
-                    </a>
+
                     @if(Auth::user()->isSuperAdmin())
                         <a href="{{ route('admin.users.index') }}" wire:navigate class="sidebar-menu-btn {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
                             <i data-lucide="users" class="h-5 w-5"></i>

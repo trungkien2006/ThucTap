@@ -47,7 +47,10 @@
                                 @endif
                             </div>
                             <div class="min-w-0 flex-1">
-                                <div class="text-sm font-semibold truncate">{{ $speaker->name }}</div>
+                                <div class="text-sm font-semibold truncate flex items-center gap-1">
+                                    <span class="text-muted-foreground font-mono text-xs shrink-0">#{{ ($speakers->currentPage() - 1) * $speakers->perPage() + $loop->iteration }}</span>
+                                    <span class="truncate">{{ $speaker->name }}</span>
+                                </div>
                                 @if($speaker->title)
                                     <div class="text-[11px] text-muted-foreground truncate" title="{{ $speaker->title }}">{{ $speaker->title }}</div>
                                 @endif

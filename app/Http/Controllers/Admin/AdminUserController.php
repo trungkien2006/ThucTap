@@ -18,7 +18,7 @@ class AdminUserController extends Controller
         abort_unless(auth()->user()->isSuperAdmin(), 403, 'Chỉ Admin gốc mới có quyền xem danh sách này.');
 
         // Hiển thị danh sách tất cả tài khoản trừ tài khoản gốc đang đăng nhập
-        $users = User::where('id', '!=', auth()->id())->orderBy('created_at', 'desc')->get();
+        $users = User::where('id', '!=', auth()->id())->orderBy('created_at', 'desc')->paginate(10);
         return view('admin.users.index', compact('users'));
     }
 

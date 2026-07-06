@@ -12,7 +12,8 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        $categories = Category::eventTypes()->get()->map(function ($category) {
+        $categories = Category::eventTypes()->paginate(10);
+        $categories->getCollection()->transform(function ($category) {
             $category->events_count = \App\Models\Event::where('category_id', $category->id)->count();
             $category->total_views = \App\Models\Event::where('category_id', $category->id)->sum('views_count');
             return $category;

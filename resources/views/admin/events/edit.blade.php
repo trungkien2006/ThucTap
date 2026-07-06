@@ -89,7 +89,7 @@
                     </select>
                 </div>
                 <div class="md:col-span-2">
-                    <label class="uni-label" for="department_ids">Khoa / Bộ phận (Có thể chọn nhiều)</label>
+                    <label class="uni-label" for="department_ids">Chuyên ngành (Có thể chọn nhiều)</label>
                     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mt-2">
                         <input type="hidden" name="has_departments_field" value="1">
                         @foreach($departments as $dept)

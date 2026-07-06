@@ -10,7 +10,7 @@
     <div class="flex items-end justify-between flex-wrap gap-3">
         <div>
             <h1 class="text-[22px] font-semibold tracking-tight">Sự kiện</h1>
-            <p class="text-xs text-muted-foreground mt-0.5">Quản lý tất cả sự kiện theo khoa và học kỳ</p>
+            <p class="text-xs text-muted-foreground mt-0.5">Quản lý tất cả sự kiện theo chuyên ngành và học kỳ</p>
         </div>
         <div class="flex items-center gap-2">
             <a href="{{ route('admin.events.create') }}" class="inline-flex items-center gap-1.5 h-11 px-5 text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl transition-all shadow-sm">
@@ -92,7 +92,7 @@
                 </select>
 
                 <select onchange="addFilterTag('department_id', this)" class="h-9 min-w-[180px] border border-input rounded-lg text-xs bg-background px-2.5 focus:outline-none focus:border-ring transition-all text-muted-foreground cursor-pointer">
-                    <option value="">+ Khoa</option>
+                    <option value="">+ Chuyên ngành</option>
                     @foreach($departments as $dept)
                         @if(!in_array($dept->id, $selectedDepartments))
                             <option value="{{ $dept->id }}">{{ $dept->name }}</option>
@@ -135,7 +135,7 @@
                     @foreach($selectedDepartments as $d)
                         @php $deptModel = $departments->firstWhere('id', $d); @endphp
                         <span class="inline-flex items-center gap-1 bg-amber-50 text-amber-600 border border-amber-200 rounded-lg px-2.5 py-1 text-xs font-medium">
-                            Khoa: {{ $deptModel->name ?? $d }}
+                            Chuyên ngành: {{ $deptModel->name ?? $d }}
                             <button type="button" onclick="removeFilterTag('department_id', '{{ $d }}')" class="hover:text-destructive transition-colors ml-0.5">
                                 <i data-lucide="x" class="h-3 w-3"></i>
                             </button>
@@ -155,9 +155,10 @@
             <table class="w-full text-xs">
                 <thead class="bg-muted/40 text-[11px] uppercase tracking-wide text-muted-foreground sticky top-0">
                     <tr>
+                        <th class="text-left px-4 py-2 font-medium w-12">STT</th>
                         <th class="text-left px-4 py-2 font-medium">Sự kiện</th>
                         <th class="text-left px-3 py-2 font-medium">Danh mục</th>
-                        <th class="text-left px-3 py-2 font-medium">Khoa</th>
+                        <th class="text-left px-3 py-2 font-medium">Chuyên ngành</th>
                         <th class="text-left px-3 py-2 font-medium">Học kỳ - Năm học</th>
                         <th class="text-left px-3 py-2 font-medium">Địa điểm</th>
                         <th class="text-left px-3 py-2 font-medium">Ngày diễn ra</th>
@@ -172,6 +173,9 @@
                         $yearStr = $event->academic_year ?? '2024-2025';
                     @endphp
                     <tr class="border-t border-border hover:bg-muted/20">
+                        <td class="px-4 py-2.5 font-medium text-muted-foreground w-12">
+                            {{ ($events->currentPage() - 1) * $events->perPage() + $loop->iteration }}
+                        </td>
                         <td class="px-4 py-2.5">
                             <a href="{{ route('admin.events.show', $event) }}" class="font-medium truncate block hover:text-primary transition-colors">{{ $event->title }}</a>
                         </td>
@@ -201,13 +205,13 @@
                                 <a href="{{ route('admin.events.edit', $event) }}" class="h-9 w-9 rounded-lg flex items-center justify-center text-muted-foreground hover:bg-accent hover:text-foreground transition-all" title="Sửa">
                                     <i data-lucide="pencil" class="h-4 w-4"></i>
                                 </a>
-                                <form action="{{ route('admin.events.archive', $event) }}" method="POST" class="inline" onsubmit="return confirm('Bạn có chắc chắn muốn lưu trữ sự kiện này?');">
+                                <form action="{{ route('admin.events.archive', $event) }}" method="POST" class="inline" onsubmit="showConfirmModal(event, 'Lưu trữ sự kiện', 'Bạn có chắc chắn muốn lưu trữ sự kiện &quot;{{ $event->title }}&quot;? Sự kiện sẽ được chuyển vào kho lưu trữ.', 'warning');">
                                     @csrf
                                     <button type="submit" class="h-9 w-9 rounded-lg flex items-center justify-center text-muted-foreground hover:bg-accent hover:text-foreground transition-all" title="Lưu trữ">
                                         <i data-lucide="archive" class="h-4 w-4"></i>
                                     </button>
                                 </form>
-                                <form action="{{ route('admin.events.destroy', $event) }}" method="POST" class="inline" onsubmit="return confirm('Xóa sự kiện này?');">
+                                <form action="{{ route('admin.events.destroy', $event) }}" method="POST" class="inline" onsubmit="showConfirmModal(event, 'Xóa sự kiện', 'Bạn có chắc chắn muốn xóa sự kiện &quot;{{ $event->title }}&quot;? Hành động này không thể hoàn tác.', 'danger');">
                                     @csrf @method('DELETE')
                                     <button type="submit" class="h-9 w-9 rounded-lg flex items-center justify-center text-muted-foreground hover:bg-red-50 hover:text-red-500 transition-all" title="Xóa">
                                         <i data-lucide="trash-2" class="h-4 w-4"></i>
@@ -238,6 +242,25 @@
             </div>
         </div>
         @endif
+    </div>
+
+    {{-- Custom Confirmation Modal --}}
+    <div id="confirmModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300 animate-in fade-in zoom-in-95">
+        <div class="bg-card border border-border rounded-xl shadow-xl w-full max-w-md p-6 space-y-4 scale-95 transition-transform duration-300 transform" id="confirmModalContainer">
+            <div class="flex items-start gap-4">
+                <div class="h-10 w-10 rounded-full flex items-center justify-center shrink-0" id="confirmIconBg">
+                    <i data-lucide="alert-triangle" class="h-5 w-5" id="confirmIcon"></i>
+                </div>
+                <div class="flex-1 space-y-1">
+                    <h3 class="text-sm font-bold text-foreground animate-none" id="confirmTitle">Xác nhận</h3>
+                    <p class="text-xs text-muted-foreground leading-relaxed" id="confirmMessage">Bạn có chắc chắn muốn thực hiện hành động này không?</p>
+                </div>
+            </div>
+            <div class="flex justify-end gap-2.5 pt-4 border-t border-border">
+                <button type="button" id="confirmCancelBtn" class="h-9 px-4 rounded-lg text-xs font-medium border border-input bg-background hover:bg-accent text-foreground transition-all">Hủy</button>
+                <button type="button" id="confirmOkBtn" class="h-9 px-4 rounded-lg text-xs font-medium text-white transition-all shadow-sm">Xác nhận</button>
+            </div>
+        </div>
     </div>
 </div>
 @endsection
@@ -273,5 +296,73 @@
         // Submit form
         document.getElementById('filterForm').submit();
     }
+
+    let pendingForm = null;
+
+    function showConfirmModal(event, title, message, type = 'warning') {
+        event.preventDefault();
+        pendingForm = event.target;
+        
+        const modal = document.getElementById('confirmModal');
+        const container = document.getElementById('confirmModalContainer');
+        const titleEl = document.getElementById('confirmTitle');
+        const messageEl = document.getElementById('confirmMessage');
+        const iconBg = document.getElementById('confirmIconBg');
+        const icon = document.getElementById('confirmIcon');
+        const okBtn = document.getElementById('confirmOkBtn');
+        
+        titleEl.textContent = title;
+        messageEl.textContent = message;
+        
+        if (type === 'danger') {
+            iconBg.className = 'h-10 w-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center shrink-0';
+            icon.setAttribute('data-lucide', 'trash-2');
+            okBtn.className = 'h-9 px-4 rounded-lg text-xs font-medium bg-red-600 hover:bg-red-700 text-white transition-all shadow-sm';
+        } else {
+            iconBg.className = 'h-10 w-10 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center shrink-0';
+            icon.setAttribute('data-lucide', 'archive');
+            okBtn.className = 'h-9 px-4 rounded-lg text-xs font-medium bg-amber-500 hover:bg-amber-600 text-white transition-all shadow-sm';
+        }
+        
+        if (window.lucide) {
+            window.lucide.createIcons();
+        }
+        
+        modal.classList.remove('hidden');
+        void modal.offsetWidth;
+        modal.classList.remove('opacity-0');
+        container.classList.remove('scale-95');
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const modal = document.getElementById('confirmModal');
+        const container = document.getElementById('confirmModalContainer');
+        const cancelBtn = document.getElementById('confirmCancelBtn');
+        const okBtn = document.getElementById('confirmOkBtn');
+        
+        function hideModal() {
+            modal.classList.add('opacity-0');
+            container.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                pendingForm = null;
+            }, 300);
+        }
+        
+        cancelBtn.addEventListener('click', hideModal);
+        
+        okBtn.addEventListener('click', function() {
+            if (pendingForm) {
+                pendingForm.submit();
+            }
+            hideModal();
+        });
+        
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                hideModal();
+            }
+        });
+    });
 </script>
 @endpush

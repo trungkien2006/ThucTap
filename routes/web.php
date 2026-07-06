@@ -78,11 +78,12 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
             ),
         ];
 
-        // Optimized: 1 query instead of 12
-        $eventsByMonth = \App\Models\Event::selectRaw('MONTH(created_at) as month, count(*) as count')
-            ->whereYear('created_at', $currentYear)
-            ->groupBy('month')
-            ->pluck('count', 'month')
+        // Optimized: 1 query, database-agnostic grouping
+        $eventsByMonth = \App\Models\Event::whereYear('created_at', $currentYear)
+            ->pluck('created_at')
+            ->map(fn($date) => \Carbon\Carbon::parse($date)->month)
+            ->groupBy(fn($m) => $m)
+            ->map(fn($group) => $group->count())
             ->toArray();
         $eventsTrend = [];
         for ($m = 1; $m <= 12; $m++) {
@@ -107,17 +108,15 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
             ];
         }
 
-        // Optimized: 1 query instead of 24
-        $mediaByMonth = \App\Models\EventMedia::selectRaw('type, MONTH(created_at) as month, count(*) as count')
-            ->whereIn('type', ['image', 'video'])
+        // Optimized: 1 query, database-agnostic grouping
+        $allMedia = \App\Models\EventMedia::whereIn('type', ['image', 'video'])
             ->whereYear('created_at', $currentYear)
-            ->groupBy('type', 'month')
-            ->get();
+            ->get(['type', 'created_at']);
         $imagesTrend = [];
         $videosTrend = [];
         for ($m = 1; $m <= 12; $m++) {
-            $imagesTrend[] = $mediaByMonth->where('type', 'image')->where('month', $m)->first()->count ?? 0;
-            $videosTrend[] = $mediaByMonth->where('type', 'video')->where('month', $m)->first()->count ?? 0;
+            $imagesTrend[] = $allMedia->where('type', 'image')->filter(fn($item) => \Carbon\Carbon::parse($item->created_at)->month === $m)->count();
+            $videosTrend[] = $allMedia->where('type', 'video')->filter(fn($item) => \Carbon\Carbon::parse($item->created_at)->month === $m)->count();
         }
 
         return view('admin.dashboard', compact(

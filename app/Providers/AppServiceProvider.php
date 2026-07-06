@@ -22,7 +22,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        \Livewire\Livewire::forceAssetInjection();
+        if (class_exists('Livewire\Livewire')) {
+            \Livewire\Livewire::forceAssetInjection();
+        }
 
 
         Storage::extend('google', function($app, $config) {

@@ -317,11 +317,17 @@
         if (type === 'danger') {
             iconBg.className = 'h-10 w-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center shrink-0';
             icon.setAttribute('data-lucide', 'trash-2');
-            okBtn.className = 'h-9 px-4 rounded-lg text-xs font-medium bg-red-600 hover:bg-red-700 text-white transition-all shadow-sm';
+            okBtn.className = 'h-9 px-4 rounded-lg text-xs font-medium text-white transition-all shadow-sm';
+            okBtn.style.backgroundColor = '#ef4444'; // Tailwind red-500
+            okBtn.onmouseover = () => okBtn.style.backgroundColor = '#dc2626'; // Tailwind red-600
+            okBtn.onmouseout = () => okBtn.style.backgroundColor = '#ef4444';
         } else {
             iconBg.className = 'h-10 w-10 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center shrink-0';
             icon.setAttribute('data-lucide', 'archive');
-            okBtn.className = 'h-9 px-4 rounded-lg text-xs font-medium bg-amber-500 hover:bg-amber-600 text-white transition-all shadow-sm';
+            okBtn.className = 'h-9 px-4 rounded-lg text-xs font-medium text-white transition-all shadow-sm';
+            okBtn.style.backgroundColor = '#f59e0b'; // Tailwind amber-500
+            okBtn.onmouseover = () => okBtn.style.backgroundColor = '#d97706'; // Tailwind amber-600
+            okBtn.onmouseout = () => okBtn.style.backgroundColor = '#f59e0b';
         }
         
         if (window.lucide) {

@@ -410,7 +410,7 @@ class EventController extends Controller
             'videos',
         ]);
 
-        $newestEventsData = \Illuminate\Support\Facades\Cache::remember('newest_events', 300, function() {
+        $newestEventsData = \Illuminate\Support\Facades\Cache::remember('admin_preview_newest_events', 300, function() {
             return \App\Models\Event::with(['bannerImage', 'category'])
                 ->where('is_published', true)
                 ->orderBy('event_date', 'desc')
@@ -480,6 +480,7 @@ class EventController extends Controller
         $event->fill($validated);
 
         $event->is_published = ($status === 'published');
+        $event->status = $status;
 
         // Handle banner image upload
         if ($request->hasFile('banner_image')) {
@@ -544,7 +545,10 @@ class EventController extends Controller
 
     public function archive(Event $event)
     {
-        $event->update(['is_published' => false]);
+        $event->update([
+            'is_published' => false,
+            'status' => 'archived'
+        ]);
 
         ActivityLogger::log("đã lưu trữ sự kiện: {$event->title}", route('admin.archive.index'));
 

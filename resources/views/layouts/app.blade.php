@@ -77,7 +77,7 @@
         <!-- Sidebar Navigation -->
         <nav class="flex-1 overflow-y-auto p-3 space-y-4">
             
-            <a href="{{ route('home') }}" target="_blank" class="sidebar-menu-btn text-brand-orange hover:text-brand-orange hover:bg-orange-50 bg-orange-50/50 mb-2 border border-brand-orange/20" wire:navigate>
+            <a href="{{ route('home') }}" target="_blank" class="sidebar-menu-btn text-brand-orange hover:text-brand-orange hover:bg-orange-50 bg-orange-50/50 mb-2 border border-brand-orange/20">
                 <i data-lucide="globe" class="h-5 w-5"></i>
                 <span>Xem Website</span>
             </a>
@@ -86,27 +86,27 @@
             <div>
                 <p class="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground/70 px-3 mb-1.5">Chính</p>
                 <div class="space-y-0.5">
-                    <a href="{{ route('admin.dashboard') }}" wire:navigate class="sidebar-menu-btn {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                    <a href="{{ route('admin.dashboard') }}" class="sidebar-menu-btn {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                         <i data-lucide="layout-dashboard" class="h-5 w-5"></i>
                         <span>Tổng quan</span>
                     </a>
-                    <a href="{{ route('admin.events.index') }}" wire:navigate class="sidebar-menu-btn {{ request()->routeIs('admin.events.*') && !request()->routeIs('admin.events.create') && !request()->routeIs('admin.events.edit') && !request()->routeIs('admin.events.design') && !request()->routeIs('admin.events.preview') && !request()->routeIs('admin.events.show') ? 'active' : '' }}">
+                    <a href="{{ route('admin.events.index') }}" class="sidebar-menu-btn {{ request()->routeIs('admin.events.*') && !request()->routeIs('admin.events.create') && !request()->routeIs('admin.events.edit') && !request()->routeIs('admin.events.design') && !request()->routeIs('admin.events.preview') && !request()->routeIs('admin.events.show') ? 'active' : '' }}">
                         <i data-lucide="calendar" class="h-5 w-5"></i>
                         <span>Sự kiện</span>
                     </a>
-                    <a href="{{ route('admin.categories.index') }}" wire:navigate class="sidebar-menu-btn {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.categories.index') }}" class="sidebar-menu-btn {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
                         <i data-lucide="tag" class="h-5 w-5"></i>
                         <span>Danh mục sự kiện</span>
                     </a>
-                    <a href="{{ route('admin.departments.index') }}" wire:navigate class="sidebar-menu-btn {{ request()->routeIs('admin.departments.*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.departments.index') }}" class="sidebar-menu-btn {{ request()->routeIs('admin.departments.*') ? 'active' : '' }}">
                         <i data-lucide="building" class="h-5 w-5"></i>
                         <span>Chuyên ngành</span>
                     </a>
-                    <a href="{{ route('admin.archive.index') }}" wire:navigate class="sidebar-menu-btn {{ request()->routeIs('admin.archive.*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.archive.index') }}" class="sidebar-menu-btn {{ request()->routeIs('admin.archive.*') ? 'active' : '' }}">
                         <i data-lucide="archive" class="h-5 w-5"></i>
                         <span>Lưu trữ sự kiện</span>
                     </a>
-                    <a href="{{ route('admin.speakers.index') }}" wire:navigate class="sidebar-menu-btn {{ request()->routeIs('admin.speakers.*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.speakers.index') }}" class="sidebar-menu-btn {{ request()->is('admin/speakers*') ? 'active' : '' }}">
                         <i data-lucide="mic" class="h-5 w-5"></i>
                         <span>Diễn giả / Khách mời</span>
                     </a>
@@ -117,13 +117,12 @@
             <div>
                 <p class="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground/70 px-3 mb-1.5">Nội dung</p>
                 <div class="space-y-0.5">
-                    <a href="{{ route('admin.media.index') }}" wire:navigate class="sidebar-menu-btn {{ request()->routeIs('admin.media.*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.media.index') }}" class="sidebar-menu-btn {{ request()->routeIs('admin.media.*') ? 'active' : '' }}">
                         <i data-lucide="image" class="h-5 w-5"></i>
                         <span>Thư viện Media</span>
                     </a>
-
                     @if(Auth::user()->isSuperAdmin())
-                        <a href="{{ route('admin.users.index') }}" wire:navigate class="sidebar-menu-btn {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+                        <a href="{{ route('admin.users.index') }}" class="sidebar-menu-btn {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
                             <i data-lucide="users" class="h-5 w-5"></i>
                             <span>Quản lý Admin</span>
                         </a>
@@ -150,15 +149,15 @@
                 </button>
                 <div id="adminAvatarDropdown" class="absolute bottom-full left-0 right-0 mb-2 bg-white border border-border rounded-md shadow-lg py-1 hidden z-50">
                     @if(Auth::user()->isSuperAdmin())
-                        <a href="{{ route('admin.users.create') }}" wire:navigate class="flex items-center px-3 py-2 text-xs text-foreground hover:bg-accent">
+                        <a href="{{ route('admin.users.create') }}" class="flex items-center px-3 py-2 text-xs text-foreground hover:bg-accent">
                             <i data-lucide="user-plus" class="h-3.5 w-3.5 mr-2"></i> Tạo tài khoản
                         </a>
                         <div class="h-px bg-border my-1"></div>
                     @endif
-                    <a href="{{ route('admin.profile.edit') }}" wire:navigate class="flex items-center px-3 py-2 text-xs text-foreground hover:bg-accent">
+                    <a href="{{ route('admin.profile.edit') }}" class="flex items-center px-3 py-2 text-xs text-foreground hover:bg-accent">
                         <i data-lucide="settings" class="h-3.5 w-3.5 mr-2"></i> Cài đặt tài khoản
                     </a>
-                    <a href="{{ route('admin.profile.activity') }}" wire:navigate class="flex items-center px-3 py-2 text-xs text-foreground hover:bg-accent">
+                    <a href="{{ route('admin.profile.activity') }}" class="flex items-center px-3 py-2 text-xs text-foreground hover:bg-accent">
                         <i data-lucide="history" class="h-3.5 w-3.5 mr-2"></i> Lịch sử hoạt động
                     </a>
                     <div class="h-px bg-border my-1"></div>
@@ -204,25 +203,16 @@
 
         @php
             $nowTime = now();
-            $notifications = \Illuminate\Support\Facades\Cache::remember('admin_header_notifications', 60, function () use ($nowTime) {
-                $startingSoon = \App\Models\Event::where('is_published', true)
-                    ->where('event_date', '>', $nowTime)
-                    ->where('event_date', '<=', $nowTime->copy()->addMinutes(10))
-                    ->get();
-                $runningEvents = \App\Models\Event::where('is_published', true)
-                    ->where('event_date', '<=', $nowTime)
-                    ->where('end_date', '>=', $nowTime)
-                    ->get();
-                return [
-                    'startingSoon' => $startingSoon,
-                    'runningEvents' => $runningEvents,
-                    'count' => $startingSoon->count() + $runningEvents->count()
-                ];
-            });
+            $startingSoon = \App\Models\Event::where('is_published', true)
+                ->where('event_date', '>', $nowTime)
+                ->where('event_date', '<=', $nowTime->copy()->addMinutes(10))
+                ->get();
+            $runningEvents = \App\Models\Event::where('is_published', true)
+                ->where('event_date', '<=', $nowTime)
+                ->where('end_date', '>=', $nowTime)
+                ->get();
             
-            $startingSoon = $notifications['startingSoon'];
-            $runningEvents = $notifications['runningEvents'];
-            $notificationCount = $notifications['count'];
+            $notificationCount = $startingSoon->count() + $runningEvents->count();
         @endphp
         <div class="flex items-center gap-2 md:gap-3">
             <!-- Semester Badge (Real-time Clock) -->
@@ -333,8 +323,8 @@
         </div>
     </main>
 
-    <script>
-        // Init setup that runs on initial page load AND after Livewire SPA navigations
+    <script data-spa-ignore>
+        // Init setup that runs on initial page load AND after SPA navigations
         function initAdminScripts() {
             // Initialize Lucide Icons
             if (typeof lucide !== 'undefined') {
@@ -347,22 +337,29 @@
             const mobileOverlay = document.getElementById('mobileOverlay');
 
         function openSidebar() {
-            sidebar.classList.remove('-translate-x-full');
-            mobileOverlay.classList.remove('hidden');
+            if(sidebar) sidebar.classList.remove('-translate-x-full');
+            if(mobileOverlay) mobileOverlay.classList.remove('hidden');
         }
         function closeSidebar() {
-            sidebar.classList.add('-translate-x-full');
-            mobileOverlay.classList.add('hidden');
+            if(sidebar) sidebar.classList.add('-translate-x-full');
+            if(mobileOverlay) mobileOverlay.classList.add('hidden');
         }
 
-        if (mobileSidebarToggle) mobileSidebarToggle.addEventListener('click', openSidebar);
-        if (mobileOverlay) mobileOverlay.addEventListener('click', closeSidebar);
+        if (mobileSidebarToggle && !mobileSidebarToggle.dataset.initialized) {
+            mobileSidebarToggle.dataset.initialized = 'true';
+            mobileSidebarToggle.addEventListener('click', openSidebar);
+        }
+        if (mobileOverlay && !mobileOverlay.dataset.initialized) {
+            mobileOverlay.dataset.initialized = 'true';
+            mobileOverlay.addEventListener('click', closeSidebar);
+        }
 
         // Quick Create Dropdown Toggle
         const quickCreateBtn = document.getElementById('quickCreateBtn');
         const quickCreateDropdown = document.getElementById('quickCreateDropdown');
 
-        if (quickCreateBtn && quickCreateDropdown) {
+        if (quickCreateBtn && quickCreateDropdown && !quickCreateBtn.dataset.initialized) {
+            quickCreateBtn.dataset.initialized = 'true';
             quickCreateBtn.addEventListener('click', function(e) {
                 e.stopPropagation();
                 quickCreateDropdown.classList.toggle('hidden');
@@ -378,7 +375,8 @@
         const adminAvatarBtn = document.getElementById('adminAvatarBtn');
         const adminAvatarDropdown = document.getElementById('adminAvatarDropdown');
 
-        if (adminAvatarBtn && adminAvatarDropdown) {
+        if (adminAvatarBtn && adminAvatarDropdown && !adminAvatarBtn.dataset.initialized) {
+            adminAvatarBtn.dataset.initialized = 'true';
             adminAvatarBtn.addEventListener('click', function(e) {
                 e.stopPropagation();
                 adminAvatarDropdown.classList.toggle('hidden');
@@ -394,7 +392,8 @@
         const notificationBtn = document.getElementById('notificationBtn');
         const notificationDropdown = document.getElementById('notificationDropdown');
 
-        if (notificationBtn && notificationDropdown) {
+        if (notificationBtn && notificationDropdown && !notificationBtn.dataset.initialized) {
+            notificationBtn.dataset.initialized = 'true';
             notificationBtn.addEventListener('click', function(e) {
                 e.stopPropagation();
                 notificationDropdown.classList.toggle('hidden');
@@ -408,7 +407,12 @@
 
         // Dynamic Real-time Clock
         const dateTimeString = document.getElementById('dateTimeString');
-        if (dateTimeString) {
+        if (dateTimeString && !dateTimeString.dataset.initialized) {
+            dateTimeString.dataset.initialized = 'true';
+            // clear old interval if it exists (so they don't stack up)
+            if (window.clockInterval) {
+                clearInterval(window.clockInterval);
+            }
             const updateClock = () => {
                 const now = new Date();
                 const month = now.getMonth() + 1;
@@ -433,13 +437,75 @@
                 dateTimeString.textContent = now.toLocaleDateString('vi-VN', options) + ` · Kỳ ${semester}`;
             };
             updateClock();
-            setInterval(updateClock, 1000);
+            window.clockInterval = setInterval(updateClock, 1000);
         }
         
         } // End of initAdminScripts
 
-        document.addEventListener('DOMContentLoaded', initAdminScripts);
-        document.addEventListener('livewire:navigated', initAdminScripts);
+        if (!window.adminSpaInitialized) {
+            window.adminSpaInitialized = true;
+            document.addEventListener('DOMContentLoaded', initAdminScripts);
+            
+            // Custom Bulletproof SPA Navigation for Admin Sidebar
+            document.addEventListener('click', async (e) => {
+            const link = e.target.closest('a.sidebar-menu-btn, a[href*="admin.profile"], a[href*="admin.users"]');
+            if (!link || !link.href || link.target === '_blank' || link.hasAttribute('download')) return;
+            if (link.href.includes('javascript:') || link.href.includes('#')) return;
+            
+            e.preventDefault();
+            const url = link.href;
+
+            // Visual feedback
+            const topBar = document.createElement('div');
+            topBar.className = 'fixed top-0 left-0 h-1 bg-primary z-[9999] transition-all duration-300 ease-out';
+            topBar.style.width = '30%';
+            document.body.appendChild(topBar);
+
+            try {
+                const response = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                if (response.redirected) {
+                    window.location.href = response.url;
+                    return;
+                }
+                
+                topBar.style.width = '70%';
+                
+                const html = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+
+                // Swap Title & Body
+                document.title = doc.title;
+                document.body.innerHTML = doc.body.innerHTML;
+                document.body.className = doc.body.className;
+
+                // Update History
+                history.pushState({}, '', url);
+
+                // Re-evaluate scripts in the body
+                Array.from(document.body.querySelectorAll('script:not([data-spa-ignore])')).forEach(oldScript => {
+                    const newScript = document.createElement('script');
+                    Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                    newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+                    oldScript.parentNode.replaceChild(newScript, oldScript);
+                });
+
+                // Re-initialize UI
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+                if (typeof initAdminScripts === 'function') initAdminScripts();
+
+            } catch (err) {
+                window.location.href = url; // Fallback
+            } finally {
+                topBar.style.width = '100%';
+                setTimeout(() => topBar.remove(), 200);
+            }
+        });
+
+        window.addEventListener('popstate', () => {
+            window.location.reload();
+        });
+        } // End of window.adminSpaInitialized
     </script>
 
     @stack('scripts')

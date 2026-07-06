@@ -57,7 +57,9 @@ class MediaController extends Controller
                 $originalName = $file->getClientOriginalName();
 
                 if (!$forceUpload) {
-                    $exists = EventMedia::where('caption', $originalName)->exists();
+                    $exists = EventMedia::where('caption', $originalName)
+                                        ->where('event_id', $request->event_id)
+                                        ->exists();
                     if ($exists) {
                         $duplicates[] = $originalName;
                         continue;

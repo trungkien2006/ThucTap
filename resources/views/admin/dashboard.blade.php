@@ -256,7 +256,7 @@
 
 @push('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        (function () {
             const months = ['Th1', 'Th2', 'Th3', 'Th4', 'Th5', 'Th6', 'Th7', 'Th8', 'Th9', 'Th10', 'Th11', 'Th12'];
             const events = {!! json_encode($eventsTrend) !!};
 
@@ -431,6 +431,6 @@
                     plugins: [hoverLinePlugin]
                 });
             }
-        });
+        })();
     </script>
 @endpush

@@ -69,11 +69,7 @@
                     </label>
                 </div>
                 
-                @if (Route::has('password.request'))
-                    <a href="{{ route('password.request') }}" class="text-sm text-slate-700 hover:text-slate-900 font-medium transition-colors">
-                        Quên mật khẩu?
-                    </a>
-                @endif
+
             </div>
 
             {{-- Submit --}}
@@ -85,13 +81,7 @@
                 Đăng nhập
             </button>
 
-            {{-- Signup text --}}
-            <div class="text-center mt-6">
-                <p class="text-slate-700 text-sm">
-                    Bạn chưa có tài khoản? <a href="{{ Route::has('register') ? route('register') : '#' }}" class="text-slate-900 font-bold hover:underline">Đăng ký</a>
-                </p>
-            </div>
-            
+
             {{-- Footer info --}}
             <div class="text-center mt-8">
                 <p class="text-slate-600 text-xs italic">Hệ thống quản lý sự kiện UniEvents</p>

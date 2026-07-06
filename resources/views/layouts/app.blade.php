@@ -41,13 +41,13 @@
             transition: background-color 0.15s, color 0.15s;
         }
         .sidebar-menu-btn.active {
-            background-color: var(--color-sidebar-accent, #f1f5f9);
-            color: var(--color-sidebar-accent-foreground, #0f172a);
+            background-color: var(--sidebar-accent, #eff6ff);
+            color: var(--sidebar-primary, #2563eb);
             font-weight: 600;
         }
         .sidebar-menu-btn:hover:not(.active) {
-            background-color: var(--color-sidebar-accent, #f1f5f9);
-            color: var(--color-sidebar-accent-foreground, #0f172a);
+            background-color: var(--sidebar-accent, #f8fafc);
+            color: var(--sidebar-accent-foreground, #0f172a);
         }
         
         /* Mobile Overlay styling */
@@ -450,6 +450,17 @@
             window.adminSpaInitialized = true;
             document.addEventListener('DOMContentLoaded', initAdminScripts);
             
+            // Prefetch on hover for instant navigation
+            document.addEventListener('mouseover', (e) => {
+                const link = e.target.closest('a.sidebar-menu-btn, a[href*="admin.profile"], a[href*="admin.users"]');
+                if (!link || !link.href || link.dataset.prefetched || link.target === '_blank' || link.href.includes('javascript:') || link.href.includes('#')) return;
+                link.dataset.prefetched = 'true';
+                const linkElement = document.createElement('link');
+                linkElement.rel = 'prefetch';
+                linkElement.href = link.href;
+                document.head.appendChild(linkElement);
+            });
+
             // Custom Bulletproof SPA Navigation for Admin Sidebar
             document.addEventListener('click', async (e) => {
             const link = e.target.closest('a.sidebar-menu-btn, a[href*="admin.profile"], a[href*="admin.users"]');
@@ -459,9 +470,15 @@
             e.preventDefault();
             const url = link.href;
 
+            // Optimistically update active state on sidebar
+            if (link.classList.contains('sidebar-menu-btn')) {
+                document.querySelectorAll('.sidebar-menu-btn').forEach(btn => btn.classList.remove('active'));
+                link.classList.add('active');
+            }
+
             // Visual feedback
             const topBar = document.createElement('div');
-            topBar.className = 'fixed top-0 left-0 h-1 bg-primary z-[9999] transition-all duration-300 ease-out';
+            topBar.className = 'fixed top-0 left-0 h-1 bg-primary z-[9999] transition-all duration-150 ease-out';
             topBar.style.width = '30%';
             document.body.appendChild(topBar);
 

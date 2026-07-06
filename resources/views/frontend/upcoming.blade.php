@@ -3,6 +3,44 @@
 @endphp
 
 <style>
+    /* Responsive overrides for desktop vs mobile */
+    .upcoming-desktop-wrapper {
+        display: block !important;
+    }
+    .upcoming-mobile-wrapper {
+        display: none !important;
+    }
+
+    @media (max-width: 1023px) {
+        .upcoming-desktop-wrapper {
+            display: none !important;
+        }
+        .upcoming-mobile-wrapper {
+            display: block !important;
+            width: 100%;
+            padding: 0 20px;
+        }
+        .upcoming-mobile-slider {
+            display: flex !important;
+            overflow-x: auto !important;
+            scroll-snap-type: x mandatory !important;
+            gap: 16px !important;
+            width: 100% !important;
+            padding-bottom: 8px !important;
+            scroll-behavior: smooth !important;
+            -ms-overflow-style: none !important;
+            scrollbar-width: none !important;
+        }
+        .upcoming-mobile-slider::-webkit-scrollbar {
+            display: none !important;
+        }
+        .upcoming-mobile-slide {
+            flex-shrink: 0 !important;
+            width: 100% !important;
+            scroll-snap-align: center !important;
+        }
+    }
+
     /* Desktop Vertical Slide-up Layout */
     @media (min-width: 1024px) {
         .upcoming-pinned-container {
@@ -102,140 +140,244 @@
 </style>
 
 <section id="upcoming-vertical" class="relative w-full z-[30] rounded-t-[3rem] shadow-[0_-20px_40px_-15px_rgba(0,0,0,0.05)] pt-12 lg:pt-16" style="background:#FFFBEA; font-family: 'Inter', sans-serif;">
-    <div class="upcoming-pinned-container">
-        
-        <!-- Tiêu đề cố định -->
-        <div class="absolute top-6 md:top-8 left-0 w-full z-30 pointer-events-none text-center px-6" data-aos="fade-down">
-            <div class="flex items-center justify-center gap-3 mb-2">
-                <div class="h-1.5 w-8 rounded-full" style="background:#FFE381;"></div>
-                <span class="text-md md:text-sm font-bold uppercase tracking-[0.25em]" style="color:#7A6A52;">Đừng bỏ lỡ</span>
-                <div class="h-1.5 w-8 rounded-full" style="background:#FFE381;"></div>
+    
+    <!-- DESKTOP / TABLET VERSION (>= 1024px) -->
+    <div class="upcoming-desktop-wrapper">
+        <div class="upcoming-pinned-container">
+            <!-- Tiêu đề cố định -->
+            <div class="absolute top-6 md:top-8 left-0 w-full z-30 pointer-events-none text-center px-6" data-aos="fade-down">
+                <div class="flex items-center justify-center gap-3 mb-2">
+                    <div class="h-1.5 w-8 rounded-full" style="background:#FFE381;"></div>
+                    <span class="text-md md:text-sm font-bold uppercase tracking-[0.25em]" style="color:#7A6A52;">Đừng bỏ lỡ</span>
+                    <div class="h-1.5 w-8 rounded-full" style="background:#FFE381;"></div>
+                </div>
+                <h2 class="font-barlow-condensed text-4xl md:text-5xl lg:text-5xl font-black uppercase tracking-tight text-[#1C1410] drop-shadow-md">
+                    Các sự kiện <span style="color:#07A0C3;">nổi bật</span>
+                </h2>
             </div>
-            <h2 class="font-barlow-condensed text-4xl md:text-5xl lg:text-5xl font-black uppercase tracking-tight text-[#1C1410] drop-shadow-md">
-                Các sự kiện <span style="color:#07A0C3;">nổi bật</span>
-            </h2>
-        </div>
 
-        <div class="upcoming-vertical-stack">
-            
-            @if($hasEvents)
-                @foreach($upcoming as $idx => $u)
-                    @php 
-                        $img = !empty($u['images']) ? $u['images'][0] : (!empty($u['img']) ? $u['img'] : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80');
-                        $zIndex = $idx + 1;
-                    @endphp
-                    <div class="upcoming-panel text-[#1C1410]" style="z-index: {{ $zIndex }};" data-index="{{ $idx }}">
-                        <!-- Center Image Frame -->
-                        <div class="slide-image-frame pointer-events-auto">
-                            <div tabindex="0" class="slide-image-inner bg-gray-200 relative group overflow-hidden cursor-pointer focus:outline-none"
-                                 x-data="{ active: 0, images: {{ json_encode(!empty($u['images']) ? $u['images'] : (!empty($u['img']) ? [$u['img']] : ['https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80'])) }} }">
-                                 
-<style>
-    /* Custom CSS để đảm bảo hiệu ứng blur hoạt động 100% không phụ thuộc Tailwind JIT */
-    .group:hover .custom-blur-img-upcoming {
-        filter: blur(12px) brightness(0.35) !important;
-    }
-</style>
+            <div class="upcoming-vertical-stack">
+                @if($hasEvents)
+                    @foreach($upcoming as $idx => $u)
+                        @php 
+                            $img = !empty($u['images']) ? $u['images'][0] : (!empty($u['img']) ? $u['img'] : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80');
+                            $zIndex = $idx + 1;
+                        @endphp
+                        <div class="upcoming-panel text-[#1C1410]" style="z-index: {{ $zIndex }};" data-index="{{ $idx }}">
+                            <!-- Center Image Frame -->
+                            <div class="slide-image-frame pointer-events-auto">
+                                <div tabindex="0" class="slide-image-inner bg-gray-200 relative group overflow-hidden cursor-pointer focus:outline-none"
+                                     x-data="{ active: 0, images: {{ json_encode(!empty($u['images']) ? $u['images'] : (!empty($u['img']) ? [$u['img']] : ['https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80'])) }} }">
+                                     
+                                    <style>
+                                        /* Custom CSS để đảm bảo hiệu ứng blur hoạt động 100% không phụ thuộc Tailwind JIT */
+                                        .group:hover .custom-blur-img-upcoming {
+                                            filter: blur(12px) brightness(0.35) !important;
+                                        }
+                                    </style>
 
-                                <template x-for="(imgSrc, i) in images" :key="i">
-                                    <img :src="imgSrc" :alt="`{{ $u['name'] ?? $u['title'] ?? '' }} - Hình ${i+1}`" 
-                                         class="absolute inset-0 w-full h-full object-cover transition-all duration-700 custom-blur-img-upcoming group-hover:scale-110"
-                                         :class="active === i ? 'opacity-100 z-10' : 'opacity-0 z-0'">
-                                </template>
+                                    <template x-for="(imgSrc, i) in images" :key="i">
+                                        <img :src="imgSrc" :alt="`{{ $u['name'] ?? $u['title'] ?? '' }} - Hình ${i+1}`" 
+                                             class="absolute inset-0 w-full h-full object-cover transition-all duration-700 custom-blur-img-upcoming group-hover:scale-110"
+                                             :class="active === i ? 'opacity-100 z-10' : 'opacity-0 z-0'">
+                                    </template>
 
-
-
-                                <!-- Dots -->
-                                <template x-if="images.length > 1">
-                                    <div class="absolute bottom-6 right-6 z-30 flex gap-2 pointer-events-auto">
-                                        <template x-for="(imgSrc, i) in images" :key="i">
-                                            <button @click.prevent.stop="active = i" 
-                                                    class="h-2 rounded-full transition-all duration-300 cursor-pointer"
-                                                    :class="active === i ? 'bg-[#FFC107] w-8' : 'bg-white/50 w-2 hover:bg-white/80'"></button>
-                                        </template>
-                                    </div>
-                                </template>
-                                
-                                <!-- Dark Hover Overlay -->
-                                <div class="absolute inset-0 bg-[#1C1410]/60 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-20"></div>
-                                
-                                <!-- Event Info Content (Hover State Match Steam Card Style) -->
-                                <div class="absolute inset-0 px-8 pt-8 md:px-12 md:pt-12 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-30 pointer-events-none">
-                                    <!-- Yellow Category / Tag -->
-                                    <h3 class="font-black uppercase text-[16px] md:text-[20px] tracking-widest mb-4 drop-shadow-lg" style="color: #FFC107;">
-                                        {{ $u['category'] ?? 'Sự kiện' }}
-                                    </h3>
-                                    
-                                    <!-- White Description Text -->
-                                    <div class="text-white text-[16px] md:text-[18px] leading-relaxed drop-shadow-lg font-medium max-w-3xl">
-                                        <strong class="block mb-3 text-[28px] md:text-[40px] font-black leading-tight line-clamp-3">{{ $u['name'] ?? $u['title'] ?? '' }}</strong>
-                                    </div>
-                                    <div class="text-white text-[16px] md:text-[18px] leading-relaxed drop-shadow-lg font-medium max-w-3xl">
-                                        <span class="block line-clamp-4 text-white/95">{{ $u['summary'] ?? '' }}</span>
-                                    </div>
-                                    
-                                    <!-- Small details at bottom left -->
-                                    <div class="absolute bottom-[50px] left-8 right-8 md:left-12 md:right-12 flex flex-col gap-3 pointer-events-auto">
-                                        <div class="flex items-center gap-3 text-white/90 text-[16px] font-medium">
-                                            <i data-lucide="calendar" class="w-5 h-5"></i>
-                                            <span>{{ $u['date'] }}</span>
+                                    <!-- Dots -->
+                                    <template x-if="images.length > 1">
+                                        <div class="absolute bottom-6 right-6 z-30 flex gap-2 pointer-events-auto">
+                                            <template x-for="(imgSrc, i) in images" :key="i">
+                                                <button @click.prevent.stop="active = i" 
+                                                         class="h-2 rounded-full transition-all duration-300 cursor-pointer"
+                                                         :class="active === i ? 'bg-[#FFC107] w-8' : 'bg-white/50 w-2 hover:bg-white/80'"></button>
+                                            </template>
                                         </div>
-                                        <div class="flex items-start gap-3 text-white/90 text-[16px] font-medium">
-                                            <i data-lucide="map-pin" class="w-5 h-5 shrink-0 mt-0.5"></i>
-                                            <span class="line-clamp-2 max-w-lg">{{ $u['location'] ?? 'Sẽ thông báo sau' }}</span>
+                                    </template>
+                                    
+                                    <!-- Dark Hover Overlay -->
+                                    <div class="absolute inset-0 bg-[#1C1410]/60 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-20"></div>
+                                    
+                                    <!-- Event Info Content (Hover State Match Steam Card Style) -->
+                                    <div class="absolute inset-0 px-8 pt-8 md:px-12 md:pt-12 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-30 pointer-events-none">
+                                        <!-- Yellow Category / Tag -->
+                                        <h3 class="font-black uppercase text-[16px] md:text-[20px] tracking-widest mb-4 drop-shadow-lg" style="color: #FFC107;">
+                                            {{ $u['category'] ?? 'Sự kiện' }}
+                                        </h3>
+                                        
+                                        <!-- White Description Text -->
+                                        <div class="text-white text-[16px] md:text-[18px] leading-relaxed drop-shadow-lg font-medium max-w-3xl">
+                                            <strong class="block mb-3 text-[28px] md:text-[40px] font-black leading-tight line-clamp-3">{{ $u['name'] ?? $u['title'] ?? '' }}</strong>
+                                        </div>
+                                        <div class="text-white text-[16px] md:text-[18px] leading-relaxed drop-shadow-lg font-medium max-w-3xl">
+                                            <span class="block line-clamp-4 text-white/95">{{ $u['summary'] ?? '' }}</span>
                                         </div>
                                         
-                                        <!-- Action Button -->
-                                        <div class="mt-4 pointer-events-auto">
-                                            <a href="{{ route('events.show', $u['slug']) }}" class="inline-flex items-center gap-3 text-white text-[14px] font-bold tracking-[0.15em] group/btn w-fit uppercase hover:text-[#FFC107] transition-colors" style="text-decoration: none;">
-                                                <span>XEM CHI TIẾT</span>
-                                                <div class="w-10 h-10 rounded-full border border-white/50 flex items-center justify-center group-hover/btn:border-[#FFC107] transition-colors">
-                                                    <i data-lucide="arrow-right" class="w-5 h-5"></i>
-                                                </div>
-                                            </a>
+                                        <!-- Small details at bottom left -->
+                                        <div class="absolute bottom-[50px] left-8 right-8 md:left-12 md:right-12 flex flex-col gap-3 pointer-events-auto">
+                                            <div class="flex items-center gap-3 text-white/90 text-[16px] font-medium">
+                                                <i data-lucide="calendar" class="w-5 h-5"></i>
+                                                <span>{{ $u['date'] }}</span>
+                                            </div>
+                                            <div class="flex items-start gap-3 text-white/90 text-[16px] font-medium">
+                                                <i data-lucide="map-pin" class="w-5 h-5 shrink-0 mt-0.5"></i>
+                                                <span class="line-clamp-2 max-w-lg">{{ $u['location'] ?? 'Sẽ thông báo sau' }}</span>
+                                            </div>
+                                            
+                                            <!-- Action Button -->
+                                            <div class="mt-4 pointer-events-auto">
+                                                <a href="{{ route('events.show', $u['slug']) }}" class="inline-flex items-center gap-3 text-white text-[14px] font-bold tracking-[0.15em] group/btn w-fit uppercase hover:text-[#FFC107] transition-colors" style="text-decoration: none;">
+                                                    <span>XEM CHI TIẾT</span>
+                                                    <div class="w-10 h-10 rounded-full border border-white/50 flex items-center justify-center group-hover/btn:border-[#FFC107] transition-colors">
+                                                        <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                                                    </div>
+                                                </a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    @endforeach
+                @else
+                    <div class="upcoming-panel text-[#1C1410]" style="z-index: 1;" data-index="0">
+                        <p class="font-medium text-2xl">Hiện chưa có sự kiện nào sắp diễn ra.</p>
                     </div>
+                @endif
+            </div>
+
+            <!-- Navigation dots -->
+            @if($hasEvents && count($upcoming) > 1)
+            <div id="upcoming-dots" class="absolute bottom-6 md:bottom-8 left-0 right-0 z-40 flex justify-center gap-2 md:gap-3 pointer-events-none">
+                @foreach($upcoming as $idx => $u)
+                    <div class="upcoming-dot h-2 rounded-full transition-all duration-500"
+                         data-dot="{{ $idx }}"
+                         style="width: {{ $idx === 0 ? '2rem' : '0.5rem' }}; background: {{ $idx === 0 ? '#FFE381' : 'rgba(122,106,82,0.3)' }};"></div>
                 @endforeach
-            @else
-                <div class="upcoming-panel text-[#1C1410]" style="z-index: 1;" data-index="0">
-                    <p class="font-medium text-2xl">Hiện chưa có sự kiện nào sắp diễn ra.</p>
-                </div>
+            </div>
+
+            <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const dots = document.querySelectorAll('.upcoming-dot');
+                const panels = document.querySelectorAll('.upcoming-panel');
+                if (!dots.length || !panels.length) return;
+
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const idx = entry.target.dataset.index;
+                            dots.forEach((d, i) => {
+                                d.style.width = String(i) === String(idx) ? '2rem' : '0.5rem';
+                                d.style.background = String(i) === String(idx) ? '#FFE381' : 'rgba(122,106,82,0.3)';
+                            });
+                        }
+                    });
+                }, { threshold: 0.6 });
+
+                panels.forEach(p => observer.observe(p));
+            });
+            </script>
             @endif
         </div>
+    </div>
 
-        <!-- THÊM MỚI — Navigation dots -->
-        @if($hasEvents && count($upcoming) > 1)
-        <div id="upcoming-dots" class="absolute bottom-6 md:bottom-8 left-0 right-0 z-40 flex justify-center gap-2 md:gap-3 pointer-events-none">
-            @foreach($upcoming as $idx => $u)
-                <div class="upcoming-dot h-2 rounded-full transition-all duration-500"
-                     data-dot="{{ $idx }}"
-                     style="width: {{ $idx === 0 ? '2rem' : '0.5rem' }}; background: {{ $idx === 0 ? '#FFE381' : 'rgba(122,106,82,0.3)' }};"></div>
-            @endforeach
-        </div>
-
-        <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const dots = document.querySelectorAll('.upcoming-dot');
-            const panels = document.querySelectorAll('.upcoming-panel');
-            if (!dots.length || !panels.length) return;
-
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const idx = entry.target.dataset.index;
-                        dots.forEach((d, i) => {
-                            d.style.width = String(i) === String(idx) ? '2rem' : '0.5rem';
-                            d.style.background = String(i) === String(idx) ? '#FFE381' : 'rgba(122,106,82,0.3)';
+    <!-- MOBILE VERSION (< 1024px) -->
+    <div class="upcoming-mobile-wrapper" x-data="{ 
+            activeUpcomingSlide: 0, 
+            totalUpcomingSlides: {{ count($upcoming) }},
+            autoplayInterval: null,
+            startAutoplay() {
+                this.autoplayInterval = setInterval(() => {
+                    this.activeUpcomingSlide = (this.activeUpcomingSlide + 1) % this.totalUpcomingSlides;
+                    const container = this.$refs.upcomingSliderContainer;
+                    if (container) {
+                        const slideWidth = container.clientWidth;
+                        container.scrollTo({
+                            left: this.activeUpcomingSlide * slideWidth,
+                            behavior: 'smooth'
                         });
                     }
-                });
-            }, { threshold: 0.6 });
+                }, 4000);
+            },
+            stopAutoplay() {
+                clearInterval(this.autoplayInterval);
+            }
+         }"
+         x-init="startAutoplay()"
+         @mouseenter="stopAutoplay()"
+         @mouseleave="startAutoplay()">
+         
+         <!-- Tiêu đề tĩnh trên di động -->
+         <div class="text-center mb-6">
+             <div class="flex items-center justify-center gap-2 mb-1">
+                 <div class="h-1 w-6 rounded-full" style="background:#FFE381;"></div>
+                 <span class="text-xs font-bold uppercase tracking-widest" style="color:#7A6A52;">Đừng bỏ lỡ</span>
+                 <div class="h-1 w-6 rounded-full" style="background:#FFE381;"></div>
+             </div>
+             <h2 class="font-barlow-condensed text-3xl font-black uppercase tracking-tight text-[#1C1410]">
+                 Các sự kiện <span style="color:#07A0C3;">nổi bật</span>
+             </h2>
+         </div>
 
-            panels.forEach(p => observer.observe(p));
+         <!-- Mobile Slider View -->
+         <div x-ref="upcomingSliderContainer" 
+              class="upcoming-mobile-slider"
+              @scroll.debounce.150ms="const container = $el; activeUpcomingSlide = Math.round(container.scrollLeft / container.clientWidth)">
+             @foreach($upcoming as $idx => $u)
+                 @php 
+                     $img = !empty($u['images']) ? $u['images'][0] : (!empty($u['img']) ? $u['img'] : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80');
+                 @endphp
+                 <div class="upcoming-mobile-slide">
+                     <div class="relative w-full rounded-2xl overflow-hidden shadow-lg" style="aspect-ratio: 16/9; min-height: 240px; background: #000;">
+                         <!-- Background Image -->
+                         <img src="{{ $img }}" alt="{{ $u['name'] ?? $u['title'] ?? '' }}" class="absolute inset-0 w-full h-full object-cover opacity-60">
+                         
+                         <!-- Gradient Overlay -->
+                         <div class="absolute inset-0 bg-gradient-to-t from-black via-black/45 to-transparent"></div>
+                         
+                         <!-- Content (Always Visible on Mobile) -->
+                         <div class="absolute inset-0 p-5 flex flex-col justify-end text-white">
+                             <!-- Category Tag -->
+                             <span class="text-xs font-black uppercase tracking-wider text-[#FFC107] mb-1">
+                                 {{ $u['category'] ?? 'Sự kiện' }}
+                             </span>
+                             
+                             <!-- Event Title -->
+                             <h3 class="text-lg font-black leading-snug line-clamp-2 mb-2">
+                                 {{ $u['name'] ?? $u['title'] ?? '' }}
+                             </h3>
+                             
+                             <!-- Date & Location -->
+                             <div class="flex flex-col gap-1 text-xs text-white/80 mb-4">
+                                 <div class="flex items-center gap-1.5">
+                                     <i data-lucide="calendar" class="w-4 h-4"></i>
+                                     <span>{{ $u['date'] }}</span>
+                                 </div>
+                                 <div class="flex items-center gap-1.5">
+                                     <i data-lucide="map-pin" class="w-4 h-4 shrink-0"></i>
+                                     <span class="line-clamp-1">{{ $u['location'] ?? 'Sẽ thông báo sau' }}</span>
+                                 </div>
+                             </div>
+                             
+                             <!-- Action Button -->
+                             <a href="{{ route('events.show', $u['slug']) }}" class="inline-flex items-center gap-2 bg-[#07A0C3] hover:bg-[#07A0C3]/80 text-white font-bold text-xs uppercase px-4 py-2 rounded-xl w-fit transition-colors">
+                                 <span>Xem Chi Tiết</span>
+                                 <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                             </a>
+                         </div>
+                     </div>
+                 </div>
+             @endforeach
+         </div>
+
+         <!-- Mobile Indicator Dots -->
+         <div class="flex justify-center gap-1.5 mt-4 pb-4">
+             <template x-for="i in totalUpcomingSlides" :key="i-1">
+                 <button @click="activeUpcomingSlide = i-1; $refs.upcomingSliderContainer.scrollTo({ left: (i-1) * $refs.upcomingSliderContainer.clientWidth, behavior: 'smooth' })"
+                         class="h-1.5 rounded-full transition-all duration-300"
+                         :class="activeUpcomingSlide === i-1 ? 'w-5 bg-[#07A0C3]' : 'w-1.5 bg-gray-300'"></button>
+             </template>
+         </div>
+    </div>
+</section>erve(p));
         });
         </script>
         @endif

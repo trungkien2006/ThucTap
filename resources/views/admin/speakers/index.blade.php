@@ -35,7 +35,7 @@
         {{-- Speakers Grid --}}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
             @forelse($speakers as $speaker)
-                <div class="bg-card rounded-lg border border-border p-4 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+                <div class="bg-card rounded-2xl border-none shadow-2xl shadow-slate-300/60 hover:-translate-y-2 hover:shadow-slate-300/80 transition-all duration-300 p-5 bg-card rounded-2xl border-none shadow-2xl shadow-slate-300/60 hover:-translate-y-2 hover:shadow-slate-300/80 transition-all duration-300-hover flex flex-col justify-between">
                     <div>
                         {{-- Header Card --}}
                         <div class="flex items-start gap-3 mb-3">
@@ -100,7 +100,7 @@
                     </div>
                 </div>
             @empty
-                <div class="col-span-full py-16 text-center bg-card rounded-lg border border-border shadow-sm">
+                <div class="col-span-full py-16 text-center bg-card rounded-lg border-none shadow-2xl shadow-slate-300/60 hover:-translate-y-2 hover:shadow-slate-300/80 transition-all duration-300">
                     <i data-lucide="mic-off" class="h-10 w-10 text-muted-foreground/30 mx-auto mb-3"></i>
                     <p class="text-sm text-muted-foreground mb-4">Chưa có diễn giả nào.</p>
                     <a href="{{ route('admin.speakers.create') }}"

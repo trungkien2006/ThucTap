@@ -24,7 +24,7 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- Update Profile Card -->
-        <div class="bg-card rounded-xl border border-border p-5 shadow-sm space-y-4">
+        <div class="bg-card rounded-xl border-none p-5 shadow-2xl shadow-slate-300/60 hover:-translate-y-2 hover:shadow-slate-300/80 transition-all duration-300 space-y-4">
             <div class="flex items-center gap-2 pb-3 border-b border-border">
                 <i data-lucide="user" class="h-5 w-5 text-primary"></i>
                 <h2 class="text-sm font-bold text-foreground">Thông tin cá nhân</h2>
@@ -56,7 +56,7 @@
         </div>
 
         <!-- Update Password Card -->
-        <div class="bg-card rounded-xl border border-border p-5 shadow-sm space-y-4">
+        <div class="bg-card rounded-xl border-none p-5 shadow-2xl shadow-slate-300/60 hover:-translate-y-2 hover:shadow-slate-300/80 transition-all duration-300 space-y-4">
             <div class="flex items-center gap-2 pb-3 border-b border-border">
                 <i data-lucide="lock" class="h-5 w-5 text-primary"></i>
                 <h2 class="text-sm font-bold text-foreground">Đổi mật khẩu</h2>

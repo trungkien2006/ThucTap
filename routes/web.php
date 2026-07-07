@@ -31,6 +31,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
         $totalEvents = \App\Models\Event::count();
         $upcomingEventsCount = \App\Models\Event::where('event_date', '>=', now())->count();
         $completedEventsCount = \App\Models\Event::where('event_date', '<', now())->count();
+        $draftEventsCount = \App\Models\Event::where('is_published', false)->count();
         $totalSpeakers = \App\Models\Speaker::where('is_hidden', false)->count();
         $totalMedia = \App\Models\EventMedia::whereIn('type', ['image', 'video'])->count();
 
@@ -55,26 +56,33 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
             return ($diff >= 0 ? '+' : '') . round($diff, 1) . '%';
         };
 
+        $now = now();
+        $prev = now()->subMonth();
+
         $deltas = [
             'events' => $getGrowthDelta(
-                \App\Models\Event::whereYear('created_at', $currentYear)->count(),
-                \App\Models\Event::whereYear('created_at', $lastYear)->count()
+                \App\Models\Event::whereYear('created_at', $now->year)->whereMonth('created_at', $now->month)->count(),
+                \App\Models\Event::whereYear('created_at', $prev->year)->whereMonth('created_at', $prev->month)->count()
             ),
             'upcoming' => $getGrowthDelta(
-                \App\Models\Event::where('event_date', '>=', now())->whereYear('event_date', $currentYear)->count(),
-                \App\Models\Event::where('event_date', '>=', now()->subYear())->whereYear('event_date', $lastYear)->count()
+                \App\Models\Event::where('event_date', '>=', $now)->whereYear('event_date', $now->year)->whereMonth('event_date', $now->month)->count(),
+                \App\Models\Event::where('event_date', '>=', $prev)->whereYear('event_date', $prev->year)->whereMonth('event_date', $prev->month)->count()
             ),
             'completed' => $getGrowthDelta(
-                \App\Models\Event::where('event_date', '<', now())->whereYear('event_date', $currentYear)->count(),
-                \App\Models\Event::where('event_date', '<', now()->subYear())->whereYear('event_date', $lastYear)->count()
+                \App\Models\Event::where('event_date', '<', $now)->whereYear('event_date', $now->year)->whereMonth('event_date', $now->month)->count(),
+                \App\Models\Event::where('event_date', '<', $prev)->whereYear('event_date', $prev->year)->whereMonth('event_date', $prev->month)->count()
+            ),
+            'draft' => $getGrowthDelta(
+                \App\Models\Event::where('is_published', false)->whereYear('created_at', $now->year)->whereMonth('created_at', $now->month)->count(),
+                \App\Models\Event::where('is_published', false)->whereYear('created_at', $prev->year)->whereMonth('created_at', $prev->month)->count()
             ),
             'views' => $getGrowthDelta(
-                \App\Models\Event::whereYear('created_at', $currentYear)->sum('views_count'),
-                \App\Models\Event::whereYear('created_at', $lastYear)->sum('views_count')
+                \App\Models\Event::whereYear('created_at', $now->year)->whereMonth('created_at', $now->month)->sum('views_count'),
+                \App\Models\Event::whereYear('created_at', $prev->year)->whereMonth('created_at', $prev->month)->sum('views_count')
             ),
             'media' => $getGrowthDelta(
-                \App\Models\EventMedia::whereIn('type', ['image', 'video'])->whereYear('created_at', $currentYear)->count(),
-                \App\Models\EventMedia::whereIn('type', ['image', 'video'])->whereYear('created_at', $lastYear)->count()
+                \App\Models\EventMedia::whereIn('type', ['image', 'video'])->whereYear('created_at', $now->year)->whereMonth('created_at', $now->month)->count(),
+                \App\Models\EventMedia::whereIn('type', ['image', 'video'])->whereYear('created_at', $prev->year)->whereMonth('created_at', $prev->month)->count()
             ),
         ];
 
@@ -122,7 +130,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
 
         return view('admin.dashboard', compact(
             'totalViews', 'totalLikes', 'totalEvents', 'upcomingEventsCount',
-            'completedEventsCount', 'totalSpeakers', 'totalMedia',
+            'completedEventsCount', 'draftEventsCount', 'totalSpeakers', 'totalMedia',
             'upcomingEvents', 'mostViewed', 'deltas', 'eventsTrend', 'categoriesData',
             'imagesTrend', 'videosTrend'
         ));

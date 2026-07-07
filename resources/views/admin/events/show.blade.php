@@ -44,7 +44,7 @@
 
 <!-- Stats Grid -->
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-    <div class="bg-card rounded-xl border border-border p-4 shadow-sm flex items-center gap-4">
+    <div class="bg-card rounded-xl border-none p-4 shadow-2xl shadow-slate-300/60 hover:-translate-y-2 hover:shadow-slate-300/80 transition-all duration-300 flex items-center gap-4">
         <div class="h-10 w-10 rounded-xl bg-blue-50 dark:bg-blue-950/20 text-blue-500 flex items-center justify-center shrink-0">
             <i data-lucide="eye" class="h-5 w-5"></i>
         </div>
@@ -53,7 +53,7 @@
             <p class="text-xl font-bold text-foreground mt-0.5 tabular-nums">{{ number_format($event->views_count ?? 0) }}</p>
         </div>
     </div>
-    <div class="bg-card rounded-xl border border-border p-4 shadow-sm flex items-center gap-4">
+    <div class="bg-card rounded-xl border-none p-4 shadow-2xl shadow-slate-300/60 hover:-translate-y-2 hover:shadow-slate-300/80 transition-all duration-300 flex items-center gap-4">
         <div class="h-10 w-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/20 text-emerald-500 flex items-center justify-center shrink-0">
             <i data-lucide="heart" class="h-5 w-5"></i>
         </div>
@@ -68,7 +68,7 @@
     <!-- Left Column: Details & Description & Speakers & Schedule -->
     <div class="lg:col-span-2 space-y-6">
         <!-- Event General Information -->
-        <div class="bg-card rounded-xl border border-border p-6 shadow-sm">
+        <div class="bg-card rounded-xl border-none p-6 shadow-2xl shadow-slate-300/60 hover:-translate-y-2 hover:shadow-slate-300/80 transition-all duration-300">
             <h3 class="text-sm font-bold text-foreground flex items-center gap-2 mb-5 pb-3 border-b border-border">
                 <span class="w-1.5 h-4.5 bg-primary rounded-full"></span>
                 Thông tin chung
@@ -108,7 +108,7 @@
         </div>
 
         <!-- Event Description -->
-        <div class="bg-card rounded-xl border border-border p-6 shadow-sm">
+        <div class="bg-card rounded-xl border-none p-6 shadow-2xl shadow-slate-300/60 hover:-translate-y-2 hover:shadow-slate-300/80 transition-all duration-300">
             <h3 class="text-sm font-bold text-foreground flex items-center gap-2 mb-4 pb-3 border-b border-border">
                 <span class="w-1.5 h-4.5 bg-primary rounded-full"></span>
                 Mô tả sự kiện
@@ -123,7 +123,7 @@
         </div>
 
         <!-- Event Speakers -->
-        <div class="bg-card rounded-xl border border-border p-6 shadow-sm">
+        <div class="bg-card rounded-xl border-none p-6 shadow-2xl shadow-slate-300/60 hover:-translate-y-2 hover:shadow-slate-300/80 transition-all duration-300">
             <h3 class="text-sm font-bold text-foreground flex items-center gap-2 mb-5 pb-3 border-b border-border">
                 <span class="w-1.5 h-4.5 bg-primary rounded-full"></span>
                 Diễn giả & Khách mời ({{ $event->speakers->count() }})
@@ -165,7 +165,7 @@
         </div>
 
         <!-- Event Schedule -->
-        <div class="bg-card rounded-xl border border-border p-6 shadow-sm">
+        <div class="bg-card rounded-xl border-none p-6 shadow-2xl shadow-slate-300/60 hover:-translate-y-2 hover:shadow-slate-300/80 transition-all duration-300">
             <h3 class="text-sm font-bold text-foreground flex items-center gap-2 mb-5 pb-3 border-b border-border">
                 <span class="w-1.5 h-4.5 bg-primary rounded-full"></span>
                 Lịch trình chi tiết
@@ -208,7 +208,7 @@
     <!-- Right Column: QR Code & Documents & Media Gallery -->
     <div class="space-y-6">
         <!-- QR Code -->
-        <div class="bg-card rounded-xl border border-border p-6 shadow-sm text-center flex flex-col justify-center items-center">
+        <div class="bg-card rounded-xl border-none p-6 shadow-2xl shadow-slate-300/60 hover:-translate-y-2 hover:shadow-slate-300/80 transition-all duration-300 text-center flex flex-col justify-center items-center">
             <h3 class="text-sm font-bold text-foreground mb-1">Mã QR sự kiện</h3>
             <p class="text-[10px] text-muted-foreground mb-5">Quét để truy cập nhanh</p>
             <div class="p-4 bg-white dark:bg-white/90 border border-border rounded-xl shadow-sm mb-4 inline-block">
@@ -221,7 +221,7 @@
         </div>
 
         <!-- Documents -->
-        <div class="bg-card rounded-xl border border-border p-6 shadow-sm">
+        <div class="bg-card rounded-xl border-none p-6 shadow-2xl shadow-slate-300/60 hover:-translate-y-2 hover:shadow-slate-300/80 transition-all duration-300">
             <h3 class="text-sm font-bold text-foreground flex items-center gap-2 mb-4 pb-3 border-b border-border">
                 <span class="w-1.5 h-4.5 bg-primary rounded-full"></span>
                 Tài liệu đính kèm ({{ $event->documents->count() }})
@@ -249,7 +249,7 @@
         </div>
 
         <!-- Gallery / Media -->
-        <div class="bg-card rounded-xl border border-border p-6 shadow-sm">
+        <div class="bg-card rounded-xl border-none p-6 shadow-2xl shadow-slate-300/60 hover:-translate-y-2 hover:shadow-slate-300/80 transition-all duration-300">
             <h3 class="text-sm font-bold text-foreground flex items-center gap-2 mb-4 pb-3 border-b border-border">
                 <span class="w-1.5 h-4.5 bg-primary rounded-full"></span>
                 Thư viện ảnh/video ({{ $event->galleryImages->count() + $event->videos->count() }})

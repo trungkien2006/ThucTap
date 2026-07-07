@@ -54,81 +54,90 @@
         #mobileOverlay.show {
             display: block;
         }
+        
+        /* Hide scrollbar */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
     </style>
 </head>
-<body class="overflow-x-clip bg-background text-foreground font-body admin-body">
+<body class="overflow-x-clip bg-background text-foreground font-body admin-body admin-bg-gradient">
 
     <!-- Mobile Overlay -->
     <div id="mobileOverlay" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 hidden md:hidden transition-opacity"></div>
 
     <!-- Sidebar Wrapper -->
-    <aside id="sidebar" class="sidebar-transition fixed left-0 top-0 h-full flex flex-col bg-sidebar border-r border-sidebar-border w-[240px] z-50 -translate-x-full md:translate-x-0">
+    <aside id="sidebar" class="sidebar-transition fixed left-0 top-0 h-full flex flex-col bg-transparent hover:bg-white border-r border-border hover:shadow-2xl w-[240px] md:sidebar-icon-only z-50 -translate-x-full md:translate-x-0 group">
         <!-- Sidebar Header -->
-        <div class="flex h-16 shrink-0 items-center gap-2 border-b border-sidebar-border px-4">
-            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+        <div class="flex h-16 shrink-0 items-center gap-2 border-b border-white/20 px-4 sidebar-logo-container transition-all">
+            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-indigo-500 text-white shadow-md">
                 <i data-lucide="graduation-cap" class="h-5 w-5"></i>
             </div>
-            <div class="flex flex-col min-w-0">
+            <div class="flex flex-col min-w-0 sidebar-text-element">
                 <span class="text-sm font-bold leading-tight truncate">UniEvent</span>
                 <span class="text-[11px] text-muted-foreground leading-tight">Trang quản trị</span>
             </div>
         </div>
 
         <!-- Sidebar Navigation -->
-        <nav class="flex-1 overflow-y-auto p-3 space-y-4">
+        <nav class="flex-1 overflow-y-auto scrollbar-hide p-3 space-y-4">
             
-            <a href="{{ route('home') }}" target="_blank" class="sidebar-menu-btn text-brand-orange hover:text-brand-orange hover:bg-orange-50 bg-orange-50/50 mb-2 border border-brand-orange/20">
-                <i data-lucide="globe" class="h-5 w-5"></i>
-                <span>Xem Website</span>
+            <a href="{{ route('home') }}" target="_blank" class="sidebar-menu-btn text-violet-600 hover:text-violet-700 hover:bg-violet-50/50 bg-white/40 mb-2 border border-violet-200/50 backdrop-blur-sm rounded-xl">
+                <i data-lucide="globe" class="h-5 w-5 shrink-0"></i>
+                <span class="sidebar-text-element">Xem Website</span>
             </a>
 
             <!-- Main Group -->
             <div>
-                <p class="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground/70 px-3 mb-1.5">Chính</p>
+                <p class="text-[10px] uppercase tracking-wider font-bold text-muted-foreground/70 px-3 mb-1.5 sidebar-text-element">Chính</p>
                 <div class="space-y-0.5">
-                    <a href="{{ route('admin.dashboard') }}" class="sidebar-menu-btn {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                        <i data-lucide="layout-dashboard" class="h-5 w-5"></i>
-                        <span>Tổng quan</span>
+                    <a href="{{ route('admin.dashboard') }}" class="sidebar-menu-btn rounded-xl {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                        <i data-lucide="layout-dashboard" class="h-5 w-5 shrink-0"></i>
+                        <span class="sidebar-text-element">Tổng quan</span>
                     </a>
-                    <a href="{{ route('admin.events.index') }}" class="sidebar-menu-btn {{ request()->routeIs('admin.events.*') && !request()->routeIs('admin.events.create') && !request()->routeIs('admin.events.edit') && !request()->routeIs('admin.events.design') && !request()->routeIs('admin.events.preview') && !request()->routeIs('admin.events.show') ? 'active' : '' }}">
-                        <i data-lucide="calendar" class="h-5 w-5"></i>
-                        <span>Sự kiện</span>
+                    <a href="{{ route('admin.events.index') }}" class="sidebar-menu-btn rounded-xl {{ request()->routeIs('admin.events.*') && !request()->routeIs('admin.events.create') && !request()->routeIs('admin.events.edit') && !request()->routeIs('admin.events.design') && !request()->routeIs('admin.events.preview') && !request()->routeIs('admin.events.show') ? 'active' : '' }}">
+                        <i data-lucide="calendar" class="h-5 w-5 shrink-0"></i>
+                        <span class="sidebar-text-element">Sự kiện</span>
                     </a>
-                    <a href="{{ route('admin.categories.index') }}" class="sidebar-menu-btn {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
-                        <i data-lucide="tag" class="h-5 w-5"></i>
-                        <span>Danh mục sự kiện</span>
+                    <a href="{{ route('admin.categories.index') }}" class="sidebar-menu-btn rounded-xl {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+                        <i data-lucide="tag" class="h-5 w-5 shrink-0"></i>
+                        <span class="sidebar-text-element">Danh mục sự kiện</span>
                     </a>
-                    <a href="{{ route('admin.departments.index') }}" class="sidebar-menu-btn {{ request()->routeIs('admin.departments.*') ? 'active' : '' }}">
-                        <i data-lucide="building" class="h-5 w-5"></i>
-                        <span>Khoa / Bộ phận</span>
+                    <a href="{{ route('admin.departments.index') }}" class="sidebar-menu-btn rounded-xl {{ request()->routeIs('admin.departments.*') ? 'active' : '' }}">
+                        <i data-lucide="building" class="h-5 w-5 shrink-0"></i>
+                        <span class="sidebar-text-element">Khoa / Bộ phận</span>
                     </a>
-                    <a href="{{ route('admin.archive.index') }}" class="sidebar-menu-btn {{ request()->routeIs('admin.archive.*') ? 'active' : '' }}">
-                        <i data-lucide="archive" class="h-5 w-5"></i>
-                        <span>Lưu trữ sự kiện</span>
+                    <a href="{{ route('admin.archive.index') }}" class="sidebar-menu-btn rounded-xl {{ request()->routeIs('admin.archive.*') ? 'active' : '' }}">
+                        <i data-lucide="archive" class="h-5 w-5 shrink-0"></i>
+                        <span class="sidebar-text-element">Lưu trữ sự kiện</span>
                     </a>
-                    <a href="{{ route('admin.speakers.index') }}" class="sidebar-menu-btn {{ request()->is('admin/speakers*') ? 'active' : '' }}">
-                        <i data-lucide="mic" class="h-5 w-5"></i>
-                        <span>Diễn giả / Khách mời</span>
+                    <a href="{{ route('admin.speakers.index') }}" class="sidebar-menu-btn rounded-xl {{ request()->is('admin/speakers*') ? 'active' : '' }}">
+                        <i data-lucide="mic" class="h-5 w-5 shrink-0"></i>
+                        <span class="sidebar-text-element">Diễn giả / Khách mời</span>
                     </a>
                 </div>
             </div>
 
             <!-- Content Group -->
             <div>
-                <p class="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground/70 px-3 mb-1.5">Nội dung</p>
+                <p class="text-[10px] uppercase tracking-wider font-bold text-muted-foreground/70 px-3 mb-1.5 sidebar-text-element">Nội dung</p>
                 <div class="space-y-0.5">
-                    <a href="{{ route('admin.media.index') }}" class="sidebar-menu-btn {{ request()->routeIs('admin.media.*') ? 'active' : '' }}">
-                        <i data-lucide="image" class="h-5 w-5"></i>
-                        <span>Thư viện Media</span>
+                    <a href="{{ route('admin.media.index') }}" class="sidebar-menu-btn rounded-xl {{ request()->routeIs('admin.media.*') ? 'active' : '' }}">
+                        <i data-lucide="image" class="h-5 w-5 shrink-0"></i>
+                        <span class="sidebar-text-element">Thư viện Media</span>
                     </a>
-                    <a href="{{ route('admin.documents.index') }}" class="sidebar-menu-btn {{ request()->routeIs('admin.documents.*') ? 'active' : '' }}">
-                        <i data-lucide="files" class="h-5 w-5"></i>
-                        <span>Tài liệu</span>
+                    <a href="{{ route('admin.documents.index') }}" class="sidebar-menu-btn rounded-xl {{ request()->routeIs('admin.documents.*') ? 'active' : '' }}">
+                        <i data-lucide="files" class="h-5 w-5 shrink-0"></i>
+                        <span class="sidebar-text-element">Tài liệu</span>
                     </a>
                     @if(Auth::user()->isSuperAdmin())
-                        <a href="{{ route('admin.users.index') }}" class="sidebar-menu-btn {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
-                            <i data-lucide="users" class="h-5 w-5"></i>
-                            <span>Quản lý Admin</span>
+                        <a href="{{ route('admin.users.index') }}" class="sidebar-menu-btn rounded-xl {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+                            <i data-lucide="users" class="h-5 w-5 shrink-0"></i>
+                            <span class="sidebar-text-element">Quản lý Admin</span>
                         </a>
                     @endif
                 </div>
@@ -136,20 +145,20 @@
         </nav>
 
         <!-- Sidebar Footer -->
-        <div class="border-t border-sidebar-border p-3">
+        <div class="border-t border-white/20 p-3">
             <div class="relative">
-                <button id="adminAvatarBtn" class="flex items-center gap-2 w-full mb-2 hover:bg-accent/50 rounded-md p-1 transition-colors">
+                <button id="adminAvatarBtn" class="flex items-center gap-2 w-full mb-2 hover:bg-white/40 rounded-xl p-1 transition-colors">
                     @php
                         $userInitials = collect(explode(' ', Auth::user()->name))->map(fn($w) => substr($w, 0, 1))->slice(0, 2)->implode('');
                     @endphp
-                    <div class="h-8 w-8 shrink-0 rounded-full bg-accent text-accent-foreground grid place-items-center text-xs font-semibold uppercase">
+                    <div class="h-8 w-8 shrink-0 rounded-full bg-gradient-to-br from-violet-200 to-indigo-200 text-indigo-700 grid place-items-center text-xs font-bold uppercase shadow-sm">
                         {{ $userInitials }}
                     </div>
-                    <div class="min-w-0 flex-1 text-left">
-                        <div class="text-xs font-medium truncate">{{ Auth::user()->name }}</div>
+                    <div class="min-w-0 flex-1 text-left sidebar-text-element">
+                        <div class="text-xs font-semibold truncate text-foreground">{{ Auth::user()->name }}</div>
                         <div class="text-[11px] text-muted-foreground truncate">{{ Auth::user()->email }}</div>
                     </div>
-                    <i data-lucide="chevron-up" class="h-3 w-3 text-muted-foreground"></i>
+                    <i data-lucide="chevron-up" class="h-3 w-3 text-muted-foreground shrink-0 sidebar-text-element"></i>
                 </button>
                 <div id="adminAvatarDropdown" class="absolute bottom-full left-0 right-0 mb-2 bg-white border border-border rounded-md shadow-lg py-1 hidden z-50">
                     @if(Auth::user()->isSuperAdmin())
@@ -177,7 +186,7 @@
     </aside>
 
     <!-- Top Header -->
-    <header class="fixed top-0 left-0 md:left-[240px] right-0 h-16 z-30 flex items-center gap-2 border-b border-border bg-background/95 backdrop-blur px-3 md:px-4 justify-between">
+    <header class="fixed top-0 left-0 md:left-[80px] right-0 h-16 z-30 flex items-center gap-2 bg-transparent px-3 md:px-4 justify-between transition-all">
         <div class="flex items-center gap-2 min-w-0">
             <!-- Mobile Toggle Button -->
             <button id="mobileSidebarToggle" class="md:hidden h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-accent rounded-xl flex items-center justify-center transition-all">
@@ -205,6 +214,20 @@
             </div>
         </div>
 
+        <!-- Global Search Bar -->
+        <div class="flex-1 max-w-2xl px-4 hidden md:flex items-center justify-center">
+            <form action="{{ route('admin.events.index') }}" method="GET" class="flex items-center w-full max-w-md gap-2">
+                <div class="relative flex-1 group">
+                    <i data-lucide="search" class="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4 group-focus-within:text-primary transition-colors"></i>
+                    <input type="text" name="search" placeholder="Tìm kiếm sự kiện, danh mục..." value="{{ request('search') }}"
+                        class="h-10 w-full pl-10 pr-4 rounded-xl border border-border bg-white focus:bg-white text-sm transition-all focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary shadow-sm placeholder:text-muted-foreground">
+                </div>
+                <button type="submit" class="h-10 px-4 bg-primary text-primary-foreground text-sm font-medium rounded-xl hover:bg-primary/90 transition-colors shadow-sm whitespace-nowrap">
+                    Tìm kiếm
+                </button>
+            </form>
+        </div>
+
         @php
             $nowTime = now();
             $startingSoon = \App\Models\Event::where('is_published', true)
@@ -227,14 +250,13 @@
 
             <!-- Create quick dropdown -->
             <div class="relative">
-                <button id="quickCreateBtn" class="flex items-center gap-1.5 h-11 px-5 bg-primary text-primary-foreground hover:bg-primary/95 rounded-xl text-sm font-semibold transition-all">
+                <button id="quickCreateBtn" class="flex items-center gap-1.5 h-11 px-5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white hover:opacity-90 rounded-xl text-sm font-semibold transition-all shadow-md shadow-indigo-500/20">
                     <i data-lucide="plus" class="h-5 w-5"></i> Tạo mới
                     <i data-lucide="chevron-down" class="h-3 w-3 opacity-70"></i>
                 </button>
                 <div id="quickCreateDropdown" class="absolute right-0 top-full mt-1.5 w-48 bg-white border border-border rounded-md shadow-lg py-1 hidden z-50">
                     <div class="px-2.5 py-1.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Tạo nhanh</div>
                     <div class="h-px bg-border my-1"></div>
-                    <a href="{{ route('admin.events.create') }}" wire:navigate class="flex items-center px-2.5 py-1.5 text-xs text-foreground hover:bg-accent rounded-sm mx-1">Sự kiện mới</a>
                     <a href="{{ route('admin.speakers.create') }}" wire:navigate class="flex items-center px-2.5 py-1.5 text-xs text-foreground hover:bg-accent rounded-sm mx-1">Diễn giả mới</a>
                     <a href="{{ route('admin.media.index') }}" wire:navigate class="flex items-center px-2.5 py-1.5 text-xs text-foreground hover:bg-accent rounded-sm mx-1">Tải lên Media</a>
                 </div>
@@ -307,7 +329,7 @@
     </header>
 
     <!-- Main Content Wrapper -->
-    <main class="pt-16 md:pl-[240px] min-h-screen">
+    <main class="pt-16 md:pl-[80px] min-h-screen transition-all">
         <div class="p-4 md:p-6 lg:p-8 max-w-[1600px] mx-auto">
             @if(session('success'))
                 <div class="mb-4 bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-lg text-xs flex items-center gap-2 animate-fade-in shadow-sm">

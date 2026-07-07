@@ -25,7 +25,7 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-[220px_1fr_280px] gap-4">
             {{-- Folder Sidebar --}}
-            <div class="bg-card rounded-lg border border-border p-3 shadow-sm h-fit">
+            <div class="bg-card rounded-2xl border-none shadow-2xl shadow-slate-300/60 hover:-translate-y-2 hover:shadow-slate-300/80 transition-all duration-300 p-4 h-fit">
                 <div class="text-[11px] uppercase tracking-wide text-muted-foreground font-medium mb-2">Thư mục</div>
                 <div class="space-y-0.5">
                     @php
@@ -55,7 +55,7 @@
             {{-- Media Grid --}}
             <div class="space-y-3">
                 <form action="{{ route('admin.media.index') }}" method="GET"
-                    class="bg-card rounded-lg border border-border p-2 shadow-sm flex items-center gap-2">
+                    class="bg-card rounded-2xl border-none shadow-2xl shadow-slate-300/60 hover:-translate-y-2 hover:shadow-slate-300/80 transition-all duration-300 p-3 flex items-center gap-2">
                     @if(request('type'))
                         <input type="hidden" name="type" value="{{ request('type') }}">
                     @endif
@@ -85,7 +85,7 @@
 
                 <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                     @forelse($media as $m)
-                        <div class="bg-card rounded-lg border border-border overflow-hidden shadow-sm hover:shadow-md transition-all group cursor-pointer media-item-card"
+                        <div class="bg-card rounded-2xl border-none shadow-2xl shadow-slate-300/60 hover:-translate-y-2 hover:shadow-slate-300/80 transition-all duration-300 overflow-hidden bg-card rounded-2xl border-none shadow-2xl shadow-slate-300/60 hover:-translate-y-2 hover:shadow-slate-300/80 transition-all duration-300-hover group cursor-pointer media-item-card"
                             data-url="{{ \App\Helpers\FileHelper::url($m->url) }}" data-type="{{ $m->type }}"
                             data-caption="{{ $m->caption ?? basename($m->url) }}"
                             data-created-at="{{ $m->created_at ? $m->created_at->diffForHumans() : '—' }}"
@@ -124,7 +124,7 @@
             </div>
 
             {{-- Preview Panel --}}
-            <div class="bg-card rounded-lg border border-border p-3 shadow-sm h-fit">
+            <div class="bg-card rounded-2xl border-none shadow-2xl shadow-slate-300/60 hover:-translate-y-2 hover:shadow-slate-300/80 transition-all duration-300 p-4 h-fit">
                 @if($media->first())
                     @php $first = $media->first(); @endphp
                     <div id="preview-media-container"

@@ -9,7 +9,7 @@
     </div>
 
     <!-- Timeline Wrapper -->
-    <div class="bg-card rounded-xl border border-border p-6 shadow-sm">
+    <div class="bg-card rounded-xl border-none p-6 shadow-2xl shadow-slate-300/60 hover:-translate-y-2 hover:shadow-slate-300/80 transition-all duration-300">
         @if(count($activities) > 0)
         <div class="relative border-l border-border pl-6 ml-3 space-y-6 py-2">
             @foreach($activities as $act)

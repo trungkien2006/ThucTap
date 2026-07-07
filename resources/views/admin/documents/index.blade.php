@@ -14,7 +14,7 @@
 </div>
 
 <!-- Search & Filters -->
-<div class="rounded-xl border bg-card text-card-foreground shadow-none p-3 gap-3 flex flex-wrap items-center gap-2 mb-4">
+<div class="bg-card rounded-2xl border-none shadow-2xl shadow-slate-300/60 hover:-translate-y-2 hover:shadow-slate-300/80 transition-all duration-300 p-3 flex flex-wrap items-center gap-2 mb-4">
     <form method="GET" action="{{ route('admin.documents.index') }}" class="relative flex-1 min-w-[220px] flex items-center gap-2">
         <div class="relative flex-1">
             <i data-lucide="search" class="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground"></i>
@@ -29,10 +29,10 @@
 
 <!-- Documents List -->
 @if($documents->count() > 0)
-<div class="rounded-xl border bg-card text-card-foreground shadow-none overflow-hidden mb-6">
+<div class="bg-card rounded-2xl border-none shadow-2xl shadow-slate-300/60 hover:-translate-y-2 hover:shadow-slate-300/80 transition-all duration-300 overflow-hidden mb-6">
     <div class="overflow-x-auto">
         <table class="w-full text-sm">
-            <thead class="bg-muted/40 text-[11px] uppercase tracking-wide text-muted-foreground border-b border-border">
+            <thead class="bg-white/40 backdrop-blur-md text-[11px] uppercase tracking-wide text-muted-foreground border-b border-border">
                 <tr>
                     <th class="text-left px-4 py-2 font-medium">Tên tài liệu</th>
                     <th class="text-left px-3 py-2 font-medium">Sự kiện</th>
@@ -121,7 +121,7 @@
 @endif
 
 @else
-<div class="rounded-xl border bg-card text-card-foreground shadow-none p-16 text-center">
+<div class="bg-card rounded-2xl border-none shadow-2xl shadow-slate-300/60 hover:-translate-y-2 hover:shadow-slate-300/80 transition-all duration-300 p-16 text-center">
     <div class="h-12 w-12 rounded-full bg-accent flex items-center justify-center mx-auto mb-4">
         <i data-lucide="folder-open" class="h-6 w-6 text-muted-foreground/60"></i>
     </div>

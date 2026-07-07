@@ -28,11 +28,11 @@
         </div>
     @endif
 
-    <div class="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
+    <div class="bg-card rounded-2xl border-none shadow-2xl shadow-slate-300/60 hover:-translate-y-2 hover:shadow-slate-300/80 transition-all duration-300 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-left text-sm">
                 <thead>
-                    <tr class="border-b border-border bg-muted/40">
+                    <tr class="border-b border-border bg-white/40 backdrop-blur-md">
                         <th class="h-10 px-4 font-semibold text-xs text-muted-foreground w-12">#</th>
                         <th class="h-10 px-4 font-semibold text-xs text-muted-foreground">Họ và tên</th>
                         <th class="h-10 px-4 font-semibold text-xs text-muted-foreground">Email</th>
@@ -43,7 +43,7 @@
                 </thead>
                 <tbody class="divide-y divide-border">
                     @forelse($users as $index => $user)
-                        <tr class="hover:bg-muted/30 transition-colors">
+                        <tr class="hover:bg-white/40 transition-colors">
                             <td class="p-4 text-xs">{{ $index + 1 }}</td>
                             <td class="p-4">
                                 <div class="font-medium text-foreground text-xs">{{ $user->name }}</div>

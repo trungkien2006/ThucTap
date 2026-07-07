@@ -10,6 +10,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Hanken+Grotesk:wght@600;700&family=Be+Vietnam+Pro:wght@400;600;700&family=Charm:wght@400;700&family=Montserrat:wght@400;600;700&family=Pacifico&family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Rowdies:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -431,22 +433,22 @@
                 </div>
 
                                 <!-- Right Column -->
-                <div class="lg:col-span-4 space-y-6" style="position: sticky; top: 88px; align-self: start; height: max-content;" x-data="speakerGuestManager()">
+                <div class="lg:col-span-4 space-y-6" style="position: sticky; top: 88px; align-self: start; height: max-content;" x-data="speakerManager()">
                     
-                    <!-- Speakers & Guests -->
+                    <!-- Speakers -->
                     <div class="uni-card p-6 transition-all relative" @click.away="closeDropdown()">
                         <!-- Speakers Section -->
                         <div class="mb-6">
                             <div class="flex justify-between items-center mb-3 border-b border-slate-100 pb-2">
                                 <span class="text-[13px] text-slate-500 font-medium">Diễn giả tham gia</span>
-                                <button type="button" @click="openDropdown('speaker')" class="material-symbols-outlined text-slate-400 hover:text-brand-orange transition-colors text-[18px]">add_circle</button>
+                                <button type="button" @click="openDropdown()" class="material-symbols-outlined text-slate-400 hover:text-brand-orange transition-colors text-[18px]">add_circle</button>
                             </div>
                             <div class="flex flex-wrap gap-2">
                                 <template x-for="person in selectedSpeakers" :key="person.id">
                                     <div class="flex items-center gap-2 bg-orange-50 border border-orange-200 rounded-full py-1 pl-1 pr-3 shadow-sm">
                                         <img :src="person.photo" class="w-6 h-6 rounded-full object-cover">
                                         <span class="text-[12px] font-semibold text-primary" x-text="person.name"></span>
-                                        <button type="button" @click="removePerson('speaker', person.id)" class="text-orange-400 hover:text-orange-600 ml-1 flex items-center"><span class="material-symbols-outlined text-[14px]">close</span></button>
+                                        <button type="button" @click="removePerson(person.id)" class="text-orange-400 hover:text-orange-600 ml-1 flex items-center"><span class="material-symbols-outlined text-[14px]">close</span></button>
                                         <input type="hidden" name="speaker_ids[]" :value="person.id" class="speaker-id-input">
                                     </div>
                                 </template>
@@ -454,31 +456,13 @@
                             </div>
                         </div>
 
-                        <!-- Guests Section -->
-                        <div>
-                            <div class="flex justify-between items-center mb-3 border-b border-slate-100 pb-2">
-                                <span class="text-[13px] text-slate-500 font-medium">Khách mời đặc biệt</span>
-                                <button type="button" @click="openDropdown('guest')" class="material-symbols-outlined text-slate-400 hover:text-brand-orange transition-colors text-[18px]">add_circle</button>
-                            </div>
-                            <div class="flex flex-wrap gap-2">
-                                <template x-for="person in selectedGuests" :key="person.id">
-                                    <div class="flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-full py-1 pl-1 pr-3 shadow-sm">
-                                        <img :src="person.photo" class="w-6 h-6 rounded-full object-cover">
-                                        <span class="text-[12px] font-semibold text-primary" x-text="person.name"></span>
-                                        <button type="button" @click="removePerson('guest', person.id)" class="text-blue-400 hover:text-blue-600 ml-1 flex items-center"><span class="material-symbols-outlined text-[14px]">close</span></button>
-                                        <input type="hidden" name="guest_ids[]" :value="person.id" class="guest-id-input">
-                                    </div>
-                                </template>
-                                <div x-show="selectedGuests.length === 0" class="text-[12px] text-slate-400 italic">Chưa chọn khách mời</div>
-                            </div>
-                        </div>
 
                         <!-- Shared Dropdown Modal -->
                         <div x-show="dropdownOpen" class="absolute top-[40px] right-0 w-[300px] z-[60] bg-white rounded-2xl shadow-xl border border-slate-200 flex flex-col max-h-[350px]" style="display: none;">
                             <div class="p-3 border-b border-slate-100 flex items-center justify-between">
                                 <div class="relative flex-1">
                                     <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">search</span>
-                                    <input type="text" x-model="searchQuery" x-ref="searchInput" :placeholder="currentType === 'speaker' ? 'Tìm tên diễn giả...' : 'Tìm khách mời...'" class="w-full pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-[12px] focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all">
+                                    <input type="text" x-model="searchQuery" x-ref="searchInput" placeholder="Tìm tên diễn giả..." class="w-full pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-[12px] focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all">
                                 </div>
                                 <button type="button" @click="closeDropdown()" class="ml-2 text-slate-400 hover:text-slate-600 flex items-center"><span class="material-symbols-outlined text-[18px]">close</span></button>
                             </div>
@@ -504,12 +488,87 @@
                     </div>
 
                     <!-- Schedule Card -->
-                    <div class="uni-card p-5 transition-all">
+                    @php
+                        $scheduleJson = $event->scheduleItems->map(function($s) {
+                            return [
+                                'id' => uniqid(),
+                                'start_time' => $s->start_time ? $s->start_time->format('H:i') : '',
+                                'end_time' => $s->end_time ? $s->end_time->format('H:i') : '',
+                                'title' => $s->title
+                            ];
+                        })->toJson();
+                    @endphp
+                    <div class="uni-card p-5 transition-all" x-data="scheduleManager({{ $scheduleJson }})">
                         <h4 class="text-[13px] font-bold text-primary mb-3 font-heading flex items-center justify-between">
                             <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px] text-brand-orange">format_list_bulleted</span>Lịch hoạt động sự kiện</span>
-                            <span class="text-[10px] font-normal text-slate-400">Có thể sửa trực tiếp</span>
                         </h4>
-                        <textarea id="inLichHoatDong" rows="5" oninput="syncData()" class="w-full text-[12px] text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200 focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all leading-relaxed resize-y" placeholder="VD: 13:30 - Đón tiếp & Check-in&#10;14:00 - Bắt đầu chương trình">{{ $event->scheduleItems->map(fn($s) => $s->start_time . ' - ' . $s->title)->implode("\n") }}</textarea>
+                        
+                        <div class="space-y-3 mb-3" x-show="items.length > 0" x-transition>
+                            <template x-for="(item, index) in items" :key="item.id">
+                                <div class="flex flex-col gap-2.5 bg-slate-50 p-3 rounded-xl border border-slate-200 transition-all group hover:border-brand-orange/30">
+                                    
+                                    <!-- View Mode (Saved Card) -->
+                                    <div x-show="item._saved" style="display: none;" class="flex items-start justify-between gap-3 cursor-pointer" @click="item._saved = false">
+                                        <div class="flex flex-col gap-1">
+                                            <div class="text-[11px] font-bold text-brand-orange font-mono bg-orange-100/50 px-2 py-0.5 rounded-md inline-flex w-max items-center gap-1">
+                                                <span class="material-symbols-outlined text-[13px]">schedule</span>
+                                                <span x-text="item.start_time || '--:--'"></span>
+                                                <template x-if="item.end_time">
+                                                    <span> - <span x-text="item.end_time"></span></span>
+                                                </template>
+                                            </div>
+                                            <div class="text-[13px] font-medium text-slate-700 leading-snug break-words" x-text="item.title || '(Chưa có nội dung)'"></div>
+                                        </div>
+                                        <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button type="button" @click.stop="item._saved = false" class="p-1.5 text-slate-400 hover:text-brand-orange hover:bg-orange-50 rounded-lg transition-colors" title="Sửa">
+                                                <span class="material-symbols-outlined text-[16px]">edit</span>
+                                            </button>
+                                            <button type="button" @click.stop="removeItem(index)" class="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Xóa">
+                                                <span class="material-symbols-outlined text-[16px]">delete</span>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Edit Mode (Form) -->
+                                    <div x-show="!item._saved" class="flex flex-col gap-2.5">
+                                        <!-- Cột thời gian và nút xoá -->
+                                        <div class="flex items-center gap-3">
+                                            <div class="flex items-center gap-1.5 flex-1">
+                                                <span class="text-[11px] font-bold text-slate-400 shrink-0">Từ</span>
+                                                <input type="text" x-model="item.start_time" x-init="flatpickr($el, { enableTime: true, noCalendar: true, dateFormat: 'H:i', time_24hr: true, onChange: (sd, ds) => { item.start_time = ds; syncData(); } })" placeholder="--:--" class="w-full text-[12px] py-1.5 px-2 rounded-lg border border-slate-200 focus:border-brand-orange focus:ring-1 focus:ring-brand-orange bg-white transition-all font-medium text-center">
+                                            </div>
+                                            <div class="flex items-center gap-1.5 flex-1">
+                                                <span class="text-[11px] font-bold text-slate-400 shrink-0">Đến</span>
+                                                <input type="text" x-model="item.end_time" x-init="flatpickr($el, { enableTime: true, noCalendar: true, dateFormat: 'H:i', time_24hr: true, onChange: (sd, ds) => { item.end_time = ds; syncData(); } })" placeholder="--:--" class="w-full text-[12px] py-1.5 px-2 rounded-lg border border-slate-200 focus:border-brand-orange focus:ring-1 focus:ring-brand-orange bg-white transition-all font-medium text-slate-500 text-center">
+                                            </div>
+                                            <button type="button" @click="removeItem(index)" class="shrink-0 p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Xóa">
+                                                <span class="material-symbols-outlined text-[18px]">delete</span>
+                                            </button>
+                                        </div>
+                                        <!-- Ô nhập nội dung -->
+                                        <textarea rows="2" x-model="item.title" @input="syncData()" class="w-full text-[12px] p-2.5 rounded-lg border border-slate-200 focus:border-brand-orange focus:ring-1 focus:ring-brand-orange bg-white resize-none transition-all" placeholder="Nhập nội dung mốc thời gian..."></textarea>
+                                        
+                                        <!-- Nút xác nhận từng mục -->
+                                        <div class="flex justify-end">
+                                            <button type="button" @click="item._saved = true; syncData()" 
+                                                    style="background-color: #10b981;"
+                                                    class="px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all flex items-center gap-1 shadow-sm text-white hover:opacity-90">
+                                                <span class="material-symbols-outlined text-[14px]">check_circle</span>
+                                                <span>Xác nhận</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                        
+                        <div class="flex flex-col gap-2">
+                            <button type="button" @click="addItem()" class="w-full py-2.5 border border-dashed border-brand-orange/50 text-brand-orange rounded-xl text-[12px] font-bold hover:bg-orange-50 hover:border-brand-orange transition-all flex items-center justify-center gap-1.5 shadow-sm">
+                                <span class="material-symbols-outlined text-[16px]">add_circle</span> Thêm mốc lịch trình mới
+                            </button>
+                        </div>
+                        
+                        <input type="hidden" id="inLichHoatDongData" :value="JSON.stringify(items)">
                     </div>
 
                     <!-- Promoted Events: Newest -->
@@ -1108,14 +1167,11 @@
             loadingOverlay.classList.remove('hidden');
 
             const speakerIds = Array.from(document.querySelectorAll('.speaker-id-input')).map(el => el.value);
-            const guestIds = Array.from(document.querySelectorAll('.guest-id-input')).map(el => el.value);
-
             const formData = {
                 title: document.getElementById('inTieuDe').value,
                 description: document.getElementById('inMoTa').value,
                 speaker_ids: speakerIds,
-                guest_ids: guestIds,
-                schedule_text: document.getElementById('inLichHoatDong').value,
+                schedule_data: document.getElementById('inLichHoatDongData') ? document.getElementById('inLichHoatDongData').value : '[]',
                 
                 event_template: document.getElementById('inEventTemplate').value,
                 
@@ -1372,20 +1428,34 @@
 @php
     $apData = $allSpeakers->map(fn($s) => ['id' => $s->id, 'name' => $s->name, 'bio' => Str::limit($s->bio, 30), 'photo' => $s->photo_url ? asset($s->photo_url) : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80', 'type' => $s->type ?? 'speaker'])->values()->toArray();
     $ssData = $event->speakers->where('pivot.role', 'speaker')->values()->map(fn($s) => ['id' => $s->id, 'name' => $s->name, 'photo' => $s->photo_url ? asset($s->photo_url) : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80'])->toArray();
-    $sgData = $event->speakers->where('pivot.role', 'guest')->values()->map(fn($s) => ['id' => $s->id, 'name' => $s->name, 'photo' => $s->photo_url ? asset($s->photo_url) : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80'])->toArray();
+
 @endphp
 <script>
     document.addEventListener('alpine:init', () => {
-        Alpine.data('speakerGuestManager', () => ({
+        Alpine.data('scheduleManager', (initialItems = []) => ({
+            items: initialItems.map(i => ({ ...i, _saved: true })),
+            addItem() {
+                this.items.push({ id: Date.now().toString(), start_time: '', end_time: '', title: '', _saved: false });
+                this.$nextTick(() => { this.syncData(); });
+            },
+            removeItem(index) {
+                this.items.splice(index, 1);
+                this.$nextTick(() => { this.syncData(); });
+            },
+            syncData() {
+                if (typeof window.syncData === 'function') {
+                    window.syncData();
+                }
+            }
+        }));
+
+        Alpine.data('speakerManager', () => ({
             allPersons: @json($apData),
             selectedSpeakers: @json($ssData),
-            selectedGuests: @json($sgData),
             dropdownOpen: false,
-            currentType: 'speaker', // 'speaker' or 'guest'
             searchQuery: '',
 
-            openDropdown(type) {
-                this.currentType = type;
+            openDropdown() {
                 this.searchQuery = '';
                 this.dropdownOpen = true;
                 setTimeout(() => this.$refs.searchInput.focus(), 100);
@@ -1396,41 +1466,25 @@
             },
 
             get filteredPersons() {
-                let baseList = this.allPersons.filter(p => p.type === this.currentType);
+                let baseList = this.allPersons;
                 if (this.searchQuery === '') return baseList;
                 return baseList.filter(p => p.name.toLowerCase().includes(this.searchQuery.toLowerCase()));
             },
 
             isSelected(id) {
-                if (this.currentType === 'speaker') {
-                    return this.selectedSpeakers.some(p => p.id === id);
-                } else {
-                    return this.selectedGuests.some(p => p.id === id);
-                }
+                return this.selectedSpeakers.some(p => p.id === id);
             },
 
             togglePerson(person) {
-                if (this.currentType === 'speaker') {
-                    if (this.isSelected(person.id)) {
-                        this.selectedSpeakers = this.selectedSpeakers.filter(p => p.id !== person.id);
-                    } else {
-                        this.selectedSpeakers.push(person);
-                    }
+                if (this.isSelected(person.id)) {
+                    this.selectedSpeakers = this.selectedSpeakers.filter(p => p.id !== person.id);
                 } else {
-                    if (this.isSelected(person.id)) {
-                        this.selectedGuests = this.selectedGuests.filter(p => p.id !== person.id);
-                    } else {
-                        this.selectedGuests.push(person);
-                    }
+                    this.selectedSpeakers.push(person);
                 }
             },
 
-            removePerson(type, id) {
-                if (type === 'speaker') {
-                    this.selectedSpeakers = this.selectedSpeakers.filter(p => p.id !== id);
-                } else {
-                    this.selectedGuests = this.selectedGuests.filter(p => p.id !== id);
-                }
+            removePerson(id) {
+                this.selectedSpeakers = this.selectedSpeakers.filter(p => p.id !== id);
             }
         }))
     });

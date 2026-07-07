@@ -205,75 +205,7 @@
             </div>
         </section>
 
-<!-- Section 5: Guests -->
-        <section class="uni-card p-6 space-y-5">
-            <div class="flex items-center gap-2.5 border-b border-slate-100 pb-3">
-                <span class="material-symbols-outlined text-primary text-[20px]">person</span>
-                <h3 class="text-[16px] font-bold text-primary font-heading">Khách mời</h3>
-            </div>
-            <div>
-                <div class="flex items-center justify-between gap-3 mb-2 flex-wrap">
-                    <label class="uni-label mb-0">Chọn khách mời (Có thể chọn nhiều)</label>
-                    <div class="flex items-center gap-2 w-full sm:w-auto">
-                        <button type="button" class="open-add-guest-modal-btn btn-ghost py-1.5 px-3 text-xs flex items-center gap-1 border border-slate-200">
-                            <span class="material-symbols-outlined text-[16px]">add</span>
-                            Thêm mới
-                        </button>
-                        <div class="relative flex-1 sm:w-64">
-                            <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-[18px]">search</span>
-                            <input type="text" id="guest_search" placeholder="Tìm kiếm khách mời..." class="uni-input py-1.5 text-xs" style="padding-left: 2.5rem !important;">
-                        </div>
-                    </div>
-                </div>
-                <div id="guest_list_container" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[240px] overflow-y-auto p-2 border border-slate-200 rounded-xl bg-slate-50/50">
-                    @forelse($guests as $guest)
-                        @php
-                            $photoUrl = $guest->photo_url 
-                                ? ((strpos($guest->photo_url, 'http') === 0 || strpos($guest->photo_url, '/') === 0) ? $guest->photo_url : \App\Helpers\FileHelper::url($guest->photo_url)) 
-                                : 'https://ui-avatars.com/api/?name='.urlencode($guest->name).'&background=random';
-                        @endphp
-                        <label class="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-lg cursor-pointer hover:border-brand-orange transition-all relative">
-                            <div class="flex items-center gap-3">
-                                <input type="checkbox" name="guest_ids[]" value="{{ $guest->id }}" {{ is_array(old('guest_ids')) && in_array($guest->id, old('guest_ids')) ? 'checked' : '' }} class="rounded border-slate-300 text-brand-orange focus:ring-brand-orange w-4 h-4">
-                                <div class="flex items-center gap-3">
-                                    <img src="{{ $photoUrl }}" class="w-8 h-8 rounded-full object-cover">
-                                    <div>
-                                        <p class="text-[13px] font-semibold text-primary guest-name-text">{{ $guest->name }}</p>
-                                        <p class="text-[11px] text-slate-400 guest-title-text">{{ $guest->title ?? 'Khách mời' }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <button type="button" class="guest-details-btn p-1 text-slate-400 hover:text-brand-orange hover:bg-slate-50 rounded-lg transition-colors z-20"
-                                data-name="{{ $guest->name }}"
-                                data-title="{{ $guest->title ?? '' }}"
-                                data-photo="{{ $photoUrl }}"
-                                data-bio="{{ $guest->bio ?? '' }}"
-                                data-type="{{ $guest->type ?? 'guest' }}">
-                                <span class="material-symbols-outlined text-[20px]">info</span>
-                            </button>
-                        </label>
-                    @empty
-                        <div class="col-span-full py-6 text-center">
-                            <p class="text-[13px] text-slate-400">Chưa có khách mời nào trong hệ thống.</p>
-                            <button type="button" class="open-add-guest-modal-btn inline-flex items-center gap-1.5 text-brand-orange text-[12px] font-semibold hover:underline mt-2">
-                                <span class="material-symbols-outlined text-[16px]">add_circle</span>
-                                Thêm khách mời mới
-                            </button>
-                        </div>
-                    @endforelse
-                    
-                    <!-- Search Empty State -->
-                    <div id="guest_search_empty" class="hidden col-span-full py-6 text-center">
-                        <p class="text-[13px] text-slate-400">Không tìm thấy khách mời nào khớp với từ khóa.</p>
-                        <button type="button" class="open-add-guest-modal-btn inline-flex items-center gap-1.5 text-brand-orange text-[12px] font-semibold hover:underline mt-2">
-                            <span class="material-symbols-outlined text-[16px]">add_circle</span>
-                            Thêm khách mời mới
-                        </button>
-                    </div>
-                </div>
-                @error('guest_ids') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
-            </div>
-        </section>
+
 
         <!-- Section 6: Banner -->
         <section class="uni-card p-6 space-y-5">
@@ -355,13 +287,7 @@
                 <input type="text" id="new_speaker_title" name="title" class="uni-input py-2 text-xs" placeholder="VD: Chuyên gia Trí tuệ nhân tạo">
             </div>
             <div>
-                <label class="uni-label" for="new_speaker_type">Phân loại <span class="text-red-400">*</span></label>
-                <select id="new_speaker_type" name="type" required class="uni-input py-2 text-xs">
-                    <option value="speaker">Diễn giả</option>
-                    <option value="guest">Khách mời</option>
-                </select>
-            </div>
-            <div>
+
                 <label class="uni-label" for="new_speaker_photo">Ảnh đại diện</label>
                 <input type="file" id="new_speaker_photo" name="photo" accept="image/*" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-slate-50 file:text-brand-orange hover:file:bg-slate-100">
             </div>
@@ -380,51 +306,7 @@
         </form>
     </div>
 </div>
-<!-- Add Guest Modal -->
-<div id="addGuestModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-opacity">
-    <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl p-6 relative transform transition-all scale-95 duration-200 border border-slate-100">
-        <!-- Close Button -->
-        <button type="button" id="closeAddGuestModalBtn" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1 hover:bg-slate-100 rounded-lg transition-all flex items-center justify-center">
-            <span class="material-symbols-outlined text-[20px]">close</span>
-        </button>
-        
-        <h3 class="text-[18px] font-bold text-primary font-heading mb-4">Thêm khách mời mới</h3>
-        
-        <form id="ajaxAddGuestForm" class="space-y-4">
-            <div>
-                <label class="uni-label" for="new_guest_name">Họ & Tên <span class="text-red-400">*</span></label>
-                <input type="text" id="new_guest_name" name="name" required class="uni-input py-2 text-xs" placeholder="VD: Nguyễn Văn A">
-            </div>
-            <div>
-                <label class="uni-label" for="new_guest_title">Chức danh / Chuyên môn</label>
-                <input type="text" id="new_guest_title" name="title" class="uni-input py-2 text-xs" placeholder="VD: Chuyên gia Trí tuệ nhân tạo">
-            </div>
-            <div>
-                <label class="uni-label" for="new_guest_type">Phân loại <span class="text-red-400">*</span></label>
-                <select id="new_guest_type" name="type" required class="uni-input py-2 text-xs">
-                    <option value="guest">Khách mời</option>
-                    <option value="guest">Khách mời</option>
-                </select>
-            </div>
-            <div>
-                <label class="uni-label" for="new_guest_photo">Ảnh đại diện</label>
-                <input type="file" id="new_guest_photo" name="photo" accept="image/*" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-slate-50 file:text-brand-orange hover:file:bg-slate-100">
-            </div>
-            <div>
-                <label class="uni-label" for="new_guest_bio">Tiểu sử / Giới thiệu ngắn</label>
-                <textarea id="new_guest_bio" name="bio" rows="3" class="uni-input py-2 text-xs" placeholder="Giới thiệu kinh nghiệm, lĩnh vực hoạt động..."></textarea>
-            </div>
-            
-            <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
-                <button type="button" id="cancelAddGuestBtn" class="btn-ghost py-2 text-xs">Hủy</button>
-                <button type="submit" class="btn-primary py-2 text-xs flex items-center gap-1">
-                    <span class="material-symbols-outlined text-[16px] hidden animate-spin" id="add_guest_spinner">sync</span>
-                    Lưu khách mời
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
+
 
 @endsection
 
@@ -478,10 +360,7 @@
             document.getElementById('modalSpeakerBio').textContent = bio || 'Chưa có thông tin giới thiệu.';
             
             const typeBadge = document.getElementById('modalSpeakerType');
-            if (type === 'guest') {
-                typeBadge.textContent = 'Khách mời';
-                typeBadge.className = 'mt-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-purple-50 text-purple-700 border border-purple-100';
-            } else {
+            if (typeBadge) {
                 typeBadge.textContent = 'Diễn giả';
                 typeBadge.className = 'mt-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-100';
             }
@@ -673,10 +552,7 @@
                             document.getElementById('modalSpeakerBio').textContent = bio || 'Chưa có thông tin giới thiệu.';
                             
                             const typeBadge = document.getElementById('modalSpeakerType');
-                            if (type === 'guest') {
-                                typeBadge.textContent = 'Khách mời';
-                                typeBadge.className = 'mt-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-purple-50 text-purple-700 border border-purple-100';
-                            } else {
+                            if (typeBadge) {
                                 typeBadge.textContent = 'Diễn giả';
                                 typeBadge.className = 'mt-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-100';
                             }
@@ -711,190 +587,6 @@
         });
     }
 
-// Guest Search Filter logic
-    const guestSearch = document.getElementById('guest_search');
-    const guestListContainer = document.getElementById('guest_list_container');
-    const guestItems = guestListContainer ? guestListContainer.querySelectorAll('label') : [];
-    const guestEmptyState = document.getElementById('guest_search_empty');
 
-    if (guestSearch) {
-        guestSearch.addEventListener('input', function() {
-            const query = this.value.toLowerCase().trim();
-            let hasVisibleItem = false;
-            const items = guestListContainer ? guestListContainer.querySelectorAll('label') : [];
-
-            items.forEach(item => {
-                const nameNode = item.querySelector('.guest-name-text');
-                const titleNode = item.querySelector('.guest-title-text');
-                const name = nameNode ? nameNode.textContent.toLowerCase() : '';
-                const title = titleNode ? titleNode.textContent.toLowerCase() : '';
-                
-                if (name.includes(query) || title.includes(query)) {
-                    item.classList.remove('hidden');
-                    hasVisibleItem = true;
-                } else {
-                    item.classList.add('hidden');
-                }
-            });
-
-            if (hasVisibleItem) {
-                if (guestEmptyState) guestEmptyState.classList.add('hidden');
-            } else {
-                if (guestEmptyState) guestEmptyState.classList.remove('hidden');
-            }
-        });
-    }
-
-    // Add Guest Modal controls
-    const addGuestModal = document.getElementById('addGuestModal');
-    const openAddGuestBtns = document.querySelectorAll('.open-add-guest-modal-btn');
-    const closeAddGuestModalBtn = document.getElementById('closeAddGuestModalBtn');
-    const cancelAddGuestBtn = document.getElementById('cancelAddGuestBtn');
-    const ajaxAddGuestForm = document.getElementById('ajaxAddGuestForm');
-    const addGuestSpinner = document.getElementById('add_guest_spinner');
-
-    if (openAddGuestBtns) {
-        openAddGuestBtns.forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.preventDefault();
-                addGuestModal.classList.remove('hidden');
-            });
-        });
-    }
-
-    const closeAddGuestModal = () => {
-        addGuestModal.classList.add('hidden');
-        ajaxAddGuestForm.reset();
-    };
-
-    if (closeAddGuestModalBtn) closeAddGuestModalBtn.addEventListener('click', closeAddGuestModal);
-    if (cancelAddGuestBtn) cancelAddGuestBtn.addEventListener('click', closeAddGuestModal);
-
-    window.addEventListener('click', function(e) {
-        if (e.target === addGuestModal) {
-            closeAddGuestModal();
-        }
-    });
-
-    if (ajaxAddGuestForm) {
-        ajaxAddGuestForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            if (addGuestSpinner) addGuestSpinner.classList.remove('hidden');
-            const submitBtn = ajaxAddGuestForm.querySelector('button[type="submit"]');
-            if (submitBtn) submitBtn.disabled = true;
-
-            const formData = new FormData(this);
-
-            fetch('{{ route("admin.speakers.store") }}', {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                }
-            })
-            .then(response => {
-                if (!response.ok) {
-                    return response.json().then(err => { throw err; });
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.success && data.speaker) {
-                    const sp = data.speaker;
-                    
-                    const photoUrl = sp.photo_url 
-                        ? ((sp.photo_url.indexOf('http') === 0 || sp.photo_url.indexOf('/') === 0) ? sp.photo_url : `/storage/${sp.photo_url}`)
-                        : `https://ui-avatars.com/api/?name=${encodeURIComponent(sp.name)}&background=random`;
-
-                    const newHtml = `
-                        <label class="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-lg cursor-pointer hover:border-brand-orange transition-all relative">
-                            <div class="flex items-center gap-3">
-                                <input type="checkbox" name="guest_ids[]" value="${sp.id}" checked class="rounded border-slate-300 text-brand-orange focus:ring-brand-orange w-4 h-4">
-                                <div class="flex items-center gap-3">
-                                    <img src="${photoUrl}" class="w-8 h-8 rounded-full object-cover">
-                                    <div>
-                                        <p class="text-[13px] font-semibold text-primary guest-name-text">${sp.name}</p>
-                                        <p class="text-[11px] text-slate-400 guest-title-text">${sp.title || 'Khách mời'}</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <button type="button" class="guest-details-btn p-1 text-slate-400 hover:text-brand-orange hover:bg-slate-50 rounded-lg transition-colors z-20"
-                                data-name="${sp.name}"
-                                data-title="${sp.title || ''}"
-                                data-photo="${photoUrl}"
-                                data-bio="${sp.bio || ''}"
-                                data-type="${sp.type || 'guest'}">
-                                <span class="material-symbols-outlined text-[20px]">info</span>
-                            </button>
-                        </label>
-                    `;
-
-                    const emptyState = document.getElementById('guest_search_empty');
-                    if (emptyState) {
-                        emptyState.insertAdjacentHTML('beforebegin', newHtml);
-                    } else {
-                        guestListContainer.insertAdjacentHTML('beforeend', newHtml);
-                    }
-
-                    // Re-bind details click listener
-                    const newLabel = (emptyState ? emptyState.previousElementSibling : guestListContainer.lastElementChild);
-                    const newBtn = newLabel.querySelector('.guest-details-btn');
-                    if (newBtn) {
-                        newBtn.addEventListener('click', function(e) {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            
-                            const name = this.getAttribute('data-name');
-                            const title = this.getAttribute('data-title');
-                            const photo = this.getAttribute('data-photo');
-                            const bio = this.getAttribute('data-bio');
-                            const type = this.getAttribute('data-type');
-                            
-                            document.getElementById('modalSpeakerPhoto').src = photo;
-                            document.getElementById('modalSpeakerPhoto').alt = name;
-                            document.getElementById('modalSpeakerName').textContent = name;
-                            document.getElementById('modalSpeakerTitle').textContent = title || 'Khách mời';
-                            document.getElementById('modalSpeakerBio').textContent = bio || 'Chưa có thông tin giới thiệu.';
-                            
-                            const typeBadge = document.getElementById('modalSpeakerType');
-                            if (type === 'guest') {
-                                typeBadge.textContent = 'Khách mời';
-                                typeBadge.className = 'mt-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-purple-50 text-purple-700 border border-purple-100';
-                            } else {
-                                typeBadge.textContent = 'Khách mời';
-                                typeBadge.className = 'mt-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-100';
-                            }
-                            
-                            document.getElementById('speakerModal').classList.remove('hidden');
-                        });
-                    }
-
-                    if (guestSearch) {
-                        guestSearch.value = '';
-                        guestSearch.dispatchEvent(new Event('input'));
-                    }
-
-                    closeAddGuestModal();
-                } else {
-                    alert('Không thể lưu khách mời. Vui lòng thử lại.');
-                }
-            })
-            .catch(err => {
-                console.error(err);
-                if (err.errors) {
-                    const firstErr = Object.values(err.errors)[0][0];
-                    alert('Lỗi: ' + firstErr);
-                } else {
-                    alert('Có lỗi xảy ra khi thêm khách mời.');
-                }
-            })
-            .finally(() => {
-                if (addGuestSpinner) addGuestSpinner.classList.add('hidden');
-                if (submitBtn) submitBtn.disabled = false;
-            });
-        });
-    }
 </script>
 @endpush

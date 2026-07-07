@@ -49,12 +49,7 @@
                         @error('title') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
                     </div>
                     <div>
-                        <label class="uni-label" for="type">Vai trò <span class="text-red-400">*</span></label>
-                        <select class="uni-input" id="type" name="type" required>
-                            <option value="speaker" {{ old('type', $speaker->type) == 'speaker' ? 'selected' : '' }}>Diễn giả</option>
-                            <option value="guest" {{ old('type', $speaker->type) == 'guest' ? 'selected' : '' }}>Khách mời</option>
-                        </select>
-                        @error('type') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
+
                     </div>
                     <div>
                         <label class="uni-label" for="bio">Giới thiệu / Tiểu sử</label>

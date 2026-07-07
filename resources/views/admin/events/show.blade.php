@@ -126,7 +126,7 @@
         <div class="bg-card rounded-xl border border-border p-6 shadow-sm">
             <h3 class="text-sm font-bold text-foreground flex items-center gap-2 mb-5 pb-3 border-b border-border">
                 <span class="w-1.5 h-4.5 bg-primary rounded-full"></span>
-                Diễn giả & Khách mời ({{ $event->speakers->count() }})
+                Diễn giả tham gia ({{ $event->speakers->count() }})
             </h3>
             @if($event->speakers->count() > 0)
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">

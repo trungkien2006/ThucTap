@@ -13,7 +13,7 @@
 @push('styles')
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
-#navbar, .studio-footer { display: none !important; }
+/* Removed hide navbar rule to comply with layout rule */
 
 :root {
     --mag-bg: #F9F8F3;        /* Cream/Paper */
@@ -259,37 +259,23 @@ body { background-color: #EFECE5; }
 }
 
 /* ── SPEAKERS / GUESTS ── */
-.t7-guests {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 30px;
-    margin-bottom: 80px;
+.t7-speakers { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 60px; }
+@media (max-width:768px){
+    .t7-speakers { grid-template-columns: 1fr; }
 }
-.t7-guest-card {
-    text-align: center;
+.t7-speaker-card { text-align: center; }
+.t7-speaker-img { 
+    width: 100px; height: 100px; border-radius: 50%; object-fit: cover; 
+    margin: 0 auto 15px; border: 1px solid var(--mag-border); padding: 4px; 
+    filter: grayscale(100%); transition: filter 0.3s ease; 
 }
-.t7-guest-img {
-    width: 120px; height: 120px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin: 0 auto 20px;
-    border: 1px solid var(--mag-border);
-    padding: 4px;
-    filter: grayscale(100%);
-    transition: filter 0.3s;
+.t7-speaker-card:hover .t7-speaker-img { filter: grayscale(0%); }
+.t7-speaker-name { 
+    font-family: var(--font-serif); font-size: 18px; font-weight: 600; 
+    margin-bottom: 4px; 
 }
-.t7-guest-card:hover .t7-guest-img { filter: grayscale(0%); }
-.t7-guest-name {
-    font-family: var(--font-serif);
-    font-size: 20px;
-    font-weight: 600;
-    margin-bottom: 5px;
-}
-.t7-guest-role {
-    font-size: 12px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--mag-gold);
+.t7-speaker-role { 
+    font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mag-gold); 
 }
 
 /* ── SCHEDULE (TIMELINE) ── */
@@ -557,16 +543,16 @@ body { background-color: #EFECE5; }
             <div class="t7-section-kicker">Chương 3</div>
             <h2 class="t7-section-title">Gương Mặt Tiêu Biểu</h2>
         </div>
-        <div class="t7-guests">
+        <div class="t7-speakers">
             @foreach($event->speakers as $speaker)
-            <div class="t7-guest-card">
+            <div class="t7-speaker-card">
                 @if($speaker->photo_url)
-                    <img src="{{ \App\Helpers\FileHelper::url($speaker->photo_url) }}" class="t7-guest-img" alt="{{ $speaker->name }}">
+                    <img src="{{ \App\Helpers\FileHelper::url($speaker->photo_url) }}" class="t7-speaker-img" alt="{{ $speaker->name }}">
                 @else
-                    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80" class="t7-guest-img" alt="{{ $speaker->name }}">
+                    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80" class="t7-speaker-img" alt="{{ $speaker->name }}">
                 @endif
-                <div class="t7-guest-name">{{ $speaker->name }}</div>
-                <div class="t7-guest-role">{{ $speaker->title }}</div>
+                <div class="t7-speaker-name">{{ $speaker->name }}</div>
+                <div class="t7-speaker-role">{{ $speaker->title }}</div>
             </div>
             @endforeach
         </div>
@@ -581,7 +567,7 @@ body { background-color: #EFECE5; }
         <div class="t7-timeline">
             @foreach($event->scheduleItems as $item)
             <div class="t7-tl-item">
-                <div class="t7-tl-time">{{ $item->start_time ? \Carbon\Carbon::parse($item->start_time)->format('H:i') : '' }}</div>
+                <div class="t7-tl-time">{{ $item->start_time ? \Carbon\Carbon::parse($item->start_time)->format('H:i') : '' }}{{ $item->end_time ? ' - ' . \Carbon\Carbon::parse($item->end_time)->format('H:i') : '' }}</div>
                 <div class="t7-tl-dot"></div>
                 <div class="t7-tl-content">
                     <div class="t7-tl-title">{{ $item->title }}</div>

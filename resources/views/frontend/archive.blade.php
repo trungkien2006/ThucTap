@@ -361,7 +361,7 @@
                             <button @click="activeTab = 'speakers'"
                                     class="pb-3 text-sm font-bold tracking-wider uppercase border-b-2 transition-all flex items-center gap-2 focus:outline-none"
                                     :class="activeTab === 'speakers' ? 'border-[#1C1410] text-[#1C1410]' : 'border-transparent text-[#7A6A52] hover:text-[#1C1410]'">
-                                <i data-lucide="users" class="h-4 w-4"></i> Diễn giả & Khách mời
+                                <i data-lucide="users" class="h-4 w-4"></i> Diễn giả tham gia
                             </button>
                         </div>
 
@@ -426,7 +426,7 @@
                                 </template>
                             </div>
                             <div x-show="current && current.speakers && current.speakers.length === 0" class="text-center py-10 text-[#7A6A52]/50 text-sm">
-                                Không có thông tin diễn giả hoặc khách mời cho sự kiện này.
+                                Không có thông tin diễn giả cho sự kiện này.
                             </div>
                         </div>
                     </div>

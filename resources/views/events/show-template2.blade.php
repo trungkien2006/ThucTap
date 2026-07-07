@@ -286,23 +286,13 @@
         </div>
         <div class="gw-schedule-grid">
             @foreach($event->scheduleItems as $i => $item)
-            @php $gm = $event->galleryImages->get($i); @endphp
-            <div class="gw-schedule-item gw-fade-in">
-                @if($gm && $gm->url)
-                    @if($gm->type === 'video')
-                        <video src="{{ \App\Helpers\FileHelper::url($gm->url) }}" class="gw-schedule-img" autoplay loop muted playsinline></video>
-                    @else
-                        <img src="{{ \App\Helpers\FileHelper::url($gm->url) }}" alt="{{ $item->title }}" class="gw-schedule-img">
-                    @endif
-                @else
-                    <div class="gw-schedule-img-ph"></div>
-                @endif
-                <div class="gw-schedule-name">{{ $item->title }}</div>
-                <div class="gw-schedule-time">{{ $item->start_time->format('H:i') }}@if($item->end_time) – {{ $item->end_time->format('H:i') }}@endif</div>
+            <div class="gw-schedule-item gw-fade-in text-center p-6 bg-[#f4f7f4] rounded-2xl">
+                <div class="gw-schedule-time text-[1.4rem] font-bold text-[#5d7a5c] mb-2">{{ $item->start_time->format('H:i') }}@if($item->end_time) – {{ $item->end_time->format('H:i') }}@endif</div>
+                <div class="gw-schedule-name text-[1.6rem] font-medium text-[#3d4438] mb-2">{{ $item->title }}</div>
                 @if($item->description)
-                <div class="gw-schedule-desc">{{ $item->description }}</div>
+                <div class="gw-schedule-desc text-[#6e7a6a]">{{ $item->description }}</div>
                 @elseif($item->speaker)
-                <div class="gw-schedule-desc">{{ $item->speaker->name }}</div>
+                <div class="gw-schedule-desc text-[#6e7a6a]">{{ $item->speaker->name }}</div>
                 @endif
             </div>
             @endforeach
@@ -393,7 +383,6 @@
         </div>
         @php
             $t2_speakers = $event->speakers()->wherePivot('role', 'speaker')->get();
-            $t2_guests = $event->speakers()->wherePivot('role', 'guest')->get();
         @endphp
 
         @if($t2_speakers->count() > 0)
@@ -415,24 +404,7 @@
         </div>
         @endif
 
-        @if($t2_guests->count() > 0)
-        <div class="gw-fade-in" style="margin-top:40px;">
-            <div style="font-size:0.78rem;letter-spacing:0.25em;text-transform:uppercase;color:#6e7a6a;margin-bottom:20px;font-family:'DM Sans',sans-serif;text-align:center;">Khách mời đặc biệt</div>
-            <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:24px;">
-                @foreach($t2_guests as $guest)
-                <div class="gw-speaker-block" style="margin-top:0;display:flex;align-items:center;gap:20px;padding:24px;background:#f9f9f8;border:1px solid rgba(61,68,56,0.1);border-radius:4px;width:100%;max-width:350px;">
-                    <img src="{{ $guest->photo_url ? asset($guest->photo_url) : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80' }}"
-                         alt="{{ $guest->name }}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;flex-shrink:0;">
-                    <div>
-                        <div style="font-size:1.15rem;font-weight:600;color:#3d4438;margin-bottom:4px;">{{ $guest->name }}</div>
-                        @if($guest->title)<div style="font-size:0.9rem;color:#5d7a5c;font-family:'DM Sans',sans-serif;">{{ $guest->title }}</div>@endif
-                        @if($guest->bio)<div style="font-size:0.85rem;color:#9aa09a;margin-top:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">{{ $guest->bio }}</div>@endif
-                    </div>
-                </div>
-                @endforeach
-            </div>
-        </div>
-        @endif
+
     </div>
 </section>
 @endif

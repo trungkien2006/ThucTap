@@ -77,13 +77,8 @@ class EventController extends Controller
     {
         $categories = Category::eventTypes()->get();
         $departments = Category::departments()->get();
-        $speakers = \App\Models\Speaker::where('is_hidden', false)
-            ->where('type', 'speaker')
-            ->get();
-        $guests = \App\Models\Speaker::where('is_hidden', false)
-            ->where('type', 'guest')
-            ->get();
-        return view('admin.events.create', compact('categories', 'departments', 'speakers', 'guests'));
+        $speakers = \App\Models\Speaker::where('is_hidden', false)->get();
+        return view('admin.events.create', compact('categories', 'departments', 'speakers'));
     }
 
     public function store(Request $request)
@@ -101,26 +96,23 @@ class EventController extends Controller
             'banner_image' => 'nullable|image|mimes:jpg,jpeg,png,webp',
             'speaker_ids' => 'nullable|array',
             'speaker_ids.*' => 'exists:speakers,id',
-            'guest_ids' => 'nullable|array',
-            'guest_ids.*' => 'exists:speakers,id',
+
         ]);
 
-        // Remove banner_image, speaker_ids, guest_ids from validated data
-        unset($validated['banner_image'], $validated['speaker_ids'], $validated['guest_ids'], $validated['department_ids']);
+        // Remove banner_image, speaker_ids from validated data
+        unset($validated['banner_image'], $validated['speaker_ids'], $validated['department_ids']);
 
         $event = new Event($validated);
         $event->is_published = false;
         $event->created_by = auth()->id();
         $event->save();
 
-        if ($request->has('speaker_ids') || $request->has('guest_ids')) {
+        if ($request->has('speaker_ids')) {
             $syncData = [];
             foreach ($request->input('speaker_ids', []) as $id) {
                 $syncData[$id] = ['role' => 'speaker'];
             }
-            foreach ($request->input('guest_ids', []) as $id) {
-                $syncData[$id] = ['role' => 'guest'];
-            }
+            
             $event->speakers()->sync($syncData);
         }
 
@@ -174,7 +166,61 @@ class EventController extends Controller
 
     public function templatePreview($templateId)
     {
-        return view('admin.events.template-preview', compact('templateId'));
+        $event = new \App\Models\Event([
+            'id' => 9999,
+            'title' => 'Sự kiện mẫu (Preview)',
+            'slug' => 'su-kien-mau-preview',
+            'description' => 'Đây là nội dung sự kiện mẫu được hệ thống sinh ra tự động để phục vụ cho việc xem trước bố cục.',
+            'event_date' => now()->addDays(7),
+            'location' => 'Hội trường A',
+            'academic_year' => 'Fall 2026',
+            'page_template' => $templateId,
+        ]);
+        
+        $category = new \App\Models\Category(['name' => 'Sự kiện Tiêu chuẩn']);
+        $event->setRelation('category', $category);
+        
+        $banner = new \App\Models\EventMedia([
+            'url' => 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1600&q=80',
+            'type' => 'image',
+            'is_banner' => true
+        ]);
+        $event->setRelation('bannerImage', $banner);
+        
+        $subBanner = new \App\Models\EventMedia([
+            'url' => 'https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&w=1600&q=80',
+            'type' => 'image',
+            'is_recap' => true
+        ]);
+        $event->setRelation('subBannerImage', $subBanner);
+        
+        $gallery = collect([
+            new \App\Models\EventMedia(['url' => 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80', 'type' => 'image', 'content' => 'Nội dung sự kiện mẫu đoạn 1. Khai mạc chương trình và giới thiệu đại biểu.']),
+            new \App\Models\EventMedia(['url' => 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=800&q=80', 'type' => 'image', 'content' => 'Nội dung sự kiện mẫu đoạn 2. Thảo luận các chủ đề chính.']),
+            new \App\Models\EventMedia(['url' => 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80', 'type' => 'image', 'content' => 'Nội dung sự kiện mẫu đoạn 3. Giao lưu khán giả.']),
+            new \App\Models\EventMedia(['url' => 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800&q=80', 'type' => 'image', 'content' => 'Nội dung sự kiện mẫu đoạn 4. Bế mạc chương trình.']),
+        ]);
+        $event->setRelation('galleryImages', $gallery);
+        
+        $speaker = new \App\Models\Speaker([
+            'name' => 'Nguyễn Văn A',
+            'bio' => 'Chuyên gia mẫu',
+            'photo_url' => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80',
+        ]);
+        $event->setRelation('speakers', collect([$speaker]));
+        
+        $schedule = collect([
+            new \App\Models\EventSchedule(['start_time' => now()->setTime(8,0), 'end_time' => now()->setTime(9,0), 'title' => 'Đón khách & Check-in']),
+            new \App\Models\EventSchedule(['start_time' => now()->setTime(9,0), 'end_time' => now()->setTime(11,0), 'title' => 'Khai mạc & Báo cáo chuyên đề']),
+        ]);
+        $event->setRelation('scheduleItems', $schedule);
+        
+        $viewName = 'events.show';
+        if ($templateId > 1 && view()->exists("events.show-template{$templateId}")) {
+            $viewName = "events.show-template{$templateId}";
+        }
+        
+        return view($viewName, compact('event'));
     }
 
     public function design(Event $event)
@@ -212,9 +258,8 @@ class EventController extends Controller
             'department_id' => 'nullable|exists:categories,id',
             'speaker_ids' => 'nullable|array',
             'speaker_ids.*' => 'exists:speakers,id',
-            'guest_ids' => 'nullable|array',
-            'guest_ids.*' => 'exists:speakers,id',
-            'schedule_text' => 'nullable|string',
+
+            'schedule_data' => 'nullable|string',
             
 
             
@@ -256,24 +301,38 @@ class EventController extends Controller
                 $syncData[$id] = ['role' => 'speaker'];
             }
         }
-        if ($request->has('guest_ids') && is_array($request->guest_ids)) {
-            foreach ($request->guest_ids as $id) {
-                $syncData[$id] = ['role' => 'guest'];
-            }
-        }
         $event->speakers()->sync($syncData);
 
-        if ($request->has('schedule_text')) {
-            $event->scheduleItems()->delete();
-            $lines = explode("\n", $request->schedule_text);
-            foreach ($lines as $line) {
-                $line = trim($line);
-                if (empty($line)) continue;
-                $parts = explode('-', $line, 2);
-                if (count($parts) == 2) {
+        if ($request->has('schedule_data')) {
+            $scheduleItems = json_decode($request->schedule_data, true);
+            if (is_array($scheduleItems)) {
+                $event->scheduleItems()->delete();
+                $baseDate = $event->event_date ? $event->event_date->format('Y-m-d') : now()->format('Y-m-d');
+                
+                foreach ($scheduleItems as $item) {
+                    if (empty($item['title'])) continue;
+                    
+                    $startTime = null;
+                    if (!empty($item['start_time'])) {
+                        try {
+                            $startTime = \Carbon\Carbon::parse($baseDate . ' ' . $item['start_time']);
+                        } catch (\Exception $e) {}
+                    }
+                    if (!$startTime) {
+                        $startTime = \Carbon\Carbon::parse($baseDate . ' 00:00:00');
+                    }
+                    
+                    $endTime = null;
+                    if (!empty($item['end_time'])) {
+                        try {
+                            $endTime = \Carbon\Carbon::parse($baseDate . ' ' . $item['end_time']);
+                        } catch (\Exception $e) {}
+                    }
+
                     $event->scheduleItems()->create([
-                        'start_time' => trim($parts[0]),
-                        'title' => trim($parts[1]),
+                        'start_time' => $startTime,
+                        'end_time' => $endTime,
+                        'title' => trim($item['title']),
                     ]);
                 }
             }
@@ -435,23 +494,14 @@ class EventController extends Controller
         $event->load('bannerImage', 'speakers', 'departments');
         $categories = Category::eventTypes()->get();
         $departments = Category::departments()->get();
-        $eventSpeakerIds = $event->speakers()->wherePivot('role', 'speaker')->pluck('speakers.id')->toArray();
-        $speakers = \App\Models\Speaker::where('type', 'speaker')
-            ->where(function ($q) use ($eventSpeakerIds) {
+        $eventSpeakerIds = $event->speakers()->pluck('speakers.id')->toArray();
+        $speakers = \App\Models\Speaker::where(function ($q) use ($eventSpeakerIds) {
                 $q->where('is_hidden', false)
                   ->orWhereIn('id', $eventSpeakerIds);
             })
             ->get();
 
-        $eventGuestIds = $event->speakers()->wherePivot('role', 'guest')->pluck('speakers.id')->toArray();
-        $guests = \App\Models\Speaker::where('type', 'guest')
-            ->where(function ($q) use ($eventGuestIds) {
-                $q->where('is_hidden', false)
-                  ->orWhereIn('id', $eventGuestIds);
-            })
-            ->get();
-
-        return view('admin.events.edit', compact('event', 'categories', 'departments', 'speakers', 'guests'));
+        return view('admin.events.edit', compact('event', 'categories', 'departments', 'speakers'));
     }
 
     public function update(Request $request, Event $event)
@@ -469,13 +519,12 @@ class EventController extends Controller
             'banner_image' => 'nullable|image|mimes:jpg,jpeg,png,webp',
             'speaker_ids' => 'nullable|array',
             'speaker_ids.*' => 'exists:speakers,id',
-            'guest_ids' => 'nullable|array',
-            'guest_ids.*' => 'exists:speakers,id',
+
             'status' => 'required|in:draft,published,archived',
         ]);
 
         $status = $validated['status'];
-        unset($validated['status'], $validated['banner_image'], $validated['speaker_ids'], $validated['guest_ids'], $validated['department_ids']);
+        unset($validated['status'], $validated['banner_image'], $validated['speaker_ids'], $validated['department_ids']);
 
         $event->fill($validated);
 
@@ -503,13 +552,10 @@ class EventController extends Controller
 
         $event->save();
 
-        if ($request->has('speaker_ids') || $request->has('has_speakers_field') || $request->has('guest_ids') || $request->has('has_guests_field')) {
+        if ($request->has('speaker_ids') || $request->has('has_speakers_field')) {
             $syncData = [];
             foreach ($request->input('speaker_ids', []) as $id) {
                 $syncData[$id] = ['role' => 'speaker'];
-            }
-            foreach ($request->input('guest_ids', []) as $id) {
-                $syncData[$id] = ['role' => 'guest'];
             }
             $event->speakers()->sync($syncData);
         }

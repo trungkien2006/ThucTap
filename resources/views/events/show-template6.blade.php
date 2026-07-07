@@ -13,7 +13,7 @@
 @push('styles')
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-#navbar, .studio-footer { display: none !important; }
+/* Removed hide navbar rule to comply with layout rule */
 
 :root {
     --school-bg: #F8FAFC;
@@ -447,7 +447,7 @@ body { background-color: #f1f5f9; }
 
             {{-- SPEAKERS --}}
             @if($event->speakers->count() > 0)
-            <h2 class="w6-section-title">Khách Mời & Diễn Giả</h2>
+            <h2 class="w6-section-title">Diễn giả tham gia</h2>
             <div class="w6-speakers">
                 @foreach($event->speakers as $speaker)
                 <div class="w6-speaker-card">
@@ -469,7 +469,7 @@ body { background-color: #f1f5f9; }
             <div class="w6-schedule">
                 @foreach($event->scheduleItems as $item)
                 <div class="w6-sch-item">
-                    <div class="w6-sch-time">{{ $item->start_time ? \Carbon\Carbon::parse($item->start_time)->format('H:i') : '' }}</div>
+                    <div class="w6-sch-time">{{ $item->start_time ? \Carbon\Carbon::parse($item->start_time)->format('H:i') : '' }}{{ $item->end_time ? ' - ' . \Carbon\Carbon::parse($item->end_time)->format('H:i') : '' }}</div>
                     <div class="w6-sch-info">
                         <h4>{{ $item->title }}</h4>
                         @if($item->speaker) <p>Cùng {{ $item->speaker->name }}</p> @endif

@@ -125,14 +125,6 @@ class Event extends Model
                     ->withPivot('role');
     }
 
-    public function guests()
-    {
-        return $this->belongsToMany(Speaker::class, 'event_speakers')
-                    ->using(EventSpeaker::class)
-                    ->withPivot('role')
-                    ->wherePivot('role', 'guest');
-    }
-
 
 
     // ── Scopes ─────────────────────────────────────────

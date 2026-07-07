@@ -108,7 +108,7 @@
                     </a>
                     <a href="{{ route('admin.speakers.index') }}" class="sidebar-menu-btn {{ request()->is('admin/speakers*') ? 'active' : '' }}">
                         <i data-lucide="mic" class="h-5 w-5"></i>
-                        <span>Diễn giả / Khách mời</span>
+                        <span>Quản lý diễn giả</span>
                     </a>
                 </div>
             </div>

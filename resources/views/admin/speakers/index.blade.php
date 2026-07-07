@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
 @php
-    $pageTitle = 'Speakers & Guests';
-    $breadcrumbs = [['label' => 'Speakers / Guests']];
+    $pageTitle = 'Quản lý diễn giả';
+    $breadcrumbs = [['label' => 'Quản lý diễn giả']];
 @endphp
 
 @section('content')
@@ -10,8 +10,8 @@
         {{-- Header & Toolbar --}}
         <div class="flex items-end justify-between flex-wrap gap-3">
             <div>
-                <h1 class="text-[22px] font-semibold tracking-tight">Diễn giả &amp; Khách mời</h1>
-                <p class="text-xs text-muted-foreground mt-0.5">Danh sách diễn giả và khách mời của các sự kiện</p>
+                <h1 class="text-[22px] font-semibold tracking-tight">Quản lý Diễn giả</h1>
+                <p class="text-xs text-muted-foreground mt-0.5">Danh sách diễn giả của các sự kiện</p>
             </div>
             <div class="flex items-center gap-2">
                 <form method="GET" action="{{ route('admin.speakers.index') }}" class="relative w-64 hidden md:flex items-center gap-1.5">
@@ -54,13 +54,6 @@
                                 @if($speaker->title)
                                     <div class="text-[11px] text-muted-foreground truncate" title="{{ $speaker->title }}">{{ $speaker->title }}</div>
                                 @endif
-                                <div class="mt-1">
-                                    @if(($speaker->type ?? 'speaker') === 'guest')
-                                        <span class="inline-flex items-center h-5 px-1.5 rounded text-[10px] font-medium bg-amber-50 border border-amber-200 text-amber-600">Khách mời</span>
-                                    @else
-                                        <span class="inline-flex items-center h-5 px-1.5 rounded text-[10px] font-medium bg-blue-50 border border-blue-200 text-blue-600">Diễn giả</span>
-                                    @endif
-                                </div>
                             </div>
                         </div>
                         

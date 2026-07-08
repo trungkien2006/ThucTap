@@ -576,7 +576,7 @@
         @endif
 
         {{-- SECTION 3: COLLAGE GALLERY --}}
-        @if($event->galleryImages->count() > 0)
+        @if($event->galleryImages->count() > 0 && $event->event_date <= now())
         <div class="t5-card">
             <div class="t5-collage-grid">
                 @php
@@ -622,20 +622,52 @@
 
         {{-- SECTION: LỊCH TRÌNH CHƯƠNG TRÌNH --}}
         @if($event->scheduleItems->count() > 0)
-        <div class="t5-card">
+        <div class="t5-card" x-data="{ activeIndex: 0 }">
             <div class="t5-sec-title bubble">Chương trình hội thảo</div>
-            <div class="t5-schedule-grid">
-                @foreach($event->scheduleItems as $item)
-                <div class="t5-schedule-item">
-                    <div class="t5-schedule-time">{{ $item->start_time ? \Carbon\Carbon::parse($item->start_time)->format('H:i') : '--:--' }}{{ $item->end_time ? ' - ' . \Carbon\Carbon::parse($item->end_time)->format('H:i') : '' }}</div>
-                    <div class="t5-schedule-body">
-                        <div class="t5-schedule-title">{{ $item->title }}</div>
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6 mt-6">
+                <!-- Left panel: Time slots selector -->
+                <div class="md:col-span-4 flex md:flex-col gap-2 overflow-x-auto md:overflow-x-visible pb-3 md:pb-0 scrollbar-none" style="-ms-overflow-style: none; scrollbar-width: none;">
+                    @foreach($event->scheduleItems as $index => $item)
+                    <button 
+                        @click="activeIndex = {{ $index }}"
+                        :class="activeIndex === {{ $index }} ? 'bg-[#982B37] text-white border-[#982B37]' : 'bg-slate-50 text-slate-700 hover:bg-slate-100 border-slate-200'"
+                        class="flex items-center justify-center md:justify-start gap-3 px-4 py-3 rounded-xl border text-sm font-bold transition-all shrink-0 w-auto md:w-full text-left"
+                    >
+                        <span class="material-symbols-outlined text-[18px]">schedule</span>
+                        <span>{{ $item->start_time ? \Carbon\Carbon::parse($item->start_time)->format('H:i') : '--:--' }}{{ $item->end_time ? ' - ' . \Carbon\Carbon::parse($item->end_time)->format('H:i') : '' }}</span>
+                    </button>
+                    @endforeach
+                </div>
+                
+                <!-- Right panel: Content corresponding to chosen time slot -->
+                <div class="md:col-span-8 bg-slate-50 border border-slate-200/60 rounded-xl p-6 min-h-[160px] flex flex-col justify-center text-left">
+                    @foreach($event->scheduleItems as $index => $item)
+                    <div x-show="activeIndex === {{ $index }}" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" class="space-y-4">
+                        <div>
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-orange-100 text-[#982B37] mb-3">
+                                <span class="material-symbols-outlined text-[14px]">schedule</span>
+                                {{ $item->start_time ? \Carbon\Carbon::parse($item->start_time)->format('H:i') : '--:--' }}{{ $item->end_time ? ' - ' . \Carbon\Carbon::parse($item->end_time)->format('H:i') : '' }}
+                            </span>
+                            <h3 class="font-extrabold text-xl text-slate-800 tracking-tight leading-tight">{{ $item->title }}</h3>
+                        </div>
+                        
                         @if($item->speaker)
-                            <div class="t5-schedule-speaker">Diễn giả: {{ $item->speaker->name }}</div>
+                        <div class="flex items-center gap-3 bg-white p-3 rounded-xl border border-slate-200/60 w-fit">
+                            <img src="{{ $item->speaker->photo_url ? asset($item->speaker->photo_url) : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80' }}"
+                                 alt="{{ $item->speaker->name }}" class="w-10 h-10 rounded-full object-cover border border-slate-100 shadow-sm">
+                            <div>
+                                <div class="font-bold text-sm text-slate-800 leading-none mb-1 text-left">{{ $item->speaker->name }}</div>
+                                <div class="text-xs text-slate-500 leading-none text-left">{{ $item->speaker->title ?? 'Diễn giả' }}</div>
+                            </div>
+                        </div>
+                        @endif
+                        
+                        @if($item->description)
+                        <p class="text-slate-600 text-sm leading-relaxed whitespace-pre-line">{{ $item->description }}</p>
                         @endif
                     </div>
+                    @endforeach
                 </div>
-                @endforeach
             </div>
         </div>
         @endif

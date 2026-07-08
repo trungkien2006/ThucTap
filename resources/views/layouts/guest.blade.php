@@ -34,11 +34,10 @@
 
                     {{-- Logo --}}
                     <div class="relative z-10">
-                        <a href="{{ route('home') }}" class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-fpt-orange flex items-center justify-center shadow-lg">
-                                <span class="material-symbols-outlined text-white font-bold" style="font-size:20px">event</span>
-                            </div>
-                            <span class="text-pure-white font-bold text-xl tracking-tight">FPT Event Maker</span>
+                        <a href="{{ route('home') }}" class="flex items-center gap-4">
+                            <img src="{{ asset('images/unievent-logo.png') }}?v={{ time() }}" alt="UniEvent" class="h-10 w-auto object-contain">
+                            <div class="h-6 w-[1px] bg-white/20"></div>
+                            <img src="{{ asset('images/fpt-polytechnic.png') }}?v={{ time() }}" alt="FPT Polytechnic" class="h-10 w-auto object-contain">
                         </a>
                     </div>
 
@@ -82,11 +81,10 @@
                     <div class="w-full max-w-md">
 
                         {{-- Mobile Logo --}}
-                        <div class="lg:hidden flex items-center gap-3 mb-8 justify-center">
-                            <div class="w-10 h-10 rounded-xl bg-fpt-orange flex items-center justify-center shadow-lg">
-                                <span class="material-symbols-outlined text-white font-bold" style="font-size:20px">event</span>
-                            </div>
-                            <span class="text-slate-900 font-bold text-xl">FPT Event Maker</span>
+                        <div class="lg:hidden flex items-center gap-4 mb-8 justify-center">
+                            <img src="{{ asset('images/unievent-logo.png') }}?v={{ time() }}" alt="UniEvent" class="h-8 w-auto object-contain">
+                            <div class="h-6 w-[1px] bg-slate-300"></div>
+                            <img src="{{ asset('images/fpt-polytechnic.png') }}?v={{ time() }}" alt="FPT Polytechnic" class="h-8 w-auto object-contain">
                         </div>
 
                         {{ $slot }}

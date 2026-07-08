@@ -45,7 +45,7 @@
         x-data="{ mobileOpen: false, megaMenuOpen: false }"
     >
         <div class="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-5 lg:px-10 relative">
-            <a href="{{ route('home') }}#top" wire:navigate class="group relative flex items-center h-8 min-w-[240px]" x-data="{ showUni: true }" x-init="setInterval(() => { showUni = !showUni }, 3000)">
+            <a href="{{ route('home') }}#top" wire:navigate class="group relative flex items-center h-8 w-[160px] sm:w-[240px]" x-data="{ showUni: true }" x-init="setInterval(() => { showUni = !showUni }, 3000)">
                 <style>
                     /* Smooth Top-to-Bottom Flow Transition */
                     @keyframes fluidIn {
@@ -78,24 +78,23 @@
 
                 <!-- UniEvent Logo (Image + Fluid effect) -->
                 <div 
-                    class="absolute inset-y-0 left-0 flex items-center" 
+                    class="absolute inset-y-0 left-0 flex items-center w-[160px] sm:w-[240px] lg:w-[350px]" 
                     x-show="showUni"
                     x-transition:enter="fluid-in"
                     x-transition:leave="fluid-out"
-                    style="width: 350px;"
                 >
-                    <img src="{{ asset('images/unievent-logo.png') }}?v={{ time() }}" alt="UniEvent" style="height: 80px; width: auto; max-width: none; object-fit: contain; margin-left: -5px; filter: drop-shadow(0 4px 3px rgba(0,0,0,0.07));">
+                    <img src="{{ asset('images/unievent-logo.png') }}?v={{ time() }}" alt="UniEvent" class="h-10 sm:h-14 lg:h-20 w-auto max-w-none object-contain ml-[-5px] filter drop-shadow-[0_4px_3px_rgba(0,0,0,0.07)]">
                 </div>
 
                 <!-- FPT Polytechnic Logo (Fluid effect) -->
                 <div 
-                    class="absolute inset-y-0 left-0 flex items-center" 
+                    class="absolute inset-y-0 left-0 flex items-center w-[160px] sm:w-[240px] lg:w-[350px]" 
                     x-show="!showUni"
                     x-transition:enter="fluid-in"
                     x-transition:leave="fluid-out"
-                    style="display: none; width: 350px;"
+                    style="display: none;"
                 >
-                    <img src="{{ asset('images/fpt-polytechnic.png') }}?v={{ time() }}" alt="FPT Polytechnic" style="height: 110px; width: auto; max-width: none; object-fit: contain; margin-left: -20px; filter: drop-shadow(0 4px 3px rgba(0,0,0,0.07));">
+                    <img src="{{ asset('images/fpt-polytechnic.png') }}?v={{ time() }}" alt="FPT Polytechnic" class="h-14 sm:h-20 lg:h-28 w-auto max-w-none object-contain ml-[-12px] sm:ml-[-20px] filter drop-shadow-[0_4px_3px_rgba(0,0,0,0.07)]">
                 </div>
             </a>
 
@@ -213,9 +212,11 @@
                  x-transition:leave-end="translate-x-full">
                 
                 <div class="flex items-center justify-between mb-8">
-                    <span class="font-barlow text-2xl font-black uppercase tracking-tight text-[#1C1410]">
-                        Uni<span style="color:#E8C84A;">Event</span>
-                    </span>
+                    <div class="flex items-center gap-3">
+                        <img src="{{ asset('images/unievent-logo.png') }}?v={{ time() }}" alt="UniEvent" class="h-8 w-auto object-contain">
+                        <div class="h-5 w-[1px] bg-slate-300"></div>
+                        <img src="{{ asset('images/fpt-polytechnic.png') }}?v={{ time() }}" alt="FPT Polytechnic" class="h-8 w-auto object-contain">
+                    </div>
                     <button @click="mobileOpen = false" class="p-2 text-[#7A6A52] hover:text-[#1C1410] bg-white rounded-full shadow-sm">
                         <i data-lucide="x" class="h-5 w-5"></i>
                     </button>
@@ -269,13 +270,13 @@
     <footer class="relative bg-[#1C1410] pt-24 pb-12 overflow-hidden" style="z-index: 70;">
         <div class="absolute inset-0 z-0 opacity-20 pointer-events-none" style="background-image:url('{{ asset('images/frontend/footer-bg.png') }}'); background-size: cover; background-position: center;"></div>
         <div class="mx-auto max-w-[1400px] px-6 lg:px-10 relative z-10">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-16">
+            <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-16">
                 <!-- Brand Info -->
-                <div class="lg:col-span-1">
-                    <a href="{{ route('home') }}#top" class="inline-block mb-6">
-                        <span class="font-barlow text-3xl font-black uppercase tracking-tight text-white">
-                            Uni<span style="color:#E8C84A;">Event</span>
-                        </span>
+                <div class="col-span-2 md:col-span-1 lg:col-span-1">
+                    <a href="{{ route('home') }}#top" class="inline-flex items-center gap-3 mb-6">
+                        <img src="{{ asset('images/unievent-logo.png') }}?v={{ time() }}" alt="UniEvent" class="h-10 w-auto object-contain">
+                        <div class="h-6 w-[1px] bg-white/20"></div>
+                        <img src="{{ asset('images/fpt-polytechnic.png') }}?v={{ time() }}" alt="FPT Polytechnic" class="h-10 w-auto object-contain">
                     </a>
                     <p class="text-white/60 text-sm leading-relaxed mb-6 max-w-xs">
                         Nền tảng quản lý và trải nghiệm sự kiện học đường hàng đầu, kết nối sinh viên và kiến tạo kỷ niệm đáng nhớ.
@@ -298,7 +299,7 @@
                 </div>
 
                 <!-- Quick Links -->
-                <div>
+                <div class="col-span-1">
                     <h4 class="text-white font-bold mb-6 text-lg tracking-wide uppercase font-barlow">Khám Phá</h4>
                     <ul class="space-y-4">
                         <li><a href="{{ route('home') }}#master-wipe-anchor" wire:navigate class="text-white/60 hover:text-[#E8C84A] text-sm transition-colors flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4"></i> Sự kiện nổi bật</a></li>
@@ -308,7 +309,7 @@
                 </div>
 
                 <!-- Categories -->
-                <div>
+                <div class="col-span-1">
                     <h4 class="text-white font-bold mb-6 text-lg tracking-wide uppercase font-barlow">Danh Mục</h4>
                     <ul class="space-y-4">
                         @if(isset($categories) && count($categories) > 0)
@@ -327,7 +328,7 @@
                 </div>
 
                 <!-- Contact -->
-                <div id="contact">
+                <div id="contact" class="col-span-2 md:col-span-1 lg:col-span-1">
                     <h4 class="text-white font-bold mb-6 text-lg tracking-wide uppercase font-barlow">Liên Hệ</h4>
                     <ul class="space-y-4">
                         <li class="flex items-start gap-3">

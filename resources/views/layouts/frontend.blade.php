@@ -268,9 +268,9 @@
     <footer class="relative bg-[#1C1410] pt-24 pb-12 overflow-hidden" style="z-index: 70;">
         <div class="absolute inset-0 z-0 opacity-20 pointer-events-none" style="background-image:url('{{ asset('images/frontend/footer-bg.png') }}'); background-size: cover; background-position: center;"></div>
         <div class="mx-auto max-w-[1400px] px-6 lg:px-10 relative z-10">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-16">
+            <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-16">
                 <!-- Brand Info -->
-                <div class="lg:col-span-1">
+                <div class="col-span-2 md:col-span-1 lg:col-span-1">
                     <a href="{{ route('home') }}#top" class="inline-block mb-6">
                         <span class="font-barlow text-3xl font-black uppercase tracking-tight text-white">
                             Uni<span style="color:#E8C84A;">Event</span>
@@ -297,7 +297,7 @@
                 </div>
 
                 <!-- Quick Links -->
-                <div>
+                <div class="col-span-1">
                     <h4 class="text-white font-bold mb-6 text-lg tracking-wide uppercase font-barlow">Khám Phá</h4>
                     <ul class="space-y-4">
                         <li><a href="{{ route('home') }}#master-wipe-anchor" wire:navigate class="text-white/60 hover:text-[#E8C84A] text-sm transition-colors flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4"></i> Sự kiện nổi bật</a></li>
@@ -307,7 +307,7 @@
                 </div>
 
                 <!-- Categories -->
-                <div>
+                <div class="col-span-1">
                     <h4 class="text-white font-bold mb-6 text-lg tracking-wide uppercase font-barlow">Danh Mục</h4>
                     <ul class="space-y-4">
                         @if(isset($categories) && count($categories) > 0)
@@ -326,7 +326,7 @@
                 </div>
 
                 <!-- Contact -->
-                <div id="contact">
+                <div id="contact" class="col-span-2 md:col-span-1 lg:col-span-1">
                     <h4 class="text-white font-bold mb-6 text-lg tracking-wide uppercase font-barlow">Liên Hệ</h4>
                     <ul class="space-y-4">
                         <li class="flex items-start gap-3">

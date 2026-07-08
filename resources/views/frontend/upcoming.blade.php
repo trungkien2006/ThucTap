@@ -39,6 +39,27 @@
             width: 100% !important;
             scroll-snap-align: center !important;
         }
+        #master-wipe-container {
+            display: block !important;
+            height: auto !important;
+            overflow: visible !important;
+        }
+        #master-wipe-container > div {
+            grid-area: auto !important;
+            width: 100% !important;
+            height: auto !important;
+            position: relative !important;
+            z-index: auto !important;
+        }
+        #featured-events-wrapper {
+            grid-area: auto !important;
+            width: 100% !important;
+            height: auto !important;
+            position: relative !important;
+            z-index: auto !important;
+            transform: none !important;
+            background: transparent !important;
+        }
     }
 
     /* Desktop Vertical Slide-up Layout */
@@ -326,44 +347,36 @@
                      $img = !empty($u['images']) ? $u['images'][0] : (!empty($u['img']) ? $u['img'] : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80');
                  @endphp
                  <div class="upcoming-mobile-slide">
-                     <div class="relative w-full rounded-2xl overflow-hidden shadow-lg" style="aspect-ratio: 16/9; min-height: 240px; background: #000;">
-                         <!-- Background Image -->
-                         <img src="{{ $img }}" alt="{{ $u['name'] ?? $u['title'] ?? '' }}" class="absolute inset-0 w-full h-full object-cover opacity-60">
-                         
-                         <!-- Gradient Overlay -->
-                         <div class="absolute inset-0 bg-gradient-to-t from-black via-black/45 to-transparent"></div>
-                         
-                         <!-- Content (Always Visible on Mobile) -->
-                         <div class="absolute inset-0 p-5 flex flex-col justify-end text-white">
-                             <!-- Category Tag -->
-                             <span class="text-xs font-black uppercase tracking-wider text-[#FFC107] mb-1">
-                                 {{ $u['category'] ?? 'Sự kiện' }}
-                             </span>
-                             
-                             <!-- Event Title -->
-                             <h3 class="text-lg font-black leading-snug line-clamp-2 mb-2">
-                                 {{ $u['name'] ?? $u['title'] ?? '' }}
-                             </h3>
-                             
-                             <!-- Date & Location -->
-                             <div class="flex flex-col gap-1 text-xs text-white/80 mb-4">
-                                 <div class="flex items-center gap-1.5">
-                                     <i data-lucide="calendar" class="w-4 h-4"></i>
-                                     <span>{{ $u['date'] }}</span>
-                                 </div>
-                                 <div class="flex items-center gap-1.5">
-                                     <i data-lucide="map-pin" class="w-4 h-4 shrink-0"></i>
-                                     <span class="line-clamp-1">{{ $u['location'] ?? 'Sẽ thông báo sau' }}</span>
-                                 </div>
-                             </div>
-                             
-                             <!-- Action Button -->
-                             <a href="{{ route('events.show', $u['slug']) }}" class="inline-flex items-center gap-2 bg-[#07A0C3] hover:bg-[#07A0C3]/80 text-white font-bold text-xs uppercase px-4 py-2 rounded-xl w-fit transition-colors">
-                                 <span>Xem Chi Tiết</span>
-                                 <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                             </a>
-                         </div>
-                     </div>
+                      <a href="{{ route('events.show', $u['slug']) }}" class="block">
+                          <!-- Clean Image Card (Matching the first screenshot) -->
+                          <div class="relative w-full rounded-[24px] overflow-hidden shadow-lg mb-4" style="aspect-ratio: 16/9; min-height: 200px; background: #eae5d8;">
+                              <img src="{{ $img }}" alt="{{ $u['name'] ?? $u['title'] ?? '' }}" class="absolute inset-0 w-full h-full object-cover">
+                          </div>
+                          
+                          <!-- Event Info below the Image Card -->
+                          <div class="text-center px-2">
+                              <span class="text-xs font-black uppercase tracking-wider text-[#07A0C3] mb-1 block">
+                                  {{ $u['category'] ?? 'Sự kiện' }}
+                              </span>
+                              <h3 class="text-lg font-black text-[#1C1410] leading-snug line-clamp-2 mb-2">
+                                  {{ $u['name'] ?? $u['title'] ?? '' }}
+                              </h3>
+                              <div class="flex flex-wrap justify-center gap-x-4 gap-y-1 text-xs text-[#7A6A52] font-semibold mb-3">
+                                  <div class="flex items-center gap-1">
+                                      <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+                                      <span>{{ $u['date'] }}</span>
+                                  </div>
+                                  <div class="flex items-center gap-1">
+                                      <i data-lucide="map-pin" class="w-3.5 h-3.5 shrink-0"></i>
+                                      <span class="line-clamp-1">{{ $u['location'] ?? 'Sẽ thông báo sau' }}</span>
+                                  </div>
+                              </div>
+                              <div class="inline-flex items-center gap-2 bg-[#07A0C3] hover:bg-[#07A0C3]/80 text-white font-bold text-xs uppercase px-4 py-2 rounded-xl transition-colors">
+                                  <span>Xem Chi Tiết</span>
+                                  <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                              </div>
+                          </div>
+                      </a>
                  </div>
              @endforeach
          </div>
@@ -376,11 +389,6 @@
                          :class="activeUpcomingSlide === i-1 ? 'w-5 bg-[#07A0C3]' : 'w-1.5 bg-gray-300'"></button>
              </template>
          </div>
-    </div>
-</section>erve(p));
-        });
-        </script>
-        @endif
     </div>
 </section>
 
@@ -449,6 +457,17 @@
                         });
                     }
 
+                    const refreshSpacerHeight = () => {
+                        const spacer = document.getElementById('archive-delay-spacer');
+                        if (spacer) {
+                            const D = window.innerHeight * ((panels.length - 1) * 1.5 + 1.5) + getCardsScrollDistance();
+                            spacer.style.height = D + 'px';
+                        }
+                    };
+
+                    // Initial calculation
+                    refreshSpacerHeight();
+
                     // Create a timeline for the scrub animation
                     const tl = gsap.timeline({
                         scrollTrigger: {
@@ -460,8 +479,6 @@
                             // Add extra scroll distance for the section wipe (1.5x) AND the cards scrolling PLUS window height for layered effect
                             end: () => {
                                 const D = window.innerHeight * ((panels.length - 1) * 1.5 + 1.5) + getCardsScrollDistance();
-                                const spacer = document.getElementById('archive-delay-spacer');
-                                if (spacer) spacer.style.height = D + 'px';
                                 return "+=" + (D + window.innerHeight - 72);
                             },
                             invalidateOnRefresh: true,
@@ -533,6 +550,7 @@
 
                     // Refresh ScrollTrigger on window resize
                     window.addEventListener('resize', () => {
+                        refreshSpacerHeight();
                         ScrollTrigger.refresh();
                     });
 

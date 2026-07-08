@@ -32,8 +32,8 @@ class FrontendController extends Controller
                       "Email: {$validated['email']}\n" .
                       "Chủ đề: {$validated['subject']}\n" .
                       "Nội dung:\n{$validated['message']}", function ($message) use ($validated) {
-                // To the site admin
-                $message->to(env('MAIL_FROM_ADDRESS', 'admin@example.com'))
+                // To the site admin (or recipient address configured in .env)
+                $message->to(env('MAIL_RECEIVE_ADDRESS', 'kient9596@gmail.com'))
                         ->subject('Tin nhắn mới từ: ' . $validated['name']);
                 
                 // Reply-To the user who submitted the form

@@ -465,7 +465,7 @@
         style="display: grid; grid-template-columns: 1fr; width: 100%; overflow-x: hidden; position: relative; z-index: 30;">
 
         <div style="grid-area: 1 / 1; width: 100%; height: 100%; z-index: 30;">
-            @include('frontend.upcoming', ['upcoming' => $featuredEvents])
+            @include('frontend.upcoming', ['upcoming' => $upcoming])
         </div>
 
         <!-- FEATURED EVENTS WRAPPER -->
@@ -477,12 +477,11 @@
                         <div>
                             <div class="flex items-center gap-3 mb-2">
                                 <div class="h-7 w-1 rounded-full" style="background:#07A0C3;"></div>
-                                <span class="text-xs font-bold uppercase tracking-[0.25em]" style="color:#07A0C3;">Upcoming
-                                    Events</span>
+                                <span class="text-xs font-bold uppercase tracking-[0.25em]" style="color:#07A0C3;">Featured Events</span>
                             </div>
                             <h2
                                 class="font-barlow-condensed text-5xl font-black uppercase tracking-tight text-[#1C1410] lg:text-6xl">
-                                Sự kiện sắp tới</h2>
+                                Sự kiện nổi bật</h2>
                         </div>
                         <a href="#" class="hidden items-center gap-2 text-sm font-semibold lg:inline-flex transition-colors"
                             style="color:#07A0C3;" onmouseover="this.style.color='#04F06A'"
@@ -496,7 +495,7 @@
                         <div id="featured-cards-container"
                             class="flex gap-6 flex-nowrap absolute top-0 left-0 h-full items-center"
                             style="width: max-content; padding-right: 2rem;">
-                            @foreach($upcoming as $i => $ev)
+                            @foreach($featuredEvents as $i => $ev)
                                 <div class="shrink-0 featured-card-item rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
                                     style="width: 350px; height: 480px; max-width: 85vw;">
                                     <x-event-card :event="$ev" mode="grid" />

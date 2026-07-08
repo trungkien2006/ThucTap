@@ -112,7 +112,7 @@
                 <div class="h-1.5 w-8 rounded-full" style="background:#FFE381;"></div>
             </div>
             <h2 class="font-barlow-condensed text-4xl md:text-5xl lg:text-5xl font-black uppercase tracking-tight text-[#1C1410] drop-shadow-md">
-                Các sự kiện <span style="color:#07A0C3;">nổi bật</span>
+                Sự kiện <span style="color:#07A0C3;">sắp diễn ra</span>
             </h2>
         </div>
 

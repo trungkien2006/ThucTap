@@ -176,7 +176,7 @@
                         $semesterName = $event->semester == 1 ? 'fall' : ($event->semester == 2 ? 'spring' : 'summer');
                         $yearStr = $event->academic_year ?? '2024-2025';
                     @endphp
-                    <tr class="border-t border-border hover:bg-white/40 transition-colors">
+                    <tr class="border-t border-border hover:bg-slate-50 relative hover:z-10 hover:shadow-xl hover:shadow-slate-200/60 hover:-translate-y-1 transition-all duration-300">
                         <td class="px-4 py-3">
                             <a href="{{ route('admin.events.show', $event) }}" class="font-medium truncate block hover:text-primary transition-colors">{{ $event->title }}</a>
                         </td>

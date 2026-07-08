@@ -24,11 +24,15 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        $request->authenticate();
-
-        $request->session()->regenerate();
-
-        return redirect()->intended(route('dashboard', absolute: false));
+        try {
+            $request->authenticate();
+            $request->session()->regenerate();
+            return redirect()->intended(route('dashboard', absolute: false))
+                ->with('success', 'Đăng nhập thành công! Chào mừng bạn trở lại.');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            session()->flash('error', 'Đăng nhập thất bại! Vui lòng kiểm tra lại thông tin.');
+            throw $e;
+        }
     }
 
     /**
@@ -42,6 +46,6 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/login');
+        return redirect('/login')->with('success', 'Đăng xuất thành công.');
     }
 }

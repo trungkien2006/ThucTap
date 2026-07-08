@@ -375,44 +375,178 @@
                     }
                 @endphp
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 max-w-[1200px] mx-auto">
-                    @foreach($gridItems as $idx => $item)
-                        <a href="{{ $item['slug'] ? route('events.index', ['category' => $item['slug']]) : '#events' }}"
-                            style="aspect-ratio: 16/9; min-height: 160px; opacity: 0;"
-                            class="event-category-card group relative block w-full rounded-2xl overflow-hidden {{ $item['image'] ? 'bg-gray-900' : 'bg-gray-200' }} shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                <style>
+                    /* Cấu trúc Grid 3 cột mặc định trên máy tính (chưa thay đổi) */
+                    .category-desktop-grid {
+                        display: grid !important;
+                        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+                        gap: 24px !important;
+                        width: 100%;
+                    }
+                    .category-mobile-slider {
+                        display: none !important;
+                    }
+                    .category-mobile-dots {
+                        display: none !important;
+                    }
 
-                            @if($item['image'])
-                                <!-- Background Image -->
-                                <img src="{{ asset($item['image']) }}" alt="{{ $item['name'] }}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                            @else
-                                <div class="absolute inset-0 w-full h-full bg-gray-200 flex items-center justify-center">
-                                    <i data-lucide="{{ $item['icon'] }}" class="w-12 h-12 text-gray-400"></i>
-                                </div>
-                            @endif
+                    @media (max-width: 1024px) {
+                        .category-desktop-grid {
+                            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                            gap: 16px !important;
+                        }
+                    }
 
-                            <!-- Category Name (Top Left Badge) -->
-                            <div class="absolute top-4 left-4 lg:top-6 lg:left-6 z-10">
-                                <div class="bg-paper px-4 py-2 lg:px-5 lg:py-2.5 rounded-xl border-2 border-black shadow-lg">
-                                    <h3 class="text-[#1C1410] text-lg lg:text-xl font-bold tracking-tight group-hover:text-[#07A0C3] transition-colors leading-tight">
-                                        {{ $item['name'] }}
-                                    </h3>
-                                </div>
+                    /* Cấu trúc Slider trượt ngang tự động chỉ kích hoạt trên di động */
+                    @media (max-width: 767px) {
+                        .category-desktop-grid {
+                            display: none !important;
+                        }
+                        .category-mobile-slider {
+                            display: flex !important;
+                            overflow-x: auto !important;
+                            scroll-snap-type: x mandatory !important;
+                            gap: 16px !important;
+                            width: 100% !important;
+                            padding-bottom: 8px !important;
+                            scroll-behavior: smooth !important;
+                            -ms-overflow-style: none !important;
+                            scrollbar-width: none !important;
+                        }
+                        .category-mobile-slider::-webkit-scrollbar {
+                            display: none !important;
+                        }
+                        .category-mobile-slide {
+                            flex-shrink: 0 !important;
+                            width: 100% !important;
+                            scroll-snap-align: center !important;
+                        }
+                        .category-mobile-dots {
+                            display: flex !important;
+                        }
+                    }
+                </style>
+
+                <div x-data="{ 
+                        activeSlide: 0, 
+                        totalSlides: {{ count($gridItems) }},
+                        autoplayInterval: null,
+                        startAutoplay() {
+                            this.autoplayInterval = setInterval(() => {
+                                this.activeSlide = (this.activeSlide + 1) % this.totalSlides;
+                                const container = this.$refs.sliderContainer;
+                                if (container) {
+                                    const slideWidth = container.clientWidth;
+                                    container.scrollTo({
+                                        left: this.activeSlide * slideWidth,
+                                        behavior: 'smooth'
+                                    });
+                                }
+                            }, 4000);
+                        },
+                        stopAutoplay() {
+                            clearInterval(this.autoplayInterval);
+                        }
+                     }"
+                     x-init="startAutoplay()"
+                     @mouseenter="stopAutoplay()"
+                     @mouseleave="startAutoplay()"
+                     class="w-full max-w-[1200px] mx-auto relative">
+                     
+                    <!-- Mobile Slider View (below md) -->
+                    <div x-ref="sliderContainer" 
+                         class="category-mobile-slider"
+                         @scroll.debounce.150ms="const container = $el; activeSlide = Math.round(container.scrollLeft / container.clientWidth)">
+                        @foreach($gridItems as $idx => $item)
+                            <div class="category-mobile-slide">
+                                <a href="{{ $item['slug'] ? route('events.index', ['category' => $item['slug']]) : '#events' }}"
+                                    style="aspect-ratio: 16/9; min-height: 160px; opacity: 1;"
+                                    class="group relative block w-full rounded-2xl overflow-hidden {{ $item['image'] ? 'bg-gray-900' : 'bg-gray-200' }} shadow-sm hover:shadow-lg transition-all duration-300">
+
+                                    @if($item['image'])
+                                        <!-- Background Image -->
+                                        <img src="{{ asset($item['image']) }}" alt="{{ $item['name'] }}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                                    @else
+                                        <div class="absolute inset-0 w-full h-full bg-gray-200 flex items-center justify-center">
+                                            <i data-lucide="{{ $item['icon'] }}" class="w-12 h-12 text-gray-400"></i>
+                                        </div>
+                                    @endif
+
+                                    <!-- Category Name (Top Left Badge) -->
+                                    <div class="absolute top-4 left-4 z-10">
+                                        <div class="bg-paper px-4 py-2 rounded-xl border-2 border-black shadow-lg">
+                                            <h3 class="text-[#1C1410] text-lg font-bold tracking-tight group-hover:text-[#07A0C3] transition-colors leading-tight">
+                                                {{ $item['name'] }}
+                                            </h3>
+                                        </div>
+                                    </div>
+
+                                    <!-- Overlay gradient dưới thẻ (tạo chiều sâu) -->
+                                    <div class="absolute inset-x-0 bottom-0 h-1/2 pointer-events-none transition-opacity duration-300 opacity-60 group-hover:opacity-100"
+                                         style="background: linear-gradient(to top, rgba(28,20,16,0.8) 0%, transparent 100%);"></div>
+
+                                    <!-- Badge số lượng sự kiện góc dưới phải -->
+                                    <div class="absolute bottom-4 right-4 z-10">
+                                        <div class="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-bold shadow-sm"
+                                             style="background: rgba(7,160,195,0.9); color: #fff; backdrop-filter: blur(4px);">
+                                            <i data-lucide="calendar" class="w-3 h-3"></i>
+                                            <span>{{ $item['count'] }} sự kiện</span>
+                                        </div>
+                                    </div>
+                                </a>
                             </div>
+                        @endforeach
+                    </div>
 
-                            <!-- Overlay gradient dưới thẻ (tạo chiều sâu) -->
-                            <div class="absolute inset-x-0 bottom-0 h-1/2 pointer-events-none transition-opacity duration-300 opacity-60 group-hover:opacity-100"
-                                 style="background: linear-gradient(to top, rgba(28,20,16,0.8) 0%, transparent 100%);"></div>
+                    <!-- Mobile Indicator Dots -->
+                    <div class="category-mobile-dots justify-center gap-1.5 mt-3">
+                        <template x-for="i in totalSlides" :key="i-1">
+                            <button @click="activeSlide = i-1; $refs.sliderContainer.scrollTo({ left: (i-1) * $refs.sliderContainer.clientWidth, behavior: 'smooth' })"
+                                    class="h-1.5 rounded-full transition-all duration-300"
+                                    :class="activeSlide === i-1 ? 'w-5 bg-[#07A0C3]' : 'w-1.5 bg-gray-300'"></button>
+                        </template>
+                    </div>
 
-                            <!-- Badge số lượng sự kiện góc dưới phải -->
-                            <div class="absolute bottom-4 right-4 z-10">
-                                <div class="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-bold shadow-sm transition-transform duration-300 group-hover:scale-105"
-                                     style="background: rgba(7,160,195,0.9); color: #fff; backdrop-filter: blur(4px);">
-                                    <i data-lucide="calendar" class="w-3 h-3"></i>
-                                    <span>{{ $item['count'] }} sự kiện</span>
+                    <!-- Desktop Grid View (md and above) -->
+                    <div class="category-desktop-grid">
+                        @foreach($gridItems as $idx => $item)
+                            <a href="{{ $item['slug'] ? route('events.index', ['category' => $item['slug']]) : '#events' }}"
+                                style="aspect-ratio: 16/9; min-height: 160px; opacity: 0;"
+                                class="event-category-card group relative block w-full rounded-2xl overflow-hidden {{ $item['image'] ? 'bg-gray-900' : 'bg-gray-200' }} shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+
+                                @if($item['image'])
+                                    <!-- Background Image -->
+                                    <img src="{{ asset($item['image']) }}" alt="{{ $item['name'] }}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                                @else
+                                    <div class="absolute inset-0 w-full h-full bg-gray-200 flex items-center justify-center">
+                                        <i data-lucide="{{ $item['icon'] }}" class="w-12 h-12 text-gray-400"></i>
+                                    </div>
+                                @endif
+
+                                <!-- Category Name (Top Left Badge) -->
+                                <div class="absolute top-4 left-4 lg:top-6 lg:left-6 z-10">
+                                    <div class="bg-paper px-4 py-2 lg:px-5 lg:py-2.5 rounded-xl border-2 border-black shadow-lg">
+                                        <h3 class="text-[#1C1410] text-lg lg:text-xl font-bold tracking-tight group-hover:text-[#07A0C3] transition-colors leading-tight">
+                                            {{ $item['name'] }}
+                                        </h3>
+                                    </div>
                                 </div>
-                            </div>
-                        </a>
-                    @endforeach
+
+                                <!-- Overlay gradient dưới thẻ (tạo chiều sâu) -->
+                                <div class="absolute inset-x-0 bottom-0 h-1/2 pointer-events-none transition-opacity duration-300 opacity-60 group-hover:opacity-100"
+                                     style="background: linear-gradient(to top, rgba(28,20,16,0.8) 0%, transparent 100%);"></div>
+
+                                <!-- Badge số lượng sự kiện góc dưới phải -->
+                                <div class="absolute bottom-4 right-4 z-10">
+                                    <div class="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-bold shadow-sm transition-transform duration-300 group-hover:scale-105"
+                                         style="background: rgba(7,160,195,0.9); color: #fff; backdrop-filter: blur(4px);">
+                                        <i data-lucide="calendar" class="w-3 h-3"></i>
+                                        <span>{{ $item['count'] }} sự kiện</span>
+                                    </div>
+                                </div>
+                            </a>
+                        @endforeach
+                    </div>
                 </div>
 
                 <!-- Decorative bottom — nằm ngoài vùng GSAP animation -->
@@ -764,7 +898,7 @@
         <template x-if="items.length > 0">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <!-- Left Side: Main Player -->
-                <div class="lg:col-span-8 bg-black rounded-2xl overflow-hidden relative" style="box-shadow:0 16px 50px rgba(7,160,195,0.15); height: 380px;">
+                <div class="lg:col-span-8 bg-black rounded-2xl overflow-hidden relative h-[260px] sm:h-[340px] lg:h-[380px]" style="box-shadow:0 16px 50px rgba(7,160,195,0.15);">
                     <template x-for="(item, index) in items" :key="index">
                         <div x-show="currentIndex === index" 
                              x-transition:enter="transition ease-out duration-700 transform"
@@ -803,9 +937,9 @@
                 </div>
 
                 <!-- Right Side: Info and Thumbnails -->
-                <div class="lg:col-span-4 flex flex-col gap-4 h-[380px]">
+                <div class="lg:col-span-4 flex flex-col gap-4 h-auto lg:h-[380px]">
                     <!-- Top Info Box (2/3) -->
-                    <div class="flex-1 rounded-2xl p-6 flex flex-col justify-center relative overflow-hidden group" style="background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); box-shadow: 0 4px 20px rgba(255,200,60,0.15); border: 1px solid rgba(255, 227, 129, 0.5);">
+                    <div class="flex-1 rounded-2xl p-6 flex flex-col justify-center relative overflow-hidden group min-h-[180px] lg:min-h-0" style="background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); box-shadow: 0 4px 20px rgba(255,200,60,0.15); border: 1px solid rgba(255, 227, 129, 0.5);">
                         <div class="mb-4 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.25em] text-[#1C1410]" style="background:#FFE381;" x-text="currentItem.type === 'video' ? 'Video' : 'Hình ảnh'"></div>
                         
                         <h3 class="font-barlow-condensed text-3xl font-black uppercase tracking-wide text-[#1C1410] leading-snug line-clamp-4" x-text="currentItem.title"></h3>

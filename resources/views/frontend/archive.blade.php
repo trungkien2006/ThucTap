@@ -144,14 +144,16 @@
             </div>
 
             <!-- Dropdowns & Action Controls -->
-            <div class="flex flex-wrap items-center gap-3">
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-wrap items-center gap-3 w-full">
                 <!-- Year Filter Dropdown -->
-                <div class="flex items-center gap-2 rounded-2xl px-4 h-11 border relative" 
+                <div class="flex items-center justify-between gap-2 rounded-2xl px-4 h-11 border relative w-full md:w-auto" 
                      style="background: #FFFDF9; border-color: #E8E2D5;">
-                    <i data-lucide="calendar" class="h-4 w-4 shrink-0 text-[#8A7320]"></i>
-                    <span class="text-xs font-bold uppercase tracking-widest text-[#7A6A52] mr-1">Năm</span>
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="calendar" class="h-4 w-4 shrink-0 text-[#8A7320]"></i>
+                        <span class="text-xs font-bold uppercase tracking-widest text-[#7A6A52] mr-1">Năm</span>
+                    </div>
                     <select x-model="filterYear" @change="resetIdx()"
-                            class="bg-transparent bg-none text-sm font-semibold focus:outline-none cursor-pointer pr-5 appearance-none">
+                            class="bg-transparent bg-none text-sm font-semibold focus:outline-none cursor-pointer pr-5 appearance-none w-full">
                         <option value="">Tất cả</option>
                         <template x-for="yr in years" :key="yr">
                             <option :value="yr" x-text="yr"></option>
@@ -161,12 +163,14 @@
                 </div>
 
                 <!-- Month Filter Dropdown -->
-                <div class="flex items-center gap-2 rounded-2xl px-4 h-11 border relative" 
+                <div class="flex items-center justify-between gap-2 rounded-2xl px-4 h-11 border relative w-full md:w-auto" 
                      style="background: #FFFDF9; border-color: #E8E2D5;">
-                    <i data-lucide="calendar-days" class="h-4 w-4 shrink-0 text-[#07A0C3]"></i>
-                    <span class="text-xs font-bold uppercase tracking-widest text-[#7A6A52] mr-1">Tháng</span>
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="calendar-days" class="h-4 w-4 shrink-0 text-[#07A0C3]"></i>
+                        <span class="text-xs font-bold uppercase tracking-widest text-[#7A6A52] mr-1">Tháng</span>
+                    </div>
                     <select x-model="filterMonth" @change="resetIdx()"
-                            class="bg-transparent bg-none text-sm font-semibold focus:outline-none cursor-pointer pr-5 appearance-none">
+                            class="bg-transparent bg-none text-sm font-semibold focus:outline-none cursor-pointer pr-5 appearance-none w-full">
                         <option value="">Tất cả</option>
                         <template x-for="m in [1,2,3,4,5,6,7,8,9,10,11,12]" :key="m">
                             <option :value="m" x-text="'Tháng ' + m"></option>
@@ -176,12 +180,14 @@
                 </div>
 
                 <!-- Category Filter Dropdown -->
-                <div class="flex items-center gap-2 rounded-2xl px-4 h-11 border relative" 
+                <div class="flex items-center justify-between gap-2 rounded-2xl px-4 h-11 border relative w-full md:w-auto" 
                      style="background: #FFFDF9; border-color: #E8E2D5;">
-                    <i data-lucide="tag" class="h-4 w-4 shrink-0 text-[#04B050]"></i>
-                    <span class="text-xs font-bold uppercase tracking-widest text-[#7A6A52] mr-1">Loại</span>
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="tag" class="h-4 w-4 shrink-0 text-[#04B050]"></i>
+                        <span class="text-xs font-bold uppercase tracking-widest text-[#7A6A52] mr-1">Loại</span>
+                    </div>
                     <select x-model="filterCategory" @change="resetIdx()"
-                            class="bg-transparent bg-none text-sm font-semibold focus:outline-none cursor-pointer pr-5 appearance-none">
+                            class="bg-transparent bg-none text-sm font-semibold focus:outline-none cursor-pointer pr-5 appearance-none w-full">
                         <option value="">Tất cả</option>
                         <template x-for="cat in categories" :key="cat">
                             <option :value="cat" x-text="cat"></option>
@@ -191,12 +197,14 @@
                 </div>
 
                 <!-- Attached File Filter Custom Multi-select Dropdown -->
-                <div class="relative" @click.away="showFileTypeDropdown = false">
+                <div class="relative w-full md:w-auto" @click.away="showFileTypeDropdown = false">
                     <div @click="showFileTypeDropdown = !showFileTypeDropdown"
-                         class="flex items-center gap-2 rounded-2xl px-4 h-11 border cursor-pointer select-none" 
+                         class="flex items-center justify-between gap-2 rounded-2xl px-4 h-11 border cursor-pointer select-none w-full" 
                          style="background: #FFFDF9; border-color: #E8E2D5;">
-                        <i data-lucide="paperclip" class="h-4 w-4 shrink-0 text-[#07A0C3]"></i>
-                        <span class="text-xs font-bold uppercase tracking-widest text-[#7A6A52] mr-1">Đính kèm</span>
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="paperclip" class="h-4 w-4 shrink-0 text-[#07A0C3]"></i>
+                            <span class="text-xs font-bold uppercase tracking-widest text-[#7A6A52] mr-1">Đính kèm</span>
+                        </div>
                         <span class="text-sm font-semibold text-[#1C1410] max-w-[100px] truncate" 
                               x-text="filterFileTypes.length === 0 ? 'Tất cả' : (filterFileTypes.length + ' loại')"></span>
                         <i data-lucide="chevron-down" class="h-3 w-3 shrink-0 text-[#7A6A52] transition-transform" :class="showFileTypeDropdown ? 'rotate-180' : ''"></i>
@@ -220,7 +228,7 @@
                         </label>
                         <label class="flex items-center gap-2.5 cursor-pointer text-xs font-bold text-[#7A6A52] hover:text-[#1C1410] select-none">
                             <input type="checkbox" x-model="filterFileTypes" value="video" @change="resetIdx()"
-                                   class="w-4 h-4 rounded border-[#E8E2D5] text-[#FFE381] focus:ring-0 cursor-pointer accent-[#FF4D4D]">
+                                   class="w-4 h-4 rounded border-[#E8E2D5] text-[#FFE381] focus:ring-0 cursor-pointer accent-[#FFE381]">
                             <span>🎥 Video</span>
                         </label>
 
@@ -267,13 +275,13 @@
                 <div x-show="archiveReady" style="display: none;" class="space-y-4" x-transition:enter="transition-opacity ease-out duration-300">
                 <template x-for="(ev, i) in filteredArchive" :key="ev.id || i">
                     <button @click="idx = i; activeTab = 'images'"
-                            class="w-full text-left rounded-2xl p-4 flex gap-4 transition-all duration-300 border focus:outline-none"
+                            class="w-full text-left rounded-2xl p-3 sm:p-4 flex gap-3 sm:gap-4 transition-all duration-300 border focus:outline-none"
                             :style="idx === i 
                                 ? 'background:#FFE381; border-color:#FFE381; color:#1C1410; box-shadow:0 8px 24px rgba(255,227,129,0.25);' 
                                 : 'background:#FFFFFF; border-color:#E8E2D5; color:#1C1410; box-shadow:0 2px 8px rgba(28,20,16,0.02);'">
                         
                         <!-- Cover Image Thumbnail -->
-                        <div class="w-16 h-16 rounded-xl overflow-hidden shrink-0 bg-[#1C1410]/5 border border-[#E8E2D5]/50">
+                        <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-xl overflow-hidden shrink-0 bg-[#1C1410]/5 border border-[#E8E2D5]/50">
                             <img :src="ev.img" loading="lazy" class="w-full h-full object-cover" />
                         </div>
                         

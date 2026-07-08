@@ -113,13 +113,12 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
         $mediaByMonth = \App\Models\EventMedia::selectRaw("type, {$monthExpr} as month, count(*) as count")
             ->whereIn('type', ['image', 'video'])
             ->whereYear('created_at', $currentYear)
-            ->groupBy('type', 'month')
-            ->get();
+            ->get(['type', 'created_at']);
         $imagesTrend = [];
         $videosTrend = [];
         for ($m = 1; $m <= 12; $m++) {
-            $imagesTrend[] = $mediaByMonth->where('type', 'image')->where('month', $m)->first()->count ?? 0;
-            $videosTrend[] = $mediaByMonth->where('type', 'video')->where('month', $m)->first()->count ?? 0;
+            $imagesTrend[] = $allMedia->where('type', 'image')->filter(fn($item) => \Carbon\Carbon::parse($item->created_at)->month === $m)->count();
+            $videosTrend[] = $allMedia->where('type', 'video')->filter(fn($item) => \Carbon\Carbon::parse($item->created_at)->month === $m)->count();
         }
 
         return view('admin.dashboard', compact(

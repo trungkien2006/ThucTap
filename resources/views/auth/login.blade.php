@@ -15,6 +15,19 @@
         {{-- Session Status --}}
         <x-auth-session-status class="mb-4" :status="session('status')" />
 
+        {{-- Session Messages --}}
+        @if (session('success'))
+            <div class="mb-4 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 text-sm text-center font-medium animate-fade-in">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if (session('error'))
+            <div class="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 text-sm text-center font-medium animate-fade-in">
+                {{ session('error') }}
+            </div>
+        @endif
+
         <form method="POST" action="{{ route('login') }}" class="space-y-5">
             @csrf
 
@@ -33,7 +46,6 @@
                 />
                 <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none">person</span>
             </div>
-            <x-input-error :messages="$errors->get('email')" class="mt-1" />
 
             {{-- Password --}}
             <div class="relative">
@@ -50,30 +62,18 @@
                     <span class="material-symbols-outlined" id="eyeIcon">visibility_off</span>
                 </button>
             </div>
-            <x-input-error :messages="$errors->get('password')" class="mt-1" />
 
             {{-- Remember Me --}}
-            <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                    <div class="relative flex items-center justify-center">
-                        <input
-                            id="remember_me"
-                            type="checkbox"
-                            name="remember"
-                            class="peer appearance-none w-5 h-5 border border-white/60 rounded bg-white/50 checked:bg-emerald-500 checked:border-emerald-500 transition-all cursor-pointer focus:ring-0 focus:ring-offset-0"
-                        />
-                        <span class="material-symbols-outlined absolute text-white text-[14px] pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity">check</span>
-                    </div>
-                    <label for="remember_me" class="text-sm text-slate-800 font-medium cursor-pointer select-none">
-                        Ghi nhớ
-                    </label>
-                </div>
-                
-                @if (Route::has('password.request'))
-                    <a href="{{ route('password.request') }}" class="text-sm text-slate-700 hover:text-slate-900 font-medium transition-colors">
-                        Quên mật khẩu?
-                    </a>
-                @endif
+            <div class="flex items-center gap-2">
+                <input
+                    id="remember_me"
+                    type="checkbox"
+                    name="remember"
+                    class="w-4 h-4 rounded border-slate-400 text-emerald-600 focus:ring-emerald-500 cursor-pointer accent-emerald-600 bg-white"
+                />
+                <label for="remember_me" class="text-sm text-slate-800 font-medium cursor-pointer select-none">
+                    Ghi nhớ đăng nhập
+                </label>
             </div>
 
             {{-- Submit --}}
@@ -85,12 +85,14 @@
                 Đăng nhập
             </button>
 
-            {{-- Signup text --}}
-            <div class="text-center mt-6">
-                <p class="text-slate-700 text-sm">
-                    Bạn chưa có tài khoản? <a href="{{ Route::has('register') ? route('register') : '#' }}" class="text-slate-900 font-bold hover:underline">Đăng ký</a>
-                </p>
-            </div>
+            {{-- Errors display --}}
+            @if ($errors->any())
+                <div class="mt-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 text-sm text-center font-medium">
+                    @foreach ($errors->all() as $error)
+                        <p>{{ $error }}</p>
+                    @endforeach
+                </div>
+            @endif
             
             {{-- Footer info --}}
             <div class="text-center mt-8">

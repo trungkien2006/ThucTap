@@ -212,7 +212,8 @@
             </div>
         </section>
 
-        <!-- Section 6: Status & Options -->
+
+        <!-- Section 7: Status & Options -->
         <section class="uni-card p-6 space-y-4">
             <div class="flex items-center gap-2.5 border-b border-slate-100 pb-3">
                 <span class="material-symbols-outlined text-primary text-[20px]">tune</span>
@@ -223,15 +224,16 @@
                     <label class="uni-label" for="status">Trạng thái <span class="text-red-400">*</span></label>
                     <select class="uni-input" id="status" name="status" required>
                         @php
-                            $currentStatus = 'draft';
-                            if ($event->is_published) {
-                                $currentStatus = 'published';
-                            } else {
-                                $currentStatus = ($event->event_date && $event->event_date < now()) ? 'archived' : 'draft';
+                            $currentStatus = $event->status ?: 'draft';
+                            // Fallback for old data if status is just 'draft' but actually published
+                            if ($currentStatus === 'draft' && $event->is_published) {
+                                $currentStatus = ($event->event_date && $event->event_date < now()) ? 'ended' : 'published';
                             }
                         @endphp
                         <option value="draft" {{ $currentStatus == 'draft' ? 'selected' : '' }}>Bản nháp</option>
-                        <option value="published" {{ $currentStatus == 'published' ? 'selected' : '' }}>Đã xuất bản</option>
+                        <option value="published" {{ $currentStatus == 'published' ? 'selected' : '' }}>Đã xuất bản (Đang diễn ra/Sắp tới)</option>
+                        <option value="ended" {{ $currentStatus == 'ended' ? 'selected' : '' }}>Kết thúc</option>
+                        <option value="cancelled" {{ $currentStatus == 'cancelled' ? 'selected' : '' }}>Đã hủy</option>
                         <option value="archived" {{ $currentStatus == 'archived' ? 'selected' : '' }}>Lưu trữ</option>
                     </select>
                 </div>

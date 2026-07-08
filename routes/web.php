@@ -138,6 +138,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::get('events/{event}/design', [App\Http\Controllers\Admin\EventController::class, 'design'])->name('events.design');
     Route::post('events/{event}/save-design', [App\Http\Controllers\Admin\EventController::class, 'saveDesign'])->name('events.save_design');
     Route::get('events/{event}/preview', [App\Http\Controllers\Admin\EventController::class, 'preview'])->name('events.preview');
+    Route::post('events/{event}/recap-link', [App\Http\Controllers\Admin\EventController::class, 'saveRecapLink'])->name('events.save_recap_link');
     Route::get('events/{event}/preview-iframe', [App\Http\Controllers\Admin\EventController::class, 'previewIframe'])->name('events.preview_iframe');
     Route::get('template-preview/{templateId}', [App\Http\Controllers\Admin\EventController::class, 'templatePreview'])->name('events.template_preview');
 

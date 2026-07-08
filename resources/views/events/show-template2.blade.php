@@ -409,15 +409,18 @@
 </section>
 @endif
 
-{{-- GALLERY --}}
-@if($event->galleryImages->where('type','image')->count() > 1)
+{{-- GALLERY (RECAP ALBUM) --}}
+@php
+    $recapMedia = $event->media()->where('is_recap', true)->where('type', 'image')->get();
+@endphp
+@if($recapMedia->count() > 0)
 <section class="gw-gallery-section" id="gw-gallery">
     <div style="padding:0 32px 20px;max-width:860px;margin:0 auto;">
-        <h2 class="gw-section-title gw-fade-in">Thư viện ảnh</h2>
+        <h2 class="gw-section-title gw-fade-in">Album Sự kiện</h2>
     </div>
     <div style="overflow:hidden;">
         <div class="gw-gallery-track" id="gw-gallery-track">
-            @foreach($event->galleryImages->where('type','image') as $img)
+            @foreach($recapMedia as $img)
             <div class="gw-gallery-slide">
                 <img src="{{ \App\Helpers\FileHelper::url($img->url) }}" alt="{{ $img->caption ?? $event->title }}">
             </div>

@@ -128,7 +128,13 @@ class FrontendController extends Controller
                 ->published()
                 ->where(function($q) {
                     $q->where('status', 'archived')
-                      ->orWhere('event_date', '<', now());
+                      ->orWhere(function($q2) {
+                          $q2->whereNotNull('recap_drive_link')
+                             ->where(function($q3) {
+                                 $q3->where('event_date', '<', now())
+                                    ->orWhere('end_date', '<', now());
+                             });
+                      });
                 })
                 ->orderBy('event_date', 'desc')
                 ->get();

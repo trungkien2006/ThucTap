@@ -21,6 +21,20 @@ class Event extends Model
         ];
     }
 
+    public function isEnded()
+    {
+        if ($this->status === 'ended') {
+            return true;
+        }
+        $date = $this->end_date ?: $this->event_date;
+        return $date && $date < now();
+    }
+
+    public function isMissingRecap()
+    {
+        return $this->isEnded() && empty($this->recap_drive_link);
+    }
+
     protected static function boot()
     {
         parent::boot();
@@ -131,7 +145,14 @@ class Event extends Model
 
     public function scopePublished($query)
     {
-        return $query->where('is_published', true);
+        return $query->where('is_published', true)
+                     ->where(function($q) {
+                         $q->where(function($q2) {
+                             $q2->whereNull('end_date')->where('event_date', '>=', now());
+                         })->orWhere(function($q2) {
+                             $q2->whereNotNull('end_date')->where('end_date', '>=', now());
+                         })->orWhereNotNull('recap_drive_link');
+                     });
     }
 
     public function scopeUpcoming($query)

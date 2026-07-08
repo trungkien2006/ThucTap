@@ -517,18 +517,21 @@ class EventController extends Controller
             'department_ids' => 'nullable|array',
             'department_ids.*' => 'exists:categories,id',
             'banner_image' => 'nullable|image|mimes:jpg,jpeg,png,webp',
+            'recap_images' => 'nullable|array',
+            'recap_images.*' => 'nullable|file|mimes:jpg,jpeg,png,webp,mp4,avi,mov,wmv,mkv,webm|max:51200',
+            'delete_recap_media' => 'nullable|array',
             'speaker_ids' => 'nullable|array',
             'speaker_ids.*' => 'exists:speakers,id',
 
-            'status' => 'required|in:draft,published,archived',
+            'status' => 'required|in:draft,published,ended,cancelled,archived',
         ]);
 
         $status = $validated['status'];
-        unset($validated['status'], $validated['banner_image'], $validated['speaker_ids'], $validated['department_ids']);
+        unset($validated['status'], $validated['banner_image'], $validated['speaker_ids'], $validated['department_ids'], $validated['recap_images'], $validated['delete_recap_media']);
 
         $event->fill($validated);
 
-        $event->is_published = ($status === 'published');
+        $event->is_published = in_array($status, ['published', 'ended']);
         $event->status = $status;
 
         // Handle banner image upload
@@ -548,6 +551,41 @@ class EventController extends Controller
                 'url' => $path,
                 'is_banner' => true,
             ]);
+        }
+        
+        // Handle delete recap media
+        if ($request->has('delete_recap_media')) {
+            $mediaToDelete = $event->media()->whereIn('id', $request->delete_recap_media)->where('is_recap', true)->get();
+            foreach ($mediaToDelete as $media) {
+                if (Storage::exists($media->url)) {
+                    Storage::delete($media->url);
+                }
+                $media->delete();
+            }
+        }
+        
+        // Handle new recap media upload
+        if ($request->hasFile('recap_images')) {
+            $categorySlug = $event->category ? $event->category->slug : 'uncategorized';
+            $folderPath = "{$categorySlug}/{$event->slug}/media";
+            
+            foreach ($request->file('recap_images') as $file) {
+                try {
+                    $path = $file->store($folderPath, 'google');
+                } catch (\Exception $e) {
+                    $path = $file->store($folderPath, 'public');
+                }
+                
+                $ext = strtolower($file->getClientOriginalExtension());
+                $type = in_array($ext, ['mp4', 'avi', 'mov', 'wmv', 'mkv', 'webm']) ? 'video' : 'image';
+                
+                $event->media()->create([
+                    'type' => $type,
+                    'url' => $path,
+                    'is_banner' => false,
+                    'is_recap' => true,
+                ]);
+            }
         }
 
         $event->save();
@@ -632,5 +670,94 @@ class EventController extends Controller
         $categories = Category::eventTypes()->get();
 
         return view('admin.archive.index', compact('events', 'academicYears', 'categories'));
+    }
+
+    public function saveRecapLink(Request $request, Event $event)
+    {
+        $request->validate([
+            'recap_drive_link' => 'required|url'
+        ]);
+
+        $link = $request->input('recap_drive_link');
+        
+        // Extract folder ID from Google Drive link
+        $folderId = null;
+        if (preg_match('/folders\/([a-zA-Z0-9_-]+)/', $link, $matches)) {
+            $folderId = $matches[1];
+        } elseif (preg_match('/id=([a-zA-Z0-9_-]+)/', $link, $matches)) {
+            $folderId = $matches[1];
+        }
+
+        if (!$folderId) {
+            return back()->with('error', 'Link Google Drive không hợp lệ. Vui lòng sử dụng link thư mục (có chứa folders/ID).');
+        }
+
+        // We assume class Google\Client is available due to masbug/flysystem-google-drive-ext
+        try {
+            $guzzleClient = new \GuzzleHttp\Client(['verify' => false]);
+            $client = new \Google\Client();
+            $client->setHttpClient($guzzleClient);
+            $client->setClientId(config('filesystems.disks.google.clientId'));
+            $client->setClientSecret(config('filesystems.disks.google.clientSecret'));
+            
+            // fetchAccessTokenWithRefreshToken might throw an exception if http_errors is true in Guzzle,
+            // or return an error array if caught internally. We handle both.
+            try {
+                $token = $client->fetchAccessTokenWithRefreshToken(config('filesystems.disks.google.refreshToken'));
+                if (isset($token['error'])) {
+                    throw new \Exception('Lỗi Token: ' . ($token['error_description'] ?? $token['error']));
+                }
+            } catch (\Exception $tokenEx) {
+                throw new \Exception('REFRESH_TOKEN trong file .env đã hết hạn hoặc bị thu hồi. Vui lòng tạo lại token mới! (Chi tiết: ' . $tokenEx->getMessage() . ')');
+            }
+            
+            $service = new \Google\Service\Drive($client);
+            
+            // Query for files inside the folder, only images and videos
+            $results = $service->files->listFiles([
+                'q' => "'$folderId' in parents and (mimeType contains 'image/' or mimeType contains 'video/')",
+                'fields' => 'files(id, name, mimeType)',
+                'pageSize' => 100 // Get up to 100 files at once
+            ]);
+
+            $files = $results->getFiles();
+
+            if (count($files) === 0) {
+                return back()->with('error', 'Không tìm thấy hình ảnh/video nào trong thư mục. Đảm bảo thư mục đã được chia sẻ công khai "Anyone with the link".');
+            }
+
+            // Remove existing recap media if any (or keep them, but since we are automating, we probably want to replace)
+            $event->media()->where('is_recap', true)->delete();
+
+            foreach ($files as $file) {
+                $type = str_contains($file->getMimeType(), 'video') ? 'video' : 'image';
+                
+                if ($type === 'image') {
+                    // Use thumbnail endpoint for images to bypass third-party cookie blocking
+                    $viewUrl = "https://drive.google.com/thumbnail?id=" . $file->getId() . "&sz=w1920";
+                } else {
+                    // Use preview endpoint for videos (requires iframe to render)
+                    $viewUrl = "https://drive.google.com/file/d/" . $file->getId() . "/preview";
+                }
+                
+                $event->media()->create([
+                    'type' => $type,
+                    'url' => $viewUrl,
+                    'is_banner' => false,
+                    'is_recap' => true,
+                    'caption' => $file->getName()
+                ]);
+            }
+
+            // Update the event with the link so it moves to Archive
+            $event->recap_drive_link = $link;
+            $event->save();
+
+            return back()->with('success', 'Đã lấy ' . count($files) . ' file từ Google Drive và thêm vào Album Sự kiện!');
+
+        } catch (\Exception $e) {
+            \Log::error('Google Drive Fetch Error: ' . $e->getMessage());
+            return back()->with('error', 'Có lỗi xảy ra khi truy cập Google Drive. Hãy chắc chắn link đúng và thư mục được cấp quyền "Anyone with the link can view". (Chi tiết: ' . $e->getMessage() . ')');
+        }
     }
 }

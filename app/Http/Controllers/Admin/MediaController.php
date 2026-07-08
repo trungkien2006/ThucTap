@@ -12,32 +12,48 @@ class MediaController extends Controller
 {
     public function index(Request $request)
     {
-        $query = EventMedia::query()->with('event')->whereIn('type', ['image', 'video']);
+        if ($request->filled('event_id')) {
+            $event = \App\Models\Event::findOrFail($request->event_id);
+            $query = EventMedia::query()->where('event_id', $event->id)->whereIn('type', ['image', 'video']);
 
-        if ($request->filled('type')) {
-            $query->where('type', $request->type);
+            $sort = $request->input('sort', 'date_desc');
+            if ($sort === 'date_asc') {
+                $query->orderBy('created_at', 'asc');
+            } else {
+                $query->orderBy('created_at', 'desc');
+            }
+
+            $media = $query->paginate(24);
+            return view('admin.media.show', compact('media', 'event'));
         }
 
+        $query = \App\Models\Event::query();
+
         if ($request->filled('search')) {
-            $query->where('caption', 'like', '%' . $request->search . '%');
+            $query->where('title', 'like', '%' . $request->search . '%');
         }
 
         $sort = $request->input('sort', 'date_desc');
         if ($sort === 'date_asc') {
             $query->orderBy('created_at', 'asc');
-        } elseif ($sort === 'event') {
-            $query->leftJoin('events', 'event_medias.event_id', '=', 'events.id')
-                  ->select('event_medias.*')
-                  ->orderBy('events.title', 'asc');
-        } elseif ($sort === 'size') {
-            $query->orderBy('url', 'asc');
+        } elseif ($sort === 'title') {
+            $query->orderBy('title', 'asc');
+        } elseif ($sort === 'title_desc') {
+            $query->orderBy('title', 'desc');
+        } elseif ($sort === 'likes') {
+            $query->orderBy('likes_count', 'desc');
         } else {
             $query->orderBy('created_at', 'desc');
         }
 
-        $media = $query->paginate(24);
+        $albums = $query->paginate(24);
 
-        return view('admin.media.index', compact('media'));
+        $totalAlbums = \App\Models\Event::count();
+        $albumsThisMonth = \App\Models\Event::whereMonth('created_at', now()->month)
+                                            ->whereYear('created_at', now()->year)
+                                            ->count();
+
+        return view('admin.media.index', compact('albums', 'totalAlbums', 'albumsThisMonth'));
     }
 
     public function store(Request $request)
@@ -104,10 +120,10 @@ class MediaController extends Controller
 
         if (count($duplicates) > 0) {
             $msg = "Đã tải lên {$uploaded} tệp thành công. Bỏ qua " . count($duplicates) . " tệp đã tồn tại (VD: " . \Illuminate\Support\Str::limit(implode(', ', $duplicates), 50) . ").";
-            return redirect()->route('admin.media.index')->with('warning', $msg);
+            return redirect()->route('admin.media.index', ['event_id' => $request->event_id])->with('warning', $msg);
         }
 
-        return redirect()->route('admin.media.index')->with('success', "Đã tải lên {$uploaded} tệp mới.");
+        return redirect()->route('admin.media.index', ['event_id' => $request->event_id])->with('success', "Đã tải lên {$uploaded} tệp mới.");
     }
 
     public function destroy(EventMedia $medium)
@@ -120,6 +136,6 @@ class MediaController extends Controller
 
         ActivityLogger::log("đã xóa tệp media: {$caption}", route('admin.media.index'));
 
-        return redirect()->route('admin.media.index')->with('success', 'Đã xóa media thành công.');
+        return redirect()->back()->with('success', 'Đã xóa media thành công.');
     }
 }

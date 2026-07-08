@@ -3,10 +3,7 @@
 @push('styles')
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
 <style>
-/* Reset some default layout details to showcase the custom template */
-#navbar, .studio-footer {
-    display: none !important;
-}
+/* Removed hide navbar rule to comply with layout rule */
 
 :root {
     --navy: #1E3A8A;
@@ -738,9 +735,7 @@
                                     <div style="color: var(--soft); font-size: 13.5px; line-height: 1.7;">{!! $block->content !!}</div>
                                 @endif
                                 <div class="flex flex-wrap gap-2 mt-4">
-                                    @if($block->document_url)
-                                        <a href="{{ \App\Helpers\FileHelper::url($block->document_url) }}" target="_blank" class="t3-btn-outline" style="padding: 6px 14px; font-size: 12px; border-color: var(--blue); color: var(--blue); background: var(--blue-lt); border-radius: 6px; text-decoration: none;">Tài liệu</a>
-                                    @endif
+
                                     @if($block->action_url)
                                         <a href="{{ $block->action_url }}" target="_blank" class="t3-btn-primary" style="padding: 6px 14px; font-size: 12px; border-radius: 6px; text-decoration: none;">Liên kết</a>
                                     @endif
@@ -773,9 +768,7 @@
                                     <div style="color: var(--soft); font-size: 13.5px; line-height: 1.7;">{!! $block->content !!}</div>
                                 @endif
                                 <div class="flex flex-wrap gap-2 mt-4">
-                                    @if($block->document_url)
-                                        <a href="{{ \App\Helpers\FileHelper::url($block->document_url) }}" target="_blank" class="t3-btn-outline" style="padding: 6px 14px; font-size: 12px; border-color: var(--blue); color: var(--blue); background: var(--blue-lt); border-radius: 6px; text-decoration: none;">Tài liệu</a>
-                                    @endif
+
                                     @if($block->action_url)
                                         <a href="{{ $block->action_url }}" target="_blank" class="t3-btn-primary" style="padding: 6px 14px; font-size: 12px; border-radius: 6px; text-decoration: none;">Liên kết</a>
                                     @endif
@@ -805,7 +798,7 @@
                         </div>
                         <div class="t3-speaker-name">{{ $speaker->name }}</div>
                         <div class="t3-speaker-role">{{ $speaker->title }}</div>
-                        <div class="t3-speaker-topic">{{ $speaker->bio ?? 'Diễn giả khách mời' }}</div>
+                        <div class="t3-speaker-topic">{{ $speaker->bio ?? 'Diễn giả' }}</div>
                     </div>
                     @endforeach
                 </div>
@@ -820,7 +813,7 @@
                 <div>
                     @foreach($event->scheduleItems as $item)
                     <div class="t3-sched-item">
-                        <div class="t3-sched-time">{{ $item->start_time ? \Carbon\Carbon::parse($item->start_time)->format('H:i') : '' }}</div>
+                        <div class="t3-sched-time">{{ $item->start_time ? \Carbon\Carbon::parse($item->start_time)->format('H:i') : '' }}{{ $item->end_time ? ' - ' . \Carbon\Carbon::parse($item->end_time)->format('H:i') : '' }}</div>
                         <div class="t3-sched-body">
                             <div class="t3-sched-title">{{ $item->title }}</div>
                             @if($item->speaker)

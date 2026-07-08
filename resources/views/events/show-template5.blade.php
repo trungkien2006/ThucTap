@@ -3,10 +3,7 @@
 @push('styles')
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Satisfy&family=Fredoka+One&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
-/* Hide standard navbar and footer to fully showcase the custom mobile-like layout */
-#navbar, .studio-footer {
-    display: none !important;
-}
+/* Removed hide navbar rule to comply with layout rule */
 
 :root {
     --t5-bg: #D4EBF8; /* Pastel Baby Blue */
@@ -601,10 +598,10 @@
         </div>
         @endif
 
-        {{-- SECTION: DIỄN GIẢ & KHÁCH MỜI --}}
+        {{-- SECTION: DIỄN GIẢ THAM GIA --}}
         @if($event->speakers->count() > 0)
         <div class="t5-card">
-            <div class="t5-sec-title bubble">Diễn giả & Khách mời</div>
+            <div class="t5-sec-title bubble">Diễn giả tham gia</div>
             <div class="t5-speakers-grid">
                 @foreach($event->speakers as $speaker)
                 <div class="t5-speaker-card">
@@ -630,7 +627,7 @@
             <div class="t5-schedule-grid">
                 @foreach($event->scheduleItems as $item)
                 <div class="t5-schedule-item">
-                    <div class="t5-schedule-time">{{ $item->start_time ? \Carbon\Carbon::parse($item->start_time)->format('H:i') : '--:--' }}</div>
+                    <div class="t5-schedule-time">{{ $item->start_time ? \Carbon\Carbon::parse($item->start_time)->format('H:i') : '--:--' }}{{ $item->end_time ? ' - ' . \Carbon\Carbon::parse($item->end_time)->format('H:i') : '' }}</div>
                     <div class="t5-schedule-body">
                         <div class="t5-schedule-title">{{ $item->title }}</div>
                         @if($item->speaker)

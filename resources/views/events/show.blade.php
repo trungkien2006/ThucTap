@@ -143,11 +143,7 @@
                         
                         {{-- Tài liệu và link nếu có --}}
                         <div class="flex flex-wrap gap-2 mt-4">
-                            @if($block->document_url)
-                                <a href="{{ \App\Helpers\FileHelper::url($block->document_url) }}" target="_blank" class="inline-flex items-center gap-1 px-3 py-1.5 bg-orange-50 text-orange-600 rounded-lg text-sm font-medium hover:bg-orange-100 transition-colors border border-orange-100">
-                                    <span class="material-symbols-outlined text-[16px]">download</span> Tài liệu
-                                </a>
-                            @endif
+
                             @if($block->action_url)
                                 <a href="{{ $block->action_url }}" target="_blank" class="inline-flex items-center gap-1 px-3 py-1.5 bg-slate-50 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-100 transition-colors border border-slate-200">
                                     <span class="material-symbols-outlined text-[16px]">open_in_new</span> Liên kết
@@ -166,11 +162,7 @@
                         
                         {{-- Tài liệu và link nếu có --}}
                         <div class="flex flex-wrap gap-2 mt-4">
-                            @if($block->document_url)
-                                <a href="{{ \App\Helpers\FileHelper::url($block->document_url) }}" target="_blank" class="inline-flex items-center gap-1 px-3 py-1.5 bg-orange-50 text-orange-600 rounded-lg text-sm font-medium hover:bg-orange-100 transition-colors border border-orange-100">
-                                    <span class="material-symbols-outlined text-[16px]">download</span> Tài liệu
-                                </a>
-                            @endif
+
                             @if($block->action_url)
                                 <a href="{{ $block->action_url }}" target="_blank" class="inline-flex items-center gap-1 px-3 py-1.5 bg-slate-50 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-100 transition-colors border border-slate-200">
                                     <span class="material-symbols-outlined text-[16px]">open_in_new</span> Liên kết
@@ -201,7 +193,7 @@
                 @foreach($event->scheduleItems as $index => $item)
                 <div class="flex gap-4 p-4 rounded-xl border border-slate-100 bg-slate-50">
                     <div class="w-20 text-center shrink-0">
-                        <div class="text-[#f97316] font-bold text-lg">{{ $item->start_time->format('H:i') }}</div>
+                        <div class="text-[#f97316] font-bold text-lg">{{ $item->start_time->format('H:i') }}{{ $item->end_time ? ' - ' . $item->end_time->format('H:i') : '' }}</div>
                     </div>
                     <div class="flex-1 border-l border-slate-200 pl-4">
                         <h4 class="font-bold text-lg text-slate-800 mb-1">{{ $item->title }}</h4>
@@ -217,10 +209,8 @@
             </div>
         </div>
         @endif
-        <!-- Diễn giả & Khách mời -->
         @php
             $speakers = $event->speakers()->wherePivot('role', 'speaker')->get();
-            $guests = $event->speakers()->wherePivot('role', 'guest')->get();
         @endphp
         
         @if($speakers->count() > 0)
@@ -244,26 +234,7 @@
         </div>
         @endif
 
-        @if($guests->count() > 0)
-        <div class="tp1-card">
-            <h2 class="tp1-section-title text-center">Khách mời đặc biệt</h2>
-            <div class="flex flex-wrap justify-center gap-6">
-                @foreach($guests as $guest)
-                <div class="flex flex-col items-center text-center p-6 rounded-xl border border-blue-100 bg-blue-50/50 hover:shadow-md transition-shadow w-full sm:w-[calc(50%-12px)] md:w-[calc(33.333%-16px)] max-w-[320px]">
-                    <img src="{{ $guest->photo_url ? asset($guest->photo_url) : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80' }}"
-                         alt="{{ $guest->name }}" class="w-24 h-24 rounded-full object-cover mb-4 border-4 border-white shadow-sm">
-                    <h3 class="font-bold text-lg text-slate-800">{{ $guest->name }}</h3>
-                    @if($guest->title)
-                        <p class="text-sm text-blue-600 font-medium mb-3">{{ $guest->title }}</p>
-                    @endif
-                    @if($guest->bio)
-                        <p class="text-sm text-slate-600">{{ $guest->bio }}</p>
-                    @endif
-                </div>
-                @endforeach
-            </div>
-        </div>
-        @endif
+
         
         <!-- Tương tác & Chia sẻ -->
         <div class="flex flex-wrap justify-center gap-4 mt-8" x-data="{ copied: false }">

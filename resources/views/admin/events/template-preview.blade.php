@@ -282,10 +282,7 @@
 @push('styles')
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
 <style>
-/* Reset some default layout details to showcase the custom template */
-#navbar, .studio-footer {
-    display: none !important;
-}
+/* Removed hide navbar rule to comply with layout rule */
 
 :root {
     --navy: #1E3A8A;
@@ -906,7 +903,7 @@
 @push('styles')
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-#navbar, .studio-footer { display: none !important; }
+/* Removed hide navbar rule to comply with layout rule */
 :root {
     --school-bg: #F8FAFC;
     --school-primary: #1E3A8A; /* Navy Blue */
@@ -1172,7 +1169,7 @@
                 </div>
             </div>
 
-            <h2 class="w6p-section-title">Khách Mời</h2>
+            <h2 class="w6p-section-title">Diễn Giả Tham Gia</h2>
             <div class="w6p-speakers">
                 <div class="w6p-speaker-card">
                     <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80" class="w6p-speaker-img" alt="">
@@ -1213,7 +1210,7 @@
 @push('styles')
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-#navbar, .studio-footer { display: none !important; }
+/* Removed hide navbar rule to comply with layout rule */
 .t4p-body {
     background-color: #FCF9F2 !important;
     color: #2C2520;
@@ -1545,7 +1542,7 @@
 @push('styles')
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Satisfy&family=Fredoka+One&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
-#navbar, .studio-footer { display: none !important; }
+/* Removed hide navbar rule to comply with layout rule */
 .t5p-body {
     background-color: #D4EBF8 !important;
     color: #1E3E62;
@@ -1871,7 +1868,7 @@
         </div>
 
         <div class="t5p-card">
-            <div class="t5p-sec-title bubble">Diễn giả & Khách mời</div>
+            <div class="t5p-sec-title bubble">Diễn giả tham gia</div>
             <div class="t5p-collage-grid" style="grid-template-columns: 1fr 1fr;">
                 <div class="t5p-speaker-card" style="background:#FFF; border:1px solid #BBD6EC; border-radius:12px; padding:16px; text-align:center;">
                     <div class="t5p-speaker-av" style="width:64px; height:64px; border-radius:50%; margin:0 auto 8px; overflow:hidden; background:#E8F4FC; display:grid; place-items:center; font-size:24px;">👨‍💼</div>
@@ -1998,7 +1995,7 @@
 @push('styles')
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
-#navbar, .studio-footer { display: none !important; }
+/* Removed hide navbar rule to comply with layout rule */
 :root {
     --mag-bg: #F9F8F3;
     --mag-ink: #1C1A17;
@@ -2108,11 +2105,11 @@
 .t7p-gal-img { width: 100%; aspect-ratio: 3/4; object-fit: cover; position: relative; z-index: 2; filter: grayscale(20%); }
 .t7p-gal-content { width: 50%; }
 .t7p-gal-caption { font-family: var(--font-serif); font-size: 20px; font-weight: 600; margin-bottom: 10px; }
-.t7p-guests { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 60px; }
-.t7p-guest-card { text-align: center; }
-.t7p-guest-img { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin: 0 auto 15px; border: 1px solid var(--mag-border); padding: 4px; filter: grayscale(100%); }
-.t7p-guest-name { font-family: var(--font-serif); font-size: 18px; font-weight: 600; margin-bottom: 4px; }
-.t7p-guest-role { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mag-gold); }
+.t7p-speakers { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 60px; }
+.t7p-speaker-card { text-align: center; }
+.t7p-speaker-img { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin: 0 auto 15px; border: 1px solid var(--mag-border); padding: 4px; filter: grayscale(100%); }
+.t7p-speaker-name { font-family: var(--font-serif); font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+.t7p-speaker-role { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mag-gold); }
 .t7p-timeline { position: relative; max-width: 500px; margin: 0 auto 60px; }
 .t7p-timeline::before { content: ''; position: absolute; top: 0; bottom: 0; left: 50%; transform: translateX(-50%); width: 1px; background: var(--mag-border); }
 .t7p-tl-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; position: relative; }
@@ -2171,18 +2168,18 @@
 
         <div class="t7p-section-hd">
             <div class="t7p-section-kicker">Chương 3</div>
-            <h2 class="t7p-section-title">Khách Mời</h2>
+            <h2 class="t7p-section-title">Diễn Giả Tham Gia</h2>
         </div>
-        <div class="t7p-guests">
-            <div class="t7p-guest-card">
-                <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&q=80" class="t7p-guest-img" alt="">
-                <div class="t7p-guest-name">GS. Nguyễn Văn A</div>
-                <div class="t7p-guest-role">Hiệu Trưởng</div>
+        <div class="t7p-speakers">
+            <div class="t7p-speaker-card">
+                <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&q=80" class="t7p-speaker-img" alt="">
+                <div class="t7p-speaker-name">GS. Nguyễn Văn A</div>
+                <div class="t7p-speaker-role">Hiệu Trưởng</div>
             </div>
-            <div class="t7p-guest-card">
-                <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&q=80" class="t7p-guest-img" alt="">
-                <div class="t7p-guest-name">TS. Trần Thị B</div>
-                <div class="t7p-guest-role">Trưởng Khoa</div>
+            <div class="t7p-speaker-card">
+                <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&q=80" class="t7p-speaker-img" alt="">
+                <div class="t7p-speaker-name">TS. Trần Thị B</div>
+                <div class="t7p-speaker-role">Trưởng Khoa</div>
             </div>
         </div>
 

@@ -43,6 +43,7 @@
             </div>
             <div>
                 <div class="text-sm font-semibold flex items-center gap-1.5">
+                    <span class="text-muted-foreground font-mono text-xs">#{{ ($categories->currentPage() - 1) * $categories->perPage() + $i + 1 }}</span>
                     <span>{{ $category->name }}</span>
                 </div>
                 <div class="text-[11px] text-muted-foreground mt-0.5">Slug: /{{ Str::slug($category->name) }}</div>
@@ -65,6 +66,13 @@
         </div>
         @endforelse
     </div>
+
+    {{-- Pagination --}}
+    @if($categories->hasPages())
+        <div class="flex justify-center mt-4">
+            {{ $categories->links() }}
+        </div>
+    @endif
 </div>
 
 {{-- New Category Modal --}}

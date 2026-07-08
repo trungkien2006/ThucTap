@@ -128,7 +128,13 @@ class FrontendController extends Controller
                 ->published()
                 ->where(function($q) {
                     $q->where('status', 'archived')
-                      ->orWhere('event_date', '<', now());
+                      ->orWhere(function($q2) {
+                          $q2->whereNotNull('recap_drive_link')
+                             ->where(function($q3) {
+                                 $q3->where('event_date', '<', now())
+                                    ->orWhere('end_date', '<', now());
+                             });
+                      });
                 })
                 ->orderBy('event_date', 'desc')
                 ->get();
@@ -335,7 +341,7 @@ class FrontendController extends Controller
     {
         $selectedYear = $request->input('year');
 
-        $query = Event::with(['bannerImage', 'category', 'galleryImages', 'documents', 'speakers'])
+        $query = Event::with(['bannerImage', 'category', 'galleryImages', 'speakers'])
             ->published()
             ->where(function($q) {
                 $q->where('status', 'archived')
@@ -364,14 +370,7 @@ class FrontendController extends Controller
                 'videos' => $event->galleryImages->where('type', 'video')->map(function($media) {
                     return ['url' => \App\Helpers\FileHelper::url($media->url), 'caption' => $media->caption];
                 })->values()->toArray(),
-                'documents' => $event->documents->map(function($doc) {
-                    return [
-                        'title' => $doc->title,
-                        'type' => strtolower(pathinfo($doc->file_path, PATHINFO_EXTENSION)) ?: 'pdf',
-                        'size' => round(\Illuminate\Support\Facades\Storage::exists($doc->file_path) ? \Illuminate\Support\Facades\Storage::size($doc->file_path) / 1024 : 0, 2) . ' KB',
-                        'url' => \App\Helpers\FileHelper::url($doc->file_path),
-                    ];
-                })->values()->toArray(),
+                'documents' => [],
                 'speakers' => $event->speakers->map(function($speaker) {
                     return [
                         'name' => $speaker->name,

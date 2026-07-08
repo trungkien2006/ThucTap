@@ -34,7 +34,7 @@ class SpeakerController extends Controller
             'name' => 'required|string|max:255',
             'title' => 'nullable|string|max:255',
             'bio' => 'nullable|string',
-            'type' => 'required|in:speaker,guest',
+
             'photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
@@ -71,7 +71,7 @@ class SpeakerController extends Controller
             'name' => 'required|string|max:255',
             'title' => 'nullable|string|max:255',
             'bio' => 'nullable|string',
-            'type' => 'required|in:speaker,guest',
+
             'photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 

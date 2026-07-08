@@ -3,10 +3,7 @@
 @push('styles')
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-/* Reset navbar and footer to showcase the custom invitation layout */
-#navbar, .studio-footer {
-    display: none !important;
-}
+/* Removed hide navbar rule to comply with layout rule */
 
 :root {
     --t4-gold: #D97706; /* Màu vàng đồng / hổ phách sang trọng */
@@ -437,7 +434,7 @@
                 @foreach($event->scheduleItems as $item)
                 <div class="t4-timeline-item">
                     <div class="t4-timeline-dot"></div>
-                    <div class="t4-timeline-time">{{ \Carbon\Carbon::parse($item->start_time)->format('H:i') }}</div>
+                    <div class="t4-timeline-time">{{ \Carbon\Carbon::parse($item->start_time)->format('H:i') }}{{ $item->end_time ? ' - ' . \Carbon\Carbon::parse($item->end_time)->format('H:i') : '' }}</div>
                     <div class="t4-timeline-title">{{ $item->title }}</div>
                 </div>
                 @endforeach
@@ -467,7 +464,7 @@
         {{-- SECTION 7: DIỄN GIẢ --}}
         @if($event->speakers->count() > 0)
         <div class="t4-card">
-            <div class="t4-sec-title">Diễn giả & Khách mời</div>
+            <div class="t4-sec-title">Diễn giả tham gia</div>
             <div class="t4-speakers">
                 @foreach($event->speakers as $speaker)
                 <div class="t4-speaker">

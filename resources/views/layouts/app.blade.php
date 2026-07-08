@@ -93,6 +93,17 @@
                     <a href="{{ route('admin.events.index') }}" class="sidebar-menu-btn {{ request()->routeIs('admin.events.*') && !request()->routeIs('admin.events.create') && !request()->routeIs('admin.events.edit') && !request()->routeIs('admin.events.design') && !request()->routeIs('admin.events.preview') && !request()->routeIs('admin.events.show') ? 'active' : '' }}">
                         <i data-lucide="calendar" class="h-5 w-5"></i>
                         <span>Sự kiện</span>
+                        @php
+                            $missingRecapCount = \App\Models\Event::where(function($q) {
+                                $q->where('event_date', '<', now())
+                                  ->where(function($q2) {
+                                      $q2->whereNull('end_date')->orWhere('end_date', '<', now());
+                                  });
+                            })->whereNull('recap_drive_link')->count();
+                        @endphp
+                        @if($missingRecapCount > 0)
+                            <span class="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-sm" title="Có {{ $missingRecapCount }} sự kiện đã kết thúc nhưng chưa có link Recap">{{ $missingRecapCount }}</span>
+                        @endif
                     </a>
                     <a href="{{ route('admin.categories.index') }}" class="sidebar-menu-btn {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
                         <i data-lucide="tag" class="h-5 w-5"></i>
@@ -100,7 +111,7 @@
                     </a>
                     <a href="{{ route('admin.departments.index') }}" class="sidebar-menu-btn {{ request()->routeIs('admin.departments.*') ? 'active' : '' }}">
                         <i data-lucide="building" class="h-5 w-5"></i>
-                        <span>Khoa / Bộ phận</span>
+                        <span>Chuyên ngành</span>
                     </a>
                     <a href="{{ route('admin.archive.index') }}" class="sidebar-menu-btn {{ request()->routeIs('admin.archive.*') ? 'active' : '' }}">
                         <i data-lucide="archive" class="h-5 w-5"></i>
@@ -108,7 +119,7 @@
                     </a>
                     <a href="{{ route('admin.speakers.index') }}" class="sidebar-menu-btn {{ request()->is('admin/speakers*') ? 'active' : '' }}">
                         <i data-lucide="mic" class="h-5 w-5"></i>
-                        <span>Diễn giả / Khách mời</span>
+                        <span>Quản lý diễn giả</span>
                     </a>
                 </div>
             </div>
@@ -120,10 +131,6 @@
                     <a href="{{ route('admin.media.index') }}" class="sidebar-menu-btn {{ request()->routeIs('admin.media.*') ? 'active' : '' }}">
                         <i data-lucide="image" class="h-5 w-5"></i>
                         <span>Thư viện Media</span>
-                    </a>
-                    <a href="{{ route('admin.documents.index') }}" class="sidebar-menu-btn {{ request()->routeIs('admin.documents.*') ? 'active' : '' }}">
-                        <i data-lucide="files" class="h-5 w-5"></i>
-                        <span>Tài liệu</span>
                     </a>
                     @if(Auth::user()->isSuperAdmin())
                         <a href="{{ route('admin.users.index') }}" class="sidebar-menu-btn {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
@@ -242,57 +249,64 @@
 
             <!-- Notifications Button with Dropdown -->
             <div class="relative">
-                <button id="notificationBtn" class="h-11 w-11 relative text-muted-foreground hover:text-foreground hover:bg-accent rounded-xl flex items-center justify-center transition-all">
+                <button id="notificationBtn" class="h-10 w-10 relative text-muted-foreground hover:text-foreground hover:bg-accent rounded-full flex items-center justify-center transition-all">
                     <i data-lucide="bell" class="h-5 w-5"></i>
                     @if($notificationCount > 0)
-                        <span class="absolute top-3 right-3 h-4 w-4 bg-destructive text-white text-[9px] font-bold rounded-full flex items-center justify-center animate-pulse">
-                            {{ $notificationCount }}
-                        </span>
+                        <span class="absolute top-2 right-2 h-2.5 w-2.5 bg-red-500 border-2 border-background rounded-full"></span>
                     @endif
                 </button>
-                <div id="notificationDropdown" class="absolute right-0 top-full mt-1.5 w-80 bg-white border border-border rounded-md shadow-lg py-2 hidden z-50">
-                    <div class="px-3 py-1.5 text-xs font-semibold text-foreground border-b border-border flex justify-between items-center">
-                        <span>Thông báo sự kiện</span>
+                <div id="notificationDropdown" class="absolute right-0 top-full mt-2 w-80 bg-card border border-border rounded-xl shadow-xl py-1 z-50 overflow-hidden hidden">
+                    <div class="px-4 py-3 text-[13px] font-semibold text-foreground flex justify-between items-center bg-muted/30">
+                        <span>Thông báo</span>
                         @if($notificationCount > 0)
-                            <span class="bg-destructive/10 text-destructive text-[10px] px-1.5 py-0.5 rounded-full font-medium">{{ $notificationCount }} mới</span>
+                            <span class="bg-primary/10 text-primary text-[10px] px-2 py-0.5 rounded-full font-medium">{{ $notificationCount }} mới</span>
                         @endif
                     </div>
-                    <div class="max-h-64 overflow-y-auto divide-y divide-border">
+                    <div class="max-h-[300px] overflow-y-auto">
                         @if($notificationCount == 0)
-                            <div class="p-4 text-center text-xs text-muted-foreground">Không có thông báo nào vào lúc này</div>
+                            <div class="p-6 flex flex-col items-center justify-center text-center">
+                                <div class="h-10 w-10 rounded-full bg-muted/50 flex items-center justify-center mb-2">
+                                    <i data-lucide="bell-off" class="h-4 w-4 text-muted-foreground/60"></i>
+                                </div>
+                                <span class="text-[12px] text-muted-foreground">Bạn không có thông báo mới.</span>
+                            </div>
                         @else
                             @foreach($startingSoon as $evt)
                                 @php
                                     $diffMin = max(1, round($nowTime->diffInMinutes($evt->event_date)));
                                 @endphp
-                                <div class="p-3 hover:bg-accent/40 transition-colors">
-                                    <div class="flex items-start gap-2.5">
-                                        <div class="h-7 w-7 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center shrink-0">
+                                <a href="{{ route('admin.events.show', $evt) }}" class="block p-3.5 hover:bg-muted/50 transition-colors border-t border-border/50 first:border-0 group">
+                                    <div class="flex items-start gap-3">
+                                        <div class="h-8 w-8 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center shrink-0 mt-0.5 group-hover:scale-110 transition-transform">
                                             <i data-lucide="clock" class="h-4 w-4"></i>
                                         </div>
                                         <div class="flex-1 min-w-0">
-                                            <p class="text-xs font-medium text-foreground truncate">{{ $evt->title }}</p>
-                                            <p class="text-[11px] text-amber-600 font-medium mt-0.5">Sắp diễn ra: Bắt đầu sau {{ $diffMin }} phút nữa</p>
+                                            <p class="text-[13px] font-medium text-foreground line-clamp-1 group-hover:text-primary transition-colors">{{ $evt->title }}</p>
+                                            <p class="text-[11px] text-muted-foreground mt-0.5 flex items-center gap-1">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Bắt đầu sau {{ $diffMin }} phút
+                                            </p>
                                         </div>
                                     </div>
-                                </div>
+                                </a>
                             @endforeach
                             @foreach($runningEvents as $evt)
                                 @php
                                     $diffEnd = $nowTime->diffInMinutes($evt->end_date);
                                     $diffEndStr = $diffEnd > 60 ? (round($diffEnd / 60) . ' giờ') : ($diffEnd . ' phút');
                                 @endphp
-                                <div class="p-3 hover:bg-accent/40 transition-colors">
-                                    <div class="flex items-start gap-2.5">
-                                        <div class="h-7 w-7 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
+                                <a href="{{ route('admin.events.show', $evt) }}" class="block p-3.5 hover:bg-muted/50 transition-colors border-t border-border/50 first:border-0 group">
+                                    <div class="flex items-start gap-3">
+                                        <div class="h-8 w-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5 group-hover:scale-110 transition-transform">
                                             <i data-lucide="play" class="h-4 w-4"></i>
                                         </div>
                                         <div class="flex-1 min-w-0">
-                                            <p class="text-xs font-medium text-foreground truncate">{{ $evt->title }}</p>
-                                            <p class="text-[11px] text-emerald-600 font-medium mt-0.5">Đang diễn ra: Còn {{ $diffEndStr }} là kết thúc</p>
+                                            <p class="text-[13px] font-medium text-foreground line-clamp-1 group-hover:text-primary transition-colors">{{ $evt->title }}</p>
+                                            <p class="text-[11px] text-muted-foreground mt-0.5 flex items-center gap-1">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Đang diễn ra (còn {{ $diffEndStr }})
+                                            </p>
                                         </div>
                                     </div>
-                                </div>
+                                </a>
                             @endforeach
                         @endif
                     </div>
@@ -306,21 +320,39 @@
         </div>
     </header>
 
+    <!-- Floating Toasts -->
+    <div class="fixed top-20 right-6 z-50 flex flex-col gap-2 pointer-events-none" id="toastContainer">
+        @if(session('success'))
+            <div class="bg-card border-l-4 border-emerald-500 shadow-xl rounded-lg px-4 py-3 flex items-start gap-3 w-80 animate-in slide-in-from-right-8 fade-in pointer-events-auto" id="toast-success">
+                <div class="mt-0.5 rounded-full bg-emerald-100 p-1 shrink-0">
+                    <i data-lucide="check" class="h-3.5 w-3.5 text-emerald-600"></i>
+                </div>
+                <div class="flex-1">
+                    <p class="text-sm font-semibold text-foreground">Thành công</p>
+                    <p class="text-xs text-muted-foreground mt-0.5">{{ session('success') }}</p>
+                </div>
+                <button onclick="document.getElementById('toast-success').remove()" class="text-muted-foreground hover:text-foreground shrink-0"><i data-lucide="x" class="h-4 w-4"></i></button>
+            </div>
+            <script>setTimeout(() => { const t = document.getElementById('toast-success'); if(t) t.remove(); }, 4000);</script>
+        @endif
+        @if(session('error'))
+            <div class="bg-card border-l-4 border-red-500 shadow-xl rounded-lg px-4 py-3 flex items-start gap-3 w-80 animate-in slide-in-from-right-8 fade-in pointer-events-auto" id="toast-error">
+                <div class="mt-0.5 rounded-full bg-red-100 p-1 shrink-0">
+                    <i data-lucide="alert-triangle" class="h-3.5 w-3.5 text-red-600"></i>
+                </div>
+                <div class="flex-1">
+                    <p class="text-sm font-semibold text-foreground">Lỗi</p>
+                    <p class="text-xs text-muted-foreground mt-0.5">{{ session('error') }}</p>
+                </div>
+                <button onclick="document.getElementById('toast-error').remove()" class="text-muted-foreground hover:text-foreground shrink-0"><i data-lucide="x" class="h-4 w-4"></i></button>
+            </div>
+            <script>setTimeout(() => { const t = document.getElementById('toast-error'); if(t) t.remove(); }, 6000);</script>
+        @endif
+    </div>
+
     <!-- Main Content Wrapper -->
     <main class="pt-16 md:pl-[240px] min-h-screen">
         <div class="p-4 md:p-6 lg:p-8 max-w-[1600px] mx-auto">
-            @if(session('success'))
-                <div class="mb-4 bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-lg text-xs flex items-center gap-2 animate-fade-in shadow-sm">
-                    <i data-lucide="check-circle-2" class="h-4 w-4 text-emerald-600"></i>
-                    <span class="font-medium">{{ session('success') }}</span>
-                </div>
-            @endif
-            @if(session('error'))
-                <div class="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-xs flex items-center gap-2 shadow-sm">
-                    <i data-lucide="alert-circle" class="h-4 w-4 text-red-600"></i>
-                    <span class="font-medium">{{ session('error') }}</span>
-                </div>
-            @endif
 
             @yield('content')
             {{ $slot ?? '' }}

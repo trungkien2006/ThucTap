@@ -101,7 +101,7 @@
                     <p class="font-semibold text-foreground text-sm capitalize">{{ $event->category?->name ?? '—' }}</p>
                 </div>
                 <div class="space-y-1">
-                    <span class="text-muted-foreground">Khoa / Bộ phận</span>
+                    <span class="text-muted-foreground">Chuyên ngành</span>
                     <p class="text-[13px] font-semibold text-primary mt-1">{{ $event->departments->pluck('name')->implode(', ') ?: '—' }}</p>
                 </div>
             </div>
@@ -126,7 +126,7 @@
         <div class="bg-card rounded-xl border border-border p-6 shadow-sm">
             <h3 class="text-sm font-bold text-foreground flex items-center gap-2 mb-5 pb-3 border-b border-border">
                 <span class="w-1.5 h-4.5 bg-primary rounded-full"></span>
-                Diễn giả & Khách mời ({{ $event->speakers->count() }})
+                Diễn giả tham gia ({{ $event->speakers->count() }})
             </h3>
             @if($event->speakers->count() > 0)
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -220,33 +220,6 @@
             </button>
         </div>
 
-        <!-- Documents -->
-        <div class="bg-card rounded-xl border border-border p-6 shadow-sm">
-            <h3 class="text-sm font-bold text-foreground flex items-center gap-2 mb-4 pb-3 border-b border-border">
-                <span class="w-1.5 h-4.5 bg-primary rounded-full"></span>
-                Tài liệu đính kèm ({{ $event->documents->count() }})
-            </h3>
-            @if($event->documents->count() > 0)
-                <div class="space-y-2 max-h-[250px] overflow-y-auto pr-1">
-                    @foreach($event->documents as $doc)
-                        <div class="flex items-center justify-between p-2 rounded-lg border border-border hover:bg-muted/10 transition-colors">
-                            <div class="flex items-center gap-2 min-w-0">
-                                <i data-lucide="file-text" class="h-4.5 w-4.5 text-primary shrink-0"></i>
-                                <div class="min-w-0">
-                                    <p class="text-[11px] font-semibold text-foreground truncate max-w-[140px]">{{ $doc->title ?? basename($doc->url) }}</p>
-                                    <span class="text-[9px] text-muted-foreground font-mono uppercase">{{ $doc->file_type ?? 'FILE' }}</span>
-                                </div>
-                            </div>
-                            <a href="{{ \App\Helpers\FileHelper::url($doc->url) }}" download class="h-7 w-7 rounded-md border border-border flex items-center justify-center hover:bg-accent text-muted-foreground hover:text-foreground shrink-0 transition-colors">
-                                <i data-lucide="download" class="h-3.5 w-3.5"></i>
-                            </a>
-                        </div>
-                    @endforeach
-                </div>
-            @else
-                <p class="text-xs text-muted-foreground italic text-center py-4">Chưa đính kèm tài liệu nào.</p>
-            @endif
-        </div>
 
         <!-- Gallery / Media -->
         <div class="bg-card rounded-xl border border-border p-6 shadow-sm">

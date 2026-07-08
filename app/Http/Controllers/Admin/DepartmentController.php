@@ -12,7 +12,8 @@ class DepartmentController extends Controller
 {
     public function index()
     {
-        $departments = Category::departments()->get()->map(function ($dept) {
+        $departments = Category::departments()->paginate(10);
+        $departments->getCollection()->transform(function ($dept) {
             $dept->events_count = \App\Models\Event::where('department_id', $dept->id)->count();
             $dept->total_views = \App\Models\Event::where('department_id', $dept->id)->sum('views_count');
             return $dept;
@@ -33,9 +34,9 @@ class DepartmentController extends Controller
             'slug' => Str::slug($request->name),
         ]);
 
-        ActivityLogger::log("đã tạo khoa/bộ phận mới: {$dept->name}", route('admin.departments.index'));
+        ActivityLogger::log("đã tạo chuyên ngành mới: {$dept->name}", route('admin.departments.index'));
 
-        return redirect()->route('admin.departments.index')->with('success', 'Thêm khoa/bộ phận mới thành công.');
+        return redirect()->route('admin.departments.index')->with('success', 'Thêm chuyên ngành mới thành công.');
     }
 
     public function edit(Category $department)
@@ -61,13 +62,13 @@ class DepartmentController extends Controller
             'slug' => Str::slug($request->name),
         ]);
 
-        ActivityLogger::log("đã cập nhật khoa/bộ phận: {$department->name}", route('admin.departments.index'));
+        ActivityLogger::log("đã cập nhật chuyên ngành: {$department->name}", route('admin.departments.index'));
 
-        return redirect()->route('admin.departments.index')->with('success', 'Cập nhật khoa/bộ phận thành công.');
+        return redirect()->route('admin.departments.index')->with('success', 'Cập nhật chuyên ngành thành công.');
     }
 
     public function destroy(Category $department)
     {
-        return redirect()->route('admin.departments.index')->with('error', 'Không được phép xóa khoa/bộ phận.');
+        return redirect()->route('admin.departments.index')->with('error', 'Không được phép xóa chuyên ngành.');
     }
 }

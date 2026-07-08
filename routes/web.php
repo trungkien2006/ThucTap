@@ -3,7 +3,6 @@
 use App\Http\Controllers\PublicEventController;
 use App\Http\Controllers\Admin\SpeakerController;
 use App\Http\Controllers\Admin\MediaController;
-use App\Http\Controllers\Admin\DocumentController;
 
 use App\Http\Controllers\FrontendController;
 
@@ -78,12 +77,14 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
             ),
         ];
 
-        // Optimized: 1 query, database-agnostic grouping
-        $eventsByMonth = \App\Models\Event::whereYear('created_at', $currentYear)
-            ->pluck('created_at')
-            ->map(fn($date) => \Carbon\Carbon::parse($date)->month)
-            ->groupBy(fn($m) => $m)
-            ->map(fn($group) => $group->count())
+        // Optimized: 1 query instead of 12
+        $isSqlite = \Illuminate\Support\Facades\DB::connection()->getDriverName() === 'sqlite';
+        $monthExpr = $isSqlite ? "CAST(strftime('%m', created_at) as integer)" : 'MONTH(created_at)';
+
+        $eventsByMonth = \App\Models\Event::selectRaw("{$monthExpr} as month, count(*) as count")
+            ->whereYear('created_at', $currentYear)
+            ->groupBy('month')
+            ->pluck('count', 'month')
             ->toArray();
         $eventsTrend = [];
         for ($m = 1; $m <= 12; $m++) {
@@ -108,8 +109,9 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
             ];
         }
 
-        // Optimized: 1 query, database-agnostic grouping
-        $allMedia = \App\Models\EventMedia::whereIn('type', ['image', 'video'])
+        // Optimized: 1 query instead of 24
+        $mediaByMonth = \App\Models\EventMedia::selectRaw("type, {$monthExpr} as month, count(*) as count")
+            ->whereIn('type', ['image', 'video'])
             ->whereYear('created_at', $currentYear)
             ->get(['type', 'created_at']);
         $imagesTrend = [];
@@ -134,8 +136,8 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::post('events/{event}/template', [App\Http\Controllers\Admin\EventController::class, 'saveTemplate'])->name('events.save_template');
     Route::get('events/{event}/design', [App\Http\Controllers\Admin\EventController::class, 'design'])->name('events.design');
     Route::post('events/{event}/save-design', [App\Http\Controllers\Admin\EventController::class, 'saveDesign'])->name('events.save_design');
-    Route::post('events/upload-document', [App\Http\Controllers\Admin\EventController::class, 'uploadDocument'])->name('events.upload_document');
     Route::get('events/{event}/preview', [App\Http\Controllers\Admin\EventController::class, 'preview'])->name('events.preview');
+    Route::post('events/{event}/recap-link', [App\Http\Controllers\Admin\EventController::class, 'saveRecapLink'])->name('events.save_recap_link');
     Route::get('events/{event}/preview-iframe', [App\Http\Controllers\Admin\EventController::class, 'previewIframe'])->name('events.preview_iframe');
     Route::get('template-preview/{templateId}', [App\Http\Controllers\Admin\EventController::class, 'templatePreview'])->name('events.template_preview');
 
@@ -155,7 +157,6 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::resource('media', MediaController::class)->only(['index', 'store', 'destroy']);
 
     // Documents
-    Route::resource('documents', DocumentController::class);
 
     // Profile Settings & Activities
     Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');

@@ -5,7 +5,7 @@
     <div class="flex items-center justify-between border-b border-border pb-4">
         <div>
             <h1 class="text-xl font-bold text-foreground leading-tight">Chỉnh sửa Danh mục</h1>
-            <p class="text-xs text-muted-foreground mt-1">Cập nhật thông tin danh mục sự kiện hoặc khoa/bộ phận</p>
+            <p class="text-xs text-muted-foreground mt-1">Cập nhật thông tin danh mục sự kiện</p>
         </div>
         <a href="{{ route('admin.categories.index') }}" class="inline-flex items-center justify-center rounded-md border border-input bg-background px-3 py-1.5 text-xs font-semibold hover:bg-accent hover:text-accent-foreground transition-all">Quay lại</a>
     </div>

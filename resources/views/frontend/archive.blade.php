@@ -231,11 +231,7 @@
                                    class="w-4 h-4 rounded border-[#E8E2D5] text-[#FFE381] focus:ring-0 cursor-pointer accent-[#FFE381]">
                             <span>🎥 Video</span>
                         </label>
-                        <label class="flex items-center gap-2.5 cursor-pointer text-xs font-bold text-[#7A6A52] hover:text-[#1C1410] select-none">
-                            <input type="checkbox" x-model="filterFileTypes" value="document" @change="resetIdx()"
-                                   class="w-4 h-4 rounded border-[#E8E2D5] text-[#FFE381] focus:ring-0 cursor-pointer accent-[#FFE381]">
-                            <span>📄 Tài liệu</span>
-                        </label>
+
                         <label class="flex items-center gap-2.5 cursor-pointer text-xs font-bold text-[#7A6A52] hover:text-[#1C1410] select-none">
                             <input type="checkbox" x-model="filterFileTypes" value="archive" @change="resetIdx()"
                                    class="w-4 h-4 rounded border-[#E8E2D5] text-[#FFE381] focus:ring-0 cursor-pointer accent-[#007ACC]">
@@ -309,10 +305,7 @@
                                       :style="idx === i ? 'background:rgba(28,20,16,0.1); color:#1C1410;' : 'background:rgba(122,106,82,0.1); color:#7A6A52;'">
                                     <span x-text="ev.images.length"></span> ảnh
                                 </span>
-                                <span class="text-[9px] font-bold px-2 py-0.5 rounded-full"
-                                      :style="idx === i ? 'background:rgba(28,20,16,0.1); color:#1C1410;' : 'background:rgba(122,106,82,0.1); color:#7A6A52;'">
-                                    <span x-text="ev.documents.length"></span> tài liệu
-                                </span>
+
                             </div>
                         </div>
                     </button>
@@ -372,15 +365,11 @@
                                     :class="activeTab === 'images' ? 'border-[#1C1410] text-[#1C1410]' : 'border-transparent text-[#7A6A52] hover:text-[#1C1410]'">
                                 <i data-lucide="image" class="h-4 w-4"></i> Ảnh & Video
                             </button>
-                            <button @click="activeTab = 'docs'"
-                                    class="pb-3 text-sm font-bold tracking-wider uppercase border-b-2 transition-all flex items-center gap-2 focus:outline-none"
-                                    :class="activeTab === 'docs' ? 'border-[#1C1410] text-[#1C1410]' : 'border-transparent text-[#7A6A52] hover:text-[#1C1410]'">
-                                <i data-lucide="file-text" class="h-4 w-4"></i> Tài liệu học thuật
-                            </button>
+
                             <button @click="activeTab = 'speakers'"
                                     class="pb-3 text-sm font-bold tracking-wider uppercase border-b-2 transition-all flex items-center gap-2 focus:outline-none"
                                     :class="activeTab === 'speakers' ? 'border-[#1C1410] text-[#1C1410]' : 'border-transparent text-[#7A6A52] hover:text-[#1C1410]'">
-                                <i data-lucide="users" class="h-4 w-4"></i> Diễn giả & Khách mời
+                                <i data-lucide="users" class="h-4 w-4"></i> Diễn giả tham gia
                             </button>
                         </div>
 
@@ -420,34 +409,7 @@
                             </div>
                         </div>
 
-                        <!-- Tab 2: Attached Documents -->
-                        <div x-show="activeTab === 'docs'" class="space-y-3">
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <template x-for="(doc, idxDoc) in current.documents" :key="idxDoc">
-                                    <div class="rounded-xl p-4 flex justify-between items-center bg-[#1C1410]/5 border border-[#E8E2D5] transition-all hover:bg-[#1C1410]/10">
-                                        <div class="flex items-center gap-3 overflow-hidden flex-1 mr-3">
-                                            <div class="w-10 h-10 rounded-lg flex items-center justify-center bg-[#FFE381]/20 text-[#1C1410] shrink-0">
-                                                <!-- File Icon depending on type -->
-                                                <i data-lucide="file-text" class="h-5 w-5" :style="doc.type === 'pdf' ? 'color:#ff4d4d;' : (doc.type === 'php' ? 'color:#007acc;' : 'color:#04b050;')"></i>
-                                            </div>
-                                            <div class="overflow-hidden">
-                                                <h4 class="text-xs font-semibold text-[#1C1410] truncate w-full" x-text="doc.title"></h4>
-                                                <p class="text-[10px] text-[#7A6A52] mt-1" x-text="(doc.type ? doc.type.toUpperCase() : 'PDF') + ' · ' + (doc.size || 'N/A')"></p>
-                                            </div>
-                                        </div>
-                                        <a :href="doc.url === '#' ? 'javascript:void(0)' : doc.url" 
-                                           :target="doc.url === '#' ? '_self' : '_blank'"
-                                           @click="if(doc.url === '#') { alert('Đây là tài liệu mẫu. Chức năng chỉ hỗ trợ tải/xem tài liệu thật khi có file đính kèm trên hệ thống.') }"
-                                           class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all shrink-0 flex items-center gap-1 bg-[#FFE381] hover:bg-[#FFE381]/80 text-[#1C1410] focus:outline-none shadow-sm">
-                                            <i data-lucide="eye" class="h-3.5 w-3.5"></i> Xem
-                                        </a>
-                                    </div>
-                                </template>
-                            </div>
-                            <div x-show="current && current.documents.length === 0" class="text-center py-10 text-[#7A6A52]/50 text-sm">
-                                Không có tài liệu đính kèm cho sự kiện này.
-                            </div>
-                        </div>
+
 
                         <!-- Tab 3: Speakers -->
                         <div x-show="activeTab === 'speakers'" class="space-y-3">
@@ -472,7 +434,7 @@
                                 </template>
                             </div>
                             <div x-show="current && current.speakers && current.speakers.length === 0" class="text-center py-10 text-[#7A6A52]/50 text-sm">
-                                Không có thông tin diễn giả hoặc khách mời cho sự kiện này.
+                                Không có thông tin diễn giả cho sự kiện này.
                             </div>
                         </div>
                     </div>

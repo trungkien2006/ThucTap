@@ -32,8 +32,8 @@ class FrontendController extends Controller
                       "Email: {$validated['email']}\n" .
                       "Chủ đề: {$validated['subject']}\n" .
                       "Nội dung:\n{$validated['message']}", function ($message) use ($validated) {
-                // To the site admin
-                $message->to(env('MAIL_FROM_ADDRESS', 'admin@example.com'))
+                // To the site admin (or recipient address configured in .env)
+                $message->to(env('MAIL_RECEIVE_ADDRESS', 'kient9596@gmail.com'))
                         ->subject('Tin nhắn mới từ: ' . $validated['name']);
                 
                 // Reply-To the user who submitted the form
@@ -145,13 +145,23 @@ class FrontendController extends Controller
 
             $archive = [];
             foreach ($archiveGroups as $year => $events) {
-                $featured = $events->first();
+                // Get top events of the year by views
+                $topEvents = $events->sortByDesc('views_count')->take(5);
+                $topImages = [];
+                foreach ($topEvents as $e) {
+                    $topImages[] = [
+                        'title' => $e->title,
+                        'url' => route('events.show', $e->slug),
+                        'img' => $e->bannerImage ? \App\Helpers\FileHelper::url($e->bannerImage->url) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80',
+                    ];
+                }
+                
                 $archive[] = [
                     'year' => $year,
                     'title' => 'Tổng kết năm ' . $year,
-                    'img' => $featured->bannerImage ? \App\Helpers\FileHelper::url($featured->bannerImage->url) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80',
                     'desc' => 'Kho lưu trữ chứa ' . $events->count() . ' sự kiện đã diễn ra trong năm ' . $year . '. Từ hội thảo, hội nghị đến các hoạt động ngoại khóa.',
                     'achievements' => [$events->count() . ' sự kiện đã tổ chức'],
+                    'top_events' => $topImages,
                 ];
             }
             // Sort archive by year descending

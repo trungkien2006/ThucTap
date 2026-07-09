@@ -30,10 +30,10 @@
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
         @forelse($departments as $i => $dept)
-        <div class="bg-card rounded-lg border border-border p-4 shadow-none flex flex-col gap-3">
+        <div class="bg-card rounded-2xl border-none shadow-2xl shadow-slate-300/60 hover:-translate-y-2 hover:shadow-slate-300/80 transition-all duration-300 p-5 flex flex-col gap-3 bg-card rounded-2xl border-none shadow-2xl shadow-slate-300/60 hover:-translate-y-2 hover:shadow-slate-300/80 transition-all duration-300-hover">
             <div class="flex items-start justify-between">
-                <div class="h-9 w-9 rounded-md bg-gradient-to-br grid place-items-center {{ $palettes[$i % count($palettes)] }}">
-                    <i data-lucide="building" class="h-4 w-4"></i>
+                <div class="h-10 w-10 rounded-xl bg-gradient-to-br grid place-items-center {{ $palettes[$i % count($palettes)] }} shadow-sm">
+                    <i data-lucide="building" class="h-5 w-5"></i>
                 </div>
                 <div class="flex items-center gap-1">
                     <a href="{{ route('admin.departments.edit', $dept) }}" class="h-9 w-9 rounded-lg flex items-center justify-center text-muted-foreground hover:bg-accent hover:text-foreground transition-all" title="Sửa">
@@ -60,7 +60,7 @@
             </div>
         </div>
         @empty
-        <div class="col-span-full py-12 text-center bg-card rounded-lg border border-border shadow-none">
+        <div class="col-span-full py-12 text-center bg-card rounded-lg border-none shadow-2xl shadow-slate-300/60 hover:-translate-y-2 hover:shadow-slate-300/80 transition-all duration-300">
             <i data-lucide="building" class="h-10 w-10 text-muted-foreground/30 mx-auto mb-3"></i>
             <p class="text-sm text-muted-foreground">Chưa có chuyên ngành nào.</p>
         </div>

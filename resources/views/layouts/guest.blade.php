@@ -59,12 +59,12 @@
                         {{-- Stats --}}
                         <div class="flex gap-8 pt-4">
                             <div>
-                                <div class="text-fpt-orange font-extrabold text-2xl">{{ \App\Models\Event::count() }}</div>
+                                <div class="text-fpt-orange font-extrabold text-2xl stat-counter" data-target="{{ \App\Models\Event::count() }}">0</div>
                                 <div class="text-white/50 text-xs mt-0.5">Sự kiện</div>
                             </div>
                             <div class="w-px bg-white/10"></div>
                             <div>
-                                <div class="text-fpt-orange font-extrabold text-2xl">{{ \App\Models\Event::published()->upcoming()->count() }}</div>
+                                <div class="text-fpt-orange font-extrabold text-2xl stat-counter" data-target="{{ \App\Models\Event::published()->upcoming()->count() }}">0</div>
                                 <div class="text-white/50 text-xs mt-0.5">Sắp diễn ra</div>
                             </div>
                         </div>
@@ -175,6 +175,31 @@
                     
                     container.appendChild(snowflake);
                 }
+
+                // Counter Animation
+                const counters = document.querySelectorAll('.stat-counter');
+                counters.forEach(counter => {
+                    const target = +counter.getAttribute('data-target');
+                    const duration = 500; // 0.5 seconds
+                    const increment = target / (duration / 16); // 16ms per frame (~60fps)
+                    let current = 0;
+
+                    const updateCounter = () => {
+                        current += increment;
+                        if (current < target) {
+                            counter.innerText = Math.ceil(current);
+                            requestAnimationFrame(updateCounter);
+                        } else {
+                            counter.innerText = target;
+                        }
+                    };
+                    
+                    if (target > 0) {
+                        updateCounter();
+                    } else {
+                        counter.innerText = 0;
+                    }
+                });
             });
         </script>
     </body>

@@ -305,6 +305,11 @@
                         <li><a href="{{ route('home') }}#master-wipe-anchor" wire:navigate class="text-white/60 hover:text-[#E8C84A] text-sm transition-colors flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4"></i> Sự kiện nổi bật</a></li>
                         <li><a href="{{ route('archive') }}" wire:navigate class="text-white/60 hover:text-[#E8C84A] text-sm transition-colors flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4"></i> Kho lưu trữ</a></li>
                         <li><a href="{{ route('contact') }}" wire:navigate class="text-white/60 hover:text-[#E8C84A] text-sm transition-colors flex items-center gap-2"><i data-lucide="chevron-right" class="w-4 h-4"></i> Liên hệ</a></li>
+                        <li>
+                            <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="text-white/60 hover:text-[#E8C84A] text-sm transition-colors flex items-center gap-2 w-full text-left">
+                                <i data-lucide="chevron-up" class="w-4 h-4"></i> Quay về đầu trang
+                            </button>
+                        </li>
                     </ul>
                 </div>
 

@@ -21,38 +21,31 @@
 
     {{-- Filters Card --}}
     @php
-        // Build combined year+semester options from events
         $semestersMap = ['1' => 'fall', '2' => 'spring', '3' => 'summer'];
-        $selectedYearSemesters = array_filter(is_array(request('year_semester')) ? request('year_semester') : [request('year_semester')]);
+        $selectedSemesters = array_filter(is_array(request('semester')) ? request('semester') : [request('semester')]);
         $selectedCategories = array_filter(is_array(request('category_id')) ? request('category_id') : [request('category_id')]);
         $selectedDepartments = array_filter(is_array(request('department_id')) ? request('department_id') : [request('department_id')]);
-
-        // Build combined year_semester options from distinct event combos
-        $yearSemesterOptions = \App\Models\Event::select('academic_year', 'semester')
-            ->whereNotNull('academic_year')
-            ->whereNotNull('semester')
-            ->distinct()
-            ->orderBy('academic_year', 'desc')
-            ->orderBy('semester')
-            ->get()
-            ->map(function ($e) use ($semestersMap) {
-                $semLabel = $semestersMap[$e->semester] ?? 'HK' . $e->semester;
-                return [
-                    'value' => $e->semester . '_' . $e->academic_year,
-                    'label' => $semLabel . ' ' . $e->academic_year,
-                ];
-            });
+        $selectedStatuses = array_filter(is_array(request('status')) ? request('status') : [request('status')]);
+        
+        $statusOptions = [
+            'upcoming' => 'Sắp diễn ra',
+            'completed' => 'Đã kết thúc',
+            'draft' => 'Chưa xuất bản',
+        ];
     @endphp
     <div class="bg-card rounded-lg border border-border p-4 shadow-none flex flex-col gap-4">
         <form method="GET" action="{{ route('admin.events.index') }}" id="filterForm" class="space-y-3 w-full">
-            @foreach($selectedYearSemesters as $ys)
-                <input type="hidden" name="year_semester[]" value="{{ $ys }}" class="filter-input-year_semester">
+            @foreach($selectedSemesters as $sem)
+                <input type="hidden" name="semester[]" value="{{ $sem }}" class="filter-input-semester">
             @endforeach
             @foreach($selectedCategories as $c)
                 <input type="hidden" name="category_id[]" value="{{ $c }}" class="filter-input-category_id">
             @endforeach
             @foreach($selectedDepartments as $d)
                 <input type="hidden" name="department_id[]" value="{{ $d }}" class="filter-input-department_id">
+            @endforeach
+            @foreach($selectedStatuses as $s)
+                <input type="hidden" name="status[]" value="{{ $s }}" class="filter-input-status">
             @endforeach
 
             <div class="flex flex-wrap items-center gap-2 w-full">
@@ -65,7 +58,7 @@
                     <i data-lucide="search" class="h-3.5 w-3.5"></i> Tìm
                 </button>
 
-                @if(request('search') || count($selectedYearSemesters) > 0 || count($selectedCategories) > 0 || count($selectedDepartments) > 0)
+                @if(request('search') || count($selectedSemesters) > 0 || count($selectedCategories) > 0 || count($selectedDepartments) > 0 || count($selectedStatuses) > 0)
                     <a href="{{ route('admin.events.index') }}" class="inline-flex items-center justify-center rounded-lg text-xs font-medium border border-input bg-background h-9 px-3 hover:bg-accent transition-all gap-1">
                         <i data-lucide="x" class="h-3.5 w-3.5"></i> Xóa lọc
                     </a>
@@ -73,11 +66,11 @@
             </div>
 
             <div class="flex flex-wrap items-center gap-2">
-                <select onchange="addFilterTag('year_semester', this)" class="h-9 min-w-[220px] border border-input rounded-lg text-xs bg-background px-2.5 focus:outline-none focus:border-ring transition-all text-muted-foreground cursor-pointer">
-                    <option value="">+ Năm học & Học kỳ</option>
-                    @foreach($yearSemesterOptions as $opt)
-                        @if(!in_array($opt['value'], $selectedYearSemesters))
-                            <option value="{{ $opt['value'] }}">{{ $opt['label'] }}</option>
+                <select onchange="addFilterTag('semester', this)" class="h-9 min-w-[140px] border border-input rounded-lg text-xs bg-background px-2.5 focus:outline-none focus:border-ring transition-all text-muted-foreground cursor-pointer">
+                    <option value="">+ Học kỳ</option>
+                    @foreach($semestersMap as $val => $label)
+                        @if(!in_array($val, $selectedSemesters))
+                            <option value="{{ $val }}">{{ ucfirst($label) }}</option>
                         @endif
                     @endforeach
                 </select>
@@ -99,24 +92,27 @@
                         @endif
                     @endforeach
                 </select>
+
+                <select onchange="addFilterTag('status', this)" class="h-9 min-w-[160px] border border-input rounded-lg text-xs bg-background px-2.5 focus:outline-none focus:border-ring transition-all text-muted-foreground cursor-pointer">
+                    <option value="">+ Trạng thái</option>
+                    @foreach($statusOptions as $val => $label)
+                        @if(!in_array($val, $selectedStatuses))
+                            <option value="{{ $val }}">{{ $label }}</option>
+                        @endif
+                    @endforeach
+                </select>
             </div>
 
             {{-- Render Active Tags --}}
-            @if(count($selectedYearSemesters) > 0 || count($selectedCategories) > 0 || count($selectedDepartments) > 0)
+            @if(count($selectedSemesters) > 0 || count($selectedCategories) > 0 || count($selectedDepartments) > 0 || count($selectedStatuses) > 0)
                 <div class="flex flex-wrap items-center gap-1.5 pt-2 border-t border-border/50">
                     <span class="text-[11px] font-semibold text-muted-foreground mr-1">Bộ lọc đang chọn:</span>
 
-                    @foreach($selectedYearSemesters as $ys)
-                        @php
-                            $parts = explode('_', $ys, 2);
-                            $semVal = $parts[0] ?? '';
-                            $yearVal = $parts[1] ?? '';
-                            $semLabel = $semestersMap[$semVal] ?? 'HK'.$semVal;
-                            $ysLabel = $semLabel . ' ' . $yearVal;
-                        @endphp
+
+                    @foreach($selectedSemesters as $sem)
                         <span class="inline-flex items-center gap-1 bg-primary/10 text-primary border border-primary/20 rounded-lg px-2.5 py-1 text-xs font-medium">
-                            {{ $ysLabel }}
-                            <button type="button" onclick="removeFilterTag('year_semester', '{{ $ys }}')" class="hover:text-destructive transition-colors ml-0.5">
+                            Học kỳ: {{ ucfirst($semestersMap[$sem] ?? $sem) }}
+                            <button type="button" onclick="removeFilterTag('semester', '{{ $sem }}')" class="hover:text-destructive transition-colors ml-0.5">
                                 <i data-lucide="x" class="h-3 w-3"></i>
                             </button>
                         </span>
@@ -141,6 +137,15 @@
                             </button>
                         </span>
                     @endforeach
+
+                    @foreach($selectedStatuses as $s)
+                        <span class="inline-flex items-center gap-1 bg-blue-50 text-blue-600 border border-blue-200 rounded-lg px-2.5 py-1 text-xs font-medium">
+                            Trạng thái: {{ $statusOptions[$s] ?? $s }}
+                            <button type="button" onclick="removeFilterTag('status', '{{ $s }}')" class="hover:text-destructive transition-colors ml-0.5">
+                                <i data-lucide="x" class="h-3 w-3"></i>
+                            </button>
+                        </span>
+                    @endforeach
                 </div>
             @endif
         </form>
@@ -148,19 +153,21 @@
 
     {{-- Events Table --}}
     <div class="bg-card rounded-lg border border-border overflow-hidden shadow-none">
-        <div class="flex items-center justify-between px-3 py-2 border-b border-border bg-muted/30">
+        <div class="flex items-center justify-between px-4 py-3 border-b border-border bg-white/20">
             <span class="text-xs text-muted-foreground font-medium">Tổng số: {{ $events->total() }} sự kiện</span>
         </div>
         <div class="overflow-x-auto">
             <table class="w-full text-xs">
-                <thead class="bg-muted/30 text-[11px] uppercase tracking-wider text-muted-foreground sticky top-0">
+                <thead class="bg-white/40 backdrop-blur-md text-[11px] uppercase tracking-wide text-muted-foreground sticky top-0">
                     <tr>
-                        <th class="text-left px-5 py-3 font-semibold w-12 rounded-tl-lg">#</th>
-                        <th class="text-left px-4 py-3 font-semibold">Sự kiện</th>
-                        <th class="text-left px-4 py-3 font-semibold">Phân loại</th>
-                        <th class="text-left px-4 py-3 font-semibold">Thời gian & Địa điểm</th>
-                        <th class="text-left px-4 py-3 font-semibold">Trạng thái</th>
-                        <th class="text-right px-5 py-3 font-semibold rounded-tr-lg">Thao tác</th>
+                        <th class="text-left px-4 py-3 font-medium">Sự kiện</th>
+                        <th class="text-left px-3 py-2 font-medium">Danh mục</th>
+                        <th class="text-left px-3 py-2 font-medium">Khoa</th>
+                        <th class="text-left px-3 py-2 font-medium">Học kỳ - Năm học</th>
+                        <th class="text-left px-3 py-2 font-medium">Địa điểm</th>
+                        <th class="text-left px-3 py-2 font-medium">Ngày diễn ra</th>
+                        <th class="text-left px-3 py-2 font-medium">Trạng thái</th>
+                        <th class="w-10 px-3 py-2"></th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-border/50">
@@ -170,9 +177,9 @@
                         $yearStr = $event->academic_year ?? '2024-2025';
                         $bannerUrl = $event->bannerImage ? \App\Helpers\FileHelper::url($event->bannerImage->url) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80';
                     @endphp
-                    <tr class="hover:bg-muted/30 transition-colors group">
-                        <td class="px-5 py-3 font-medium text-muted-foreground w-12 align-top pt-4">
-                            {{ ($events->currentPage() - 1) * $events->perPage() + $loop->iteration }}
+                    <tr class="border-t border-border hover:bg-slate-50 relative hover:z-10 hover:shadow-xl hover:shadow-slate-200/60 hover:-translate-y-1 transition-all duration-300">
+                        <td class="px-4 py-3">
+                            <a href="{{ route('admin.events.show', $event) }}" class="font-medium truncate block hover:text-primary transition-colors">{{ $event->title }}</a>
                         </td>
                         <td class="px-4 py-3 align-top">
                             <div class="flex items-start gap-3 relative group/title">
@@ -268,51 +275,16 @@
                                 </div>
                             </div>
                         </td>
-                        <td class="px-4 py-3 align-top pt-3">
-                            <div class="flex flex-col items-start gap-1.5">
-                                @php
-                                    $displayStatus = $event->status ?: 'draft';
-                                    if ($displayStatus === 'draft' && $event->is_published) {
-                                        $displayStatus = ($event->event_date && $event->event_date < now()) ? 'ended' : 'published';
-                                    }
-                                @endphp
-                                @if($displayStatus === 'published')
-                                    <span class="inline-flex items-center h-5 px-2 rounded-full text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/60">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span> Đã xuất bản
-                                    </span>
-                                @elseif($displayStatus === 'ended')
-                                    <span class="inline-flex items-center h-5 px-2 rounded-full text-[10px] font-medium bg-blue-50 text-blue-700 border border-blue-200/60">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-blue-500 mr-1.5"></span> Kết thúc
-                                    </span>
-                                @elseif($displayStatus === 'cancelled')
-                                    <span class="inline-flex items-center h-5 px-2 rounded-full text-[10px] font-medium bg-red-50 text-red-700 border border-red-200/60">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-red-500 mr-1.5"></span> Đã hủy
-                                    </span>
-                                @elseif($displayStatus === 'archived')
-                                    <span class="inline-flex items-center h-5 px-2 rounded-full text-[10px] font-medium bg-amber-50 text-amber-700 border border-amber-200/60">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5"></span> Lưu trữ
-                                    </span>
-                                @else
-                                    <span class="inline-flex items-center h-5 px-2 rounded-full text-[10px] font-medium bg-slate-100 text-slate-700 border border-slate-200/60">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-slate-400 mr-1.5"></span> Nháp
-                                    </span>
-                                @endif
-                                
-                                @if($event->isEnded() && $event->isMissingRecap())
-                                    <div class="flex items-center gap-1.5 group/warn relative">
-                                        <span class="relative flex h-2 w-2">
-                                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                                          <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-                                        </span>
-                                        <span class="text-[10px] text-red-500 font-semibold cursor-help" title="Sự kiện đã kết thúc, cần thêm link Google Drive (Album) để vào kho lưu trữ">Thiếu link GG Drive</span>
-                                    </div>
-                                @elseif($event->recap_drive_link)
-                                    <div class="flex items-center gap-1.5">
-                                        <i data-lucide="check-circle-2" class="h-3 w-3 text-emerald-600"></i>
-                                        <span class="text-[10px] text-emerald-600 font-semibold">Đã có link Album</span>
-                                    </div>
-                                @endif
-                            </div>
+                        <td class="px-3 py-2.5 text-muted-foreground max-w-[180px] truncate" title="{{ $event->location ?? '—' }}">{{ $event->location ?? '—' }}</td>
+                        <td class="px-3 py-2.5 tabular-nums whitespace-nowrap">{{ $event->event_date->format('Y-m-d') }}</td>
+                        <td class="px-3 py-2.5">
+                            @if(!$event->is_published)
+                                <span class="inline-flex items-center h-5 px-1.5 rounded text-[10px] font-medium bg-amber-100 text-amber-700">Chưa xuất bản</span>
+                            @elseif($event->event_date < now())
+                                <span class="inline-flex items-center h-5 px-1.5 rounded text-[10px] font-medium bg-slate-100 text-slate-700">Đã kết thúc</span>
+                            @else
+                                <span class="inline-flex items-center h-5 px-1.5 rounded text-[10px] font-medium bg-emerald-100 text-emerald-700">Sắp diễn ra</span>
+                            @endif
                         </td>
                         <td class="px-5 py-3 align-top pt-3">
                             <div class="flex items-center justify-end gap-1 opacity-60 group-hover:opacity-100 transition-opacity">

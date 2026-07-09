@@ -16,7 +16,7 @@
         </div>
     @endif
 
-    <div class="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
+    <div class="bg-card rounded-xl border-none shadow-2xl shadow-slate-300/60 hover:-translate-y-2 hover:shadow-slate-300/80 transition-all duration-300 overflow-hidden">
         <form method="POST" action="{{ route('admin.users.store') }}" class="p-6 space-y-4">
             @csrf
 

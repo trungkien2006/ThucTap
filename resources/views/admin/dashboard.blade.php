@@ -26,50 +26,77 @@
                 <h1 class="text-xl md:text-[22px] font-semibold tracking-tight">Tổng quan</h1>
                 <p class="text-xs text-muted-foreground mt-0.5">Học kỳ {{ $semesterName }} {{ $schoolYear }} · Cập nhật 2 phút trước</p>
             </div>
-            <div class="flex items-center gap-2">
-                <a href="{{ route('admin.events.create') }}"
-                    class="inline-flex items-center gap-1.5 h-11 px-5 text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl transition-all shadow-sm">
-                    <i data-lucide="plus" class="h-5 w-5"></i> Sự kiện mới
-                </a>
-            </div>
         </div>
 
         {{-- Stats Grid --}}
-        <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
             @php
+                $nextEventDate = $upcomingEvents->first() ? $upcomingEvents->first()->event_date->format('d/m/Y') : 'Không có';
+                
                 $statCards = [
-                    ['label' => 'Tổng số sự kiện', 'value' => $totalEvents, 'delta' => $deltas['events'] ?? '0%', 'icon' => 'calendar'],
-                    ['label' => 'Sự kiện sắp diễn ra', 'value' => $upcomingEventsCount, 'delta' => $deltas['upcoming'] ?? '0%', 'icon' => 'calendar-clock'],
-                    ['label' => 'Sự kiện hoàn thành', 'value' => $completedEventsCount, 'delta' => $deltas['completed'] ?? '0%', 'icon' => 'calendar-check'],
-                    ['label' => 'Lượt xem sự kiện', 'value' => number_format($totalViews), 'delta' => $deltas['views'] ?? '0%', 'icon' => 'eye'],
-                    ['label' => 'Tổng media', 'value' => number_format($totalMedia), 'delta' => $deltas['media'] ?? '0%', 'icon' => 'film'],
+                    [
+                        'label' => 'Tổng số sự kiện', 
+                        'value' => $totalEvents, 
+                        'delta' => $deltas['events'] ?? '0%', 
+                        'icon' => 'calendar', 
+                        'extra' => '<span class="text-muted-foreground ml-auto whitespace-nowrap">('.$completedEventsCount.' đã kết thúc)</span>',
+                        'url' => route('admin.events.index')
+                    ],
+                    [
+                        'label' => 'Sự kiện sắp diễn ra', 
+                        'value' => $upcomingEventsCount, 
+                        'custom_bottom_text' => '📅 Sự kiện tiếp theo: ' . $nextEventDate, 
+                        'icon' => 'calendar-clock',
+                        'url' => route('admin.events.index', ['status' => ['upcoming']])
+                    ],
+                    [
+                        'label' => 'Sự kiện chưa xuất bản', 
+                        'value' => $draftEventsCount, 
+                        'custom_bottom_text' => '⏳ Đang chờ hoàn thiện', 
+                        'icon' => 'file-text',
+                        'url' => route('admin.events.index', ['status' => ['draft']])
+                    ],
                 ];
             @endphp
             @foreach($statCards as $s)
-                <div
-                    class="bg-card rounded-lg border border-border p-3 flex flex-col justify-between shadow-none stat-card-interactive h-full">
+                @php
+                    $isNegative = isset($s['delta']) ? str_starts_with($s['delta'], '-') : false;
+                    $isZero = isset($s['delta']) ? $s['delta'] === '0%' : false;
+                    $textColor = $isNegative ? 'text-rose-600' : ($isZero ? 'text-muted-foreground' : 'text-emerald-600');
+                    $iconName = $isNegative ? 'arrow-down-right' : ($isZero ? 'minus' : 'arrow-up-right');
+                @endphp
+                <div onclick="window.location='{{ $s['url'] }}'"
+                    class="bg-card rounded-2xl border-none p-4 flex flex-col justify-between shadow-2xl shadow-slate-300/60 hover:-translate-y-2 hover:shadow-slate-300/80 h-full cursor-pointer transition-all duration-300 group">
                     <div class="space-y-1">
                         <div class="flex items-center justify-between gap-1">
                             <span class="text-[11px] uppercase tracking-wide text-muted-foreground font-medium truncate block"
                                 title="{{ $s['label'] }}">{{ $s['label'] }}</span>
                             <i data-lucide="{{ $s['icon'] }}" class="h-3.5 w-3.5 text-muted-foreground shrink-0"></i>
                         </div>
-                        <div class="text-xl font-semibold tracking-tight">{{ $s['value'] }}</div>
+                        <div class="text-xl font-semibold tracking-tight group-hover:text-primary transition-colors">{{ $s['value'] }}</div>
                     </div>
-                    <div class="flex items-center gap-1 text-[11px] text-success mt-2 pt-1 border-t border-border/40">
-                        <i data-lucide="arrow-up-right" class="h-3 w-3 text-emerald-600 shrink-0"></i>
-                        <span class="text-emerald-600 font-medium whitespace-nowrap">{{ $s['delta'] }}</span>
-                        <span class="text-muted-foreground truncate">năm trước</span>
+                    <div class="flex items-center gap-1 text-[11px] mt-2 pt-1 border-t border-border/40">
+                        @if(isset($s['custom_bottom_text']))
+                            <span class="text-slate-600 font-medium whitespace-nowrap">{{ $s['custom_bottom_text'] }}</span>
+                        @else
+                            <i data-lucide="{{ $iconName }}" class="h-3 w-3 {{ $textColor }} shrink-0"></i>
+                            <span class="{{ $textColor }} font-medium whitespace-nowrap">{{ $s['delta'] }}</span>
+                            <span class="text-muted-foreground truncate">so với tháng trước</span>
+                        @endif
+                        
+                        @if(isset($s['extra']))
+                            {!! $s['extra'] !!}
+                        @endif
                     </div>
                 </div>
             @endforeach
         </div>
 
-        {{-- Charts Row 1 --}}
+        {{-- Charts Row --}}
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
             {{-- Area Chart: Events Trend --}}
             <div
-                class="bg-card rounded-lg border border-border p-4 lg:col-span-3 shadow-none flex flex-col gap-3 chart-card-interactive">
+                class="bg-card rounded-2xl border-none p-5 lg:col-span-2 shadow-2xl shadow-slate-300/60 hover:-translate-y-2 hover:shadow-slate-300/80 flex flex-col gap-3 transition-all duration-300">
                 <div class="flex items-center justify-between">
                     <div>
                         <h2 class="text-sm font-semibold">Xu hướng sự kiện</h2>
@@ -80,12 +107,9 @@
                     <canvas id="eventsChart"></canvas>
                 </div>
             </div>
-        </div>
 
-        {{-- Charts Row 2 (Integrated Statistics & Analytics) --}}
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
             {{-- Popular Categories (Doughnut Chart) --}}
-            <div class="bg-card rounded-lg border border-border p-4 shadow-none flex flex-col chart-card-interactive">
+            <div class="bg-card rounded-2xl border-none p-5 shadow-2xl shadow-slate-300/60 hover:-translate-y-2 hover:shadow-slate-300/80 flex flex-col lg:col-span-1 transition-all duration-300">
                 <div>
                     <h2 class="text-sm font-semibold">Danh mục phổ biến</h2>
                     <p class="text-[11px] text-muted-foreground">Tỷ lệ trên tổng số sự kiện trong vòng 1 năm</p>
@@ -107,24 +131,12 @@
                     </div>
                 </div>
             </div>
-
-            {{-- Media Growth (Line Chart) --}}
-            <div
-                class="bg-card rounded-lg border border-border p-4 lg:col-span-2 shadow-none flex flex-col gap-3 chart-card-interactive">
-                <div>
-                    <h2 class="text-sm font-semibold">Tăng trưởng truyền thông</h2>
-                    <p class="text-[11px] text-muted-foreground">Hình ảnh và video được tải lên hàng tháng</p>
-                </div>
-                <div class="h-56 relative">
-                    <canvas id="mediaGrowthChart"></canvas>
-                </div>
-            </div>
         </div>
 
         {{-- Bottom Row --}}
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
             {{-- Most Viewed Events --}}
-            <div class="bg-card rounded-lg border border-border p-4 shadow-none flex flex-col gap-3 chart-card-interactive">
+            <div class="bg-card rounded-2xl border-none p-5 shadow-2xl shadow-slate-300/60 hover:-translate-y-2 hover:shadow-slate-300/80 flex flex-col gap-3 transition-all duration-300">
                 <div class="flex items-center justify-between">
                     <h2 class="text-sm font-semibold">Sự kiện xem nhiều nhất</h2>
                     <span
@@ -155,7 +167,7 @@
 
             {{-- Recent Activity --}}
             <div
-                class="bg-card rounded-lg border border-border p-4 shadow-none lg:col-span-2 flex flex-col gap-3 chart-card-interactive">
+                class="bg-card rounded-2xl border-none p-5 shadow-2xl shadow-slate-300/60 hover:-translate-y-2 hover:shadow-slate-300/80 lg:col-span-2 flex flex-col gap-3 transition-all duration-300">
                 <div class="flex items-center justify-between">
                     <h2 class="text-sm font-semibold">Hoạt động gần đây</h2>
                     <a href="{{ route('admin.profile.activity') }}"
@@ -206,57 +218,13 @@
             </div>
         </div>
 
-        {{-- Upcoming Events Table (Removed Registrations) --}}
-        <div class="bg-card rounded-lg border border-border overflow-hidden shadow-none">
-            <div class="flex items-center justify-between p-4 border-b border-border">
-                <div>
-                    <h2 class="text-sm font-semibold">Sự kiện sắp diễn ra</h2>
-                    <p class="text-[11px] text-muted-foreground">Các sự kiện tiếp theo được lên lịch trong tháng này</p>
-                </div>
-                <a href="{{ route('admin.events.index') }}"
-                    class="inline-flex items-center gap-1 h-9 px-3.5 text-xs border border-border rounded-lg hover:bg-accent text-muted-foreground hover:text-foreground transition-all">
-                    Quản lý
-                </a>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm">
-                    <thead class="bg-muted/40 text-[11px] uppercase tracking-wide text-muted-foreground">
-                        <tr>
-                            <th class="text-left px-4 py-2 font-medium">Sự kiện</th>
-                            <th class="text-left px-3 py-2 font-medium">Danh mục</th>
-                            <th class="text-left px-3 py-2 font-medium">Ngày diễn ra</th>
-                            <th class="text-left px-3 py-2 font-medium">Địa điểm</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($upcomingEvents as $e)
-                            <tr class="border-t border-border hover:bg-muted/30">
-                                <td class="px-4 py-2.5">
-                                    <div class="font-medium text-xs">{{ $e->title }}</div>
-                                </td>
-                                <td class="px-3 py-2.5 text-xs">
-                                    <span
-                                        class="inline-flex items-center h-5 px-1.5 rounded text-[10px] font-medium border border-border bg-background">{{ $e->category?->name ?? 'Seminar' }}</span>
-                                </td>
-                                <td class="px-3 py-2.5 text-xs tabular-nums">{{ $e->event_date->format('Y-m-d') }}</td>
-                                <td class="px-3 py-2.5 text-xs">{{ $e->location ?? 'Chưa xác định' }}</td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="4" class="px-4 py-8 text-center text-muted-foreground text-xs">Không có sự kiện sắp
-                                    tới nào</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </div>
+
     </div>
 @endsection
 
 @push('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        (function () {
             const months = ['Th1', 'Th2', 'Th3', 'Th4', 'Th5', 'Th6', 'Th7', 'Th8', 'Th9', 'Th10', 'Th11', 'Th12'];
             const events = {!! json_encode($eventsTrend) !!};
 
@@ -327,8 +295,12 @@
                                 fill: true,
                                 tension: 0.4,
                                 borderWidth: 2,
-                                pointRadius: 0,
-                                pointHoverRadius: 5,
+                                pointRadius: 4,
+                                pointHoverRadius: 6,
+                                pointHitRadius: 30, // Magnetic effect radius
+                                pointBackgroundColor: '#ffffff',
+                                pointBorderColor: '#546abf',
+                                pointBorderWidth: 2,
                                 pointHoverBackgroundColor: '#546abf',
                                 pointHoverBorderColor: '#ffffff',
                                 pointHoverBorderWidth: 2,
@@ -338,9 +310,23 @@
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'index',
+                            axis: 'x',
+                            intersect: false,
+                        },
                         plugins: {
                             legend: { display: false },
-                            tooltip: { enabled: false }
+                            tooltip: { 
+                                enabled: true,
+                                intersect: false,
+                                mode: 'index',
+                                titleFont: { family: 'Inter' },
+                                bodyFont: { family: 'Inter' },
+                                padding: 10,
+                                cornerRadius: 4,
+                                displayColors: false
+                            }
                         },
                         scales: {
                             x: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 10 } } },
@@ -361,76 +347,35 @@
                         datasets: [{
                             data: {!! json_encode(collect($categories)->pluck('count')) !!},
                             backgroundColor: {!! json_encode(collect($categories)->pluck('color')) !!},
-                            borderWidth: 2,
-                            borderColor: '#ffffff',
-                            hoverOffset: 0
+                            borderWidth: 0,
+                            hoverOffset: 15
                         }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        cutout: '75%',
+                        cutout: '45%',
+                        layout: {
+                            padding: 15
+                        },
+                        interaction: {
+                            mode: 'nearest',
+                            intersect: false,
+                        },
                         plugins: {
                             legend: { display: false },
-                            tooltip: { enabled: false }
+                            tooltip: { 
+                                enabled: true,
+                                intersect: false,
+                                titleFont: { family: 'Inter' },
+                                bodyFont: { family: 'Inter' },
+                                padding: 10,
+                                cornerRadius: 4
+                            }
                         }
                     }
                 });
             }
-
-            // 3. Media Growth (Line Chart)
-            const ctx4 = document.getElementById('mediaGrowthChart');
-            if (ctx4) {
-                new Chart(ctx4, {
-                    type: 'line',
-                    data: {
-                        labels: months,
-                        datasets: [
-                            {
-                                label: 'Hình ảnh',
-                                data: {!! json_encode($imagesTrend) !!},
-                                borderColor: '#546abf',
-                                backgroundColor: 'transparent',
-                                borderWidth: 2,
-                                tension: 0.4,
-                                pointRadius: 3,
-                                pointHoverRadius: 5,
-                                pointBackgroundColor: '#546abf',
-                                pointHoverBackgroundColor: '#546abf',
-                                pointHoverBorderColor: '#ffffff',
-                                pointHoverBorderWidth: 2,
-                            },
-                            {
-                                label: 'Video',
-                                data: {!! json_encode($videosTrend) !!},
-                                borderColor: '#62a152',
-                                backgroundColor: 'transparent',
-                                borderWidth: 2,
-                                tension: 0.4,
-                                pointRadius: 3,
-                                pointHoverRadius: 5,
-                                pointBackgroundColor: '#62a152',
-                                pointHoverBackgroundColor: '#62a152',
-                                pointHoverBorderColor: '#ffffff',
-                                pointHoverBorderWidth: 2,
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { position: 'top', align: 'end', labels: { boxWidth: 12, font: { family: 'Inter', size: 10 } } },
-                            tooltip: { enabled: false }
-                        },
-                        scales: {
-                            x: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 10 } } },
-                            y: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { font: { family: 'Inter', size: 10 }, stepSize: 1, callback: function (value) { if (Number.isInteger(value)) return value; } } }
-                        }
-                    },
-                    plugins: [hoverLinePlugin]
-                });
-            }
-        });
+        })();
     </script>
 @endpush

@@ -14,7 +14,7 @@
     </div>
 
     {{-- Search & Filters --}}
-    <div class="bg-card rounded-lg border border-border p-3 shadow-none">
+    <div class="bg-card rounded-2xl border-none shadow-2xl shadow-slate-300/60 hover:-translate-y-2 hover:shadow-slate-300/80 transition-all duration-300 p-4">
         <form method="GET" action="{{ route('admin.archive.index') }}" class="flex flex-wrap items-center gap-2 w-full">
             <div class="relative flex-1 min-w-[220px]">
                 <i data-lucide="search" class="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground"></i>
@@ -57,7 +57,7 @@
     @endphp
 
     @if($events->isEmpty())
-    <div class="py-16 text-center bg-card rounded-lg border border-border shadow-sm">
+    <div class="py-16 text-center bg-card rounded-2xl border-none shadow-2xl shadow-slate-300/60 hover:-translate-y-2 hover:shadow-slate-300/80 transition-all duration-300">
         <i data-lucide="archive" class="h-10 w-10 text-muted-foreground/30 mx-auto mb-3"></i>
         <p class="text-sm text-muted-foreground">Không có sự kiện nào trong lưu trữ.</p>
     </div>
@@ -73,7 +73,7 @@
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                 @foreach($yearEvents as $e)
-                <div class="bg-card rounded-lg border border-border overflow-hidden shadow-sm hover:shadow-md transition-all">
+                <div class="bg-card rounded-2xl border-none shadow-2xl shadow-slate-300/60 hover:-translate-y-2 hover:shadow-slate-300/80 transition-all duration-300 overflow-hidden bg-card rounded-2xl border-none shadow-2xl shadow-slate-300/60 hover:-translate-y-2 hover:shadow-slate-300/80 transition-all duration-300-hover">
                     <div class="aspect-[16/9] bg-gradient-to-br from-primary/25 via-primary/10 to-accent grid place-items-center relative overflow-hidden">
                         @if($e->bannerImage)
                             <img src="{{ \App\Helpers\FileHelper::url($e->bannerImage->url) }}" class="w-full h-full object-cover" alt="">

@@ -10,7 +10,7 @@
         <a href="{{ route('admin.departments.index') }}" class="inline-flex items-center justify-center rounded-md border border-input bg-background px-3 py-1.5 text-xs font-semibold hover:bg-accent hover:text-accent-foreground transition-all">Quay lại</a>
     </div>
 
-    <div class="rounded-xl border bg-card text-card-foreground shadow-none p-6">
+    <div class="rounded-xl border-none bg-card text-card-foreground shadow-2xl shadow-slate-300/60 hover:-translate-y-2 hover:shadow-slate-300/80 transition-all duration-300 p-6">
         <form action="{{ route('admin.departments.update', $department) }}" method="POST" class="space-y-4">
             @csrf
             @method('PUT')

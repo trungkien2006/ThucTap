@@ -599,7 +599,7 @@
         style="display: grid; grid-template-columns: 1fr; width: 100%; overflow-x: hidden; position: relative; z-index: 30;">
 
         <div style="grid-area: 1 / 1; width: 100%; height: 100%; z-index: 30;">
-            @include('frontend.upcoming', ['upcoming' => $featuredEvents])
+            @include('frontend.upcoming', ['upcoming' => $upcoming])
         </div>
 
         <!-- FEATURED EVENTS WRAPPER -->
@@ -611,12 +611,11 @@
                         <div>
                             <div class="flex items-center gap-3 mb-2">
                                 <div class="h-7 w-1 rounded-full" style="background:#07A0C3;"></div>
-                                <span class="text-xs font-bold uppercase tracking-[0.25em]" style="color:#07A0C3;">Upcoming
-                                    Events</span>
+                                <span class="text-xs font-bold uppercase tracking-[0.25em]" style="color:#07A0C3;">Featured Events</span>
                             </div>
                             <h2
                                 class="font-barlow-condensed text-5xl font-black uppercase tracking-tight text-[#1C1410] lg:text-6xl">
-                                Sự kiện sắp tới</h2>
+                                Sự kiện nổi bật</h2>
                         </div>
                         <a href="#" class="hidden items-center gap-2 text-sm font-semibold lg:inline-flex transition-colors"
                             style="color:#07A0C3;" onmouseover="this.style.color='#04F06A'"
@@ -630,7 +629,7 @@
                         <div id="featured-cards-container"
                             class="flex gap-6 flex-nowrap absolute top-0 left-0 h-full items-center"
                             style="width: max-content; padding-right: 2rem;">
-                            @foreach($upcoming as $i => $ev)
+                            @foreach($featuredEvents as $i => $ev)
                                 <div class="shrink-0 featured-card-item rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
                                     style="width: 350px; height: 480px; max-width: 85vw;">
                                     <x-event-card :event="$ev" mode="grid" />
@@ -787,20 +786,46 @@
                 </div>
             </div>
 
-            <div>
-                <div class="group relative h-[280px] overflow-hidden rounded-2xl lg:h-[360px]"
-                     style="box-shadow:0 20px 60px rgba(255,227,129,0.15);">
-                    <img :src="current.img" :alt="current.title" loading="lazy"
-                         class="h-full w-full object-cover transition-transform duration-[1500ms] group-hover:scale-105" />
-                    <div class="absolute inset-0"
-                         style="background:linear-gradient(to top,rgba(45,31,10,0.92) 0%,rgba(45,31,10,0.25) 60%,transparent 100%);"></div>
-                    <!-- Jasmine accent bar -->
-                    <div class="absolute bottom-0 left-0 right-0 h-1.5" style="background:#FFE381;"></div>
-                    <div class="absolute bottom-6 left-5 right-5">
-                        <div class="mb-2 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.25em] text-[#1C1410]"
-                             style="background:#FFE381;">✦ Featured event</div>
-                        <h3 class="font-barlow-condensed text-3xl font-black uppercase tracking-wide text-white lg:text-4xl"
-                            x-text="current.title"></h3>
+            <div class="w-full">
+                <div class="relative w-full h-[280px] lg:h-[360px]" 
+                     x-data="{ slideIdx: 0, interval: null }" 
+                     x-init="
+                        $watch('idx', () => slideIdx = 0);
+                        interval = setInterval(() => { if(current.top_events && current.top_events.length > 1) { slideIdx = (slideIdx + 1) % current.top_events.length; } }, 3000);
+                     ">
+                    <div class="absolute inset-0 flex items-center justify-end" @mouseenter="clearInterval(interval)" @mouseleave="interval = setInterval(() => { if(current.top_events && current.top_events.length > 1) { slideIdx = (slideIdx + 1) % current.top_events.length; } }, 3000)">
+                        <template x-for="(event, index) in current.top_events" :key="index">
+                            <a :href="event.url" class="absolute right-0 w-[75%] sm:w-[320px] h-full rounded-2xl overflow-hidden shadow-2xl transition-all duration-[800ms] ease-[cubic-bezier(0.25,1,0.5,1)] cursor-pointer"
+                               @click.prevent="if(slideIdx !== index) { slideIdx = index; } else { window.location.href = event.url; }"
+                               :style="`
+                                   transform: translateX(${ index < slideIdx ? 120 : (index - slideIdx) * -100 }px) scale(${ index < slideIdx ? 1.05 : 1 - (index - slideIdx) * 0.05 });
+                                   z-index: ${ 50 - index };
+                                   opacity: ${ index < slideIdx ? 0 : (index - slideIdx > 3 ? 0 : 1) };
+                                   pointer-events: ${ index < slideIdx ? 'none' : 'auto' };
+                               `">
+                               
+                                <img :src="event.img" :alt="event.title" loading="lazy"
+                                     class="h-full w-full object-cover transition-transform duration-[2000ms]"
+                                     :class="index === slideIdx ? 'scale-105' : 'scale-100'" />
+                                
+                                <div class="absolute inset-0 transition-colors duration-800"
+                                     :style="`background:linear-gradient(to top,rgba(45,31,10,0.95) 0%,rgba(45,31,10, ${ index === slideIdx ? '0.1' : '0.6' }) 60%,transparent 100%);`">
+                                </div>
+                                
+                                <div>
+                                    <div class="absolute bottom-0 left-0 right-0 h-1.5 transition-colors duration-800" :style="`background: ${ index === slideIdx ? '#FFE381' : 'rgba(255,227,129,0.3)' };`"></div>
+                                    <div class="absolute bottom-5 left-4 right-4 lg:bottom-6 lg:left-5 lg:right-5 transition-all duration-800"
+                                         :style="`opacity: ${ index === slideIdx ? 1 : 0.4 }; transform: translateY(${ index === slideIdx ? '0' : '15px' });`">
+                                        <div class="mb-2 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.25em] text-[#1C1410]"
+                                             style="background:#FFE381;">
+                                             <span x-text="index === 0 ? '✦ Nổi bật nhất' : 'Top ' + (index + 1)"></span>
+                                        </div>
+                                        <h3 class="font-barlow-condensed text-2xl font-black uppercase tracking-wide text-white lg:text-3xl line-clamp-2"
+                                            x-text="event.title" :title="event.title"></h3>
+                                    </div>
+                                </div>
+                            </a>
+                        </template>
                     </div>
                 </div>
 

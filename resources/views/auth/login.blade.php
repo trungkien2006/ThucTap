@@ -64,16 +64,23 @@
             </div>
 
             {{-- Remember Me --}}
-            <div class="flex items-center gap-2">
-                <input
-                    id="remember_me"
-                    type="checkbox"
-                    name="remember"
-                    class="w-4 h-4 rounded border-slate-400 text-emerald-600 focus:ring-emerald-500 cursor-pointer accent-emerald-600 bg-white"
-                />
-                <label for="remember_me" class="text-sm text-slate-800 font-medium cursor-pointer select-none">
-                    Ghi nhớ đăng nhập
-                </label>
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <div class="relative flex items-center justify-center">
+                        <input
+                            id="remember_me"
+                            type="checkbox"
+                            name="remember"
+                            class="peer appearance-none w-5 h-5 border border-white/60 rounded bg-white/50 checked:bg-emerald-500 checked:border-emerald-500 transition-all cursor-pointer focus:ring-0 focus:ring-offset-0"
+                        />
+                        <span class="material-symbols-outlined absolute text-white text-[14px] pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity">check</span>
+                    </div>
+                    <label for="remember_me" class="text-sm text-slate-800 font-medium cursor-pointer select-none">
+                        Ghi nhớ
+                    </label>
+                </div>
+                
+
             </div>
 
             {{-- Submit --}}
@@ -85,15 +92,7 @@
                 Đăng nhập
             </button>
 
-            {{-- Errors display --}}
-            @if ($errors->any())
-                <div class="mt-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 text-sm text-center font-medium">
-                    @foreach ($errors->all() as $error)
-                        <p>{{ $error }}</p>
-                    @endforeach
-                </div>
-            @endif
-            
+
             {{-- Footer info --}}
             <div class="text-center mt-8">
                 <p class="text-slate-600 text-xs italic">Hệ thống quản lý sự kiện UniEvents</p>

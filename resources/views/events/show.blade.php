@@ -38,8 +38,9 @@
 </style>
 @endpush
 
-<div class="tp1-wrapper">
+<div class="tp1-wrapper" style="{{ $event->event_date > now() ? 'padding-top: 100px;' : '' }}">
     <!-- Hero Section -->
+    @if($event->event_date <= now())
     <div class="tp1-hero">
         @if($event->bannerImage)
             <img src="{{ \App\Helpers\FileHelper::url($event->bannerImage->url) }}" class="tp1-hero-img" alt="{{ $event->title }}">
@@ -93,119 +94,224 @@
 
         </div>
     </div>
+    @endif
     
     <div class="tp1-container">
-        <!-- Giới thiệu sự kiện -->
-        @if(!empty($event->description))
-        <div class="tp1-card">
-            <h2 class="tp1-section-title">Giới thiệu sự kiện</h2>
-            @php
-                $isJsonDesc = false;
-                if (!empty($event->description)) {
-                    $descData = @json_decode($event->description, true);
-                    if (json_last_error() === JSON_ERROR_NONE && is_array($descData)) {
-                        $isJsonDesc = true;
-                    }
-                }
-            @endphp
-            @if(!$isJsonDesc)
-                <div class="tp1-text">
+        @if($event->event_date > now())
+            <!-- Upcoming Event Layout: Poster on left, Info on right -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-10">
+                <!-- Left Column: Poster Card -->
+                <div class="lg:col-span-5">
+                    <div class="bg-white p-4 rounded-2xl shadow-md border border-slate-100 sticky top-24">
+                        @if($event->bannerImage)
+                            <img src="{{ \App\Helpers\FileHelper::url($event->bannerImage->url) }}" class="w-full rounded-xl object-contain shadow-sm" alt="{{ $event->title }}">
+                        @else
+                            <div class="w-full aspect-[3/4] bg-slate-100 rounded-xl flex items-center justify-center text-slate-400">
+                                <span class="material-symbols-outlined text-[48px]">image</span>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+
+                <!-- Right Column: Related Information -->
+                <div class="lg:col-span-7 space-y-6">
+                    <div class="bg-white p-8 rounded-2xl shadow-md border border-slate-100 space-y-6">
+                        <div>
+                            @if($event->category)
+                            <span class="tp1-badge">{{ $event->category->name }}</span>
+                            @endif
+                            <h1 class="text-3xl font-extrabold text-slate-900 mt-2 mb-4 leading-tight text-left">{{ $event->title }}</h1>
+                        </div>
+
+                        <!-- Details list -->
+                        <div class="space-y-4">
+                            <div class="flex items-start gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-orange-50 text-[#f97316] flex items-center justify-center shrink-0">
+                                    <span class="material-symbols-outlined">calendar_today</span>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-slate-500 font-medium text-left">Thời gian diễn ra</div>
+                                    <div class="text-slate-800 font-bold text-base text-left">
+                                        {{ $event->event_date->format('d/m/Y H:i') }}
+                                        @if($event->end_date)
+                                            @if($event->event_date->isSameDay($event->end_date))
+                                                - {{ $event->end_date->format('H:i') }}
+                                            @else
+                                                - {{ $event->end_date->format('d/m/Y H:i') }}
+                                            @endif
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+
+                            @if($event->location)
+                            <div class="flex items-start gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-orange-50 text-[#f97316] flex items-center justify-center shrink-0">
+                                    <span class="material-symbols-outlined">location_on</span>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-slate-500 font-medium text-left">Địa điểm</div>
+                                    <div class="text-slate-800 font-bold text-base text-left">{{ $event->location }}</div>
+                                </div>
+                            </div>
+                            @endif
+                        </div>
+
+                        <!-- Countdown Timer -->
+                        <div class="bg-slate-50 rounded-xl p-5 border border-slate-100">
+                            <div class="text-xs text-slate-500 font-bold uppercase tracking-wider text-center mb-3">Sự kiện bắt đầu sau</div>
+                            <div class="flex justify-center gap-3" id="countdown-wrapper" data-date="{{ $event->event_date->format('Y-m-d\TH:i:s') }}">
+                                <div class="bg-white rounded-lg px-4 py-3 text-center shadow-sm min-w-[70px]">
+                                    <div class="text-2xl font-bold text-[#f97316]" id="days">00</div>
+                                    <div class="text-[9px] text-slate-400 font-bold uppercase">Ngày</div>
+                                </div>
+                                <div class="bg-white rounded-lg px-4 py-3 text-center shadow-sm min-w-[70px]">
+                                    <div class="text-2xl font-bold text-[#f97316]" id="hours">00</div>
+                                    <div class="text-[9px] text-slate-400 font-bold uppercase">Giờ</div>
+                                </div>
+                                <div class="bg-white rounded-lg px-4 py-3 text-center shadow-sm min-w-[70px]">
+                                    <div class="text-2xl font-bold text-[#f97316]" id="minutes">00</div>
+                                    <div class="text-[9px] text-slate-400 font-bold uppercase">Phút</div>
+                                </div>
+                                <div class="bg-white rounded-lg px-4 py-3 text-center shadow-sm min-w-[70px]">
+                                    <div class="text-2xl font-bold text-[#f97316]" id="seconds">00</div>
+                                    <div class="text-[9px] text-slate-400 font-bold uppercase">Giây</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        @if(!empty($event->description))
+                        <div class="pt-4 border-t border-slate-100">
+                            <h3 class="font-bold text-sm text-slate-500 uppercase tracking-wider mb-2 text-left">Giới thiệu sự kiện</h3>
+                            <p class="text-slate-600 text-sm leading-relaxed whitespace-pre-line text-left">{!! nl2br(e($event->description)) !!}</p>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        @else
+            <!-- Normal layout (Giới thiệu & Hoạt động nổi bật) -->
+            <!-- Giới thiệu sự kiện -->
+            @if(!empty($event->description))
+            <div class="tp1-card">
+                <h2 class="tp1-section-title">Giới thiệu sự kiện</h2>
+                <div class="tp1-text text-left">
                     {!! nl2br(e($event->description)) !!}
                 </div>
-            @endif
-        </div>
-        @endif
-
-        <!-- Hoạt động nổi bật (Gallery Blocks) -->
-        @if($event->galleryImages->count() > 0)
-        <div class="tp1-card">
-            <h2 class="tp1-section-title">Hoạt động nổi bật</h2>
-            
-            @foreach($event->galleryImages as $index => $block)
-            <div class="tp1-grid {{ $index % 2 == 0 ? 'left-img' : 'right-img' }}" style="{{ $index > 0 ? 'margin-top: 64px;' : '' }}">
-                @if($index % 2 == 0)
-                    <div>
-                        @if($block->url)
-                            @if($block->type === 'video')
-                                <video src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="tp1-img" autoplay loop muted playsinline controls></video>
-                            @else
-                                <img src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="tp1-img" alt="">
-                            @endif
-                        @endif
-                    </div>
-                    <div>
-                        @if($block->caption)
-                            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">{{ $block->caption }}</h3>
-                        @endif
-                        @if(!empty($block->content))
-                            <div class="tp1-text">{!! $block->content !!}</div>
-                        @endif
-                        
-                        {{-- Tài liệu và link nếu có --}}
-                        <div class="flex flex-wrap gap-2 mt-4">
-
-                            @if($block->action_url)
-                                <a href="{{ $block->action_url }}" target="_blank" class="inline-flex items-center gap-1 px-3 py-1.5 bg-slate-50 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-100 transition-colors border border-slate-200">
-                                    <span class="material-symbols-outlined text-[16px]">open_in_new</span> Liên kết
-                                </a>
-                            @endif
-                        </div>
-                    </div>
-                @else
-                    <div>
-                        @if($block->caption)
-                            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">{{ $block->caption }}</h3>
-                        @endif
-                        @if(!empty($block->content))
-                            <div class="tp1-text">{!! $block->content !!}</div>
-                        @endif
-                        
-                        {{-- Tài liệu và link nếu có --}}
-                        <div class="flex flex-wrap gap-2 mt-4">
-
-                            @if($block->action_url)
-                                <a href="{{ $block->action_url }}" target="_blank" class="inline-flex items-center gap-1 px-3 py-1.5 bg-slate-50 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-100 transition-colors border border-slate-200">
-                                    <span class="material-symbols-outlined text-[16px]">open_in_new</span> Liên kết
-                                </a>
-                            @endif
-                        </div>
-                    </div>
-                    <div>
-                        @if($block->url)
-                            @if($block->type === 'video')
-                                <video src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="tp1-img" autoplay loop muted playsinline controls></video>
-                            @else
-                                <img src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="tp1-img" alt="">
-                            @endif
-                        @endif
-                    </div>
-                @endif
             </div>
-            @endforeach
-        </div>
+            @endif
+
+            <!-- Hoạt động nổi bật (Gallery Blocks) -->
+            @if($event->galleryImages->count() > 0)
+            <div class="tp1-card">
+                <h2 class="tp1-section-title">Hoạt động nổi bật</h2>
+                @foreach($event->galleryImages as $index => $block)
+                <div class="tp1-grid {{ $index % 2 == 0 ? 'left-img' : 'right-img' }}" style="{{ $index > 0 ? 'margin-top: 64px;' : '' }}">
+                    @if($index % 2 == 0)
+                        <div>
+                            @if($block->url)
+                                @if($block->type === 'video')
+                                    <video src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="tp1-img" autoplay loop muted playsinline controls></video>
+                                @else
+                                    <img src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="tp1-img" alt="">
+                                @endif
+                            @endif
+                        </div>
+                        <div class="text-left">
+                            @if($block->caption)
+                                <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">{{ $block->caption }}</h3>
+                            @endif
+                            @if(!empty($block->content))
+                                <div class="tp1-text">{!! $block->content !!}</div>
+                            @endif
+                            <div class="flex flex-wrap gap-2 mt-4">
+                                @if($block->action_url)
+                                    <a href="{{ $block->action_url }}" target="_blank" class="inline-flex items-center gap-1 px-3 py-1.5 bg-slate-50 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-100 transition-colors border border-slate-200">
+                                        <span class="material-symbols-outlined text-[16px]">open_in_new</span> Liên kết
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
+                    @else
+                        <div class="text-left">
+                            @if($block->caption)
+                                <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">{{ $block->caption }}</h3>
+                            @endif
+                            @if(!empty($block->content))
+                                <div class="tp1-text">{!! $block->content !!}</div>
+                            @endif
+                            <div class="flex flex-wrap gap-2 mt-4">
+                                @if($block->action_url)
+                                    <a href="{{ $block->action_url }}" target="_blank" class="inline-flex items-center gap-1 px-3 py-1.5 bg-slate-50 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-100 transition-colors border border-slate-200">
+                                        <span class="material-symbols-outlined text-[16px]">open_in_new</span> Liên kết
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
+                        <div>
+                            @if($block->url)
+                                @if($block->type === 'video')
+                                    <video src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="tp1-img" autoplay loop muted playsinline controls></video>
+                                @else
+                                    <img src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="tp1-img" alt="">
+                                @endif
+                            @endif
+                        </div>
+                    @endif
+                </div>
+                @endforeach
+            </div>
+            @endif
         @endif
 
         <!-- Lịch trình sự kiện -->
         @if($event->scheduleItems->count() > 0)
-        <div class="tp1-card">
+        <div class="tp1-card" x-data="{ activeIndex: 0 }">
             <h2 class="tp1-section-title">Lịch trình sự kiện</h2>
-            <div class="space-y-4">
-                @foreach($event->scheduleItems as $index => $item)
-                <div class="flex gap-4 p-4 rounded-xl border border-slate-100 bg-slate-50">
-                    <div class="w-20 text-center shrink-0">
-                        <div class="text-[#f97316] font-bold text-lg">{{ $item->start_time->format('H:i') }}{{ $item->end_time ? ' - ' . $item->end_time->format('H:i') : '' }}</div>
-                    </div>
-                    <div class="flex-1 border-l border-slate-200 pl-4">
-                        <h4 class="font-bold text-lg text-slate-800 mb-1">{{ $item->title }}</h4>
-                        @if($item->speaker)
-                            <p class="text-sm text-slate-500 flex items-center gap-1 mb-2"><span class="material-symbols-outlined text-[16px]">person</span> {{ $item->speaker->name }}</p>
-                        @endif
-                        @if($item->description)
-                            <p class="text-slate-600 text-sm">{{ $item->description }}</p>
-                        @endif
-                    </div>
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6 mt-6">
+                <!-- Left panel: Time slots selector -->
+                <div class="md:col-span-4 flex md:flex-col gap-2 overflow-x-auto md:overflow-x-visible pb-3 md:pb-0 scrollbar-none" style="-ms-overflow-style: none; scrollbar-width: none;">
+                    @foreach($event->scheduleItems as $index => $item)
+                    <button 
+                        @click="activeIndex = {{ $index }}"
+                        :class="activeIndex === {{ $index }} ? 'bg-[#f97316] text-white border-[#f97316]' : 'bg-slate-50 text-slate-700 hover:bg-slate-100 border-slate-200'"
+                        class="flex items-center justify-center md:justify-start gap-3 px-4 py-3 rounded-xl border text-sm font-bold transition-all shrink-0 w-auto md:w-full text-left"
+                    >
+                        <span class="material-symbols-outlined text-[18px]">schedule</span>
+                        <span>{{ $item->start_time->format('H:i') }}{{ $item->end_time ? ' - ' . $item->end_time->format('H:i') : '' }}</span>
+                    </button>
+                    @endforeach
                 </div>
-                @endforeach
+                
+                <!-- Right panel: Content corresponding to chosen time slot -->
+                <div class="md:col-span-8 bg-slate-50 border border-slate-200/60 rounded-xl p-6 min-h-[160px] flex flex-col justify-center text-left">
+                    @foreach($event->scheduleItems as $index => $item)
+                    <div x-show="activeIndex === {{ $index }}" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" class="space-y-4">
+                        <div>
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-orange-100 text-[#f97316] mb-3">
+                                <span class="material-symbols-outlined text-[14px]">schedule</span>
+                                {{ $item->start_time->format('H:i') }}{{ $item->end_time ? ' - ' . $item->end_time->format('H:i') : '' }}
+                            </span>
+                            <h3 class="font-extrabold text-xl text-slate-800 tracking-tight leading-tight">{{ $item->title }}</h3>
+                        </div>
+                        
+                        @if($item->speaker)
+                        <div class="flex items-center gap-3 bg-white p-3 rounded-xl border border-slate-200/60 w-fit">
+                            <img src="{{ $item->speaker->photo_url ? asset($item->speaker->photo_url) : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80' }}"
+                                 alt="{{ $item->speaker->name }}" class="w-10 h-10 rounded-full object-cover border border-slate-100 shadow-sm">
+                            <div>
+                                <div class="font-bold text-sm text-slate-800 leading-none mb-1 text-left">{{ $item->speaker->name }}</div>
+                                <div class="text-xs text-slate-500 leading-none text-left">{{ $item->speaker->title ?? 'Diễn giả' }}</div>
+                            </div>
+                        </div>
+                        @endif
+                        
+                        @if($item->description)
+                        <p class="text-slate-600 text-sm leading-relaxed whitespace-pre-line">{{ $item->description }}</p>
+                        @endif
+                    </div>
+                    @endforeach
+                </div>
             </div>
         </div>
         @endif

@@ -125,11 +125,11 @@ class FrontendController extends Controller
             })->toArray();
 
             $archivedEvents = Event::with('bannerImage')
-                ->published()
                 ->where(function($q) {
-                    $q->where('status', 'archived')
+                    $q->where('status', 'archived') // Include manually archived events (which are unpublished)
                       ->orWhere(function($q2) {
-                          $q2->whereNotNull('recap_drive_link')
+                          $q2->where('is_published', true) // Only published events for natural archiving
+                             ->whereNotNull('recap_drive_link')
                              ->where(function($q3) {
                                  $q3->where('event_date', '<', now())
                                     ->orWhere('end_date', '<', now());
@@ -145,23 +145,15 @@ class FrontendController extends Controller
 
             $archive = [];
             foreach ($archiveGroups as $year => $events) {
-                // Get top events of the year by views
-                $topEvents = $events->sortByDesc('views_count')->take(5);
-                $topImages = [];
-                foreach ($topEvents as $e) {
-                    $topImages[] = [
-                        'title' => $e->title,
-                        'url' => route('events.show', $e->slug),
-                        'img' => $e->bannerImage ? \App\Helpers\FileHelper::url($e->bannerImage->url) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80',
-                    ];
-                }
-                
+                $featured = $events->first();
                 $archive[] = [
                     'year' => $year,
                     'title' => 'Tổng kết năm ' . $year,
+                    'featured_title' => $featured->title,
+                    'featured_url' => route('events.show', $featured->slug),
+                    'img' => $featured->bannerImage ? \App\Helpers\FileHelper::url($featured->bannerImage->url) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80',
                     'desc' => 'Kho lưu trữ chứa ' . $events->count() . ' sự kiện đã diễn ra trong năm ' . $year . '. Từ hội thảo, hội nghị đến các hoạt động ngoại khóa.',
                     'achievements' => [$events->count() . ' sự kiện đã tổ chức'],
-                    'top_events' => $topImages,
                 ];
             }
             // Sort archive by year descending

@@ -80,12 +80,9 @@
                         @else
                             <i data-lucide="image" class="h-8 w-8 text-primary/50"></i>
                         @endif
-                        <span class="absolute top-2 left-2 inline-flex items-center h-5 px-1.5 rounded text-[10px] font-medium bg-background/90 text-foreground">
-                            {{ $e->category?->name ?? 'General' }}
-                        </span>
                     </div>
                     <div class="p-3 space-y-2">
-                        <div class="font-medium text-sm leading-snug line-clamp-2">{{ $e->title }}</div>
+                        <a href="{{ route('events.show', $e->slug) }}" target="_blank" class="font-medium text-sm leading-snug line-clamp-2 hover:text-primary transition-colors">{{ $e->title }}</a>
                         <div class="flex items-center gap-1.5 text-[11px] text-muted-foreground">
                             <i data-lucide="calendar" class="h-3 w-3"></i>
                             {{ $e->event_date->format('d/m/Y') }}

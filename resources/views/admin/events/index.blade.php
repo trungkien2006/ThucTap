@@ -160,14 +160,12 @@
             <table class="w-full text-xs">
                 <thead class="bg-white/40 backdrop-blur-md text-[11px] uppercase tracking-wide text-muted-foreground sticky top-0">
                     <tr>
+                        <th class="w-[50px] text-center px-3 py-3 font-medium border-r border-border/40">STT</th>
                         <th class="text-left px-4 py-3 font-medium">Sự kiện</th>
-                        <th class="text-left px-3 py-2 font-medium">Danh mục</th>
                         <th class="text-left px-3 py-2 font-medium">Khoa</th>
-                        <th class="text-left px-3 py-2 font-medium">Học kỳ - Năm học</th>
-                        <th class="text-left px-3 py-2 font-medium">Địa điểm</th>
-                        <th class="text-left px-3 py-2 font-medium">Ngày diễn ra</th>
+                        <th class="text-left px-3 py-2 font-medium">Thời gian & Địa điểm</th>
                         <th class="text-left px-3 py-2 font-medium">Trạng thái</th>
-                        <th class="w-10 px-3 py-2"></th>
+                        <th class="text-right px-4 py-2 font-medium w-[160px]">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-border/50">
@@ -178,8 +176,8 @@
                         $bannerUrl = $event->bannerImage ? \App\Helpers\FileHelper::url($event->bannerImage->url) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80';
                     @endphp
                     <tr class="border-t border-border hover:bg-slate-50 relative hover:z-10 hover:shadow-xl hover:shadow-slate-200/60 hover:-translate-y-1 transition-all duration-300">
-                        <td class="px-4 py-3">
-                            <a href="{{ route('admin.events.show', $event) }}" class="font-medium truncate block hover:text-primary transition-colors">{{ $event->title }}</a>
+                        <td class="px-3 py-3 align-top text-center font-medium text-muted-foreground pt-4 border-r border-border/40 bg-slate-50/30">
+                            {{ $events->firstItem() + $loop->index }}
                         </td>
                         <td class="px-4 py-3 align-top">
                             <div class="flex items-start gap-3 relative group/title">
@@ -275,18 +273,16 @@
                                 </div>
                             </div>
                         </td>
-                        <td class="px-3 py-2.5 text-muted-foreground max-w-[180px] truncate" title="{{ $event->location ?? '—' }}">{{ $event->location ?? '—' }}</td>
-                        <td class="px-3 py-2.5 tabular-nums whitespace-nowrap">{{ $event->event_date->format('Y-m-d') }}</td>
-                        <td class="px-3 py-2.5">
+                        <td class="px-3 py-3 align-top pt-3">
                             @if(!$event->is_published)
-                                <span class="inline-flex items-center h-5 px-1.5 rounded text-[10px] font-medium bg-amber-100 text-amber-700">Chưa xuất bản</span>
+                                <span class="inline-flex items-center h-5 px-2 rounded text-[10px] font-medium bg-amber-100 text-amber-700 whitespace-nowrap">Chưa xuất bản</span>
                             @elseif($event->event_date < now())
-                                <span class="inline-flex items-center h-5 px-1.5 rounded text-[10px] font-medium bg-slate-100 text-slate-700">Đã kết thúc</span>
+                                <span class="inline-flex items-center h-5 px-2 rounded text-[10px] font-medium bg-slate-100 text-slate-700 whitespace-nowrap">Đã kết thúc</span>
                             @else
-                                <span class="inline-flex items-center h-5 px-1.5 rounded text-[10px] font-medium bg-emerald-100 text-emerald-700">Sắp diễn ra</span>
+                                <span class="inline-flex items-center h-5 px-2 rounded text-[10px] font-medium bg-emerald-100 text-emerald-700 whitespace-nowrap">Sắp diễn ra</span>
                             @endif
                         </td>
-                        <td class="px-5 py-3 align-top pt-3">
+                        <td class="px-4 py-3 align-top pt-3">
                             <div class="flex items-center justify-end gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
                                 @if($event->isEnded() && $event->isMissingRecap())
                                 <button onclick="openDriveModal({{ $event->id }}, '{{ htmlspecialchars($event->title) }}')" class="h-[30px] w-[92px] justify-center rounded text-[11px] font-medium text-white bg-red-500 hover:bg-red-600 border border-transparent transition-colors shadow-sm flex items-center gap-1.5 mr-1" title="Nhắc thêm link GG Drive">

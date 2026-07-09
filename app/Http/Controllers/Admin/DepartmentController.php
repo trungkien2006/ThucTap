@@ -14,8 +14,12 @@ class DepartmentController extends Controller
     {
         $departments = Category::departments()->paginate(10);
         $departments->getCollection()->transform(function ($dept) {
-            $dept->events_count = \App\Models\Event::where('department_id', $dept->id)->count();
-            $dept->total_views = \App\Models\Event::where('department_id', $dept->id)->sum('views_count');
+            $dept->events_count = \App\Models\Event::whereHas('departments', function ($q) use ($dept) {
+                $q->where('categories.id', $dept->id);
+            })->count();
+            $dept->total_views = \App\Models\Event::whereHas('departments', function ($q) use ($dept) {
+                $q->where('categories.id', $dept->id);
+            })->sum('views_count');
             return $dept;
         });
 

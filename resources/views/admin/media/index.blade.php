@@ -16,27 +16,33 @@
 
         <!-- Top Control Bar -->
         <div class="flex flex-wrap items-center gap-6 pb-4 border-b border-border text-sm text-foreground">
-            <form action="{{ route('admin.media.index') }}" method="GET" class="flex items-center gap-1.5 hover:text-primary transition-colors">
-                <i data-lucide="align-left" class="w-4 h-4"></i>
-                <select name="sort" onchange="this.form.submit()" class="font-medium bg-transparent border-none appearance-none focus:outline-none focus:ring-0 cursor-pointer pr-2 hover:text-primary">
-                    <option value="date_desc" {{ request('sort', 'date_desc') === 'date_desc' ? 'selected' : '' }}>Sắp xếp: Mới nhất</option>
-                    <option value="date_asc" {{ request('sort') === 'date_asc' ? 'selected' : '' }}>Sắp xếp: Cũ nhất</option>
-                    <option value="title" {{ request('sort') === 'title' ? 'selected' : '' }}>Sắp xếp: Tên (A-Z)</option>
-                    <option value="title_desc" {{ request('sort') === 'title_desc' ? 'selected' : '' }}>Sắp xếp: Tên (Z-A)</option>
-                    <option value="likes" {{ request('sort') === 'likes' ? 'selected' : '' }}>Sắp xếp: Nhiều lượt thích nhất</option>
-                </select>
-                @if(request('view')) <input type="hidden" name="view" value="{{ request('view') }}"> @endif
-            </form>
+            <!-- Sort Control -->
+            <label class="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors group">
+                <i data-lucide="align-left" class="w-4 h-4 shrink-0 pointer-events-none"></i>
+                <form action="{{ route('admin.media.index') }}" method="GET" class="flex items-center">
+                    <select name="sort" onchange="this.form.submit()" class="font-medium bg-transparent border-none appearance-none focus:outline-none focus:ring-0 cursor-pointer hover:text-primary text-sm">
+                        <option value="date_desc" {{ request('sort', 'date_desc') === 'date_desc' ? 'selected' : '' }}>Sắp xếp: Mới nhất</option>
+                        <option value="date_asc" {{ request('sort') === 'date_asc' ? 'selected' : '' }}>Sắp xếp: Cũ nhất</option>
+                        <option value="title" {{ request('sort') === 'title' ? 'selected' : '' }}>Sắp xếp: Tên (A-Z)</option>
+                        <option value="title_desc" {{ request('sort') === 'title_desc' ? 'selected' : '' }}>Sắp xếp: Tên (Z-A)</option>
+                        <option value="likes" {{ request('sort') === 'likes' ? 'selected' : '' }}>Sắp xếp: Nhiều lượt thích nhất</option>
+                    </select>
+                    @if(request('view')) <input type="hidden" name="view" value="{{ request('view') }}"> @endif
+                </form>
+            </label>
 
-            <form action="{{ route('admin.media.index') }}" method="GET" class="flex items-center gap-1.5 hover:text-primary transition-colors">
-                <i data-lucide="layout-grid" class="w-4 h-4"></i>
-                <select name="view" onchange="this.form.submit()" class="font-medium bg-transparent border-none appearance-none focus:outline-none focus:ring-0 cursor-pointer pr-2 hover:text-primary">
-                    <option value="grid_4" {{ request('view') === 'grid_4' ? 'selected' : '' }}>Hiển thị: 4 cột</option>
-                    <option value="grid_5" {{ request('view', 'grid_5') === 'grid_5' ? 'selected' : '' }}>Hiển thị: 5 cột</option>
-                    <option value="grid_6" {{ request('view') === 'grid_6' ? 'selected' : '' }}>Hiển thị: 6 cột</option>
-                </select>
-                @if(request('sort')) <input type="hidden" name="sort" value="{{ request('sort') }}"> @endif
-            </form>
+            <!-- View Control -->
+            <label class="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors group">
+                <i data-lucide="layout-grid" class="w-4 h-4 shrink-0 pointer-events-none"></i>
+                <form action="{{ route('admin.media.index') }}" method="GET" class="flex items-center">
+                    <select name="view" onchange="this.form.submit()" class="font-medium bg-transparent border-none appearance-none focus:outline-none focus:ring-0 cursor-pointer hover:text-primary text-sm">
+                        <option value="grid_4" {{ request('view') === 'grid_4' ? 'selected' : '' }}>Hiển thị: 4 cột</option>
+                        <option value="grid_5" {{ request('view', 'grid_5') === 'grid_5' ? 'selected' : '' }}>Hiển thị: 5 cột</option>
+                        <option value="grid_6" {{ request('view') === 'grid_6' ? 'selected' : '' }}>Hiển thị: 6 cột</option>
+                    </select>
+                    @if(request('sort')) <input type="hidden" name="sort" value="{{ request('sort') }}"> @endif
+                </form>
+            </label>
             
             <div class="ml-auto flex items-center gap-6">
                 <div>

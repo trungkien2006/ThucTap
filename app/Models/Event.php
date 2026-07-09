@@ -145,14 +145,7 @@ class Event extends Model
 
     public function scopePublished($query)
     {
-        return $query->where('is_published', true)
-                     ->where(function($q) {
-                         $q->where(function($q2) {
-                             $q2->whereNull('end_date')->where('event_date', '>=', now());
-                         })->orWhere(function($q2) {
-                             $q2->whereNotNull('end_date')->where('end_date', '>=', now());
-                         })->orWhereNotNull('recap_drive_link');
-                     });
+        return $query->where('is_published', true);
     }
 
     public function scopeUpcoming($query)

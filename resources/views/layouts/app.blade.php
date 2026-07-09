@@ -24,37 +24,168 @@
     @stack('styles')
     
     <style>
-        .sidebar-transition {
-            transition: width 0.2s ease, transform 0.2s ease;
+        /* ─── Sidebar ──────────────────────────────────────────────────── */
+        :root {
+            --sidebar-collapsed-w: 64px;
+            --sidebar-expanded-w: 240px;
         }
+
+        /* Desktop: collapsed by default, expand on hover */
+        @media (min-width: 768px) {
+            #sidebar {
+                width: var(--sidebar-collapsed-w) !important;
+                transform: translateX(0) !important;
+                overflow: hidden;
+                background-color: white;
+                box-shadow: 1px 0 8px -2px rgba(0,0,0,0.08);
+            }
+            #sidebar:hover {
+                width: var(--sidebar-expanded-w) !important;
+                box-shadow: 4px 0 24px -4px rgba(0,0,0,0.12);
+            }
+            /* Header and main content always offset by collapsed width */
+            #topHeader {
+                left: var(--sidebar-collapsed-w) !important;
+            }
+            #mainContent {
+                padding-left: var(--sidebar-collapsed-w) !important;
+            }
+        }
+
+        /* Mobile: hidden by default, shown when toggled */
+        @media (max-width: 767px) {
+            #sidebar {
+                width: var(--sidebar-expanded-w) !important;
+                transform: translateX(-100%) !important;
+                background-color: white;
+            }
+            #sidebar.mobile-open {
+                transform: translateX(0) !important;
+            }
+            #topHeader {
+                left: 0 !important;
+            }
+            #mainContent {
+                padding-left: 0 !important;
+            }
+        }
+
+        /* Sidebar base transition */
+        #sidebar {
+            transition: width 0.22s cubic-bezier(0.4,0,0.2,1), transform 0.22s cubic-bezier(0.4,0,0.2,1), box-shadow 0.22s ease;
+        }
+
+        /* Text & labels hidden when collapsed, shown when hovered */
+        #sidebar .sidebar-text-element {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+            white-space: nowrap;
+            transition: opacity 0.18s ease, width 0.18s ease;
+        }
+        #sidebar:hover .sidebar-text-element {
+            opacity: 1;
+            width: auto;
+        }
+
+        /* Section labels */
+        #sidebar nav p.sidebar-text-element {
+            transition: opacity 0.18s ease;
+        }
+
+        /* ─── Sidebar Nav & Buttons ─────────────────────────────────── */
+
+        /* Nav: zero horizontal padding when collapsed */
+        #sidebarNav {
+            padding: 8px 0 !important;
+            transition: padding 0.22s ease;
+        }
+        #sidebar:hover #sidebarNav {
+            padding: 8px 12px !important;
+        }
+
+        /* Logo: center when collapsed, left when expanded */
+        #sidebarLogo {
+            justify-content: center !important;
+            padding: 0 !important;
+            transition: padding 0.22s ease;
+        }
+        #sidebar:hover #sidebarLogo {
+            justify-content: flex-start !important;
+            padding: 0 16px !important;
+            gap: 10px !important;
+        }
+
+        /* ── Menu button: icon centered via padding math ── */
+        /*   sidebar=64px, icon=20px → left pad=(64-20)/2=22px          */
         .sidebar-menu-btn {
-            display: flex;
-            align-items: center;
-            gap: 0.9rem;
-            width: 100%;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: flex-start !important;
+            gap: 0.75rem;
+            width: 100% !important;
             height: 2.75rem;
-            padding: 0 1rem;
+            /* Center icon: push 22px from left = (64px - 20px) / 2 */
+            padding: 0 0 0 22px !important;
             font-size: 0.95rem;
             font-weight: 500;
             color: var(--color-sidebar-foreground, #475569);
-            border-radius: var(--radius);
-            transition: background-color 0.15s, color 0.15s;
+            border-radius: 0.5rem;
+            transition: background-color 0.15s, color 0.15s, padding 0.22s ease;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        /* When expanded: normal left padding */
+        #sidebar:hover .sidebar-menu-btn {
+            padding: 0 12px !important;
+        }
+        .sidebar-menu-btn i,
+        .sidebar-menu-btn svg {
+            flex-shrink: 0;
+            min-width: 20px;
         }
         .sidebar-menu-btn.active {
-            background-color: var(--sidebar-accent, #eff6ff);
-            color: var(--sidebar-primary, #2563eb);
+            background-color: var(--sidebar-accent, #eff6ff) !important;
+            color: var(--sidebar-primary, #2563eb) !important;
             font-weight: 600;
         }
         .sidebar-menu-btn:hover:not(.active) {
-            background-color: var(--sidebar-accent, #f8fafc);
-            color: var(--sidebar-accent-foreground, #0f172a);
+            background-color: var(--sidebar-accent, #f8fafc) !important;
+            color: var(--sidebar-accent-foreground, #0f172a) !important;
         }
-        
+
+        /* Footer avatar: center when collapsed */
+        #sidebarFooter {
+            padding: 8px 0 !important;
+            border-top: 1px solid var(--border);
+            transition: padding 0.22s ease;
+        }
+        #sidebar:hover #sidebarFooter {
+            padding: 8px 12px !important;
+        }
+        #adminAvatarBtn {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: flex-start !important;
+            gap: 8px;
+            width: 100% !important;
+            /* Center avatar: (64 - 32) / 2 = 16px */
+            padding: 6px 0 6px 16px !important;
+            border-radius: 0.75rem;
+            transition: background-color 0.15s, padding 0.22s ease;
+        }
+        #sidebar:hover #adminAvatarBtn {
+            padding: 6px 8px !important;
+        }
+        #adminAvatarBtn:hover {
+            background-color: rgba(0,0,0,0.04) !important;
+        }
+
         /* Mobile Overlay styling */
         #mobileOverlay.show {
             display: block;
         }
-        
+
         /* Hide scrollbar */
         .scrollbar-hide::-webkit-scrollbar {
             display: none;
@@ -62,6 +193,16 @@
         .scrollbar-hide {
             -ms-overflow-style: none;
             scrollbar-width: none;
+        }
+
+        /* ─── Lucide Icon Global Fix ──────────────────────────────────── */
+        /* Khi Lucide render <i data-lucide> thành <svg>, đảm bảo luôn
+           thẳng hàng với text/select xung quanh */
+        body.admin-body [data-lucide] svg,
+        body.admin-body svg[data-lucide] {
+            display: inline-block;
+            vertical-align: middle;
+            flex-shrink: 0;
         }
     </style>
 </head>
@@ -71,9 +212,9 @@
     <div id="mobileOverlay" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 hidden md:hidden transition-opacity"></div>
 
     <!-- Sidebar Wrapper -->
-    <aside id="sidebar" class="sidebar-transition fixed left-0 top-0 h-full flex flex-col bg-transparent hover:bg-white border-r border-border hover:shadow-2xl w-[240px] md:sidebar-icon-only z-50 -translate-x-full md:translate-x-0 group">
+    <aside id="sidebar" class="fixed left-0 top-0 h-full flex flex-col border-r border-border z-50">
         <!-- Sidebar Header -->
-        <div class="flex h-16 shrink-0 items-center gap-2 border-b border-white/20 px-4 sidebar-logo-container transition-all">
+        <div class="flex h-16 shrink-0 items-center justify-center gap-2 border-b border-border/40 px-0 transition-all" id="sidebarLogo">
             <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-indigo-500 text-white shadow-md">
                 <i data-lucide="graduation-cap" class="h-5 w-5"></i>
             </div>
@@ -84,7 +225,7 @@
         </div>
 
         <!-- Sidebar Navigation -->
-        <nav class="flex-1 overflow-y-auto scrollbar-hide p-3 space-y-4">
+        <nav class="flex-1 overflow-y-auto scrollbar-hide space-y-4" id="sidebarNav">
             
             <a href="{{ route('home') }}" target="_blank" class="sidebar-menu-btn text-violet-600 hover:text-violet-700 hover:bg-violet-50/50 bg-white/40 mb-2 border border-violet-200/50 backdrop-blur-sm rounded-xl">
                 <i data-lucide="globe" class="h-5 w-5 shrink-0"></i>
@@ -130,10 +271,6 @@
                         <i data-lucide="image" class="h-5 w-5 shrink-0"></i>
                         <span class="sidebar-text-element">Thư viện Media</span>
                     </a>
-                    <a href="{{ route('admin.documents.index') }}" class="sidebar-menu-btn rounded-xl {{ request()->routeIs('admin.documents.*') ? 'active' : '' }}">
-                        <i data-lucide="files" class="h-5 w-5 shrink-0"></i>
-                        <span class="sidebar-text-element">Tài liệu</span>
-                    </a>
                     @if(Auth::user()->isSuperAdmin())
                         <a href="{{ route('admin.users.index') }}" class="sidebar-menu-btn rounded-xl {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
                             <i data-lucide="users" class="h-5 w-5 shrink-0"></i>
@@ -145,9 +282,9 @@
         </nav>
 
         <!-- Sidebar Footer -->
-        <div class="border-t border-white/20 p-3">
+        <div id="sidebarFooter">
             <div class="relative">
-                <button id="adminAvatarBtn" class="flex items-center gap-2 w-full mb-2 hover:bg-white/40 rounded-xl p-1 transition-colors">
+                <button id="adminAvatarBtn" class="mb-2">
                     @php
                         $userInitials = collect(explode(' ', Auth::user()->name))->map(fn($w) => substr($w, 0, 1))->slice(0, 2)->implode('');
                     @endphp
@@ -186,7 +323,7 @@
     </aside>
 
     <!-- Top Header -->
-    <header class="fixed top-0 left-0 md:left-[80px] right-0 h-16 z-30 flex items-center gap-2 bg-transparent px-3 md:px-4 justify-between transition-all">
+    <header id="topHeader" class="fixed top-0 right-0 h-16 z-30 flex items-center gap-2 bg-transparent px-3 md:px-4 justify-between transition-all">
         <div class="flex items-center gap-2 min-w-0">
             <!-- Mobile Toggle Button -->
             <button id="mobileSidebarToggle" class="md:hidden h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-accent rounded-xl flex items-center justify-center transition-all">
@@ -260,8 +397,6 @@
                     <a href="{{ route('admin.speakers.create') }}" wire:navigate class="flex items-center px-2.5 py-1.5 text-xs text-foreground hover:bg-accent rounded-sm mx-1">Diễn giả mới</a>
                     <a href="{{ route('admin.media.index') }}" wire:navigate class="flex items-center px-2.5 py-1.5 text-xs text-foreground hover:bg-accent rounded-sm mx-1">Tải lên Media</a>
                 </div>
-            </div>
-
             <!-- Notifications Button with Dropdown -->
             <div class="relative">
                 <button id="notificationBtn" class="h-10 w-10 relative text-muted-foreground hover:text-foreground hover:bg-accent rounded-full flex items-center justify-center transition-all">
@@ -366,7 +501,7 @@
     </div>
 
     <!-- Main Content Wrapper -->
-    <main class="pt-16 md:pl-[80px] min-h-screen transition-all">
+    <main id="mainContent" class="pt-16 min-h-screen transition-all">
         <div class="p-4 md:p-6 lg:p-8 max-w-[1600px] mx-auto">
 
             @yield('content')
@@ -388,11 +523,11 @@
             const mobileOverlay = document.getElementById('mobileOverlay');
 
         function openSidebar() {
-            if(sidebar) sidebar.classList.remove('-translate-x-full');
+            if(sidebar) sidebar.classList.add('mobile-open');
             if(mobileOverlay) mobileOverlay.classList.remove('hidden');
         }
         function closeSidebar() {
-            if(sidebar) sidebar.classList.add('-translate-x-full');
+            if(sidebar) sidebar.classList.remove('mobile-open');
             if(mobileOverlay) mobileOverlay.classList.add('hidden');
         }
 

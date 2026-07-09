@@ -46,7 +46,11 @@ class PublicEventController extends Controller
             'speakers',
             'galleryImages',
             'videos',
-        ])->where('slug', $slug)->published()->firstOrFail();
+        ])->where('slug', $slug)
+          ->where(function($query) {
+              $query->published()->orWhere('status', 'archived');
+          })
+          ->firstOrFail();
 
         // Tăng lượt xem với chống spam bằng Session
         if (!session()->has('viewed_events.' . $event->id)) {

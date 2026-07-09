@@ -21,6 +21,11 @@ Route::get('/dashboard', function () {
 
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     // Dashboard
+    Route::post('/clear-cache', function () {
+        \Illuminate\Support\Facades\Artisan::call('cache:clear');
+        return redirect()->back()->with('success', 'Đã xóa bộ nhớ đệm (cache) hệ thống thành công!');
+    })->name('cache.clear');
+
     Route::get('/', function () {
         $currentYear = now()->year;
         $lastYear = now()->subYear()->year;
@@ -121,12 +126,16 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
         $mediaByMonth = \App\Models\EventMedia::selectRaw("type, {$monthExpr} as month, count(*) as count")
             ->whereIn('type', ['image', 'video'])
             ->whereYear('created_at', $currentYear)
-            ->get(['type', 'created_at']);
+            ->groupBy('type', \Illuminate\Support\Facades\DB::raw($monthExpr))
+            ->get();
+        
+        $mediaTrendCollection = $mediaByMonth->groupBy('month');
         $imagesTrend = [];
         $videosTrend = [];
         for ($m = 1; $m <= 12; $m++) {
-            $imagesTrend[] = $allMedia->where('type', 'image')->filter(fn($item) => \Carbon\Carbon::parse($item->created_at)->month === $m)->count();
-            $videosTrend[] = $allMedia->where('type', 'video')->filter(fn($item) => \Carbon\Carbon::parse($item->created_at)->month === $m)->count();
+            $monthData = $mediaTrendCollection->get($m, collect());
+            $imagesTrend[] = $monthData->where('type', 'image')->sum('count');
+            $videosTrend[] = $monthData->where('type', 'video')->sum('count');
         }
 
         return view('admin.dashboard', compact(

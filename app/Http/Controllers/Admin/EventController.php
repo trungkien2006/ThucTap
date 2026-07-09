@@ -16,7 +16,8 @@ class EventController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Event::query()->with('bannerImage', 'category', 'departments', 'creator');
+        $query = Event::query()->with('bannerImage', 'category', 'departments', 'creator')
+            ->where('status', '!=', 'archived');
 
         if ($request->filled('search')) {
             $query->where(function($q) use ($request) {
@@ -662,7 +663,7 @@ class EventController extends Controller
     public function archiveIndex(Request $request)
     {
         $query = Event::query()->with('bannerImage', 'category', 'departments', 'creator')
-            ->where('is_published', false);
+            ->where('status', 'archived');
 
         if ($request->filled('search')) {
             $query->where(function($q) use ($request) {

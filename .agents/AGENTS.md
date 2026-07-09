@@ -8,7 +8,7 @@ These rules must NEVER be violated under any circumstances:
 4. **Layout giao diện trang chủ**:
    - Slider chính là sự kiện mới nhất mà đã được xuất bản và đã xảy ra (Tính khi được tạo ra).
    - Danh mục sự kiện.
-   - Sự kiện nổi bật nhất (Tính điểm: lượt yêu thích 3 điểm, lượt xem 1 điểm; xét trong 3 tháng được tạo ra, bao gồm cả sự kiện chưa bắt đầu).
    - Sự kiện sắp tới.
+   - Sự kiện nổi bật nhất (Tính điểm: lượt yêu thích 3 điểm, lượt xem 1 điểm; xét trong 3 tháng được tạo ra, bao gồm cả sự kiện chưa bắt đầu).
    - Giới thiệu kho lưu trữ.
    - Album media.

@@ -201,67 +201,68 @@
             </div>
             @endif
 
-            <!-- Hoạt động nổi bật (Gallery Blocks) -->
-            @if($event->galleryImages->count() > 0)
-            <div class="tp1-card">
-                <h2 class="tp1-section-title">Hoạt động nổi bật</h2>
-                @foreach($event->galleryImages as $index => $block)
-                <div class="tp1-grid {{ $index % 2 == 0 ? 'left-img' : 'right-img' }}" style="{{ $index > 0 ? 'margin-top: 64px;' : '' }}">
-                    @if($index % 2 == 0)
-                        <div>
-                            @if($block->url)
-                                @if($block->type === 'video')
-                                    <video src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="tp1-img" autoplay loop muted playsinline controls></video>
-                                @else
-                                    <img src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="tp1-img" alt="">
-                                @endif
+        @endif
+
+        <!-- Nội dung chính (Gallery Blocks) -->
+        @if(count($event->galleryImages) > 0)
+        <div class="tp1-card">
+            <h2 class="tp1-section-title">Nội dung chi tiết</h2>
+            @foreach($event->galleryImages as $index => $block)
+            <div class="tp1-grid {{ $index % 2 == 0 ? 'left-img' : 'right-img' }}" style="{{ $index > 0 ? 'margin-top: 64px;' : '' }}">
+                @if($index % 2 == 0)
+                    <div>
+                        @if($block->url)
+                            @if($block->type === 'video')
+                                <video src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="tp1-img" autoplay loop muted playsinline controls></video>
+                            @else
+                                <img src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="tp1-img" alt="">
+                            @endif
+                        @endif
+                    </div>
+                    <div class="text-left">
+                        @if($block->caption)
+                            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">{{ $block->caption }}</h3>
+                        @endif
+                        @if(!empty($block->content))
+                            <div class="tp1-text">{!! $block->content !!}</div>
+                        @endif
+                        <div class="flex flex-wrap gap-2 mt-4">
+                            @if($block->action_url)
+                                <a href="{{ $block->action_url }}" target="_blank" class="inline-flex items-center gap-1 px-3 py-1.5 bg-slate-50 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-100 transition-colors border border-slate-200">
+                                    <span class="material-symbols-outlined text-[16px]">open_in_new</span> Liên kết
+                                </a>
                             @endif
                         </div>
-                        <div class="text-left">
-                            @if($block->caption)
-                                <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">{{ $block->caption }}</h3>
-                            @endif
-                            @if(!empty($block->content))
-                                <div class="tp1-text">{!! $block->content !!}</div>
-                            @endif
-                            <div class="flex flex-wrap gap-2 mt-4">
-                                @if($block->action_url)
-                                    <a href="{{ $block->action_url }}" target="_blank" class="inline-flex items-center gap-1 px-3 py-1.5 bg-slate-50 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-100 transition-colors border border-slate-200">
-                                        <span class="material-symbols-outlined text-[16px]">open_in_new</span> Liên kết
-                                    </a>
-                                @endif
-                            </div>
-                        </div>
-                    @else
-                        <div class="text-left">
-                            @if($block->caption)
-                                <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">{{ $block->caption }}</h3>
-                            @endif
-                            @if(!empty($block->content))
-                                <div class="tp1-text">{!! $block->content !!}</div>
-                            @endif
-                            <div class="flex flex-wrap gap-2 mt-4">
-                                @if($block->action_url)
-                                    <a href="{{ $block->action_url }}" target="_blank" class="inline-flex items-center gap-1 px-3 py-1.5 bg-slate-50 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-100 transition-colors border border-slate-200">
-                                        <span class="material-symbols-outlined text-[16px]">open_in_new</span> Liên kết
-                                    </a>
-                                @endif
-                            </div>
-                        </div>
-                        <div>
-                            @if($block->url)
-                                @if($block->type === 'video')
-                                    <video src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="tp1-img" autoplay loop muted playsinline controls></video>
-                                @else
-                                    <img src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="tp1-img" alt="">
-                                @endif
+                    </div>
+                @else
+                    <div class="text-left">
+                        @if($block->caption)
+                            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">{{ $block->caption }}</h3>
+                        @endif
+                        @if(!empty($block->content))
+                            <div class="tp1-text">{!! $block->content !!}</div>
+                        @endif
+                        <div class="flex flex-wrap gap-2 mt-4">
+                            @if($block->action_url)
+                                <a href="{{ $block->action_url }}" target="_blank" class="inline-flex items-center gap-1 px-3 py-1.5 bg-slate-50 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-100 transition-colors border border-slate-200">
+                                    <span class="material-symbols-outlined text-[16px]">open_in_new</span> Liên kết
+                                </a>
                             @endif
                         </div>
-                    @endif
-                </div>
-                @endforeach
+                    </div>
+                    <div>
+                        @if($block->url)
+                            @if($block->type === 'video')
+                                <video src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="tp1-img" autoplay loop muted playsinline controls></video>
+                            @else
+                                <img src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="tp1-img" alt="">
+                            @endif
+                        @endif
+                    </div>
+                @endif
             </div>
-            @endif
+            @endforeach
+        </div>
         @endif
 
         <!-- Lịch trình sự kiện -->

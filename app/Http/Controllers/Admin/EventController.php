@@ -27,17 +27,30 @@ class EventController extends Controller
             });
         }
 
-        if ($request->filled('academic_year')) {
-            $academicYears = array_filter(is_array($request->academic_year) ? $request->academic_year : [$request->academic_year]);
-            if (!empty($academicYears)) {
-                $query->whereIn('academic_year', $academicYears);
-            }
+        if ($request->filled('year_start') && $request->filled('year_end')) {
+            $query->whereYear('event_date', '>=', $request->year_start)
+                  ->whereYear('event_date', '<=', $request->year_end);
+        } elseif ($request->filled('year_start')) {
+            $query->whereYear('event_date', '>=', $request->year_start);
+        } elseif ($request->filled('year_end')) {
+            $query->whereYear('event_date', '<=', $request->year_end);
         }
 
         if ($request->filled('semester')) {
-            $semesters = array_filter(is_array($request->semester) ? $request->semester : [$request->semester]);
-            if (!empty($semesters)) {
-                $query->whereIn('semester', $semesters);
+            $semester = $request->semester;
+            $months = [];
+            switch ($semester) {
+                case '1': $months = [1, 2, 3]; break; // Spring
+                case '2': $months = [4, 5, 6]; break; // Summer
+                case '3': $months = [7, 8, 9]; break; // Fall
+                case '4': $months = [10, 11, 12]; break; // Winter
+            }
+            if (!empty($months)) {
+                $query->where(function($q) use ($months) {
+                    foreach ($months as $month) {
+                        $q->orWhereMonth('event_date', $month);
+                    }
+                });
             }
         }
 
@@ -74,6 +87,15 @@ class EventController extends Controller
                         $q->orWhere(function ($sub) {
                             $sub->where('is_published', true)
                                 ->where('event_date', '<', now());
+                        });
+                    }
+                    if (in_array('missing_recap', $statuses)) {
+                        $q->orWhere(function ($sub) {
+                            $sub->where('is_published', true)
+                                ->where('event_date', '<', now())
+                                ->where(function($linkQ) {
+                                    $linkQ->whereNull('recap_drive_link')->orWhere('recap_drive_link', '');
+                                });
                         });
                     }
                 });

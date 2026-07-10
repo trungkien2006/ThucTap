@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.app', ['hideTopMenu' => true])
 
 @section('content')
 <div class="max-w-[1000px] mx-auto">

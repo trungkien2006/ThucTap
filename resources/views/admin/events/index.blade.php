@@ -21,8 +21,7 @@
 
     {{-- Filters Card --}}
     @php
-        $semestersMap = ['1' => 'fall', '2' => 'spring', '3' => 'summer'];
-        $selectedSemesters = array_filter(is_array(request('semester')) ? request('semester') : [request('semester')]);
+        $semestersMap = ['1' => 'Fall', '2' => 'Spring', '3' => 'Summer', '4' => 'Winter'];
         $selectedCategories = array_filter(is_array(request('category_id')) ? request('category_id') : [request('category_id')]);
         $selectedDepartments = array_filter(is_array(request('department_id')) ? request('department_id') : [request('department_id')]);
         $selectedStatuses = array_filter(is_array(request('status')) ? request('status') : [request('status')]);
@@ -30,14 +29,12 @@
         $statusOptions = [
             'upcoming' => 'Sắp diễn ra',
             'completed' => 'Đã kết thúc',
+            'missing_recap' => 'Thiếu Album',
             'draft' => 'Chưa xuất bản',
         ];
     @endphp
     <div class="bg-card rounded-lg border border-border p-4 shadow-none flex flex-col gap-4">
         <form method="GET" action="{{ route('admin.events.index') }}" id="filterForm" class="space-y-3 w-full">
-            @foreach($selectedSemesters as $sem)
-                <input type="hidden" name="semester[]" value="{{ $sem }}" class="filter-input-semester">
-            @endforeach
             @foreach($selectedCategories as $c)
                 <input type="hidden" name="category_id[]" value="{{ $c }}" class="filter-input-category_id">
             @endforeach
@@ -58,7 +55,7 @@
                     <i data-lucide="search" class="h-3.5 w-3.5"></i> Tìm
                 </button>
 
-                @if(request('search') || count($selectedSemesters) > 0 || count($selectedCategories) > 0 || count($selectedDepartments) > 0 || count($selectedStatuses) > 0)
+                @if(request('search') || request('semester') || request('year_start') || request('year_end') || count($selectedCategories) > 0 || count($selectedDepartments) > 0 || count($selectedStatuses) > 0)
                     <a href="{{ route('admin.events.index') }}" class="inline-flex items-center justify-center rounded-lg text-xs font-medium border border-input bg-background h-9 px-3 hover:bg-accent transition-all gap-1">
                         <i data-lucide="x" class="h-3.5 w-3.5"></i> Xóa lọc
                     </a>
@@ -66,12 +63,79 @@
             </div>
 
             <div class="flex flex-wrap items-center gap-2">
-                <select onchange="addFilterTag('semester', this)" class="h-9 min-w-[140px] border border-input rounded-lg text-xs bg-background px-2.5 focus:outline-none focus:border-ring transition-all text-muted-foreground cursor-pointer">
+                <!-- Year Range Slider -->
+                <div class="flex items-center gap-3 px-3 h-9 border border-input rounded-lg bg-background" style="min-width: 280px;">
+                    <span class="text-xs font-medium text-muted-foreground shrink-0">Năm:</span>
+                    <span id="yearValStart" class="text-xs font-semibold shrink-0 w-8 text-right">{{ request('year_start', 2015) }}</span>
+                    
+                    <div class="flex-1 px-2 relative" style="height: 10px;">
+                        <div id="year-slider" style="height: 6px; border: none; box-shadow: none; background: #e2e8f0;" class="mt-0.5"></div>
+                    </div>
+                    
+                    <span id="yearValEnd" class="text-xs font-semibold shrink-0 w-8">{{ request('year_end', date('Y') + 2) }}</span>
+                    
+                    <input type="hidden" name="year_start" id="year_start_input" value="{{ request('year_start', 2015) }}">
+                    <input type="hidden" name="year_end" id="year_end_input" value="{{ request('year_end', date('Y') + 2) }}">
+                </div>
+
+                <style>
+                    /* Customizing noUiSlider to look minimal */
+                    .noUi-handle {
+                        width: 14px !important;
+                        height: 14px !important;
+                        right: -7px !important;
+                        top: -4px !important;
+                        border-radius: 50%;
+                        background: #0f172a !important;
+                        border: 2px solid #fff !important;
+                        box-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
+                        cursor: pointer;
+                    }
+                    .noUi-handle:before, .noUi-handle:after { display: none; }
+                    .noUi-connect { background: #0f172a; }
+                </style>
+
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.js"></script>
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.css">
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        var yearSlider = document.getElementById('year-slider');
+                        var startInput = document.getElementById('year_start_input');
+                        var endInput = document.getElementById('year_end_input');
+                        var startVal = document.getElementById('yearValStart');
+                        var endVal = document.getElementById('yearValEnd');
+
+                        noUiSlider.create(yearSlider, {
+                            start: [parseInt(startInput.value), parseInt(endInput.value)],
+                            connect: true,
+                            step: 1,
+                            range: {
+                                'min': 2015,
+                                'max': 2035
+                            }
+                        });
+
+                        yearSlider.noUiSlider.on('update', function(values, handle) {
+                            var value = Math.round(values[handle]);
+                            if (handle) {
+                                endVal.innerHTML = value;
+                                endInput.value = value;
+                            } else {
+                                startVal.innerHTML = value;
+                                startInput.value = value;
+                            }
+                        });
+
+                        yearSlider.noUiSlider.on('change', function() {
+                            document.getElementById('filterForm').submit();
+                        });
+                    });
+                </script>
+
+                <select name="semester" onchange="document.getElementById('filterForm').submit()" class="h-9 min-w-[140px] border border-input rounded-lg text-xs bg-background px-2.5 focus:outline-none focus:border-ring transition-all text-muted-foreground cursor-pointer">
                     <option value="">+ Học kỳ</option>
                     @foreach($semestersMap as $val => $label)
-                        @if(!in_array($val, $selectedSemesters))
-                            <option value="{{ $val }}">{{ ucfirst($label) }}</option>
-                        @endif
+                        <option value="{{ $val }}" {{ request('semester') == $val ? 'selected' : '' }}>{{ $label }}</option>
                     @endforeach
                 </select>
 
@@ -93,30 +157,18 @@
                     @endforeach
                 </select>
 
-                <select onchange="addFilterTag('status', this)" class="h-9 min-w-[160px] border border-input rounded-lg text-xs bg-background px-2.5 focus:outline-none focus:border-ring transition-all text-muted-foreground cursor-pointer">
+                <select name="status" onchange="document.getElementById('filterForm').submit()" class="h-9 min-w-[160px] border border-input rounded-lg text-xs bg-background px-2.5 focus:outline-none focus:border-ring transition-all text-muted-foreground cursor-pointer">
                     <option value="">+ Trạng thái</option>
                     @foreach($statusOptions as $val => $label)
-                        @if(!in_array($val, $selectedStatuses))
-                            <option value="{{ $val }}">{{ $label }}</option>
-                        @endif
+                        <option value="{{ $val }}" {{ request('status') == $val || (is_array(request('status')) && in_array($val, request('status'))) ? 'selected' : '' }}>{{ $label }}</option>
                     @endforeach
                 </select>
             </div>
 
             {{-- Render Active Tags --}}
-            @if(count($selectedSemesters) > 0 || count($selectedCategories) > 0 || count($selectedDepartments) > 0 || count($selectedStatuses) > 0)
+            @if(count($selectedCategories) > 0 || count($selectedDepartments) > 0)
                 <div class="flex flex-wrap items-center gap-1.5 pt-2 border-t border-border/50">
                     <span class="text-[11px] font-semibold text-muted-foreground mr-1">Bộ lọc đang chọn:</span>
-
-
-                    @foreach($selectedSemesters as $sem)
-                        <span class="inline-flex items-center gap-1 bg-primary/10 text-primary border border-primary/20 rounded-lg px-2.5 py-1 text-xs font-medium">
-                            Học kỳ: {{ ucfirst($semestersMap[$sem] ?? $sem) }}
-                            <button type="button" onclick="removeFilterTag('semester', '{{ $sem }}')" class="hover:text-destructive transition-colors ml-0.5">
-                                <i data-lucide="x" class="h-3 w-3"></i>
-                            </button>
-                        </span>
-                    @endforeach
 
                     @foreach($selectedCategories as $c)
                         @php $catModel = $categories->firstWhere('id', $c); @endphp
@@ -138,14 +190,6 @@
                         </span>
                     @endforeach
 
-                    @foreach($selectedStatuses as $s)
-                        <span class="inline-flex items-center gap-1 bg-blue-50 text-blue-600 border border-blue-200 rounded-lg px-2.5 py-1 text-xs font-medium">
-                            Trạng thái: {{ $statusOptions[$s] ?? $s }}
-                            <button type="button" onclick="removeFilterTag('status', '{{ $s }}')" class="hover:text-destructive transition-colors ml-0.5">
-                                <i data-lucide="x" class="h-3 w-3"></i>
-                            </button>
-                        </span>
-                    @endforeach
                 </div>
             @endif
         </form>
@@ -156,9 +200,9 @@
         <div class="flex items-center justify-between px-4 py-3 border-b border-border bg-white/20">
             <span class="text-xs text-muted-foreground font-medium">Tổng số: {{ $events->total() }} sự kiện</span>
         </div>
-        <div class="overflow-x-auto">
-            <table class="w-full text-xs">
-                <thead class="bg-white/40 backdrop-blur-md text-[11px] uppercase tracking-wide text-muted-foreground sticky top-0">
+        <div class="overflow-auto max-h-[calc(100vh-280px)] relative">
+            <table class="w-full text-xs relative">
+                <thead class="bg-white/40 backdrop-blur-md text-[11px] uppercase tracking-wide text-muted-foreground sticky top-0 z-20">
                     <tr>
                         <th class="w-[50px] text-center px-3 py-3 font-medium border-r border-border/40">STT</th>
                         <th class="text-left px-4 py-3 font-medium">Sự kiện</th>

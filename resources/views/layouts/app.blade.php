@@ -352,6 +352,7 @@
         </div>
 
         <!-- Global Search Bar -->
+        @if(!isset($hideTopMenu) || !$hideTopMenu)
         <div class="flex-1 max-w-2xl px-4 hidden md:flex items-center justify-center">
             <form action="{{ route('admin.events.index') }}" method="GET" class="flex items-center w-full max-w-md gap-2">
                 <div class="relative flex-1 group">
@@ -364,6 +365,7 @@
                 </button>
             </form>
         </div>
+        @endif
 
         @php
             $nowTime = now();
@@ -379,6 +381,7 @@
             $notificationCount = $startingSoon->count() + $runningEvents->count();
         @endphp
         <div class="flex items-center gap-2 md:gap-3">
+            @if(!isset($hideTopMenu) || !$hideTopMenu)
             <!-- Semester Badge (Real-time Clock) -->
             <div class="hidden lg:inline-flex items-center gap-1.5 h-11 px-4 rounded-full border border-border text-[12px] font-normal text-muted-foreground">
                 <span class="h-1.5 w-1.5 rounded-full bg-primary animate-pulse"></span>
@@ -397,6 +400,7 @@
                     <a href="{{ route('admin.speakers.create') }}" wire:navigate class="flex items-center px-2.5 py-1.5 text-xs text-foreground hover:bg-accent rounded-sm mx-1">Diễn giả mới</a>
                     <a href="{{ route('admin.media.index') }}" wire:navigate class="flex items-center px-2.5 py-1.5 text-xs text-foreground hover:bg-accent rounded-sm mx-1">Tải lên Media</a>
                 </div>
+            </div>
             <!-- Notifications Button with Dropdown -->
             <div class="relative">
                 <button id="notificationBtn" class="h-10 w-10 relative text-muted-foreground hover:text-foreground hover:bg-accent rounded-full flex items-center justify-center transition-all">
@@ -467,6 +471,7 @@
             <a href="{{ route('home') }}" target="_blank" class="h-11 w-11 text-muted-foreground hover:text-foreground hover:bg-accent rounded-xl flex items-center justify-center transition-all" title="Xem trang công khai" wire:navigate>
                 <i data-lucide="external-link" class="h-5 w-5"></i>
             </a>
+            @endif
         </div>
     </header>
 

@@ -73,6 +73,23 @@ class DepartmentController extends Controller
 
     public function destroy(Category $department)
     {
-        return redirect()->route('admin.departments.index')->with('error', 'Không được phép xóa chuyên ngành.');
+        if ($department->type !== 'department') {
+            abort(404);
+        }
+
+        $eventCount = \App\Models\Event::whereHas('departments', function ($q) use ($department) {
+            $q->where('categories.id', $department->id);
+        })->count();
+
+        if ($eventCount > 0) {
+            return redirect()->route('admin.departments.index')->with('error', 'Không thể xóa chuyên ngành đang có sự kiện.');
+        }
+
+        $departmentName = $department->name;
+        $department->delete();
+
+        ActivityLogger::log("đã xóa chuyên ngành: {$departmentName}", route('admin.departments.index'));
+
+        return redirect()->route('admin.departments.index')->with('success', 'Xóa chuyên ngành thành công.');
     }
 }

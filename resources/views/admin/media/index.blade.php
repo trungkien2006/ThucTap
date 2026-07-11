@@ -16,10 +16,10 @@
 
         <!-- Top Control Bar -->
         <div class="flex flex-wrap items-center gap-6 pb-4 border-b border-border text-sm text-foreground">
-            <!-- Sort Control -->
-            <label class="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors group">
-                <i data-lucide="align-left" class="w-4 h-4 shrink-0 pointer-events-none"></i>
-                <form action="{{ route('admin.media.index') }}" method="GET" class="flex items-center">
+            <form action="{{ route('admin.media.index') }}" method="GET" class="flex flex-wrap items-center gap-6 w-full lg:w-auto flex-1">
+                <!-- Sort Control -->
+                <label class="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors group">
+                    <i data-lucide="align-left" class="w-4 h-4 shrink-0 pointer-events-none"></i>
                     <select name="sort" onchange="this.form.submit()" class="font-medium bg-transparent border-none appearance-none focus:outline-none focus:ring-0 cursor-pointer hover:text-primary text-sm">
                         <option value="date_desc" {{ request('sort', 'date_desc') === 'date_desc' ? 'selected' : '' }}>Sắp xếp: Mới nhất</option>
                         <option value="date_asc" {{ request('sort') === 'date_asc' ? 'selected' : '' }}>Sắp xếp: Cũ nhất</option>
@@ -27,22 +27,28 @@
                         <option value="title_desc" {{ request('sort') === 'title_desc' ? 'selected' : '' }}>Sắp xếp: Tên (Z-A)</option>
                         <option value="likes" {{ request('sort') === 'likes' ? 'selected' : '' }}>Sắp xếp: Nhiều lượt thích nhất</option>
                     </select>
-                    @if(request('view')) <input type="hidden" name="view" value="{{ request('view') }}"> @endif
-                </form>
-            </label>
+                </label>
 
-            <!-- View Control -->
-            <label class="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors group">
-                <i data-lucide="layout-grid" class="w-4 h-4 shrink-0 pointer-events-none"></i>
-                <form action="{{ route('admin.media.index') }}" method="GET" class="flex items-center">
+                <!-- View Control -->
+                <label class="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors group">
+                    <i data-lucide="layout-grid" class="w-4 h-4 shrink-0 pointer-events-none"></i>
                     <select name="view" onchange="this.form.submit()" class="font-medium bg-transparent border-none appearance-none focus:outline-none focus:ring-0 cursor-pointer hover:text-primary text-sm">
                         <option value="grid_4" {{ request('view') === 'grid_4' ? 'selected' : '' }}>Hiển thị: 4 cột</option>
                         <option value="grid_5" {{ request('view', 'grid_5') === 'grid_5' ? 'selected' : '' }}>Hiển thị: 5 cột</option>
                         <option value="grid_6" {{ request('view') === 'grid_6' ? 'selected' : '' }}>Hiển thị: 6 cột</option>
                     </select>
-                    @if(request('sort')) <input type="hidden" name="sort" value="{{ request('sort') }}"> @endif
-                </form>
-            </label>
+                </label>
+
+                <!-- Link Filter Control -->
+                <label class="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors group">
+                    <i data-lucide="link" class="w-4 h-4 shrink-0 pointer-events-none"></i>
+                    <select name="has_link" onchange="this.form.submit()" class="font-medium bg-transparent border-none appearance-none focus:outline-none focus:ring-0 cursor-pointer hover:text-primary text-sm">
+                        <option value="">Lọc: Tất cả</option>
+                        <option value="yes" {{ request('has_link') === 'yes' ? 'selected' : '' }}>Đã gắn link</option>
+                        <option value="no" {{ request('has_link') === 'no' ? 'selected' : '' }}>Chưa gắn link</option>
+                    </select>
+                </label>
+            </form>
             
             <div class="ml-auto flex items-center gap-6">
                 <div>
@@ -85,6 +91,13 @@
                     
                     <!-- Cover Image -->
                     <div class="aspect-square relative bg-muted flex items-center justify-center overflow-hidden">
+                        @if(!empty($album->recap_drive_link))
+                            <!-- Album Link Tag -->
+                            <div class="absolute top-3 left-3 z-30 bg-red-500 text-white p-1.5 rounded-md shadow-md backdrop-blur-sm bg-opacity-90 flex items-center justify-center" title="Đã gắn link Album">
+                                <i data-lucide="folder-heart" class="w-4 h-4"></i>
+                            </div>
+                        @endif
+                        
                         @if($cover)
                             <img src="{{ $cover }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="">
                         @else

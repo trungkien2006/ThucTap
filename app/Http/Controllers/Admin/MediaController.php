@@ -33,6 +33,16 @@ class MediaController extends Controller
             $query->where('title', 'like', '%' . $request->search . '%');
         }
 
+        if ($request->filled('has_link')) {
+            if ($request->has_link === 'yes') {
+                $query->whereNotNull('recap_drive_link')->where('recap_drive_link', '!=', '');
+            } elseif ($request->has_link === 'no') {
+                $query->where(function($q) {
+                    $q->whereNull('recap_drive_link')->orWhere('recap_drive_link', '');
+                });
+            }
+        }
+
         $sort = $request->input('sort', 'date_desc');
         if ($sort === 'date_asc') {
             $query->orderBy('created_at', 'asc');

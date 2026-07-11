@@ -33,8 +33,9 @@
             'draft' => 'Chưa xuất bản',
         ];
     @endphp
-    <div class="bg-card rounded-lg border border-border p-4 shadow-none flex flex-col gap-4">
-        <form method="GET" action="{{ route('admin.events.index') }}" id="filterForm" class="space-y-3 w-full">
+    <!-- Top Control Bar -->
+    <div class="flex flex-col gap-4 pb-4 border-b border-border text-sm text-foreground mb-6">
+        <form method="GET" action="{{ route('admin.events.index') }}" id="filterForm" class="flex flex-col gap-4 w-full">
             @foreach($selectedCategories as $c)
                 <input type="hidden" name="category_id[]" value="{{ $c }}" class="filter-input-category_id">
             @endforeach
@@ -45,31 +46,81 @@
                 <input type="hidden" name="status[]" value="{{ $s }}" class="filter-input-status">
             @endforeach
 
-            <div class="flex flex-wrap items-center gap-2 w-full">
-                <div class="relative flex-1 min-w-[220px]">
-                    <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground"></i>
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Tìm kiếm theo tên, ID, địa điểm…" class="h-9 w-full rounded-lg border border-input pl-10 text-sm bg-background focus:outline-none focus:border-ring transition-all">
-                </div>
+            <!-- Primary Filters Row -->
+            <div class="flex flex-wrap items-center gap-6 w-full">
+                <!-- Search Control -->
+                <label class="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors group relative flex-1 min-w-[240px]">
+                    <i data-lucide="search" class="w-4 h-4 shrink-0 pointer-events-none absolute left-0 text-muted-foreground"></i>
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Tìm kiếm theo tên, ID, địa điểm…" class="pl-6 w-full font-medium bg-transparent border-none focus:outline-none focus:ring-0 text-sm placeholder:text-muted-foreground">
+                </label>
 
-                <button type="submit" class="inline-flex items-center justify-center rounded-lg text-xs font-medium bg-primary text-primary-foreground h-9 px-3 hover:bg-primary/90 transition-all gap-1">
-                    <i data-lucide="search" class="h-3.5 w-3.5"></i> Tìm
-                </button>
+                <!-- Semester Control -->
+                <label class="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors group">
+                    <i data-lucide="book-open" class="w-4 h-4 shrink-0 pointer-events-none"></i>
+                    <select name="semester" onchange="document.getElementById('filterForm').submit()" class="font-medium bg-transparent border-none appearance-none focus:outline-none focus:ring-0 cursor-pointer hover:text-primary text-sm">
+                        <option value="">Tất cả Học kỳ</option>
+                        @foreach($semestersMap as $val => $label)
+                            <option value="{{ $val }}" {{ request('semester') == $val ? 'selected' : '' }}>Học kỳ {{ $label }}</option>
+                        @endforeach
+                    </select>
+                </label>
+                
+                <!-- Category Control -->
+                <label class="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors group">
+                    <i data-lucide="tag" class="w-4 h-4 shrink-0 pointer-events-none"></i>
+                    <select onchange="addFilterTag('category_id', this)" class="font-medium bg-transparent border-none appearance-none focus:outline-none focus:ring-0 cursor-pointer hover:text-primary text-sm max-w-[150px] truncate">
+                        <option value="">+ Danh mục</option>
+                        @foreach($categories as $cat)
+                            @if(!in_array($cat->id, $selectedCategories))
+                                <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                            @endif
+                        @endforeach
+                    </select>
+                </label>
 
+                <!-- Department Control -->
+                <label class="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors group">
+                    <i data-lucide="building" class="w-4 h-4 shrink-0 pointer-events-none"></i>
+                    <select onchange="addFilterTag('department_id', this)" class="font-medium bg-transparent border-none appearance-none focus:outline-none focus:ring-0 cursor-pointer hover:text-primary text-sm max-w-[150px] truncate">
+                        <option value="">+ Chuyên ngành</option>
+                        @foreach($departments as $dept)
+                            @if(!in_array($dept->id, $selectedDepartments))
+                                <option value="{{ $dept->id }}">{{ $dept->name }}</option>
+                            @endif
+                        @endforeach
+                    </select>
+                </label>
+
+                <!-- Status Control -->
+                <label class="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors group">
+                    <i data-lucide="activity" class="w-4 h-4 shrink-0 pointer-events-none"></i>
+                    <select name="status" onchange="document.getElementById('filterForm').submit()" class="font-medium bg-transparent border-none appearance-none focus:outline-none focus:ring-0 cursor-pointer hover:text-primary text-sm">
+                        <option value="">+ Trạng thái</option>
+                        @foreach($statusOptions as $val => $label)
+                            <option value="{{ $val }}" {{ request('status') == $val || (is_array(request('status')) && in_array($val, request('status'))) ? 'selected' : '' }}>{{ $label }}</option>
+                        @endforeach
+                    </select>
+                </label>
+                
                 @if(request('search') || request('semester') || request('year_start') || request('year_end') || count($selectedCategories) > 0 || count($selectedDepartments) > 0 || count($selectedStatuses) > 0)
-                    <a href="{{ route('admin.events.index') }}" class="inline-flex items-center justify-center rounded-lg text-xs font-medium border border-input bg-background h-9 px-3 hover:bg-accent transition-all gap-1">
-                        <i data-lucide="x" class="h-3.5 w-3.5"></i> Xóa lọc
-                    </a>
+                    <div class="ml-auto flex items-center gap-6">
+                        <a href="{{ route('admin.events.index') }}" class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5" title="Xóa tất cả bộ lọc">
+                            <i data-lucide="x" class="h-4 w-4"></i> Xóa lọc
+                        </a>
+                    </div>
                 @endif
             </div>
 
-            <div class="flex flex-wrap items-center gap-2">
+            <!-- Secondary Filters Row (Year Slider and Active Tags) -->
+            <div class="flex flex-wrap items-center justify-between gap-4 mt-2">
                 <!-- Year Range Slider -->
-                <div class="flex items-center gap-3 px-3 h-9 border border-input rounded-lg bg-background" style="min-width: 280px;">
-                    <span class="text-xs font-medium text-muted-foreground shrink-0">Năm:</span>
+                <div class="flex items-center gap-3 h-8 rounded-lg bg-transparent border-none group" style="min-width: 280px; max-width: 320px;">
+                    <i data-lucide="calendar-range" class="w-4 h-4 shrink-0 text-muted-foreground group-hover:text-primary transition-colors"></i>
+                    <span class="text-xs font-medium text-muted-foreground shrink-0 group-hover:text-primary transition-colors">Năm:</span>
                     <span id="yearValStart" class="text-xs font-semibold shrink-0 w-8 text-right">{{ request('year_start', 2015) }}</span>
                     
                     <div class="flex-1 px-2 relative" style="height: 10px;">
-                        <div id="year-slider" style="height: 6px; border: none; box-shadow: none; background: #e2e8f0;" class="mt-0.5"></div>
+                        <div id="year-slider" style="height: 4px; border: none; box-shadow: none; background: #e2e8f0;" class="mt-1"></div>
                     </div>
                     
                     <span id="yearValEnd" class="text-xs font-semibold shrink-0 w-8">{{ request('year_end', date('Y') + 2) }}</span>
@@ -84,7 +135,7 @@
                         width: 14px !important;
                         height: 14px !important;
                         right: -7px !important;
-                        top: -4px !important;
+                        top: -5px !important;
                         border-radius: 50%;
                         background: #0f172a !important;
                         border: 2px solid #fff !important;
@@ -132,66 +183,31 @@
                     });
                 </script>
 
-                <select name="semester" onchange="document.getElementById('filterForm').submit()" class="h-9 min-w-[140px] border border-input rounded-lg text-xs bg-background px-2.5 focus:outline-none focus:border-ring transition-all text-muted-foreground cursor-pointer">
-                    <option value="">+ Học kỳ</option>
-                    @foreach($semestersMap as $val => $label)
-                        <option value="{{ $val }}" {{ request('semester') == $val ? 'selected' : '' }}>{{ $label }}</option>
-                    @endforeach
-                </select>
-
-                <select onchange="addFilterTag('category_id', this)" class="h-9 min-w-[180px] border border-input rounded-lg text-xs bg-background px-2.5 focus:outline-none focus:border-ring transition-all text-muted-foreground cursor-pointer">
-                    <option value="">+ Danh mục</option>
-                    @foreach($categories as $cat)
-                        @if(!in_array($cat->id, $selectedCategories))
-                            <option value="{{ $cat->id }}">{{ $cat->name }}</option>
-                        @endif
-                    @endforeach
-                </select>
-
-                <select onchange="addFilterTag('department_id', this)" class="h-9 min-w-[180px] border border-input rounded-lg text-xs bg-background px-2.5 focus:outline-none focus:border-ring transition-all text-muted-foreground cursor-pointer">
-                    <option value="">+ Chuyên ngành</option>
-                    @foreach($departments as $dept)
-                        @if(!in_array($dept->id, $selectedDepartments))
-                            <option value="{{ $dept->id }}">{{ $dept->name }}</option>
-                        @endif
-                    @endforeach
-                </select>
-
-                <select name="status" onchange="document.getElementById('filterForm').submit()" class="h-9 min-w-[160px] border border-input rounded-lg text-xs bg-background px-2.5 focus:outline-none focus:border-ring transition-all text-muted-foreground cursor-pointer">
-                    <option value="">+ Trạng thái</option>
-                    @foreach($statusOptions as $val => $label)
-                        <option value="{{ $val }}" {{ request('status') == $val || (is_array(request('status')) && in_array($val, request('status'))) ? 'selected' : '' }}>{{ $label }}</option>
-                    @endforeach
-                </select>
+                {{-- Render Active Tags --}}
+                @if(count($selectedCategories) > 0 || count($selectedDepartments) > 0)
+                    <div class="flex flex-wrap items-center gap-1.5 ml-auto">
+                        <span class="text-[11px] font-semibold text-muted-foreground mr-1">Đang chọn:</span>
+                        @foreach($selectedCategories as $c)
+                            @php $catModel = $categories->firstWhere('id', $c); @endphp
+                            <span class="inline-flex items-center gap-1 bg-primary/10 text-primary rounded-lg px-2.5 py-1 text-xs font-medium">
+                                {{ $catModel->name ?? $c }}
+                                <button type="button" onclick="removeFilterTag('category_id', '{{ $c }}')" class="hover:text-red-500 transition-colors ml-0.5">
+                                    <i data-lucide="x" class="h-3 w-3"></i>
+                                </button>
+                            </span>
+                        @endforeach
+                        @foreach($selectedDepartments as $d)
+                            @php $deptModel = $departments->firstWhere('id', $d); @endphp
+                            <span class="inline-flex items-center gap-1 bg-primary/10 text-primary rounded-lg px-2.5 py-1 text-xs font-medium">
+                                {{ $deptModel->name ?? $d }}
+                                <button type="button" onclick="removeFilterTag('department_id', '{{ $d }}')" class="hover:text-red-500 transition-colors ml-0.5">
+                                    <i data-lucide="x" class="h-3 w-3"></i>
+                                </button>
+                            </span>
+                        @endforeach
+                    </div>
+                @endif
             </div>
-
-            {{-- Render Active Tags --}}
-            @if(count($selectedCategories) > 0 || count($selectedDepartments) > 0)
-                <div class="flex flex-wrap items-center gap-1.5 pt-2 border-t border-border/50">
-                    <span class="text-[11px] font-semibold text-muted-foreground mr-1">Bộ lọc đang chọn:</span>
-
-                    @foreach($selectedCategories as $c)
-                        @php $catModel = $categories->firstWhere('id', $c); @endphp
-                        <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-600 border border-emerald-200 rounded-lg px-2.5 py-1 text-xs font-medium">
-                            Danh mục: {{ $catModel->name ?? $c }}
-                            <button type="button" onclick="removeFilterTag('category_id', '{{ $c }}')" class="hover:text-destructive transition-colors ml-0.5">
-                                <i data-lucide="x" class="h-3 w-3"></i>
-                            </button>
-                        </span>
-                    @endforeach
-
-                    @foreach($selectedDepartments as $d)
-                        @php $deptModel = $departments->firstWhere('id', $d); @endphp
-                        <span class="inline-flex items-center gap-1 bg-amber-50 text-amber-600 border border-amber-200 rounded-lg px-2.5 py-1 text-xs font-medium">
-                            Chuyên ngành: {{ $deptModel->name ?? $d }}
-                            <button type="button" onclick="removeFilterTag('department_id', '{{ $d }}')" class="hover:text-destructive transition-colors ml-0.5">
-                                <i data-lucide="x" class="h-3 w-3"></i>
-                            </button>
-                        </span>
-                    @endforeach
-
-                </div>
-            @endif
         </form>
     </div>
 

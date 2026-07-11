@@ -14,22 +14,29 @@
                 <p class="text-xs text-muted-foreground mt-0.5">Danh sách diễn giả của các sự kiện</p>
             </div>
             <div class="flex items-center gap-2">
-                <form method="GET" action="{{ route('admin.speakers.index') }}" class="relative w-64 hidden md:flex items-center gap-1.5">
-                    <div class="relative flex-1">
-                        <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground"></i>
-                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Tìm kiếm diễn giả…"
-                            class="h-11 w-full rounded-xl border border-input pl-10 pr-3 text-sm bg-background focus:outline-none focus:border-ring transition-all">
-                    </div>
-                    <button type="submit" class="inline-flex items-center justify-center rounded-xl text-xs font-semibold bg-primary text-primary-foreground h-11 px-3 hover:scale-[1.02] active:scale-[0.98] transition-all">Tìm</button>
-                    @if(request('search'))
-                        <a href="{{ route('admin.speakers.index') }}" class="inline-flex items-center justify-center rounded-xl text-xs font-semibold border border-input bg-background h-11 px-3 hover:bg-accent transition-all">Xóa</a>
-                    @endif
-                </form>
                 <a href="{{ route('admin.speakers.create') }}"
                     class="inline-flex items-center gap-1.5 h-11 px-5 text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl transition-all shadow-sm">
                     <i data-lucide="plus" class="h-5 w-5"></i> Thêm diễn giả
                 </a>
             </div>
+        </div>
+
+        <!-- Top Control Bar -->
+        <div class="flex flex-wrap items-center gap-6 pb-4 border-b border-border text-sm text-foreground mb-6">
+            <form action="{{ route('admin.speakers.index') }}" method="GET" class="flex flex-wrap items-center gap-6 w-full lg:w-auto flex-1">
+                <!-- Search Control -->
+                <label class="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors group relative w-full lg:w-96">
+                    <i data-lucide="search" class="w-4 h-4 shrink-0 pointer-events-none absolute left-0 text-muted-foreground"></i>
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Tìm kiếm diễn giả…" class="pl-6 w-full font-medium bg-transparent border-none focus:outline-none focus:ring-0 text-sm placeholder:text-muted-foreground">
+                </label>
+            </form>
+            @if(request('search'))
+                <div class="ml-auto flex items-center gap-6">
+                    <a href="{{ route('admin.speakers.index') }}" class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5" title="Xóa tìm kiếm">
+                        <i data-lucide="x" class="h-4 w-4"></i> Xóa
+                    </a>
+                </div>
+            @endif
         </div>
 
         {{-- Speakers Grid --}}

@@ -250,7 +250,7 @@
                     </a>
                     <a href="{{ route('admin.departments.index') }}" class="sidebar-menu-btn rounded-xl {{ request()->routeIs('admin.departments.*') ? 'active' : '' }}">
                         <i data-lucide="building" class="h-5 w-5 shrink-0"></i>
-                        <span class="sidebar-text-element">Khoa / Bộ phận</span>
+                        <span class="sidebar-text-element">Chuyên ngành</span>
                     </a>
                     <a href="{{ route('admin.archive.index') }}" class="sidebar-menu-btn rounded-xl {{ request()->routeIs('admin.archive.*') ? 'active' : '' }}">
                         <i data-lucide="archive" class="h-5 w-5 shrink-0"></i>

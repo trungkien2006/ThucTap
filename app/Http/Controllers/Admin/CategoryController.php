@@ -74,6 +74,20 @@ class CategoryController extends Controller
 
     public function destroy(Category $category)
     {
-        return redirect()->route('admin.categories.index')->with('error', 'Không được phép xóa danh mục.');
+        if ($category->type !== 'event_type') {
+            abort(404);
+        }
+
+        $eventCount = \App\Models\Event::where('category_id', $category->id)->count();
+        if ($eventCount > 0) {
+            return redirect()->route('admin.categories.index')->with('error', 'Không thể xóa danh mục đang có sự kiện.');
+        }
+
+        $categoryName = $category->name;
+        $category->delete();
+
+        ActivityLogger::log("đã xóa danh mục: {$categoryName}", route('admin.categories.index'));
+
+        return redirect()->route('admin.categories.index')->with('success', 'Xóa danh mục thành công.');
     }
 }

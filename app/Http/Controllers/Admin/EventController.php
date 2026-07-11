@@ -685,7 +685,9 @@ class EventController extends Controller
     public function archiveIndex(Request $request)
     {
         $query = Event::query()->with('bannerImage', 'category', 'departments', 'creator')
-            ->where('status', 'archived');
+            ->where('status', 'archived')
+            ->whereNotNull('recap_drive_link')
+            ->where('recap_drive_link', '!=', '');
 
         if ($request->filled('search')) {
             $query->where(function($q) use ($request) {

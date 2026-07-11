@@ -5,48 +5,65 @@
 @endphp
 
 @section('content')
-<div class="space-y-4">
-    <div class="flex items-end justify-between flex-wrap gap-3">
+<div class="space-y-6">
+    {{-- Header --}}
+    <div class="flex items-end justify-between flex-wrap gap-4">
         <div>
-            <h1 class="text-[22px] font-semibold tracking-tight">Lưu trữ sự kiện</h1>
-            <p class="text-xs text-muted-foreground mt-0.5">Kho lưu trữ hình ảnh, video của các sự kiện trường</p>
+            <h1 class="text-[26px] font-bold text-slate-800 tracking-tight">Lưu trữ sự kiện</h1>
+            <p class="text-[13px] text-slate-500 mt-1">Kho lưu trữ hình ảnh, video và thông tin của các sự kiện đã diễn ra</p>
         </div>
     </div>
 
     {{-- Search & Filters --}}
-    <div class="bg-card rounded-2xl border-none shadow-2xl shadow-slate-300/60 hover:-translate-y-2 hover:shadow-slate-300/80 transition-all duration-300 p-4">
-        <form method="GET" action="{{ route('admin.archive.index') }}" class="flex flex-wrap items-center gap-2 w-full">
-            <div class="relative flex-1 min-w-[220px]">
-                <i data-lucide="search" class="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground"></i>
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Tìm kiếm sự kiện đã lưu trữ…" class="h-11 w-full rounded-xl border border-input pl-10 text-sm bg-background focus:outline-none focus:border-ring transition-all">
-            </div>
-            
-            <select name="academic_year" onchange="this.form.submit()" class="h-11 border border-input rounded-xl text-sm bg-background px-3 focus:outline-none focus:border-ring transition-all text-muted-foreground">
-                <option value="">Tất cả Năm học</option>
-                @foreach($academicYears as $year)
-                    <option value="{{ $year }}" {{ request('academic_year') == $year ? 'selected' : '' }}>{{ $year }}</option>
-                @endforeach
-            </select>
+    <!-- Top Control Bar -->
+    <div class="flex flex-wrap items-center gap-6 pb-4 border-b border-border text-sm text-foreground mb-6">
+        <form action="{{ route('admin.archive.index') }}" method="GET" class="flex flex-wrap items-center gap-6 w-full lg:w-auto flex-1">
+            <!-- Search Control -->
+            <label class="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors group relative w-full lg:w-64">
+                <i data-lucide="search" class="w-4 h-4 shrink-0 pointer-events-none absolute left-0 text-muted-foreground"></i>
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Tìm kiếm sự kiện…" class="pl-6 w-full font-medium bg-transparent border-none focus:outline-none focus:ring-0 text-sm placeholder:text-muted-foreground">
+            </label>
 
-            <select name="semester" onchange="this.form.submit()" class="h-11 border border-input rounded-xl text-sm bg-background px-3 focus:outline-none focus:border-ring transition-all text-muted-foreground">
-                <option value="">Tất cả Học kỳ</option>
-                <option value="1" {{ request('semester') == '1' ? 'selected' : '' }}>Học kỳ Thu</option>
-                <option value="2" {{ request('semester') == '2' ? 'selected' : '' }}>Học kỳ Xuân</option>
-                <option value="3" {{ request('semester') == '3' ? 'selected' : '' }}>Học kỳ Hè</option>
-            </select>
+            <!-- Year Control -->
+            <label class="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors group">
+                <i data-lucide="calendar" class="w-4 h-4 shrink-0 pointer-events-none"></i>
+                <select name="academic_year" onchange="this.form.submit()" class="font-medium bg-transparent border-none appearance-none focus:outline-none focus:ring-0 cursor-pointer hover:text-primary text-sm">
+                    <option value="">Tất cả Năm học</option>
+                    @foreach($academicYears as $year)
+                        <option value="{{ $year }}" {{ request('academic_year') == $year ? 'selected' : '' }}>Năm học {{ $year }}</option>
+                    @endforeach
+                </select>
+            </label>
 
-            <select name="category_id" onchange="this.form.submit()" class="h-11 border border-input rounded-xl text-sm bg-background px-3 focus:outline-none focus:border-ring transition-all text-muted-foreground">
-                <option value="">Tất cả Danh mục</option>
-                @foreach($categories as $cat)
-                    <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
-                @endforeach
-            </select>
+            <!-- Semester Control -->
+            <label class="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors group">
+                <i data-lucide="book-open" class="w-4 h-4 shrink-0 pointer-events-none"></i>
+                <select name="semester" onchange="this.form.submit()" class="font-medium bg-transparent border-none appearance-none focus:outline-none focus:ring-0 cursor-pointer hover:text-primary text-sm">
+                    <option value="">Tất cả Học kỳ</option>
+                    <option value="1" {{ request('semester') == '1' ? 'selected' : '' }}>Học kỳ Thu</option>
+                    <option value="2" {{ request('semester') == '2' ? 'selected' : '' }}>Học kỳ Xuân</option>
+                    <option value="3" {{ request('semester') == '3' ? 'selected' : '' }}>Học kỳ Hè</option>
+                </select>
+            </label>
 
-            <button type="submit" class="inline-flex items-center justify-center rounded-xl text-xs font-semibold bg-primary text-primary-foreground h-11 px-4 hover:scale-[1.02] active:scale-[0.98] transition-all">Lọc</button>
-            @if(request('search') || request('academic_year') || request('semester') || request('category_id'))
-                <a href="{{ route('admin.archive.index') }}" class="inline-flex items-center justify-center rounded-xl text-xs font-semibold border border-input bg-background h-11 px-4 hover:bg-accent transition-all">Xóa lọc</a>
-            @endif
+            <!-- Category Control -->
+            <label class="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors group">
+                <i data-lucide="tag" class="w-4 h-4 shrink-0 pointer-events-none"></i>
+                <select name="category_id" onchange="this.form.submit()" class="font-medium bg-transparent border-none appearance-none focus:outline-none focus:ring-0 cursor-pointer hover:text-primary text-sm max-w-[150px] truncate">
+                    <option value="">Tất cả Danh mục</option>
+                    @foreach($categories as $cat)
+                        <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
+                    @endforeach
+                </select>
+            </label>
         </form>
+        @if(request('search') || request('academic_year') || request('semester') || request('category_id'))
+        <div class="ml-auto flex items-center gap-6">
+            <a href="{{ route('admin.archive.index') }}" class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5" title="Xóa tất cả bộ lọc">
+                <i data-lucide="x" class="h-4 w-4"></i> Xóa lọc
+            </a>
+        </div>
+        @endif
     </div>
 
     {{-- Archived events --}}
@@ -57,48 +74,78 @@
     @endphp
 
     @if($events->isEmpty())
-    <div class="py-16 text-center bg-card rounded-2xl border-none shadow-2xl shadow-slate-300/60 hover:-translate-y-2 hover:shadow-slate-300/80 transition-all duration-300">
-        <i data-lucide="archive" class="h-10 w-10 text-muted-foreground/30 mx-auto mb-3"></i>
-        <p class="text-sm text-muted-foreground">Không có sự kiện nào trong lưu trữ.</p>
+    <div class="py-20 text-center bg-white rounded-2xl border border-slate-200/60 shadow-sm flex flex-col items-center justify-center">
+        <div class="h-16 w-16 rounded-full bg-slate-50 flex items-center justify-center mb-4">
+            <i data-lucide="archive-x" class="h-8 w-8 text-slate-400"></i>
+        </div>
+        <h3 class="text-[15px] font-semibold text-slate-700 mb-1">Không tìm thấy sự kiện</h3>
+        <p class="text-[13px] text-slate-500">Chưa có sự kiện nào trong kho lưu trữ hoặc không khớp với bộ lọc.</p>
+        @if(request('search') || request('academic_year') || request('semester') || request('category_id'))
+            <a href="{{ route('admin.archive.index') }}" class="mt-4 inline-flex items-center gap-1.5 text-primary text-[13px] font-semibold hover:underline">
+                <i data-lucide="refresh-cw" class="h-4 w-4"></i> Đặt lại bộ lọc
+            </a>
+        @endif
     </div>
     @else
-    <div class="space-y-6">
+    <div class="space-y-8">
         @foreach($grouped as $year => $yearEvents)
-        <section class="space-y-3">
+        <section class="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div class="flex items-center gap-3">
-                <div class="h-7 w-1 rounded-full bg-primary"></div>
-                <h2 class="text-sm font-semibold">{{ $year }}</h2>
-                <span class="inline-flex items-center h-5 px-1.5 rounded text-[10px] font-medium bg-secondary text-secondary-foreground">{{ $yearEvents->count() }} sự kiện</span>
-                <div class="flex-1 h-px bg-border"></div>
+                <div class="h-8 w-1.5 rounded-full bg-primary"></div>
+                <h2 class="text-xl font-bold text-slate-800">{{ $year }}</h2>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-600">{{ $yearEvents->count() }} sự kiện</span>
+                <div class="flex-1 h-px bg-slate-200/60"></div>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                 @foreach($yearEvents as $e)
-                <div class="bg-card rounded-2xl border-none shadow-2xl shadow-slate-300/60 hover:-translate-y-2 hover:shadow-slate-300/80 transition-all duration-300 overflow-hidden bg-card rounded-2xl border-none shadow-2xl shadow-slate-300/60 hover:-translate-y-2 hover:shadow-slate-300/80 transition-all duration-300-hover">
-                    <div class="aspect-[16/9] bg-gradient-to-br from-primary/25 via-primary/10 to-accent grid place-items-center relative overflow-hidden">
+                <div class="group bg-white rounded-2xl border border-slate-200/60 shadow-sm hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col">
+                    <div class="aspect-[16/9] bg-slate-100 relative overflow-hidden">
                         @if($e->bannerImage)
-                            <img src="{{ \App\Helpers\FileHelper::url($e->bannerImage->url) }}" class="w-full h-full object-cover" alt="">
+                            <img src="{{ \App\Helpers\FileHelper::url($e->bannerImage->url) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="">
                         @else
-                            <i data-lucide="image" class="h-8 w-8 text-primary/50"></i>
+                            <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 group-hover:scale-105 transition-transform duration-500">
+                                <i data-lucide="image" class="h-10 w-10 text-slate-300"></i>
+                            </div>
                         @endif
-                    </div>
-                    <div class="p-3 space-y-2">
-                        <a href="{{ route('events.show', $e->slug) }}" target="_blank" class="font-medium text-sm leading-snug line-clamp-2 hover:text-primary transition-colors">{{ $e->title }}</a>
-                        <div class="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                            <i data-lucide="calendar" class="h-3 w-3"></i>
-                            {{ $e->event_date->format('d/m/Y') }}
+                        <!-- Hover Overlay -->
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+                            <a href="{{ route('events.show', $e->slug) }}" target="_blank" class="inline-flex items-center gap-1.5 text-white text-[12px] font-semibold hover:text-primary-200">
+                                Xem chi tiết <i data-lucide="external-link" class="h-3 w-3"></i>
+                            </a>
                         </div>
-                        <div class="flex items-center justify-between text-[11px] text-muted-foreground pt-2 border-t border-border">
-                            <span class="inline-flex items-center gap-1"><i data-lucide="eye" class="h-3 w-3"></i>{{ number_format($e->views_count ?? 0) }}</span>
-                            <div class="flex items-center gap-1">
-                                <a href="{{ route('admin.events.edit', $e) }}" class="h-6 w-6 rounded flex items-center justify-center hover:bg-accent text-muted-foreground hover:text-foreground transition-all" title="Sửa">
-                                    <i data-lucide="pencil" class="h-3 w-3"></i>
-                                </a>
-                                <form action="{{ route('admin.events.destroy', $e) }}" method="POST" class="inline" onsubmit="return confirm('Xóa sự kiện này?');">
-                                    @csrf @method('DELETE')
-                                    <button type="submit" class="h-6 w-6 rounded flex items-center justify-center hover:bg-red-50 hover:text-red-500 text-muted-foreground transition-all" title="Xóa">
-                                        <i data-lucide="trash-2" class="h-3 w-3"></i>
-                                    </button>
-                                </form>
+                        <!-- Status Badge -->
+                        <div class="absolute top-3 right-3">
+                            <span class="inline-flex items-center px-2 py-1 rounded-md text-[10px] font-bold bg-white/90 text-slate-700 shadow-sm backdrop-blur-sm">
+                                Đã lưu trữ
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="p-4 flex flex-col flex-1">
+                        <a href="{{ route('events.show', $e->slug) }}" target="_blank" class="font-bold text-[15px] leading-snug line-clamp-2 text-slate-800 group-hover:text-primary transition-colors mb-3" title="{{ $e->title }}">{{ $e->title }}</a>
+                        
+                        <div class="mt-auto pt-2">
+                            <div class="flex items-center gap-2 text-[12px] text-slate-500 mb-4 font-medium flex-wrap">
+                                <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-100 px-2 py-1 rounded-md">
+                                    <i data-lucide="calendar" class="h-3.5 w-3.5 text-primary"></i>
+                                    {{ $e->event_date->format('d/m/Y') }}
+                                </div>
+                                <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-100 px-2 py-1 rounded-md">
+                                    <i data-lucide="eye" class="h-3.5 w-3.5 text-blue-500"></i>
+                                    {{ number_format($e->views_count ?? 0) }}
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+                                <div class="text-[11px] text-slate-400 font-medium truncate max-w-[120px]" title="{{ $e->category->name ?? 'Sự kiện' }}">
+                                    {{ $e->category->name ?? 'Sự kiện' }}
+                                </div>
+                                <div class="flex items-center gap-1.5 shrink-0">
+                                    <a href="{{ route('admin.media.index', ['event_id' => $e->id]) }}" class="h-8 px-3 rounded-lg flex items-center justify-center bg-primary/10 hover:bg-primary/20 text-primary transition-all text-[12px] font-semibold" title="Xem thư viện media">
+                                        <i data-lucide="images" class="h-4 w-4 mr-1.5"></i> Media
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -39,6 +39,15 @@
                     <a href="{{ route('admin.categories.edit', $category) }}" class="h-9 w-9 rounded-lg flex items-center justify-center text-muted-foreground hover:bg-accent hover:text-foreground transition-all" title="Sửa">
                         <i data-lucide="pencil" class="h-4 w-4"></i>
                     </a>
+                    @if($category->events_count == 0)
+                    <form action="{{ route('admin.categories.destroy', $category) }}" method="POST" class="inline-block" onsubmit="return confirm('Bạn có chắc chắn muốn xóa danh mục này?');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="h-9 w-9 rounded-lg flex items-center justify-center text-red-500 hover:bg-red-50 hover:text-red-600 transition-all" title="Xóa">
+                            <i data-lucide="trash-2" class="h-4 w-4"></i>
+                        </button>
+                    </form>
+                    @endif
                 </div>
             </div>
             <div>

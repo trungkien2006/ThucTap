@@ -222,7 +222,7 @@
                     <tr>
                         <th class="w-[50px] text-center px-3 py-3 font-medium border-r border-border/40">STT</th>
                         <th class="text-left px-4 py-3 font-medium">Sự kiện</th>
-                        <th class="text-left px-3 py-2 font-medium">Khoa</th>
+                        <th class="text-left px-3 py-2 font-medium">Chuyên ngành</th>
                         <th class="text-left px-3 py-2 font-medium">Thời gian & Địa điểm</th>
                         <th class="text-left px-3 py-2 font-medium">Trạng thái</th>
                         <th class="text-right px-4 py-2 font-medium w-[160px]">Thao tác</th>

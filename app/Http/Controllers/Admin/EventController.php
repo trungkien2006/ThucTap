@@ -43,7 +43,6 @@ class EventController extends Controller
                 case '1': $months = [1, 2, 3]; break; // Spring
                 case '2': $months = [4, 5, 6]; break; // Summer
                 case '3': $months = [7, 8, 9]; break; // Fall
-                case '4': $months = [10, 11, 12]; break; // Winter
             }
             if (!empty($months)) {
                 $query->where(function($q) use ($months) {
@@ -80,21 +79,27 @@ class EventController extends Controller
                     if (in_array('upcoming', $statuses)) {
                         $q->orWhere(function ($sub) {
                             $sub->where('is_published', true)
-                                ->where('event_date', '>=', now());
+                                ->where('event_date', '>', now());
+                        });
+                    }
+                    if (in_array('running', $statuses)) {
+                        $q->orWhere(function ($sub) {
+                            $sub->where('is_published', true)
+                                ->where('event_date', '<=', now())
+                                ->where(function($sub2) {
+                                    $sub2->whereNull('end_date')->whereRaw('DATE(event_date) >= ?', [now()->toDateString()])
+                                         ->orWhere('end_date', '>=', now());
+                                });
                         });
                     }
                     if (in_array('completed', $statuses)) {
                         $q->orWhere(function ($sub) {
                             $sub->where('is_published', true)
-                                ->where('event_date', '<', now());
-                        });
-                    }
-                    if (in_array('missing_recap', $statuses)) {
-                        $q->orWhere(function ($sub) {
-                            $sub->where('is_published', true)
-                                ->where('event_date', '<', now())
-                                ->where(function($linkQ) {
-                                    $linkQ->whereNull('recap_drive_link')->orWhere('recap_drive_link', '');
+                                ->where(function($sub2) {
+                                    $sub2->where('end_date', '<', now())
+                                         ->orWhere(function($sub3) {
+                                             $sub3->whereNull('end_date')->whereRaw('DATE(event_date) < ?', [now()->toDateString()]);
+                                         });
                                 });
                         });
                     }

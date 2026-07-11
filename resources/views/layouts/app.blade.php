@@ -258,7 +258,7 @@
                     </a>
                     <a href="{{ route('admin.speakers.index') }}" class="sidebar-menu-btn rounded-xl {{ request()->is('admin/speakers*') ? 'active' : '' }}">
                         <i data-lucide="mic" class="h-5 w-5 shrink-0"></i>
-                        <span class="sidebar-text-element">Diễn giả / Khách mời</span>
+                        <span class="sidebar-text-element">Diễn giả</span>
                     </a>
                 </div>
             </div>
@@ -388,19 +388,6 @@
                 <span id="dateTimeString"></span>
             </div>
 
-            <!-- Create quick dropdown -->
-            <div class="relative">
-                <button id="quickCreateBtn" class="flex items-center gap-1.5 h-11 px-5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white hover:opacity-90 rounded-xl text-sm font-semibold transition-all shadow-md shadow-indigo-500/20">
-                    <i data-lucide="plus" class="h-5 w-5"></i> Tạo mới
-                    <i data-lucide="chevron-down" class="h-3 w-3 opacity-70"></i>
-                </button>
-                <div id="quickCreateDropdown" class="absolute right-0 top-full mt-1.5 w-48 bg-white border border-border rounded-md shadow-lg py-1 hidden z-50">
-                    <div class="px-2.5 py-1.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Tạo nhanh</div>
-                    <div class="h-px bg-border my-1"></div>
-                    <a href="{{ route('admin.speakers.create') }}" wire:navigate class="flex items-center px-2.5 py-1.5 text-xs text-foreground hover:bg-accent rounded-sm mx-1">Diễn giả mới</a>
-                    <a href="{{ route('admin.media.index') }}" wire:navigate class="flex items-center px-2.5 py-1.5 text-xs text-foreground hover:bg-accent rounded-sm mx-1">Tải lên Media</a>
-                </div>
-            </div>
             <!-- Notifications Button with Dropdown -->
             <div class="relative">
                 <button id="notificationBtn" class="h-10 w-10 relative text-muted-foreground hover:text-foreground hover:bg-accent rounded-full flex items-center justify-center transition-all">
@@ -543,23 +530,6 @@
         if (mobileOverlay && !mobileOverlay.dataset.initialized) {
             mobileOverlay.dataset.initialized = 'true';
             mobileOverlay.addEventListener('click', closeSidebar);
-        }
-
-        // Quick Create Dropdown Toggle
-        const quickCreateBtn = document.getElementById('quickCreateBtn');
-        const quickCreateDropdown = document.getElementById('quickCreateDropdown');
-
-        if (quickCreateBtn && quickCreateDropdown && !quickCreateBtn.dataset.initialized) {
-            quickCreateBtn.dataset.initialized = 'true';
-            quickCreateBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                quickCreateDropdown.classList.toggle('hidden');
-            });
-            document.addEventListener('click', function(e) {
-                if (!quickCreateDropdown.contains(e.target) && !quickCreateBtn.contains(e.target)) {
-                    quickCreateDropdown.classList.add('hidden');
-                }
-            });
         }
 
         // Admin Avatar Dropdown Toggle

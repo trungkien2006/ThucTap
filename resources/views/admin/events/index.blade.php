@@ -21,7 +21,7 @@
 
     {{-- Filters Card --}}
     @php
-        $semestersMap = ['1' => 'Fall', '2' => 'Spring', '3' => 'Summer', '4' => 'Winter'];
+        $semestersMap = ['1' => 'Fall', '2' => 'Spring', '3' => 'Summer'];
         $selectedCategories = array_filter(is_array(request('category_id')) ? request('category_id') : [request('category_id')]);
         $selectedDepartments = array_filter(is_array(request('department_id')) ? request('department_id') : [request('department_id')]);
         $selectedStatuses = array_filter(is_array(request('status')) ? request('status') : [request('status')]);
@@ -29,8 +29,7 @@
         $statusOptions = [
             'upcoming' => 'Sắp diễn ra',
             'completed' => 'Đã kết thúc',
-            'missing_recap' => 'Thiếu Album',
-            'draft' => 'Chưa xuất bản',
+            'draft' => 'Bản nháp',
         ];
     @endphp
     <!-- Top Control Bar -->
@@ -335,7 +334,7 @@
                         </td>
                         <td class="px-3 py-3 align-top pt-3">
                             @if(!$event->is_published)
-                                <span class="inline-flex items-center h-5 px-2 rounded text-[10px] font-medium bg-amber-100 text-amber-700 whitespace-nowrap">Chưa xuất bản</span>
+                                <span class="inline-flex items-center h-5 px-2 rounded text-[10px] font-medium bg-amber-100 text-amber-700 whitespace-nowrap">Bản nháp</span>
                             @elseif($event->event_date < now())
                                 <span class="inline-flex items-center h-5 px-2 rounded text-[10px] font-medium bg-slate-100 text-slate-700 whitespace-nowrap">Đã kết thúc</span>
                             @else

@@ -226,13 +226,18 @@
         <main class="main-content-canvas min-h-screen pb-16">
             <!-- Fixed Header -->
             <header class="fixed top-0 left-0 w-full h-[64px] z-40 flex items-center justify-between px-8 bg-white border-b border-slate-200/80 shadow-sm transition-all duration-500">
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2 w-[240px]">
                     <a href="{{ route('admin.events.index') }}" class="flex items-center gap-2">
-                        <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white font-bold text-lg font-heading">U</div>
-                        <span class="text-[18px] font-bold text-primary font-heading tracking-tight">
-                            UniEvents
-                            <span class="text-brand-orange font-normal text-[14px]">| Studio</span>
-                        </span>
+                        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-indigo-500 text-white shadow-md">
+                            <i data-lucide="graduation-cap" class="h-5 w-5"></i>
+                        </div>
+                        <div class="flex flex-col min-w-0 text-left">
+                            <span class="text-[15px] font-bold leading-tight truncate tracking-tight text-slate-900">
+                                UniEvents
+                                <span class="text-brand-orange font-normal text-[12px] ml-0.5">| Studio</span>
+                            </span>
+                            <span class="text-[11px] text-muted-foreground leading-tight tracking-wider">Trang quản trị</span>
+                        </div>
                     </a>
                 </div>
                 <div class="flex-1 flex justify-start items-center mx-4">

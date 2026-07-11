@@ -78,7 +78,7 @@ class FrontendController extends Controller
                 ->published()
                 ->where('created_at', '>=', now()->subMonths(3))
                 ->orderByRaw('(likes_count * 3) + views_count DESC')
-                ->take(4)
+                ->take(30)
                 ->get();
             $featuredEvents = $dbFeatured->map(function ($event) {
                 return [
@@ -98,7 +98,7 @@ class FrontendController extends Controller
                 ->published()
                 ->upcoming()
                 ->orderBy('event_date', 'asc')
-                ->take(5)
+                ->take(30)
                 ->get();
             $upcoming = $dbUpcoming->map(function ($event) {
                 $images = [];

@@ -107,7 +107,7 @@
         /* Logo: center when collapsed, left when expanded */
         #sidebarLogo {
             justify-content: center !important;
-            padding: 0 !important;
+            padding: 0 0 0 6px !important;
             transition: padding 0.22s ease;
         }
         #sidebar:hover #sidebarLogo {

@@ -21,7 +21,7 @@
 
     {{-- Filters Card --}}
     @php
-        $semestersMap = ['1' => 'Fall', '2' => 'Spring', '3' => 'Summer', '4' => 'Winter'];
+        $semestersMap = ['1' => 'Fall', '2' => 'Spring', '3' => 'Summer'];
         $selectedCategories = array_filter(is_array(request('category_id')) ? request('category_id') : [request('category_id')]);
         $selectedDepartments = array_filter(is_array(request('department_id')) ? request('department_id') : [request('department_id')]);
         $selectedStatuses = array_filter(is_array(request('status')) ? request('status') : [request('status')]);
@@ -29,8 +29,7 @@
         $statusOptions = [
             'upcoming' => 'Sắp diễn ra',
             'completed' => 'Đã kết thúc',
-            'missing_recap' => 'Thiếu Album',
-            'draft' => 'Chưa xuất bản',
+            'draft' => 'Bản nháp',
         ];
     @endphp
     <!-- Top Control Bar -->
@@ -129,6 +128,7 @@
                     <input type="hidden" name="year_end" id="year_end_input" value="{{ request('year_end', date('Y') + 2) }}">
                 </div>
 
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.css">
                 <style>
                     /* Customizing noUiSlider to look minimal */
                     .noUi-handle {
@@ -142,12 +142,11 @@
                         box-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
                         cursor: pointer;
                     }
-                    .noUi-handle:before, .noUi-handle:after { display: none; }
-                    .noUi-connect { background: #0f172a; }
+                    .noUi-handle:before, .noUi-handle:after { display: none !important; }
+                    .noUi-connect { background: #0f172a !important; }
                 </style>
 
                 <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.js"></script>
-                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.css">
                 <script>
                     document.addEventListener('DOMContentLoaded', function() {
                         var yearSlider = document.getElementById('year-slider');
@@ -162,7 +161,7 @@
                             step: 1,
                             range: {
                                 'min': 2015,
-                                'max': 2035
+                                'max': {{ date('Y') + 2 }}
                             }
                         });
 
@@ -216,9 +215,9 @@
         <div class="flex items-center justify-between px-4 py-3 border-b border-border bg-white/20">
             <span class="text-xs text-muted-foreground font-medium">Tổng số: {{ $events->total() }} sự kiện</span>
         </div>
-        <div class="overflow-auto max-h-[calc(100vh-280px)] relative">
+        <div class="w-full">
             <table class="w-full text-xs relative">
-                <thead class="bg-white/40 backdrop-blur-md text-[11px] uppercase tracking-wide text-muted-foreground sticky top-0 z-20">
+                <thead class="bg-white/40 backdrop-blur-md text-[11px] uppercase tracking-wide text-muted-foreground">
                     <tr>
                         <th class="w-[50px] text-center px-3 py-3 font-medium border-r border-border/40">STT</th>
                         <th class="text-left px-4 py-3 font-medium">Sự kiện</th>
@@ -335,7 +334,7 @@
                         </td>
                         <td class="px-3 py-3 align-top pt-3">
                             @if(!$event->is_published)
-                                <span class="inline-flex items-center h-5 px-2 rounded text-[10px] font-medium bg-amber-100 text-amber-700 whitespace-nowrap">Chưa xuất bản</span>
+                                <span class="inline-flex items-center h-5 px-2 rounded text-[10px] font-medium bg-amber-100 text-amber-700 whitespace-nowrap">Bản nháp</span>
                             @elseif($event->event_date < now())
                                 <span class="inline-flex items-center h-5 px-2 rounded text-[10px] font-medium bg-slate-100 text-slate-700 whitespace-nowrap">Đã kết thúc</span>
                             @else

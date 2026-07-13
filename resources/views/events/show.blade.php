@@ -38,9 +38,8 @@
 </style>
 @endpush
 
-<div class="tp1-wrapper" style="{{ $event->event_date > now() ? 'padding-top: 100px;' : '' }}">
+<div class="tp1-wrapper">
     <!-- Hero Section -->
-    @if($event->event_date <= now())
     <div class="tp1-hero">
         @if($event->bannerImage)
             <img src="{{ \App\Helpers\FileHelper::url($event->bannerImage->url) }}" class="tp1-hero-img" alt="{{ $event->title }}">
@@ -94,103 +93,9 @@
 
         </div>
     </div>
-    @endif
+    </div>
     
     <div class="tp1-container">
-        @if($event->event_date > now())
-            <!-- Upcoming Event Layout: Poster on left, Info on right -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-10">
-                <!-- Left Column: Poster Card -->
-                <div class="lg:col-span-5">
-                    <div class="bg-white p-4 rounded-2xl shadow-md border border-slate-100 sticky top-24">
-                        @if($event->bannerImage)
-                            <img src="{{ \App\Helpers\FileHelper::url($event->bannerImage->url) }}" class="w-full rounded-xl object-contain shadow-sm" alt="{{ $event->title }}">
-                        @else
-                            <div class="w-full aspect-[3/4] bg-slate-100 rounded-xl flex items-center justify-center text-slate-400">
-                                <span class="material-symbols-outlined text-[48px]">image</span>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-
-                <!-- Right Column: Related Information -->
-                <div class="lg:col-span-7 space-y-6">
-                    <div class="bg-white p-8 rounded-2xl shadow-md border border-slate-100 space-y-6">
-                        <div>
-                            @if($event->category)
-                            <span class="tp1-badge">{{ $event->category->name }}</span>
-                            @endif
-                            <h1 class="text-3xl font-extrabold text-slate-900 mt-2 mb-4 leading-tight text-left">{{ $event->title }}</h1>
-                        </div>
-
-                        <!-- Details list -->
-                        <div class="space-y-4">
-                            <div class="flex items-start gap-3">
-                                <div class="w-10 h-10 rounded-lg bg-orange-50 text-[#f97316] flex items-center justify-center shrink-0">
-                                    <span class="material-symbols-outlined">calendar_today</span>
-                                </div>
-                                <div>
-                                    <div class="text-xs text-slate-500 font-medium text-left">Thời gian diễn ra</div>
-                                    <div class="text-slate-800 font-bold text-base text-left">
-                                        {{ $event->event_date->format('d/m/Y H:i') }}
-                                        @if($event->end_date)
-                                            @if($event->event_date->isSameDay($event->end_date))
-                                                - {{ $event->end_date->format('H:i') }}
-                                            @else
-                                                - {{ $event->end_date->format('d/m/Y H:i') }}
-                                            @endif
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-
-                            @if($event->location)
-                            <div class="flex items-start gap-3">
-                                <div class="w-10 h-10 rounded-lg bg-orange-50 text-[#f97316] flex items-center justify-center shrink-0">
-                                    <span class="material-symbols-outlined">location_on</span>
-                                </div>
-                                <div>
-                                    <div class="text-xs text-slate-500 font-medium text-left">Địa điểm</div>
-                                    <div class="text-slate-800 font-bold text-base text-left">{{ $event->location }}</div>
-                                </div>
-                            </div>
-                            @endif
-                        </div>
-
-                        <!-- Countdown Timer -->
-                        <div class="bg-slate-50 rounded-xl p-5 border border-slate-100">
-                            <div class="text-xs text-slate-500 font-bold uppercase tracking-wider text-center mb-3">Sự kiện bắt đầu sau</div>
-                            <div class="flex justify-center gap-3" id="countdown-wrapper" data-date="{{ $event->event_date->format('Y-m-d\TH:i:s') }}">
-                                <div class="bg-white rounded-lg px-4 py-3 text-center shadow-sm min-w-[70px]">
-                                    <div class="text-2xl font-bold text-[#f97316]" id="days">00</div>
-                                    <div class="text-[9px] text-slate-400 font-bold uppercase">Ngày</div>
-                                </div>
-                                <div class="bg-white rounded-lg px-4 py-3 text-center shadow-sm min-w-[70px]">
-                                    <div class="text-2xl font-bold text-[#f97316]" id="hours">00</div>
-                                    <div class="text-[9px] text-slate-400 font-bold uppercase">Giờ</div>
-                                </div>
-                                <div class="bg-white rounded-lg px-4 py-3 text-center shadow-sm min-w-[70px]">
-                                    <div class="text-2xl font-bold text-[#f97316]" id="minutes">00</div>
-                                    <div class="text-[9px] text-slate-400 font-bold uppercase">Phút</div>
-                                </div>
-                                <div class="bg-white rounded-lg px-4 py-3 text-center shadow-sm min-w-[70px]">
-                                    <div class="text-2xl font-bold text-[#f97316]" id="seconds">00</div>
-                                    <div class="text-[9px] text-slate-400 font-bold uppercase">Giây</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        @if(!empty($event->description))
-                        <div class="pt-4 border-t border-slate-100">
-                            <h3 class="font-bold text-sm text-slate-500 uppercase tracking-wider mb-2 text-left">Giới thiệu sự kiện</h3>
-                            <p class="text-slate-600 text-sm leading-relaxed whitespace-pre-line text-left">{!! nl2br(e($event->description)) !!}</p>
-                        </div>
-                        @endif
-                    </div>
-                </div>
-            </div>
-        @else
-            <!-- Normal layout (Giới thiệu & Hoạt động nổi bật) -->
             <!-- Giới thiệu sự kiện -->
             @if(!empty($event->description))
             <div class="tp1-card">
@@ -200,8 +105,6 @@
                 </div>
             </div>
             @endif
-
-        @endif
 
         <!-- Nội dung chính (Gallery Blocks) -->
         @if(count($event->galleryImages) > 0)

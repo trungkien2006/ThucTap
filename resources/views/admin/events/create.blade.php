@@ -229,6 +229,23 @@
             </div>
         </section>
 
+        <!-- Section 7: Status & Options -->
+        <section class="uni-card p-6 space-y-4">
+            <div class="flex items-center gap-2.5 border-b border-slate-100 pb-3">
+                <span class="material-symbols-outlined text-primary text-[20px]">tune</span>
+                <h3 class="text-[16px] font-bold text-primary font-heading">Trạng thái</h3>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-1 gap-5">
+                <div>
+                    <label class="uni-label" for="status">Trạng thái ban đầu</label>
+                    <select class="uni-input bg-slate-50 text-slate-500 cursor-not-allowed" id="status" disabled>
+                        <option value="draft" selected>Bản nháp</option>
+                    </select>
+                    <p class="text-[11px] text-slate-500 mt-1">Sự kiện mới sẽ lưu ở dạng <strong>Bản nháp</strong>. Bạn có thể <strong>Xuất bản</strong> sau khi chọn mẫu và thiết kế ở bước sau.</p>
+                </div>
+            </div>
+        </section>
+
         <!-- Form Actions -->
         <div class="flex items-center justify-between pt-4">
             <a href="{{ route('admin.events.index') }}" class="btn-ghost">

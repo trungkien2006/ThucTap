@@ -30,7 +30,7 @@
             'upcoming' => 'Sắp diễn ra',
             'running' => 'Đang diễn ra',
             'completed' => 'Đã kết thúc',
-            'draft' => 'Chưa xuất bản',
+            'draft' => 'Bản nháp',
         ];
     @endphp
     <!-- Top Control Bar -->
@@ -131,6 +131,60 @@
                     </datalist>
                 </div>
 
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.css">
+                <style>
+                    /* Customizing noUiSlider to look minimal */
+                    .noUi-handle {
+                        width: 14px !important;
+                        height: 14px !important;
+                        right: -7px !important;
+                        top: -5px !important;
+                        border-radius: 50%;
+                        background: #0f172a !important;
+                        border: 2px solid #fff !important;
+                        box-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
+                        cursor: pointer;
+                    }
+                    .noUi-handle:before, .noUi-handle:after { display: none !important; }
+                    .noUi-connect { background: #0f172a !important; }
+                </style>
+
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.js"></script>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        var yearSlider = document.getElementById('year-slider');
+                        var startInput = document.getElementById('year_start_input');
+                        var endInput = document.getElementById('year_end_input');
+                        var startVal = document.getElementById('yearValStart');
+                        var endVal = document.getElementById('yearValEnd');
+
+                        noUiSlider.create(yearSlider, {
+                            start: [parseInt(startInput.value), parseInt(endInput.value)],
+                            connect: true,
+                            step: 1,
+                            range: {
+                                'min': 2015,
+                                'max': {{ date('Y') + 2 }}
+                            }
+                        });
+
+                        yearSlider.noUiSlider.on('update', function(values, handle) {
+                            var value = Math.round(values[handle]);
+                            if (handle) {
+                                endVal.innerHTML = value;
+                                endInput.value = value;
+                            } else {
+                                startVal.innerHTML = value;
+                                startInput.value = value;
+                            }
+                        });
+
+                        yearSlider.noUiSlider.on('change', function() {
+                            document.getElementById('filterForm').submit();
+                        });
+                    });
+                </script>
+
                 {{-- Render Active Tags --}}
                 @if(count($selectedCategories) > 0 || count($selectedDepartments) > 0)
                     <div class="flex flex-wrap items-center gap-1.5 ml-auto">
@@ -164,9 +218,9 @@
         <div class="flex items-center justify-between px-4 py-3 border-b border-border bg-white/20">
             <span class="text-xs text-muted-foreground font-medium">Tổng số: {{ $events->total() }} sự kiện</span>
         </div>
-        <div class="overflow-auto max-h-[calc(100vh-280px)] relative">
+        <div class="w-full">
             <table class="w-full text-xs relative">
-                <thead class="bg-white/40 backdrop-blur-md text-[11px] uppercase tracking-wide text-muted-foreground sticky top-0 z-20">
+                <thead class="bg-white/40 backdrop-blur-md text-[11px] uppercase tracking-wide text-muted-foreground">
                     <tr>
                         <th class="w-[50px] text-center px-3 py-3 font-medium border-r border-border/40">STT</th>
                         <th class="text-left px-4 py-3 font-medium">Sự kiện</th>
@@ -283,8 +337,8 @@
                         </td>
                         <td class="px-3 py-3 align-top pt-3">
                             @if(!$event->is_published)
-                                <span class="inline-flex items-center h-5 px-2 rounded text-[10px] font-medium bg-amber-100 text-amber-700 whitespace-nowrap">Chưa xuất bản</span>
-                            @elseif($event->isEnded())
+                                <span class="inline-flex items-center h-5 px-2 rounded text-[10px] font-medium bg-amber-100 text-amber-700 whitespace-nowrap">Bản nháp</span>
+                            @elseif($event->event_date < now())
                                 <span class="inline-flex items-center h-5 px-2 rounded text-[10px] font-medium bg-slate-100 text-slate-700 whitespace-nowrap">Đã kết thúc</span>
                             @elseif($event->event_date <= now() && (!$event->end_date || $event->end_date >= now()))
                                 <span class="inline-flex items-center h-5 px-2 rounded text-[10px] font-medium bg-blue-100 text-blue-700 whitespace-nowrap">Đang diễn ra</span>

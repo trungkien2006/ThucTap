@@ -347,11 +347,7 @@
   }
 
   .drawer-open .main-content-canvas {
-    transform: scale(0.8) translateX(220px);
-    transform-origin: top center;
-    margin-bottom: -20%;
-    border-radius: 24px;
-    box-shadow: -20px 20px 60px rgba(0, 0, 0, 0.5);
+    /* No longer scaling or pushing the canvas, let the drawer overlay */
   }
 
   /* Stats card */

@@ -39,6 +39,23 @@ class Event extends Model
     {
         parent::boot();
 
+        static::saving(function ($event) {
+            if ($event->event_date) {
+                $month = $event->event_date->month;
+                $year = $event->event_date->year;
+                if ($month >= 1 && $month <= 4) {
+                    $event->semester = 2; // Spring
+                    $event->academic_year = ($year - 1) . '-' . $year;
+                } elseif ($month >= 5 && $month <= 8) {
+                    $event->semester = 3; // Summer
+                    $event->academic_year = ($year - 1) . '-' . $year;
+                } else {
+                    $event->semester = 1; // Fall
+                    $event->academic_year = $year . '-' . ($year + 1);
+                }
+            }
+        });
+
         static::creating(function ($event) {
             if (empty($event->slug)) {
                 $event->slug = Str::slug($event->title);

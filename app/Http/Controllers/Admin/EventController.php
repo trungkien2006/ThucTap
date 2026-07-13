@@ -40,9 +40,9 @@ class EventController extends Controller
             $semester = $request->semester;
             $months = [];
             switch ($semester) {
-                case '1': $months = [1, 2, 3]; break; // Spring
-                case '2': $months = [4, 5, 6]; break; // Summer
-                case '3': $months = [7, 8, 9]; break; // Fall
+                case '1': $months = [9, 10, 11, 12]; break; // Fall
+                case '2': $months = [1, 2, 3, 4]; break; // Spring
+                case '3': $months = [5, 6, 7, 8]; break; // Summer
             }
             if (!empty($months)) {
                 $query->where(function($q) use ($months) {
@@ -152,6 +152,7 @@ class EventController extends Controller
 
         $event = new Event($validated);
         $event->is_published = false;
+        $event->status = 'draft';
         $event->created_by = auth()->id();
         $event->save();
 
@@ -571,7 +572,7 @@ class EventController extends Controller
             'speaker_ids' => 'nullable|array',
             'speaker_ids.*' => 'exists:speakers,id',
 
-            'status' => 'required|in:draft,published,ended,cancelled,archived',
+            'status' => 'required|in:draft,published',
         ]);
 
         $status = $validated['status'];
@@ -579,7 +580,7 @@ class EventController extends Controller
 
         $event->fill($validated);
 
-        $event->is_published = in_array($status, ['published', 'ended']);
+        $event->is_published = ($status === 'published');
         $event->status = $status;
 
         // Handle banner image upload

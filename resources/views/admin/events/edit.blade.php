@@ -231,10 +231,7 @@
                             }
                         @endphp
                         <option value="draft" {{ $currentStatus == 'draft' ? 'selected' : '' }}>Bản nháp</option>
-                        <option value="published" {{ $currentStatus == 'published' ? 'selected' : '' }}>Đã xuất bản (Đang diễn ra/Sắp tới)</option>
-                        <option value="ended" {{ $currentStatus == 'ended' ? 'selected' : '' }}>Kết thúc</option>
-                        <option value="cancelled" {{ $currentStatus == 'cancelled' ? 'selected' : '' }}>Đã hủy</option>
-                        <option value="archived" {{ $currentStatus == 'archived' ? 'selected' : '' }}>Lưu trữ</option>
+                        <option value="published" {{ $currentStatus == 'published' ? 'selected' : '' }}>Đã xuất bản</option>
                     </select>
                 </div>
             </div>

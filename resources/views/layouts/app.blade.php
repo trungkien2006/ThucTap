@@ -107,7 +107,7 @@
         /* Logo: center when collapsed, left when expanded */
         #sidebarLogo {
             justify-content: center !important;
-            padding: 0 !important;
+            padding: 0 0 0 6px !important;
             transition: padding 0.22s ease;
         }
         #sidebar:hover #sidebarLogo {
@@ -218,9 +218,9 @@
             <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-indigo-500 text-white shadow-md">
                 <i data-lucide="graduation-cap" class="h-5 w-5"></i>
             </div>
-            <div class="flex flex-col min-w-0 sidebar-text-element">
-                <span class="text-sm font-bold leading-tight truncate">UniEvent</span>
-                <span class="text-[11px] text-muted-foreground leading-tight">Trang quản trị</span>
+            <div class="flex flex-col min-w-0 sidebar-text-element text-left">
+                <span class="text-[15px] font-bold leading-tight truncate tracking-tight text-slate-900">UniEvents</span>
+                <span class="text-[11px] text-muted-foreground leading-tight tracking-wider">Trang quản trị</span>
             </div>
         </div>
 

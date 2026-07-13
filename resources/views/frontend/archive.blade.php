@@ -16,6 +16,7 @@
             filterSearch: '',
             searchInput: '',
             _searchTimer: null,
+            activeMobileFilter: null,
             debounceSearch(val) {
                 clearTimeout(this._searchTimer);
                 this._searchTimer = setTimeout(() => {
@@ -143,8 +144,8 @@
                        style="background: #FFFDF9; border-color: #E8E2D5;">
             </div>
 
-            <!-- Dropdowns & Action Controls -->
-            <div class="flex flex-wrap items-center gap-3">
+            <!-- Dropdowns & Action Controls (Desktop) -->
+            <div class="hidden lg:flex flex-wrap items-center gap-3">
                 <!-- Year Filter Dropdown -->
                 <div class="flex items-center gap-2 rounded-2xl px-4 h-11 border relative" 
                      style="background: #FFFDF9; border-color: #E8E2D5;">
@@ -235,6 +236,136 @@
                         </label>
                     </div>
                 </div>
+            </div>
+
+            <!-- Mobile Filters (visible only on mobile) -->
+            <div class="flex lg:hidden items-center justify-between gap-2 w-full mt-1">
+                <!-- Year Filter Button -->
+                <button @click="activeMobileFilter = (activeMobileFilter === 'year' ? null : 'year')"
+                        type="button"
+                        class="flex-grow flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-2xl border text-sm font-semibold transition-all h-11 focus:outline-none"
+                        :class="activeMobileFilter === 'year' ? 'bg-[#FFE381]/20 border-[#FFE381] text-[#8A7320]' : (filterYear !== '' ? 'bg-[#FFE381]/10 border-[#FFE381]/50 text-[#8A7320]' : 'bg-[#FFFDF9] border-[#E8E2D5] text-[#7A6A52]')">
+                    <i data-lucide="calendar" class="h-4.5 w-4.5 shrink-0 text-[#8A7320]"></i>
+                    <span x-show="filterYear !== ''" class="text-xs font-bold" x-text="filterYear"></span>
+                </button>
+
+                <!-- Month Filter Button -->
+                <button @click="activeMobileFilter = (activeMobileFilter === 'month' ? null : 'month')"
+                        type="button"
+                        class="flex-grow flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-2xl border text-sm font-semibold transition-all h-11 focus:outline-none"
+                        :class="activeMobileFilter === 'month' ? 'bg-[#07A0C3]/10 border-[#07A0C3] text-[#07A0C3]' : (filterMonth !== '' ? 'bg-[#07A0C3]/5 border-[#07A0C3]/50 text-[#07A0C3]' : 'bg-[#FFFDF9] border-[#E8E2D5] text-[#7A6A52]')">
+                    <i data-lucide="calendar-days" class="h-4.5 w-4.5 shrink-0 text-[#07A0C3]"></i>
+                    <span x-show="filterMonth !== ''" class="text-xs font-bold" x-text="'T' + filterMonth"></span>
+                </button>
+
+                <!-- Category Filter Button -->
+                <button @click="activeMobileFilter = (activeMobileFilter === 'category' ? null : 'category')"
+                        type="button"
+                        class="flex-grow flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-2xl border text-sm font-semibold transition-all h-11 focus:outline-none"
+                        :class="activeMobileFilter === 'category' ? 'bg-[#04B050]/10 border-[#04B050] text-[#04B050]' : (filterCategory !== '' ? 'bg-[#04B050]/5 border-[#04B050]/50 text-[#04B050]' : 'bg-[#FFFDF9] border-[#E8E2D5] text-[#7A6A52]')">
+                    <i data-lucide="tag" class="h-4.5 w-4.5 shrink-0 text-[#04B050]"></i>
+                    <span x-show="filterCategory !== ''" class="text-xs font-bold max-w-[60px] truncate" x-text="filterCategory"></span>
+                </button>
+
+                <!-- Attachment Filter Button -->
+                <button @click="activeMobileFilter = (activeMobileFilter === 'attachment' ? null : 'attachment')"
+                        type="button"
+                        class="flex-grow flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-2xl border text-sm font-semibold transition-all h-11 focus:outline-none"
+                        :class="activeMobileFilter === 'attachment' ? 'bg-[#07A0C3]/10 border-[#07A0C3] text-[#07A0C3]' : (filterFileTypes.length > 0 ? 'bg-[#07A0C3]/5 border-[#07A0C3]/50 text-[#07A0C3]' : 'bg-[#FFFDF9] border-[#E8E2D5] text-[#7A6A52]')">
+                    <i data-lucide="paperclip" class="h-4.5 w-4.5 shrink-0 text-[#07A0C3]"></i>
+                    <span x-show="filterFileTypes.length > 0" class="text-xs font-bold" x-text="filterFileTypes.length"></span>
+                </button>
+            </div>
+
+            <!-- Mobile Filter Options Panel (visible only on mobile) -->
+            <div x-show="activeMobileFilter !== null"
+                 x-transition:enter="transition ease-out duration-150"
+                 x-transition:enter-start="opacity-0 -translate-y-1 scale-98"
+                 x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                 x-transition:leave="transition ease-in duration-100"
+                 x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                 x-transition:leave-end="opacity-0 -translate-y-1 scale-98"
+                 class="w-full mt-1 p-3.5 rounded-2xl border bg-[#FFFDF9] border-[#E8E2D5] shadow-sm lg:hidden z-50"
+                 style="display: none;"
+                 @click.away="activeMobileFilter = null">
+                 
+                 <!-- Year Options -->
+                 <div x-show="activeMobileFilter === 'year'" class="flex flex-wrap gap-2 justify-start">
+                     <button @click="filterYear = ''; resetIdx(); activeMobileFilter = null;"
+                             type="button"
+                             class="px-3.5 py-2 rounded-xl text-xs font-bold border transition-all"
+                             :class="filterYear === '' ? 'bg-[#FFE381] border-[#FFE381] text-[#1C1410] shadow-sm' : 'bg-white border-[#E8E2D5] text-[#7A6A52]'">
+                         Tất cả năm
+                     </button>
+                     <template x-for="yr in years" :key="yr">
+                         <button @click="filterYear = yr; resetIdx(); activeMobileFilter = null;"
+                                 type="button"
+                                 class="px-3.5 py-2 rounded-xl text-xs font-bold border transition-all"
+                                 :class="filterYear == yr ? 'bg-[#FFE381] border-[#FFE381] text-[#1C1410] shadow-sm' : 'bg-white border-[#E8E2D5] text-[#7A6A52]'"
+                                 x-text="yr">
+                         </button>
+                     </template>
+                 </div>
+
+                 <!-- Month Options -->
+                 <div x-show="activeMobileFilter === 'month'" class="grid grid-cols-4 gap-2">
+                     <button @click="filterMonth = ''; resetIdx(); activeMobileFilter = null;"
+                             type="button"
+                             class="col-span-4 px-3.5 py-2 rounded-xl text-xs font-bold border transition-all text-center"
+                             :class="filterMonth === '' ? 'bg-[#07A0C3] border-[#07A0C3] text-white shadow-sm' : 'bg-white border-[#E8E2D5] text-[#7A6A52]'">
+                         Tất cả tháng
+                     </button>
+                     <template x-for="m in [1,2,3,4,5,6,7,8,9,10,11,12]" :key="m">
+                         <button @click="filterMonth = m; resetIdx(); activeMobileFilter = null;"
+                                 type="button"
+                                 class="px-2.5 py-2 rounded-xl text-xs font-bold border transition-all text-center"
+                                 :class="filterMonth == m ? 'bg-[#07A0C3] border-[#07A0C3] text-white shadow-sm' : 'bg-white border-[#E8E2D5] text-[#7A6A52]'"
+                                 x-text="'T' + m">
+                         </button>
+                     </template>
+                 </div>
+
+                 <!-- Category Options -->
+                 <div x-show="activeMobileFilter === 'category'" class="flex flex-col gap-1 max-h-48 overflow-y-auto custom-scrollbar">
+                     <button @click="filterCategory = ''; resetIdx(); activeMobileFilter = null;"
+                             type="button"
+                             class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold border transition-all"
+                             :class="filterCategory === '' ? 'bg-[#04B050] border-[#04B050] text-white shadow-sm' : 'bg-white border-[#E8E2D5] text-[#7A6A52]'">
+                         Tất cả loại
+                     </button>
+                     <template x-for="cat in categories" :key="cat">
+                         <button @click="filterCategory = cat; resetIdx(); activeMobileFilter = null;"
+                                 type="button"
+                                 class="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-bold border transition-all"
+                                 :class="filterCategory === cat ? 'bg-[#04B050] border-[#04B050] text-white shadow-sm' : 'bg-white border-[#E8E2D5] text-[#7A6A52]'"
+                                 x-text="cat">
+                         </button>
+                     </template>
+                 </div>
+
+                 <!-- Attachment Options -->
+                 <div x-show="activeMobileFilter === 'attachment'" class="flex flex-col gap-2.5 p-1">
+                     <label class="flex items-center gap-2.5 cursor-pointer text-xs font-bold text-[#7A6A52] hover:text-[#1C1410] select-none">
+                         <input type="checkbox" x-model="filterFileTypes" value="image" @change="resetIdx()"
+                                class="w-4 h-4 rounded border-[#E8E2D5] text-[#FFE381] focus:ring-0 cursor-pointer accent-[#FFE381]">
+                         <span>🖼️ Hình ảnh</span>
+                     </label>
+                     <label class="flex items-center gap-2.5 cursor-pointer text-xs font-bold text-[#7A6A52] hover:text-[#1C1410] select-none">
+                         <input type="checkbox" x-model="filterFileTypes" value="video" @change="resetIdx()"
+                                class="w-4 h-4 rounded border-[#E8E2D5] text-[#FFE381] focus:ring-0 cursor-pointer accent-[#FF4D4D]">
+                         <span>🎥 Video</span>
+                     </label>
+                     <label class="flex items-center gap-2.5 cursor-pointer text-xs font-bold text-[#7A6A52] hover:text-[#1C1410] select-none">
+                         <input type="checkbox" x-model="filterFileTypes" value="document" @change="resetIdx()"
+                                class="w-4 h-4 rounded border-[#E8E2D5] text-[#FFE381] focus:ring-0 cursor-pointer accent-[#04B050]">
+                         <span>📄 Tài liệu & Văn bản</span>
+                     </label>
+                     <label class="flex items-center gap-2.5 cursor-pointer text-xs font-bold text-[#7A6A52] hover:text-[#1C1410] select-none">
+                         <input type="checkbox" x-model="filterFileTypes" value="archive" @change="resetIdx()"
+                                class="w-4 h-4 rounded border-[#E8E2D5] text-[#FFE381] focus:ring-0 cursor-pointer accent-[#007ACC]">
+                         <span>🗜️ Tệp nén</span>
+                     </label>
+                 </div>
             </div>
 
             <!-- Result Count & Clear Filter -->

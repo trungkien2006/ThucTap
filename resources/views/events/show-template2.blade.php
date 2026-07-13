@@ -548,54 +548,66 @@
     }); }
     // Scrollytelling
     var storySection = document.getElementById('gw-story');
+    var scrollyContainer = storySection ? storySection.querySelector('.gw-scrolly-container') : null;
     var textBlocks = document.querySelectorAll('.gw-text-block');
     var mediaCol = document.querySelector('.gw-scrolly-media-col');
     var mediaItems = document.querySelectorAll('.gw-scrolly-img');
     
-    if (window.innerWidth >= 769 && textBlocks.length > 0 && storySection && mediaCol) {
-        var offsetTop = 100; // top offset when fixed
+    if (window.innerWidth >= 769 && textBlocks.length > 0 && storySection && mediaCol && scrollyContainer) {
+        var offsetTop = 100; // distance from viewport top when fixed
+        
+        // Save the media column's initial top position relative to the document
+        var mediaColInitialTop = mediaCol.getBoundingClientRect().top + window.pageYOffset;
+        
+        // Calculate when to stop fixing (bottom of scrolly container minus media height)
+        function getStopPoint() {
+            var containerRect = scrollyContainer.getBoundingClientRect();
+            var containerBottom = containerRect.bottom + window.pageYOffset;
+            var mediaHeight = mediaCol.offsetHeight;
+            return containerBottom - mediaHeight - offsetTop;
+        }
         
         window.addEventListener('scroll', function() {
-            var rect = storySection.getBoundingClientRect();
-            var sectionTop = rect.top;
-            var sectionBottom = rect.bottom;
+            var scrollY = window.pageYOffset;
+            var stopPoint = getStopPoint();
             var windowHeight = window.innerHeight;
             
-            // 1. Manage position (Fixed vs Relative vs Absolute Bottom)
-            if (sectionTop <= offsetTop && sectionBottom > windowHeight) {
-                // User is scrolling within the section
+            // Point where media col's top would naturally reach the fixed offset
+            var fixStart = mediaColInitialTop - offsetTop;
+            
+            if (scrollY >= fixStart && scrollY < stopPoint) {
+                // Media column has reached the top — fix it
                 mediaCol.classList.add('is-fixed');
                 mediaCol.classList.remove('is-bottom');
-                // Maintain width and right position dynamically
-                var parentRect = storySection.querySelector('.gw-scrolly-container').getBoundingClientRect();
+                // Maintain correct width and horizontal position
+                var parentRect = scrollyContainer.getBoundingClientRect();
                 mediaCol.style.width = (parentRect.width * 0.5) + 'px';
                 mediaCol.style.right = (window.innerWidth - parentRect.right) + 'px';
-            } else if (sectionBottom <= windowHeight) {
-                // User scrolled past the section
+            } else if (scrollY >= stopPoint) {
+                // Scrolled past — park at bottom of container
                 mediaCol.classList.remove('is-fixed');
                 mediaCol.classList.add('is-bottom');
                 mediaCol.style.width = '50%';
                 mediaCol.style.right = '0';
             } else {
-                // User is above the section
+                // Haven't reached the section yet — natural flow
                 mediaCol.classList.remove('is-fixed');
                 mediaCol.classList.remove('is-bottom');
                 mediaCol.style.width = '50%';
                 mediaCol.style.right = 'auto';
             }
             
-            // 2. Manage Fade Effect (which text block is in focus)
-            var focusIndex = 0;
-            textBlocks.forEach(function(block, i) {
+            // Fade Effect: which text block is currently in focus
+            var focusIndex = '0';
+            textBlocks.forEach(function(block) {
                 var blockRect = block.getBoundingClientRect();
-                // If the top of the block is above the middle of the viewport
-                if (blockRect.top < windowHeight * 0.6) {
+                if (blockRect.top < windowHeight * 0.5) {
                     focusIndex = block.getAttribute('data-media-index');
                 }
             });
             
             mediaItems.forEach(function(item) {
-                if (item.getAttribute('data-media-index') === String(focusIndex)) {
+                if (item.getAttribute('data-media-index') === focusIndex) {
                     item.classList.add('active');
                 } else {
                     item.classList.remove('active');

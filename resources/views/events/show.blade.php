@@ -20,7 +20,9 @@
     .tp1-section-title { font-size: 24px; font-weight: 700; color: #0f172a; margin-bottom: 24px; display: flex; align-items: center; gap: 12px; }
     .tp1-section-title::before { content: ''; display: block; width: 4px; height: 24px; background: #f97316; border-radius: 4px; }
     
-    .tp1-text { font-size: 16px; color: #475569; margin-bottom: 20px; }
+    .tp1-text { font-size: 16px; color: #475569; margin-bottom: 20px; max-height: 250px; overflow-y: auto; scrollbar-width: thin; padding-right: 4px; }
+    .tp1-text::-webkit-scrollbar { width: 4px; }
+    .tp1-text::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
     .tp1-grid { display: grid; gap: 64px; align-items: center; }
     .tp1-grid.left-img { grid-template-columns: 1.8fr 1fr; }
     .tp1-grid.right-img { grid-template-columns: 1fr 1.8fr; }
@@ -124,7 +126,7 @@
                     </div>
                     <div class="text-left">
                         @if($block->caption)
-                            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">{{ $block->caption }}</h3>
+                            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px; max-height: 80px; overflow-y: auto; scrollbar-width: thin; padding-right: 4px;">{{ $block->caption }}</h3>
                         @endif
                         @if(!empty($block->content))
                             <div class="tp1-text">{!! $block->content !!}</div>
@@ -140,7 +142,7 @@
                 @else
                     <div class="text-left">
                         @if($block->caption)
-                            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">{{ $block->caption }}</h3>
+                            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px; max-height: 80px; overflow-y: auto; scrollbar-width: thin; padding-right: 4px;">{{ $block->caption }}</h3>
                         @endif
                         @if(!empty($block->content))
                             <div class="tp1-text">{!! $block->content !!}</div>
@@ -269,43 +271,7 @@
             </button>
         </div>
         
-        <!-- Điều hướng Sự kiện Trước / Sau -->
-        @if(isset($previousEvent) || isset($nextEvent))
-        <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t border-slate-200">
-            <div>
-                @if(isset($previousEvent) && $previousEvent)
-                <a href="{{ route('events.show', $previousEvent->slug) }}" class="group block max-w-[280px] mr-auto">
-                    <div class="flex items-center text-slate-500 group-hover:text-[#f97316] transition-colors mb-3">
-                        <span class="material-symbols-outlined text-2xl -ml-1">arrow_left_alt</span>
-                        <div class="h-[2px] bg-current flex-1"></div>
-                    </div>
-                    <div class="w-full h-[154px] rounded-xl overflow-hidden bg-slate-100 shadow-sm border border-slate-200">
-                        @if($previousEvent->bannerImage)
-                            <img src="{{ \App\Helpers\FileHelper::url($previousEvent->bannerImage->url) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                        @endif
-                    </div>
-                    <h4 class="mt-3 font-bold text-slate-800 group-hover:text-[#f97316] transition-colors line-clamp-2 text-left">{{ $previousEvent->title }}</h4>
-                </a>
-                @endif
-            </div>
-            <div class="text-right">
-                @if(isset($nextEvent) && $nextEvent)
-                <a href="{{ route('events.show', $nextEvent->slug) }}" class="group block max-w-[280px] ml-auto">
-                    <div class="flex items-center text-slate-500 group-hover:text-[#f97316] transition-colors mb-3">
-                        <div class="h-[2px] bg-current flex-1"></div>
-                        <span class="material-symbols-outlined text-2xl -mr-1">arrow_right_alt</span>
-                    </div>
-                    <div class="w-full h-[154px] rounded-xl overflow-hidden bg-slate-100 shadow-sm border border-slate-200">
-                        @if($nextEvent->bannerImage)
-                            <img src="{{ \App\Helpers\FileHelper::url($nextEvent->bannerImage->url) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                        @endif
-                    </div>
-                    <h4 class="mt-3 font-bold text-slate-800 group-hover:text-[#f97316] transition-colors line-clamp-2 text-right">{{ $nextEvent->title }}</h4>
-                </a>
-                @endif
-            </div>
-        </div>
-        @endif
+
 
     </div>
 </div>

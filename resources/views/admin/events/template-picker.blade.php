@@ -210,12 +210,12 @@
                         <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=800&q=80" alt="Template 4" class="tp-card-thumb">
                         <div class="tp-card-body">
                             <div class="flex justify-between items-start mb-1">
-                                <h3 class="tp-card-title">Mẫu 4: Hội thảo (Workshop)</h3>
+                                <h3 class="tp-card-title">Mẫu 4: Tốt nghiệp điện ảnh (Cinematic)</h3>
                                 @if($event->page_template == 4)
                                 <span class="bg-orange-100 text-orange-600 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Đang dùng</span>
                                 @endif
                             </div>
-                            <p class="tp-card-desc">Thiết kế năng động, bố cục tập trung vào thông tin diễn giả và sơ đồ thời gian biểu chi tiết.</p>
+                            <p class="tp-card-desc">Phong cách Cinematic lãng mạn, ảnh nền tràn viền, font chữ thanh lịch, thích hợp cho sự kiện kỷ niệm, lễ tốt nghiệp.</p>
                             <div class="tp-card-actions" onclick="event.stopPropagation()">
                                 <form action="{{ route('admin.events.save_template', $event) }}" method="POST" class="flex-1">
                                     @csrf
@@ -227,39 +227,17 @@
                         </div>
                     </div>
 
-                    <!-- Template 6 -->
-                    <div class="tp-card {{ $event->page_template == 6 ? 'active' : '' }}" id="card-6" onclick="selectTemplate(6)" style="cursor: pointer;">
-                        <img src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80" alt="Template 6" class="tp-card-thumb">
-                        <div class="tp-card-body">
-                            <div class="flex justify-between items-start mb-1">
-                                <h3 class="tp-card-title">Mẫu 6: Lãng mạn (Cinematic)</h3>
-                                @if($event->page_template == 6)
-                                <span class="bg-orange-100 text-orange-600 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Đang dùng</span>
-                                @endif
-                            </div>
-                            <p class="tp-card-desc">Phong cách Cinematic lãng mạn, ảnh nền tràn viền (full-bleed), thích hợp cho sự kiện kỷ niệm, lễ chúc mừng.</p>
-                            <div class="tp-card-actions" onclick="event.stopPropagation()">
-                                <form action="{{ route('admin.events.save_template', $event) }}" method="POST" class="flex-1">
-                                    @csrf
-                                    <input type="hidden" name="page_template" value="6">
-                                    <button type="submit" class="tp-btn-primary w-full">Chọn mẫu này</button>
-                                </form>
-                                <button onclick="previewTemplate(6)" class="tp-btn-secondary">Xem trước</button>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Template 5 -->
                     <div class="tp-card {{ $event->page_template == 5 ? 'active' : '' }}" id="card-5" onclick="selectTemplate(5)" style="cursor: pointer;">
                         <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80" alt="Template 5" class="tp-card-thumb" style="filter:brightness(0.85) saturate(1.3);">
                         <div class="tp-card-body">
                             <div class="flex justify-between items-start mb-1">
-                                <h3 class="tp-card-title">Mẫu 5: Neon / Tech</h3>
+                                <h3 class="tp-card-title">Mẫu 5: Kỷ niệm học đường (School Memories)</h3>
                                 @if($event->page_template == 5)
                                 <span class="bg-orange-100 text-orange-600 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Đang dùng</span>
                                 @endif
                             </div>
-                            <p class="tp-card-desc">Giao diện tối neon, split-screen — ảnh luôn bên PHẢI. Phù hợp cho sự kiện công nghệ, gaming, tech conference.</p>
+                            <p class="tp-card-desc">Giao diện tươi trẻ, phong cách ảnh Polaroid lưu giữ khoảnh khắc. Phù hợp cho sự kiện kỷ yếu, họp lớp, kỷ niệm học đường.</p>
                             <div class="tp-card-actions" onclick="event.stopPropagation()">
                                 <form action="{{ route('admin.events.save_template', $event) }}" method="POST" class="flex-1">
                                     @csrf
@@ -267,6 +245,28 @@
                                     <button type="submit" class="tp-btn-primary w-full">Chọn mẫu này</button>
                                 </form>
                                 <button onclick="previewTemplate(5)" class="tp-btn-secondary">Xem trước</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Template 6 -->
+                    <div class="tp-card {{ $event->page_template == 6 ? 'active' : '' }}" id="card-6" onclick="selectTemplate(6)" style="cursor: pointer;">
+                        <img src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80" alt="Template 6" class="tp-card-thumb">
+                        <div class="tp-card-body">
+                            <div class="flex justify-between items-start mb-1">
+                                <h3 class="tp-card-title">Mẫu 6: Hội thảo / Sự kiện trường</h3>
+                                @if($event->page_template == 6)
+                                <span class="bg-orange-100 text-orange-600 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Đang dùng</span>
+                                @endif
+                            </div>
+                            <p class="tp-card-desc">Thiết kế năng động, bố cục hiện đại với font chữ không chân, thích hợp cho hội thảo, sự kiện trường học.</p>
+                            <div class="tp-card-actions" onclick="event.stopPropagation()">
+                                <form action="{{ route('admin.events.save_template', $event) }}" method="POST" class="flex-1">
+                                    @csrf
+                                    <input type="hidden" name="page_template" value="6">
+                                    <button type="submit" class="tp-btn-primary w-full">Chọn mẫu này</button>
+                                </form>
+                                <button onclick="previewTemplate(6)" class="tp-btn-secondary">Xem trước</button>
                             </div>
                         </div>
                     </div>
@@ -430,11 +430,11 @@
             document.getElementById('fpTemplateId').value = id;
             const names = {
                 1: 'Mẫu 1: Tiêu chuẩn',
-                2: 'Mẫu 2: Garden',
+                2: 'Mẫu 2: Thiên nhiên (Garden)',
                 3: 'Mẫu 3: Học thuật (Academic)',
-                4: 'Mẫu 4: Hội thảo (Workshop)',
-                5: 'Mẫu 5: Neon / Tech',
-                6: 'Mẫu 6: Lãng mạn (Cinematic)',
+                4: 'Mẫu 4: Tốt nghiệp điện ảnh (Cinematic)',
+                5: 'Mẫu 5: Kỷ niệm học đường (School Memories)',
+                6: 'Mẫu 6: Hội thảo / Sự kiện trường',
                 7: 'Mẫu 7: Tạp chí (Magazine)',
             };
             let templateName = names[id] || ('Mẫu ' + id);

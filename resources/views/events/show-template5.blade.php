@@ -100,7 +100,13 @@
     color: var(--t5-text-dark);
     margin-top: 8px;
     text-align: center;
+    max-height: 80px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    padding-right: 4px;
 }
+.t5-polaroid-caption::-webkit-scrollbar { width: 4px; }
+.t5-polaroid-caption::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
 
 /* Torn effect border alternative styling for polaroid cards */
 .t5-polaroid.torn {
@@ -187,7 +193,13 @@
     color: var(--t5-text-dark);
     line-height: 1.8;
     white-space: pre-line;
+    max-height: 250px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    padding-right: 4px;
 }
+.t5-body-text::-webkit-scrollbar { width: 4px; }
+.t5-body-text::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
 
 /* ─── COLLAGE GRID SECTION ─── */
 .t5-collage-grid {
@@ -428,69 +440,53 @@
     text-transform: uppercase;
 }
 
-/* ─── INTERACTION BAR ─── */
+/* ─── ACTION BAR (BOTTOM OF PAGE) ─── */
 .t5-bottom-bar {
-    position: fixed;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    padding: 20px;
     width: 100%;
     max-width: 1000px;
-    background: #FFFFFF;
-    border-top: 1px solid var(--t5-border-color);
-    padding: 12px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-    z-index: 100;
-    box-shadow: 0 -4px 20px rgba(30, 62, 98, 0.05);
+    margin: 0 auto;
 }
-.t5-interaction-group {
-    display: flex;
+.t5-btn {
+    display: inline-flex;
     align-items: center;
-    gap: 12px;
-}
-.t5-action-btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 16px;
-    border-radius: 20px;
-    border: 1px solid var(--t5-border-color);
-    background: #F4F8FB;
+    gap: 8px;
+    padding: 10px 24px;
+    border-radius: 30px;
+    font-family: 'Fredoka One', cursive;
     font-weight: 600;
-    font-size: 13px;
-    color: var(--t5-text-dark);
+    font-size: 14px;
     cursor: pointer;
+    border: none;
     transition: all 0.2s;
     text-decoration: none;
 }
-.t5-action-btn:hover {
-    background: #E8F4FC;
-    border-color: #4A90E2;
-}
-.t5-heart-btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 16px;
-    border-radius: 20px;
-    border: 1px solid var(--t5-border-color);
-    background: #F4F8FB;
-    font-weight: 600;
-    font-size: 13px;
-    color: var(--t5-text-dark);
-    cursor: pointer;
-    transition: all 0.2s;
-}
-.t5-heart-btn.liked {
+.t5-btn-like {
+    background: #fff;
     color: var(--t5-accent-pink);
-    border-color: #FFB3C6;
-    background: #FFEBEF;
+    border: 1px solid var(--t5-accent-pink);
 }
-.t5-heart-btn:hover {
-    background: #FFEBEF;
+.t5-btn-like.liked {
+    background: var(--t5-accent-pink);
+    color: #fff;
+}
+.t5-btn-views {
+    background: #F4F8FB;
+    color: var(--t5-text-muted);
+}
+.t5-btn-share {
+    background: #1877F2;
+    color: #fff;
+}
+.t5-btn-copy {
+    background: #fff;
+    color: var(--t5-text-dark);
+    border: 1px solid var(--t5-border-color);
+    position: relative;
 }
 @media (max-width: 600px) {
     .t5-bottom-bar {
@@ -739,55 +735,25 @@
         </div>
         @endif
 
-        {{-- PREV/NEXT NAVIGATION --}}
-        @if(isset($previousEvent) || isset($nextEvent))
-        <div class="t5-card" style="display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap;">
-            <div style="flex: 1; text-align: left;">
-                @if(isset($previousEvent) && $previousEvent)
-                <a href="{{ route('events.show', $previousEvent->slug) }}" style="text-decoration:none; color: var(--t5-text-dark);">
-                    <div style="font-size:11px; text-transform:uppercase; color:var(--t5-text-muted); font-weight:700; margin-bottom:4px;">← Sự kiện trước</div>
-                    <div style="font-family:'Fredoka One',cursive; font-size:16px;">{{ $previousEvent->title }}</div>
-                </a>
-                @endif
+        {{-- BOTTOM INTERACTION BAR --}}
+        <div class="t5-bottom-bar" x-data="{ copied: false }">
+            <button id="t5-like-btn" data-event-id="{{ $event->id }}" class="t5-btn t5-btn-like {{ session()->has('liked_events.' . $event->id) ? 'liked' : '' }}">
+                <span class="material-symbols-outlined">favorite</span>
+                <span id="likes-count">{{ $event->likes_count }}</span> Thích
+            </button>
+            <div class="t5-btn t5-btn-views">
+                <span class="material-symbols-outlined">visibility</span>
+                {{ $event->views_count }} Lượt xem
             </div>
-            <div style="flex: 1; text-align: right;">
-                @if(isset($nextEvent) && $nextEvent)
-                <a href="{{ route('events.show', $nextEvent->slug) }}" style="text-decoration:none; color: var(--t5-text-dark);">
-                    <div style="font-size:11px; text-transform:uppercase; color:var(--t5-text-muted); font-weight:700; margin-bottom:4px;">Sự kiện tiếp →</div>
-                    <div style="font-family:'Fredoka One',cursive; font-size:16px;">{{ $nextEvent->title }}</div>
-                </a>
-                @endif
-            </div>
+            <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}" target="_blank" class="t5-btn t5-btn-share">
+                Chia sẻ
+            </a>
+            <button @click="navigator.clipboard.writeText(window.location.href); copied=true; setTimeout(()=>copied=false, 2000)" class="t5-btn t5-btn-copy">
+                <span class="material-symbols-outlined" style="font-size: 18px;">link</span> Copy Link
+                <span x-show="copied" x-transition style="display:none;position:absolute;bottom:110%;left:50%;transform:translateX(-50%);margin-bottom:10px;background:#1E3E62;color:white;font-size:12px;padding:4px 8px;border-radius:4px;white-space:nowrap;">Đã sao chép!</span>
+            </button>
         </div>
-        @endif
 
-    </div>
-</div>
-
-{{-- BOTTOM INTERACTION FLOATING BAR --}}
-<div class="t5-bottom-bar" x-data="{ copied: false }">
-    <div class="t5-interaction-group">
-        <a href="{{ route('home') }}" class="t5-action-btn" title="Về trang chủ">
-            <span class="material-symbols-outlined">home</span>
-        </a>
-        <div class="t5-action-btn" title="Lượt xem">
-            <span class="material-symbols-outlined">visibility</span>
-            <span>{{ $event->views_count }}</span>
-        </div>
-    </div>
-    
-    <div class="t5-interaction-group">
-        <button id="t5-like-btn" class="t5-heart-btn {{ session()->has('liked_events.' . $event->id) ? 'liked' : '' }}" title="Thích sự kiện" data-event-id="{{ $event->id }}">
-            <span class="material-symbols-outlined {{ session()->has('liked_events.' . $event->id) ? 'font-fill' : '' }}">favorite</span>
-            <span id="likes-count">{{ $event->likes_count }}</span>
-        </button>
-        <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}" target="_blank" class="t5-action-btn" style="background: #1877F2; color: #fff; border: none;">
-            Chia sẻ
-        </a>
-        <button @click="navigator.clipboard.writeText(window.location.href); copied=true; setTimeout(()=>copied=false, 2000)" class="t5-action-btn relative">
-            <span class="material-symbols-outlined" style="font-size: 18px;">link</span>
-            <span x-show="copied" x-transition style="display:none;position:absolute;bottom:100%;left:50%;transform:translateX(-50%);margin-bottom:10px;background:#1E3E62;color:white;font-size:11px;padding:4px 8px;border-radius:4px;white-space:nowrap;">Đã sao chép!</span>
-        </button>
     </div>
 </div>
 

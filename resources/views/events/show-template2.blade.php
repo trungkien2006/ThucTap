@@ -459,26 +459,7 @@
             <span x-show="copied" x-transition style="display:none; position:absolute; top:-40px; left:50%; transform:translateX(-50%); background:#3d4438; color:#fff; font-size:12px; padding:4px 8px; border-radius:4px; white-space:nowrap; text-transform:none; letter-spacing:normal; box-shadow:0 4px 12px rgba(0,0,0,0.1);">Đã sao chép!</span>
         </button>
     </div>
-    @if(isset($previousEvent) || isset($nextEvent))
-    <div style="max-width:860px;margin:48px auto 0;display:grid;grid-template-columns:1fr 1fr;gap:24px;">
-        <div>
-            @if(isset($previousEvent) && $previousEvent)
-            <a href="{{ route('events.show', $previousEvent->slug) }}" style="display:block;color:#3d4438;text-decoration:none;">
-                <span style="display:block;margin-bottom:8px;color:#9aa09a;font-size:0.88rem;text-transform:uppercase;letter-spacing:0.1em;">← Sự kiện trước</span>
-                <strong style="font-family:'Cormorant Garamond',serif;font-size:1.43rem;font-weight:400;">{{ $previousEvent->title }}</strong>
-            </a>
-            @endif
-        </div>
-        <div style="text-align:right;">
-            @if(isset($nextEvent) && $nextEvent)
-            <a href="{{ route('events.show', $nextEvent->slug) }}" style="display:block;color:#3d4438;text-decoration:none;">
-                <span style="display:block;margin-bottom:8px;color:#9aa09a;font-size:0.88rem;text-transform:uppercase;letter-spacing:0.1em;">Sự kiện tiếp →</span>
-                <strong style="font-family:'Cormorant Garamond',serif;font-size:1.43rem;font-weight:400;">{{ $nextEvent->title }}</strong>
-            </a>
-            @endif
-        </div>
-    </div>
-    @endif
+
 </section>
 @include('components.event-fab-menu', ['event' => $event])
 </div>

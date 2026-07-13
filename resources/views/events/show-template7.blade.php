@@ -237,11 +237,23 @@ body { background-color: #EFECE5; }
     font-size: 24px;
     font-weight: 600;
     margin-bottom: 10px;
+    max-height: 80px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    padding-right: 4px;
 }
+.t7-gal-caption::-webkit-scrollbar { width: 4px; }
+.t7-gal-caption::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
 .t7-gal-text {
     font-size: 14px;
     color: var(--mag-gray);
+    max-height: 250px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    padding-right: 4px;
 }
+.t7-gal-text::-webkit-scrollbar { width: 4px; }
+.t7-gal-text::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
 @media (min-width: 600px) {
     .t7-gal-item:nth-child(even) {
         flex-direction: row-reverse;
@@ -609,28 +621,6 @@ body { background-color: #EFECE5; }
                     </div>
                     @endforeach
                 </div>
-            </div>
-        </div>
-        @endif
-        
-        {{-- PREV / NEXT NAV --}}
-        @if(isset($previousEvent) || isset($nextEvent))
-        <div class="t7-nav">
-            <div style="text-align: left;">
-                @if(isset($previousEvent) && $previousEvent)
-                <a href="{{ route('events.show', $previousEvent->slug) }}" class="t7-nav-item">
-                    <div class="t7-nav-label">Sự kiện trước</div>
-                    <div class="t7-nav-title">{{ $previousEvent->title }}</div>
-                </a>
-                @endif
-            </div>
-            <div style="text-align: right;">
-                @if(isset($nextEvent) && $nextEvent)
-                <a href="{{ route('events.show', $nextEvent->slug) }}" class="t7-nav-item">
-                    <div class="t7-nav-label">Sự kiện tiếp</div>
-                    <div class="t7-nav-title">{{ $nextEvent->title }}</div>
-                </a>
-                @endif
             </div>
         </div>
         @endif

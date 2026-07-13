@@ -269,74 +269,58 @@
     font-weight: 700;
 }
 
-/* ─── STICKY BOTTOM BAR ─── */
-.t4-bottom-bar {
-    position: fixed;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
+/* ─── ACTION BAR ─── */
+.t4-action-bar {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    padding: 20px;
     width: 100%;
     max-width: 1000px;
-    background: #FFFFFF;
-    border-top: 1px solid var(--t4-border);
-    padding: 12px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    z-index: 100;
-    box-shadow: 0 -4px 20px rgba(44, 37, 32, 0.06);
+    margin: 0 auto;
 }
-.t4-interaction-group {
-    display: flex;
+.t4-btn {
+    display: inline-flex;
     align-items: center;
-    gap: 12px;
-}
-.t4-action-btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 16px;
-    border-radius: 20px;
-    border: 1px solid var(--t4-border);
-    background: #FAF8F2;
+    gap: 8px;
+    padding: 10px 24px;
+    border-radius: 30px;
+    font-family: 'DM Serif Display', serif;
     font-weight: 600;
-    font-size: 13px;
-    color: var(--t4-text);
+    font-size: 14px;
     cursor: pointer;
+    border: none;
     transition: all 0.2s;
     text-decoration: none;
 }
-.t4-action-btn:hover {
-    background: #FEF3C7;
-    border-color: var(--t4-gold);
+.t4-btn-like {
+    background: #fff;
+    color: var(--t4-gold);
+    border: 1px solid var(--t4-gold);
 }
-.t4-heart-btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 16px;
-    border-radius: 20px;
-    border: 1px solid var(--t4-border);
+.t4-btn-like.liked {
+    background: var(--t4-gold);
+    color: #fff;
+}
+.t4-btn-views {
     background: #FAF8F2;
-    font-weight: 600;
-    font-size: 13px;
     color: var(--t4-text);
-    cursor: pointer;
-    transition: all 0.2s;
 }
-.t4-heart-btn.liked {
-    color: #EF4444;
-    border-color: #FCA5A5;
-    background: #FEF2F2;
+.t4-btn-share {
+    background: #1877F2;
+    color: #fff;
 }
-.t4-heart-btn:hover {
-    background: #FEF2F2;
+.t4-btn-copy {
+    background: #fff;
+    color: var(--t4-text);
+    border: 1px solid var(--t4-border);
+    position: relative;
 }
 @media (max-width: 600px) {
-    .t4-bottom-bar {
-        flex-wrap: wrap;
-        justify-content: center;
+    .t4-action-bar {
+        flex-direction: column;
+        align-items: center;
     }
 }
 </style>
@@ -477,55 +461,26 @@
         </div>
         @endif
 
-        {{-- SECTION 8: PREV/NEXT EVENTS --}}
-        @if(isset($previousEvent) || isset($nextEvent))
-        <div class="t4-card" style="display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap;">
-            <div style="flex: 1; text-align: left;">
-                @if(isset($previousEvent) && $previousEvent)
-                <a href="{{ route('events.show', $previousEvent->slug) }}" style="text-decoration:none; color: var(--t4-text);">
-                    <div style="font-size:11px; text-transform:uppercase; color:var(--t4-muted); font-weight:700; margin-bottom:4px;">← Sự kiện trước</div>
-                    <div style="font-family:'Playfair Display',serif; font-weight:700; font-size:16px;">{{ $previousEvent->title }}</div>
-                </a>
-                @endif
-            </div>
-            <div style="flex: 1; text-align: right;">
-                @if(isset($nextEvent) && $nextEvent)
-                <a href="{{ route('events.show', $nextEvent->slug) }}" style="text-decoration:none; color: var(--t4-text);">
-                    <div style="font-size:11px; text-transform:uppercase; color:var(--t4-muted); font-weight:700; margin-bottom:4px;">Sự kiện tiếp →</div>
-                    <div style="font-family:'Playfair Display',serif; font-weight:700; font-size:16px;">{{ $nextEvent->title }}</div>
-                </a>
-                @endif
-            </div>
-        </div>
-        @endif
 
-    </div>
-</div>
-
-{{-- FIXED BOTTOM INTERACTION BAR --}}
-<div class="t4-bottom-bar" x-data="{ copied: false }">
-    <div class="t4-interaction-group">
-        <a href="{{ route('home') }}" class="t4-action-btn" title="Về trang chủ">
-            <span class="material-symbols-outlined">home</span>
-        </a>
-        <div class="t4-action-btn" title="Lượt xem">
-            <span class="material-symbols-outlined">visibility</span>
-            <span>{{ $event->views_count }}</span>
+        {{-- BOTTOM INTERACTION BAR --}}
+        <div class="t4-action-bar" x-data="{ copied: false }">
+            <button id="t4-like-btn" class="t4-btn t4-btn-like {{ session()->has('liked_events.' . $event->id) ? 'liked' : '' }}" data-event-id="{{ $event->id }}">
+                <span class="material-symbols-outlined">favorite</span>
+                <span id="likes-count">{{ $event->likes_count }}</span> Thích
+            </button>
+            <div class="t4-btn t4-btn-views">
+                <span class="material-symbols-outlined">visibility</span>
+                {{ $event->views_count }} Lượt xem
+            </div>
+            <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}" target="_blank" class="t4-btn t4-btn-share">
+                Chia sẻ
+            </a>
+            <button @click="navigator.clipboard.writeText(window.location.href); copied=true; setTimeout(()=>copied=false, 2000)" class="t4-btn t4-btn-copy">
+                <span class="material-symbols-outlined">link</span> Copy Link
+                <span x-show="copied" style="display:none; position:absolute; bottom:110%; left:50%; transform:translateX(-50%); background:#000; color:#fff; font-size:11px; padding:4px 8px; border-radius:4px;">Đã sao chép!</span>
+            </button>
         </div>
-    </div>
-    
-    <div class="t4-interaction-group">
-        <button id="t4-like-btn" class="t4-heart-btn {{ session()->has('liked_events.' . $event->id) ? 'liked' : '' }}" title="Thích sự kiện" data-event-id="{{ $event->id }}">
-            <span class="material-symbols-outlined {{ session()->has('liked_events.' . $event->id) ? 'font-fill' : '' }}">favorite</span>
-            <span id="likes-count">{{ $event->likes_count }}</span>
-        </button>
-        <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}" target="_blank" class="t4-action-btn" style="background: #1877F2; color: #fff; border: none;">
-            Chia sẻ
-        </a>
-        <button @click="navigator.clipboard.writeText(window.location.href); copied=true; setTimeout(()=>copied=false, 2000)" class="t4-action-btn relative">
-            <span class="material-symbols-outlined" style="font-size: 18px;">link</span>
-            <span x-show="copied" x-transition style="display:none;position:absolute;bottom:100%;left:50%;transform:translateX(-50%);margin-bottom:10px;background:#2C2520;color:white;font-size:11px;padding:4px 8px;border-radius:4px;white-space:nowrap;">Đã sao chép!</span>
-        </button>
+
     </div>
 </div>
 

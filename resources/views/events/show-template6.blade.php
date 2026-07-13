@@ -173,30 +173,53 @@ body { background-color: #f1f5f9; }
     font-size: 16px;
 }
 
-/* GALLERY (CARDS) */
-.w6-gallery {
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
-    margin-bottom: 50px;
+/* GALLERY (COMPACT NATIVE SCROLL) */
+.w6-gallery-wrapper {
+    margin-bottom: 20px;
 }
+.w6-gallery-track {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding-bottom: 15px;
+    scrollbar-width: thin;
+    scroll-snap-type: x mandatory;
+}
+.w6-gallery-track::-webkit-scrollbar { height: 6px; }
+.w6-gallery-track::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+
 .w6-gal-card {
+    flex: 0 0 calc(33.333% - 14px);
     background: #fff;
     border: 1px solid var(--school-border);
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    display: flex;
+    flex-direction: column;
+    scroll-snap-align: start;
+}
+@media (max-width: 768px) {
+    .w6-gal-card { flex: 0 0 85%; }
 }
 .w6-gal-media { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; }
-.w6-gal-body { padding: 20px; }
+.w6-gal-body { padding: 15px; flex-grow: 1; }
 .w6-gal-caption {
     font-family: 'Montserrat', sans-serif;
     font-weight: 700;
     font-size: 18px;
     color: var(--school-text);
     margin-bottom: 8px;
+    max-height: 80px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    padding-right: 4px;
 }
-.w6-gal-text { font-size: 14px; color: var(--school-muted); margin-bottom: 15px; }
+.w6-gal-caption::-webkit-scrollbar { width: 4px; }
+.w6-gal-caption::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+.w6-gal-text { font-size: 14px; color: var(--school-muted); margin-bottom: 15px; max-height: 250px; overflow-y: auto; scrollbar-width: thin; padding-right: 4px; }
+.w6-gal-text::-webkit-scrollbar { width: 4px; }
+.w6-gal-text::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
 
 /* SPEAKERS */
 .w6-speakers {
@@ -440,22 +463,24 @@ body { background-color: #f1f5f9; }
             {{-- GALLERY --}}
             @if($event->galleryImages->count() > 0 && $event->event_date <= now())
             <h2 class="w6-section-title">Khoảnh Khắc Nổi Bật</h2>
-            <div class="w6-gallery">
-                @foreach($event->galleryImages as $block)
-                <div class="w6-gal-card">
-                    @if($block->url)
-                        @if($block->type === 'video')
-                            <video src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="w6-gal-media" autoplay loop muted playsinline controls></video>
-                        @else
-                            <img src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="w6-gal-media" alt="">
+            <div class="w6-gallery-wrapper">
+                <div class="w6-gallery-track" id="w6-gallery-track">
+                    @foreach($event->galleryImages as $block)
+                    <div class="w6-gal-card w6-gallery-slide">
+                        @if($block->url)
+                            @if($block->type === 'video')
+                                <video src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="w6-gal-media" autoplay loop muted playsinline controls></video>
+                            @else
+                                <img src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="w6-gal-media" alt="">
+                            @endif
                         @endif
-                    @endif
-                    <div class="w6-gal-body">
-                        @if($block->caption) <h3 class="w6-gal-caption">{{ $block->caption }}</h3> @endif
-                        @if(!empty($block->content)) <div class="w6-gal-text">{!! $block->content !!}</div> @endif
+                        <div class="w6-gal-body">
+                            @if($block->caption) <h3 class="w6-gal-caption">{{ $block->caption }}</h3> @endif
+                            @if(!empty($block->content)) <div class="w6-gal-text">{!! $block->content !!}</div> @endif
+                        </div>
                     </div>
+                    @endforeach
                 </div>
-                @endforeach
             </div>
             @endif
 
@@ -529,27 +554,7 @@ body { background-color: #f1f5f9; }
             </div>
             @endif
             
-            {{-- PREV/NEXT EVENTS --}}
-            @if(isset($previousEvent) || isset($nextEvent))
-            <div class="w6-nav-events">
-                <div style="text-align: left;">
-                    @if(isset($previousEvent) && $previousEvent)
-                    <a href="{{ route('events.show', $previousEvent->slug) }}" class="w6-nav-item">
-                        <div class="w6-nav-label">← Sự kiện trước</div>
-                        <div class="w6-nav-title">{{ $previousEvent->title }}</div>
-                    </a>
-                    @endif
-                </div>
-                <div style="text-align: right;">
-                    @if(isset($nextEvent) && $nextEvent)
-                    <a href="{{ route('events.show', $nextEvent->slug) }}" class="w6-nav-item">
-                        <div class="w6-nav-label">Sự kiện tiếp →</div>
-                        <div class="w6-nav-title">{{ $nextEvent->title }}</div>
-                    </a>
-                    @endif
-                </div>
-            </div>
-            @endif
+
 
             {{-- BOTTOM ACTIONS --}}
             <div class="w6-bottom" x-data="{ copied: false }">
@@ -627,5 +632,7 @@ body { background-color: #f1f5f9; }
             .catch(err => console.error(err));
         });
     }
+
+
 </script>
 @endsection

@@ -2,7 +2,7 @@
 @section('content')
 @php $archiveJson = json_encode($archive); @endphp
 <section id="archive" class="relative py-24 lg:py-32"
-         style="background:linear-gradient(160deg, #FFFDF6 0%, #FFF9E6 45%, #F4FAF5 100%);"
+         style="background: transparent;"
          x-data="{
             idx: 0,
             archive: {{ $archiveJson }},
@@ -102,12 +102,6 @@
         }
     </style>
 
-    <!-- Soft aesthetic blobs -->
-    <div class="pointer-events-none absolute inset-0 overflow-hidden">
-        <div class="absolute -left-32 top-1/4 h-[450px] w-[450px] rounded-full blur-[140px] opacity-20" style="background:#FFE381;"></div>
-        <div class="absolute -right-32 bottom-10 h-[350px] w-[350px] rounded-full blur-[140px] opacity-15" style="background:#07A0C3;"></div>
-        <div class="absolute left-1/2 bottom-0 h-40 w-[600px] -translate-x-1/2 rounded-full blur-[100px] opacity-10" style="background:#04F06A;"></div>
-    </div>
     <!-- Top border Jasmine -->
     <div class="absolute inset-x-0 top-0 h-1.5" style="background:#FFE381;"></div>
 

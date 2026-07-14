@@ -20,6 +20,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Hanken+Grotesk:wght@600;700&family=Be+Vietnam+Pro:wght@400;600;700&family=Charm:wght@400;700&family=Montserrat:wght@400;600;700&family=Pacifico&family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Rowdies:wght@400;700&family=Barlow:wght@400;500;600;700;800;900&family=Barlow+Condensed:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
+    <!-- Three.js for 3D Background -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
     <!-- GSAP + ScrollTrigger -->
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
@@ -33,6 +36,11 @@
 </head>
 <body class="frontend-body antialiased bg-paper text-ink relative" x-data="{ scrolled: false }" @scroll.window="scrolled = (window.pageYOffset > 40)">
     
+    <!-- 3D Interactive Background -->
+    @if(!request()->routeIs('home'))
+        <canvas id="three-bg-canvas" class="fixed inset-0 z-[-1] pointer-events-none w-full h-full"></canvas>
+    @endif
+
     @php 
         $isHome = request()->routeIs('home'); 
     @endphp
@@ -386,6 +394,10 @@
     
     @if(request()->is('events/*') || request()->is('admin/events/*/preview*') || request()->is('admin/template-preview/*'))
         @include('components.event-fab-menu')
+    @endif
+
+    @if(!request()->routeIs('home'))
+        <script src="{{ asset('js/three-bg.js') }}"></script>
     @endif
 
 @if(request()->routeIs('home'))

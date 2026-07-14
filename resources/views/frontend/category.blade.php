@@ -6,14 +6,14 @@
 {{-- ════════════════════════════════════════
      HERO SECTION - 1 NEWEST EVENT
 ════════════════════════════════════════════ --}}
-<section class="relative pt-32 pb-16 lg:pt-40 lg:pb-24" style="background:#FFFBEA;">
+<section class="relative pt-24 pb-16 lg:pt-32 lg:pb-24" style="background: transparent;">
     <div class="mx-auto max-w-[1400px] px-6 lg:px-10">
         <div class="mb-8">
             <div class="flex items-center gap-3 mb-2">
                 <div class="h-7 w-1 rounded-full" style="background:#07A0C3;"></div>
                 <span class="text-xs font-bold uppercase tracking-[0.25em]" style="color:#07A0C3;">Danh mục</span>
             </div>
-            <h1 class="font-['Barlow_Condensed'] text-5xl font-black uppercase tracking-tight text-[#1C1410] lg:text-7xl">{{ $category->name }}</h1>
+            <h1 class="font-['Barlow_Condensed'] text-5xl font-black uppercase tracking-tight text-[#1C1410] lg:text-7xl" style="text-shadow: -1px -1px 0 #FFFBEA, 1px -1px 0 #FFFBEA, -1px 1px 0 #FFFBEA, 1px 1px 0 #FFFBEA, 0 4px 12px rgba(255,255,255,0.8);">{{ $category->name }}</h1>
         </div>
 
         @if($newestEvent)

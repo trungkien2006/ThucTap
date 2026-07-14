@@ -2,14 +2,9 @@
 @section('title', 'Sự kiện - UniEvent')
 
 @section('content')
-<section class="relative pt-32 pb-24 lg:pt-40 lg:pb-32 min-h-screen" style="background:linear-gradient(160deg, #FFFDF6 0%, #FFF9E6 45%, #F4FAF5 100%);">
+<section class="relative pt-24 pb-16 lg:pt-32 lg:pb-24 min-h-screen" style="background: transparent;">
     
-    <!-- Soft aesthetic blobs -->
-    <div class="pointer-events-none absolute inset-0 overflow-hidden">
-        <div class="absolute -left-32 top-1/4 h-[450px] w-[450px] rounded-full blur-[140px] opacity-20" style="background:#FFE381;"></div>
-        <div class="absolute -right-32 bottom-10 h-[350px] w-[350px] rounded-full blur-[140px] opacity-15" style="background:#07A0C3;"></div>
-        <div class="absolute left-1/2 bottom-0 h-40 w-[600px] -translate-x-1/2 rounded-full blur-[100px] opacity-10" style="background:#04F06A;"></div>
-    </div>
+
     
     <!-- Top border -->
     <div class="absolute inset-x-0 top-0 h-1.5" style="background:#FFE381;"></div>
@@ -23,10 +18,10 @@
                 <span class="text-sm font-bold uppercase tracking-[0.2em]" style="color:#8A7320;">Khám Phá</span>
                 <div class="h-1 w-8 rounded-full" style="background:#E8C84A;"></div>
             </div>
-            <h1 class="font-['Barlow_Condensed'] text-5xl font-black uppercase tracking-tight text-[#1C1410] lg:text-7xl mb-6">
+            <h1 class="font-['Barlow_Condensed'] text-5xl font-black uppercase tracking-tight text-[#1C1410] lg:text-7xl mb-6" style="text-shadow: -1px -1px 0 #FFFBEA, 1px -1px 0 #FFFBEA, -1px 1px 0 #FFFBEA, 1px 1px 0 #FFFBEA, 0 4px 12px rgba(255,255,255,0.8);">
                 Sự kiện tổng hợp
             </h1>
-            <p class="text-lg text-[#7A6A52] leading-relaxed">
+            <p class="text-lg font-bold text-[#1C1410] leading-relaxed max-w-2xl mx-auto" style="text-shadow: -1px -1px 0 #FFFBEA, 1px -1px 0 #FFFBEA, -1px 1px 0 #FFFBEA, 1px 1px 0 #FFFBEA, 0 4px 12px rgba(255,255,255,0.8);">
                 Nơi hội tụ tất cả các hoạt động, hội thảo, phong trào của sinh viên. Chọn danh mục dưới đây để tìm kiếm sự kiện phù hợp với bạn.
             </p>
         </div>

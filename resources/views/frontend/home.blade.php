@@ -2,7 +2,13 @@
 
 @if(!empty($slides) && isset($slides[0]))
     @push('styles')
-        <link rel="preload" as="image" href="{{ $slides[0]['image'] }}">
+        <link rel="preload" as="image" href="{{ $slides[0]['image'] }}" fetchpriority="high">
+        @if(isset($slides[1]))
+            <link rel="preload" as="image" href="{{ $slides[1]['image'] }}">
+        @endif
+        @if(isset($slides[2]))
+            <link rel="preload" as="image" href="{{ $slides[2]['image'] }}">
+        @endif
     @endpush
 @endif
 
@@ -76,14 +82,41 @@
         const progressBar  = document.getElementById('progressBar');
         const sliderEl     = document.getElementById('slider');
 
-        // Lazy load remaining background images after initial render
-        setTimeout(() => {
+        // Lazy load remaining background images when browser is idle
+        const loadRemainingBg = () => {
             bgLayers.forEach((layer, idx) => {
                 if (idx !== 0 && slides[idx]) {
-                    layer.style.backgroundImage = `url('${slides[idx].image}')`;
+                    const img = new Image();
+                    img.onload = () => { layer.style.backgroundImage = `url('${slides[idx].image}')`; };
+                    img.src = slides[idx].image;
                 }
             });
-        }, 500);
+        };
+        if ('requestIdleCallback' in window) {
+            requestIdleCallback(loadRemainingBg, { timeout: 1500 });
+        } else {
+            setTimeout(loadRemainingBg, 300);
+        }
+
+        /* ─── Shift title animation ─── */
+        function shiftTitle(text) {
+            slideTitle.innerHTML = '';
+            const chars = text.split('');
+            chars.forEach((char, i) => {
+                const span = document.createElement('span');
+                span.className = 'shift-char';
+                span.textContent = char === ' ' ? '\u00A0' : char;
+                span.style.transitionDelay = `${i * 25}ms`;
+                slideTitle.appendChild(span);
+            });
+            // Trigger the animation on next frame
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+                slideTitle.querySelectorAll('.shift-char').forEach(s => s.classList.add('is-visible'));
+            }));
+        }
+
+        // Initial title shift animation
+        shiftTitle(slides[0].title);
 
         /* ─── Card helpers ─── */
         function liveCards() { return Array.from(cardTrack.querySelectorAll('.dest-card')); }
@@ -94,7 +127,7 @@
             card.className     = 'dest-card';
             card.dataset.index = slideIdx;
             card.innerHTML =
-                `<img src="${sl.image}" alt="${sl.title}" loading="lazy">` +
+                `<img src="${sl.image}" alt="${sl.title}" loading="lazy" decoding="async">` +
                 `<div class="dest-card-overlay"></div>` +
                 `<div class="dest-card-info">` +
                     `<div class="dest-card-tag">${sl.tag}</div>` +
@@ -185,60 +218,67 @@
             }
 
             /* --- Card Track DOM updates with FLIP Animation --- */
-            // 1. Record original positions
-            const cards = Array.from(cardTrack.children);
+            // 1. Record original positions of DOM nodes
+            const oldCards = Array.from(cardTrack.children);
             const firstRects = new Map();
-            cards.forEach(c => firstRects.set(c.dataset.index, c.getBoundingClientRect()));
+            oldCards.forEach(c => firstRects.set(c, c.getBoundingClientRect()));
 
-            // 2. Extract the clicked card from queue, keep others intact, push to end
+            // 2. Remove the clicked card from the track
+            const clickedCard = oldCards[jumpQueueIndex];
+            if (clickedCard) {
+                clickedCard.remove();
+                firstRects.delete(clickedCard);
+            }
+
+            // 3. Update queue
             queue.splice(jumpQueueIndex, 1);
             queue.push(nextSlideIdx);
 
-            // 3. Rebuild track completely
-            cardTrack.innerHTML = '';
-            const count = Math.min(MAX_CARDS, queue.length);
-            for (let i = 0; i < count; i++) {
-                cardTrack.appendChild(makeCard(queue[i]));
-            }
+            // 4. Append new card to the end
+            const newSlideIdx = queue[Math.min(MAX_CARDS, queue.length) - 1];
+            const newCard = makeCard(newSlideIdx);
+            cardTrack.appendChild(newCard);
 
-            // 4. Invert and Play (FLIP) for smooth sliding
+            // 5. Update active class FIRST (this triggers flex-basis transition natively)
+            markFirstActive();
+
+            // 6. Invert and Play (FLIP) for smooth sliding
             const newCards = Array.from(cardTrack.children);
             newCards.forEach(c => {
-                if (parseInt(c.dataset.index) === nextSlideIdx) {
-                    return; // Bá» qua animation bay từ trái qua phải cho thẻ vừa click
-                }
-
-                const firstRect = firstRects.get(c.dataset.index);
+                const firstRect = firstRects.get(c);
                 if (firstRect) {
                     const lastRect = c.getBoundingClientRect();
                     const dx = firstRect.left - lastRect.left;
                     if (dx !== 0) {
-                        c.style.transition = 'none';
+                        // FIX: Only disable transform. Disabling all transitions ('none') kills flex-basis animation
+                        c.style.transition = 'transform 0s';
                         c.style.transform = `translateX(${dx}px)`;
                         requestAnimationFrame(() => requestAnimationFrame(() => {
-                            c.style.transition = 'transform 600ms cubic-bezier(0.4,0,0.2,1)';
-                            c.style.transform = 'translateX(0px)';
+                            // Restore CSS transitions for perfectly composed animations
+                            c.style.transition = '';
+                            c.style.transform = '';
                         }));
                     }
                 } else {
-                    // New card sliding in from right
+                    // New card sliding and fading in from right
                     const dx = (jumpQueueIndex + 1) * STEP;
-                    c.style.transition = 'none';
+                    c.style.transition = 'transform 0s, opacity 0s';
+                    c.style.opacity = '0';
                     c.style.transform = `translateX(${dx}px)`;
                     requestAnimationFrame(() => requestAnimationFrame(() => {
-                        c.style.transition = 'transform 550ms cubic-bezier(0.4,0,0.2,1)';
-                        c.style.transform = 'translateX(0px)';
+                        c.style.transition = 'transform 600ms cubic-bezier(0.4,0,0.2,1), opacity 600ms ease';
+                        c.style.opacity = '1';
+                        c.style.transform = '';
+                        setTimeout(() => { c.style.transition = ''; }, 600);
                     }));
                 }
             });
-
-            markFirstActive();
 
             /* --- Update text --- */
             slideInfo.classList.remove('is-active');
             setTimeout(() => {
                 slideEyebrow.textContent = slides[current].eyebrow;
-                slideTitle.textContent   = slides[current].title;
+                shiftTitle(slides[current].title);
                 slideDesc.textContent    = slides[current].description;
                 slideCta.textContent     = slides[current].cta_label;
                 slideCta.href            = slides[current].cta_url;
@@ -383,7 +423,7 @@
 
                             @if($item['image'])
                                 <!-- Background Image -->
-                                <img src="{{ asset($item['image']) }}" alt="{{ $item['name'] }}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                                <img src="{{ asset($item['image']) }}" alt="{{ $item['name'] }}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                             @else
                                 <div class="absolute inset-0 w-full h-full bg-gray-200 flex items-center justify-center">
                                     <i data-lucide="{{ $item['icon'] }}" class="w-12 h-12 text-gray-400"></i>
@@ -415,8 +455,16 @@
                     @endforeach
                 </div>
 
+                <!-- View All Categories Button -->
+                <div class="mt-10 flex justify-center event-category-title" style="opacity: 0;">
+                    <a href="{{ route('events.index') }}" class="group relative inline-flex items-center justify-center gap-2 px-8 py-3.5 text-sm font-bold uppercase tracking-wider text-white transition-all duration-300 rounded-full overflow-hidden shadow-lg hover:shadow-xl hover:-translate-y-1 bg-[#07A0C3]">
+                        <span class="relative z-10 flex items-center gap-2">Xem tất cả <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i></span>
+                        <div class="absolute inset-0 bg-[#068ba9] transform scale-x-0 origin-left transition-transform duration-500 ease-out group-hover:scale-x-100 z-0"></div>
+                    </a>
+                </div>
+
                 <!-- Decorative bottom — nằm ngoài vùng GSAP animation -->
-                <div class="mt-8 flex items-center justify-center gap-4 pointer-events-none select-none">
+                <div class="mt-10 flex items-center justify-center gap-4 pointer-events-none select-none">
                     <div class="h-px flex-1 max-w-[120px]" style="background: linear-gradient(to right, transparent, rgba(7,160,195,0.2));"></div>
                     <span class="text-[10px] font-bold uppercase tracking-[0.3em]" style="color: rgba(122,106,82,0.3);">
                         {{ $totalCount }} sự kiện đa dạng
@@ -559,7 +607,26 @@
     @php $archiveJson = json_encode($archive); @endphp
 <section id="archive" class="relative overflow-hidden py-12 lg:py-16"
          style="position: -webkit-sticky; position: sticky; top: 72px; background:linear-gradient(160deg,#2D1F0A 0%,#3D2A0E 50%,#1C2A10 100%); z-index: 50;"
-         x-data="{ idx:0, archive:{{ $archiveJson }}, dir:1, get current(){return this.archive[this.idx];}, go(d){this.dir=d;let n=this.idx+d;if(n>=0&&n<this.archive.length)this.idx=n;} }">
+         x-data="{ 
+            yearIdx: 0, 
+            eventIdx: 0,
+            archive: {{ $archiveJson }}, 
+            dir: 1, 
+            get currentYear() { return this.archive[this.yearIdx]; }, 
+            get currentEvent() { return this.currentYear.events[this.eventIdx]; },
+            go(d) {
+                this.dir = d;
+                let n = this.eventIdx + d;
+                if(n >= 0 && n < this.currentYear.events.length) {
+                    this.eventIdx = n;
+                }
+            },
+            setYear(i) {
+                this.dir = i > this.yearIdx ? 1 : -1;
+                this.yearIdx = i;
+                this.eventIdx = 0;
+            }
+         }">
 
     <!-- Warm glow blobs -->
     <div class="pointer-events-none absolute inset-0 overflow-hidden">
@@ -585,14 +652,14 @@
                 </p>
             </div>
             <div class="hidden gap-3 lg:flex">
-                <button @click="go(-1)" :disabled="idx===0"
+                <button @click="go(-1)" :disabled="eventIdx === 0"
                     class="grid h-12 w-12 place-items-center rounded-full border-2 text-white/70 transition-all disabled:opacity-30"
                     style="border-color:rgba(255,227,129,0.3); background:rgba(255,227,129,0.05);"
                     onmouseover="this.style.borderColor='#FFE381';this.style.color='#FFE381'"
                     onmouseout="this.style.borderColor='rgba(255,227,129,0.3)';this.style.color='rgba(255,255,255,0.7)'">
                     <i data-lucide="chevron-left" class="h-5 w-5"></i>
                 </button>
-                <button @click="go(1)" :disabled="idx===archive.length-1"
+                <button @click="go(1)" :disabled="eventIdx === currentYear.events.length - 1"
                     class="grid h-12 w-12 place-items-center rounded-full border-2 text-white/70 transition-all disabled:opacity-30"
                     style="border-color:rgba(255,227,129,0.3); background:rgba(255,227,129,0.05);"
                     onmouseover="this.style.borderColor='#FFE381';this.style.color='#FFE381'"
@@ -608,24 +675,24 @@
                 <div class="font-barlow-condensed text-[28vw] font-black leading-[0.85] tracking-tighter lg:text-[18vw] pl-4 lg:pl-6 pr-4"
                      style="-webkit-text-fill-color:transparent;-webkit-background-clip:text;background-clip:text;
                             background-image:linear-gradient(160deg,#FFE381 30%,#E8C84A 70%,#07A0C3 100%);"
-                     x-text="current.year"
+                     x-text="currentYear.year"
                      x-transition:enter="transition ease-out duration-500"
                      x-transition:enter-start="opacity-0 translate-y-10"
                      x-transition:enter-end="opacity-100 translate-y-0"></div>
 
                 <div class="mt-6 pl-4 lg:pl-6">
-                    <a :href="'{{ route('archive') }}?year=' + current.year" class="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold transition-all hover:scale-105"
+                    <a :href="'{{ route('archive') }}?year=' + currentYear.year" class="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold transition-all hover:scale-105"
                        style="background:#FFE381; color:#1C1410;">
-                        Xem chi tiết năm <span x-text="current.year"></span> <i data-lucide="arrow-right" class="h-4 w-4"></i>
+                        Xem chi tiết năm <span x-text="currentYear.year"></span> <i data-lucide="arrow-right" class="h-4 w-4"></i>
                     </a>
                 </div>
 
                 <!-- Year tabs -->
                 <div class="mt-7 flex flex-wrap items-center gap-2 pl-4 lg:pl-6">
                     <template x-for="(a,i) in archive" :key="a.year">
-                        <button @click="dir=i>idx?1:-1;idx=i"
+                        <button @click="setYear(i)"
                             class="rounded-full px-4 py-1.5 text-sm font-bold font-mono transition-all"
-                            :style="i===idx
+                            :style="i===yearIdx
                                 ? 'background:#FFE381;color:#1C1410;box-shadow:0 4px 12px rgba(255,227,129,0.4);'
                                 : 'background:rgba(255,227,129,0.08);color:rgba(255,227,129,0.45);'">
                             <span x-text="a.year"></span>
@@ -633,19 +700,19 @@
                     </template>
                 </div>
 
-                <!-- THÊM MỚI — Timeline mini strip, chèn sau phần year tabs trong cột trái -->
+                <!-- Timeline mini strip -->
                 <div class="mt-10 pl-4 lg:pl-6 pr-4 hidden lg:block">
                     <div class="relative border-l-2 space-y-4" style="border-color: rgba(255,227,129,0.2);">
                         <template x-for="(a, i) in archive" :key="a.year">
-                            <div class="relative pl-5 cursor-pointer" @click="dir=i>idx?1:-1;idx=i">
+                            <div class="relative pl-5 cursor-pointer" @click="setYear(i)">
                                 <!-- Timeline dot -->
                                 <div class="absolute -left-[5px] top-1.5 h-2 w-2 rounded-full transition-all duration-300"
-                                     :style="i === idx 
+                                     :style="i === yearIdx 
                                         ? 'background:#FFE381; box-shadow:0 0 8px rgba(255,227,129,0.6); transform:scale(1.5);' 
                                         : 'background:rgba(255,227,129,0.25);'"></div>
                                 
                                 <div class="text-xs font-bold font-mono transition-colors duration-300"
-                                     :style="i === idx ? 'color:#FFE381;' : 'color:rgba(255,227,129,0.35);'"
+                                     :style="i === yearIdx ? 'color:#FFE381;' : 'color:rgba(255,227,129,0.35);'"
                                      x-text="a.year + ' · ' + (a.achievements[0] || '')"></div>
                             </div>
                         </template>
@@ -654,9 +721,9 @@
             </div>
 
             <div>
-                <a :href="current.featured_url" class="group relative block h-[280px] overflow-hidden rounded-2xl lg:h-[360px]"
+                <a :href="currentEvent.featured_url" class="group relative block h-[280px] overflow-hidden rounded-2xl lg:h-[360px]"
                      style="box-shadow:0 20px 60px rgba(255,227,129,0.15);">
-                    <img :src="current.img" :alt="current.featured_title" loading="lazy"
+                    <img :src="currentEvent.img" :alt="currentEvent.featured_title" loading="lazy"
                          class="h-full w-full object-cover transition-transform duration-[1500ms] group-hover:scale-105" />
                     <div class="absolute inset-0"
                          style="background:linear-gradient(to top,rgba(45,31,10,0.92) 0%,rgba(45,31,10,0.25) 60%,transparent 100%);"></div>
@@ -665,14 +732,14 @@
                     <div class="absolute bottom-6 left-5 right-5 z-20">
                         <div class="block w-fit">
                             <h3 class="font-barlow-condensed text-3xl font-black uppercase tracking-wide text-white lg:text-4xl transition-colors group-hover:text-[#FFE381]"
-                                x-text="current.featured_title"></h3>
+                                x-text="currentEvent.featured_title"></h3>
                         </div>
                     </div>
                 </a>
 
-                <p class="mt-5 text-base leading-relaxed lg:text-lg" style="color:rgba(255,227,129,0.7);" x-text="current.desc"></p>
+                <p class="mt-5 text-base leading-relaxed lg:text-lg" style="color:rgba(255,227,129,0.7);" x-text="currentEvent.desc"></p>
 
-                <!-- THÊM MỚI — Thêm thông tin chi tiết trên achievements, chèn sau <p class="mt-5 text-base..."> -->
+                <!-- Thêm thông tin chi tiết trên achievements -->
                 <div class="mt-5 flex flex-wrap gap-4">
                     <!-- Stat: Số sự kiện -->
                     <div class="flex items-center gap-2">
@@ -682,7 +749,7 @@
                         </div>
                         <div>
                             <div class="text-xs font-bold uppercase tracking-widest" style="color:rgba(255,227,129,0.5);">Tổ chức</div>
-                            <div class="text-sm font-bold text-white" x-text="current.achievements[0]"></div>
+                            <div class="text-sm font-bold text-white" x-text="currentYear.achievements[0]"></div>
                         </div>
                     </div>
                     <!-- Separator -->
@@ -695,27 +762,25 @@
                         </div>
                         <div>
                             <div class="text-xs font-bold uppercase tracking-widest" style="color:rgba(7,160,195,0.5);">Năm hoạt động</div>
-                            <div class="text-sm font-bold text-white" x-text="current.year"></div>
+                            <div class="text-sm font-bold text-white" x-text="currentYear.year"></div>
                         </div>
                     </div>
                 </div>
 
                 <div class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
-                    <template x-for="achieve in current.achievements" :key="achieve">
+                    <template x-for="achieve in currentYear.achievements" :key="achieve">
                         <div class="rounded-xl px-4 py-3 text-sm font-medium text-white"
                              style="background:rgba(255,227,129,0.10); border:1px solid rgba(255,227,129,0.25);"
                              x-text="achieve"></div>
                     </template>
                 </div>
 
-
-
                 <div class="mt-6 flex gap-3 lg:hidden">
-                    <button @click="go(-1)" :disabled="idx===0"
+                    <button @click="go(-1)" :disabled="eventIdx === 0"
                         class="grid h-11 w-11 place-items-center rounded-full border border-[#FFE381]/30 disabled:opacity-30">
                         <i data-lucide="chevron-left" class="h-5 w-5 text-white"></i>
                     </button>
-                    <button @click="go(1)" :disabled="idx===archive.length-1"
+                    <button @click="go(1)" :disabled="eventIdx === currentYear.events.length - 1"
                         class="grid h-11 w-11 place-items-center rounded-full border border-[#FFE381]/30 disabled:opacity-30">
                         <i data-lucide="chevron-right" class="h-5 w-5 text-white"></i>
                     </button>
@@ -957,7 +1022,6 @@
     <!-- Bottom gradient line -->
     <div class="absolute inset-x-0 bottom-0 h-1" style="background: linear-gradient(to right, transparent, rgba(4,240,106,0.3), rgba(7,160,195,0.3), transparent);"></div>
 </section>
-<div style="height: 40vh;"></div>
 </div>
 
 

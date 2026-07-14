@@ -15,6 +15,7 @@ Route::get('/events/{slug}', [PublicEventController::class, 'show'])->name('even
 Route::post('/events/{id}/like', [PublicEventController::class, 'like'])->name('events.like');
 
 Route::get('/drive-proxy', [\App\Http\Controllers\Admin\FileProxyController::class, 'stream'])->name('file.proxy');
+Route::get('/image-optimize', [\App\Http\Controllers\Admin\FileProxyController::class, 'optimize'])->name('image.optimize');
 Route::get('/dashboard', function () {
     return redirect()->route('admin.dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');

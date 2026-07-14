@@ -161,12 +161,14 @@
 
         <!-- Events Grid -->
         @if($events->count() > 0)
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mb-16">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mb-16" id="events-grid">
             @foreach($events as $index => $event)
-            <div data-aos="fade-up" data-aos-delay="{{ ($index % 3) * 100 }}" class="group flex flex-col rounded-3xl bg-white shadow-sm border border-[#E8E2D5] overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
-                <!-- Image -->
-                <div class="relative h-64 overflow-hidden bg-slate-100">
-                    <img src="{{ $event->bannerImage ? \App\Helpers\FileHelper::url($event->bannerImage->url) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80' }}" 
+            <!-- GSAP animation wrapper -->
+            <div class="event-grid-card-wrapper" style="opacity: 0; transform: translateY(40px);">
+                <div class="group h-full flex flex-col rounded-3xl bg-white shadow-sm border border-[#E8E2D5] overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+                    <!-- Image -->
+                    <div class="relative h-64 overflow-hidden bg-slate-100">
+                    <img src="{{ $event->bannerImage ? \App\Helpers\FileHelper::url($event->bannerImage->url, true) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80' }}" 
                          alt="{{ $event->title }}" 
                          class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105">
                     
@@ -223,10 +225,42 @@
                             Chi tiết <i data-lucide="arrow-right" class="h-4 w-4"></i>
                         </span>
                     </div>
+                    </div>
                 </div>
             </div>
             @endforeach
         </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+                    gsap.registerPlugin(ScrollTrigger);
+                    
+                    ScrollTrigger.batch(".event-grid-card-wrapper", {
+                        interval: 0.1, // time window to batch items that enter at the same time
+                        batchMax: 4,   // max items per batch (matches xl grid cols)
+                        onEnter: batch => {
+                            gsap.to(batch, {
+                                opacity: 1, 
+                                y: 0, 
+                                stagger: 0.15, 
+                                duration: 0.8, 
+                                ease: "power3.out",
+                                overwrite: true
+                            });
+                        },
+                        start: "top 90%",
+                        once: true
+                    });
+                } else {
+                    // Fallback if GSAP fails to load
+                    document.querySelectorAll('.event-grid-card-wrapper').forEach(el => {
+                        el.style.opacity = '1';
+                        el.style.transform = 'translateY(0)';
+                    });
+                }
+            });
+        </script>
 
         <!-- Pagination -->
         <div class="mt-12 flex justify-center">

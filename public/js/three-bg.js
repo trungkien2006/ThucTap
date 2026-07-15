@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Since camera covers roughly 48x48 units, a 40x40 grid with cube size 1.5 should be huge.
     const gridSize = 45;
     const cubeSize = 1.3;
-    const gap = 0.03;
+    const gap = 0.0; // Set gap to 0 to make it look like a solid background
     const offset = (gridSize * (cubeSize + gap)) / 2;
 
     const geometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
@@ -110,11 +110,29 @@ document.addEventListener('DOMContentLoaded', function () {
     // Animation Loop
     const clock = new THREE.Clock();
     const waveRadius = 4.5;
-    const waveHeight = 2.0;
+    const waveHeight = 3.0; // Increased by 30% from 2.0
+
+    const pulses = [];
+    window.addEventListener('click', () => {
+        if (targetX !== 9999) {
+            pulses.push({
+                x: targetX,
+                z: targetZ,
+                startTime: clock.getElapsedTime()
+            });
+        }
+    });
 
     function animate() {
         requestAnimationFrame(animate);
         const time = clock.getElapsedTime();
+
+        // Remove old pulses that have faded out
+        for (let p = pulses.length - 1; p >= 0; p--) {
+            if (time - pulses[p].startTime > 4.0) {
+                pulses.splice(p, 1);
+            }
+        }
 
         let idx = 0;
         for (let x = 0; x < gridSize; x++) {
@@ -122,7 +140,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const pos = basePositions[idx];
 
                 // Base gentle floating wave (perpetual motion)
-                let y = Math.sin(time * 1.5 + pos.x * 0.3 + pos.z * 0.3) * 0.15;
+                let y = 0; // Removed auto wave
 
                 // Mouse hover wave effect
                 const dist = Math.sqrt(Math.pow(pos.x - targetX, 2) + Math.pow(pos.z - targetZ, 2));
@@ -131,6 +149,25 @@ document.addEventListener('DOMContentLoaded', function () {
                     // Smooth falloff curve
                     const influence = 1 - (dist / waveRadius);
                     y += Math.sin(influence * (Math.PI / 2)) * waveHeight;
+                }
+
+                // Pulse effects from clicks
+                for (let p = 0; p < pulses.length; p++) {
+                    const pulse = pulses[p];
+                    const age = time - pulse.startTime;
+                    const pulseRadius = age * 12.0; // Pulse expansion speed
+
+                    const distToPulse = Math.sqrt(Math.pow(pos.x - pulse.x, 2) + Math.pow(pos.z - pulse.z, 2));
+                    const distanceToWaveFront = Math.abs(distToPulse - pulseRadius);
+                    const pulseWidth = 2.5;
+
+                    if (distanceToWaveFront < pulseWidth) {
+                        // Strength decays with age
+                        const decay = Math.max(0, 1 - (age / 4.0));
+                        const waveShape = Math.cos((distanceToWaveFront / pulseWidth) * (Math.PI / 2));
+                        
+                        y += waveShape * 2.0 * decay; // 2.0 is max pulse height
+                    }
                 }
 
                 // Smooth interpolation for the Y position to avoid jittering

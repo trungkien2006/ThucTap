@@ -37,7 +37,7 @@
 <body class="frontend-body antialiased bg-paper text-ink relative" x-data="{ scrolled: false }" @scroll.window="scrolled = (window.pageYOffset > 40)">
     
     <!-- 3D Interactive Background -->
-    @if(!request()->routeIs('home'))
+    @if(!request()->routeIs('home') && !request()->routeIs('archive'))
         <canvas id="three-bg-canvas" class="fixed inset-0 z-[-1] pointer-events-none w-full h-full"></canvas>
     @endif
 
@@ -396,7 +396,7 @@
         @include('components.event-fab-menu')
     @endif
 
-    @if(!request()->routeIs('home'))
+    @if(!request()->routeIs('home') && !request()->routeIs('archive'))
         <script src="{{ asset('js/three-bg.js') }}"></script>
     @endif
 

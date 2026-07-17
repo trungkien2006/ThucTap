@@ -416,73 +416,166 @@
                 @endphp
 
                 <style>
-                    .bento-grid {
-                        grid-auto-rows: 180px;
+                    .cat-ribbon-container {
+                        scrollbar-width: none;
+                        -ms-overflow-style: none;
                     }
-                    @media (min-width: 768px) {
-                        .bento-grid {
-                            grid-auto-rows: 240px;
+                    .cat-ribbon-container::-webkit-scrollbar {
+                        display: none;
+                    }
+                    .cat-parallelogram {
+                        width: 10rem;
+                        height: 7rem;
+                        clip-path: polygon(1.5rem 0, 100% 0, calc(100% - 1.5rem) 100%, 0 100%);
+                        transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                        flex-shrink: 0;
+                    }
+                    .cat-parallelogram + .cat-parallelogram {
+                        margin-left: -1rem; /* Creates a small 8px visual gap due to the 1.5rem slant */
+                    }
+                    .cat-icon-container {
+                        width: 10rem;
+                        height: 7rem;
+                        /* No padding-left needed: geometric center of the bounding box is the visual center */
+                    }
+                    .cat-text-container {
+                        left: 8.5rem;
+                        height: 7rem;
+                        width: 12rem; /* Safe space on mobile */
+                    }
+                    @media (min-width: 1024px) {
+                        .cat-parallelogram {
+                            width: 12rem;
+                            height: 8rem;
+                            clip-path: polygon(2rem 0, 100% 0, calc(100% - 2rem) 100%, 0 100%);
+                        }
+                        .cat-parallelogram + .cat-parallelogram {
+                            margin-left: -1.5rem; /* Creates a small 8px visual gap due to the 2rem slant */
+                        }
+                        .cat-parallelogram:hover {
+                            width: 28rem; /* Increased to allow more text */
+                            transform: scale(1.05);
+                            z-index: 20;
+                        }
+                        .cat-icon-container {
+                            width: 12rem;
+                            height: 8rem;
+                        }
+                        .cat-text-container {
+                            left: 10rem;
+                            height: 8rem;
+                            width: 15rem; /* Increased safe space for text */
+                        }
+                    }
+                    .cat-parallelogram:hover {
+                        width: 18rem;
+                        z-index: 20;
+                    }
+                    .cat-parallelogram-sm {
+                        width: 4.5rem;
+                        height: 7rem;
+                        clip-path: polygon(1.5rem 0, 100% 0, calc(100% - 1.5rem) 100%, 0 100%);
+                        transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease;
+                        flex-shrink: 0;
+                    }
+                    .cat-parallelogram-sm:hover {
+                        width: 14rem;
+                        z-index: 20;
+                    }
+                    .cat-sm-icon-container {
+                        width: 4.5rem;
+                        height: 7rem;
+                    }
+                    .cat-sm-text-container {
+                        left: 4.5rem;
+                        height: 7rem;
+                        width: 10rem;
+                    }
+                    .cat-parallelogram + .cat-parallelogram-sm {
+                        margin-left: -1rem;
+                    }
+                    @media (min-width: 1024px) {
+                        .cat-parallelogram-sm {
+                            width: 5.5rem;
+                            height: 8rem;
+                            clip-path: polygon(2rem 0, 100% 0, calc(100% - 2rem) 100%, 0 100%);
+                        }
+                        .cat-parallelogram + .cat-parallelogram-sm {
+                            margin-left: -1.5rem;
+                        }
+                        .cat-parallelogram-sm:hover {
+                            width: 18rem;
+                            transform: scale(1.05);
+                            z-index: 20;
+                        }
+                        .cat-sm-icon-container {
+                            width: 5.5rem;
+                            height: 8rem;
+                        }
+                        .cat-sm-text-container {
+                            left: 5.5rem;
+                            height: 8rem;
+                            width: 12rem;
                         }
                     }
                 </style>
-                <div class="grid grid-cols-1 md:grid-cols-4 bento-grid gap-4 lg:gap-6 max-w-[1200px] mx-auto">
+
+                <div class="flex flex-nowrap overflow-x-auto lg:overflow-visible justify-start items-center py-6 px-6 lg:px-0 mx-auto max-w-full lg:w-[68.5rem] cat-ribbon-container">
                     @php
-                        $displayItems = array_slice($gridItems, 0, 4);
+                        $displayItems = array_slice($gridItems, 0, 6);
                     @endphp
                     @foreach($displayItems as $idx => $item)
-                        @php
-                            $spanClass = 'md:col-span-1 md:row-span-1'; // default for idx 2 and 3
-                            if ($idx == 0) $spanClass = 'md:col-span-2 md:row-span-2';
-                            elseif ($idx == 1) $spanClass = 'md:col-span-2 md:row-span-1';
-                        @endphp
                         <a href="{{ $item['slug'] ? route('events.index', ['category' => $item['slug']]) : '#events' }}"
                             style="opacity: 0;"
-                            class="event-category-card {{ $spanClass }} group relative block w-full h-full rounded-3xl overflow-hidden {{ $item['image'] ? 'bg-gray-900' : 'bg-gray-200' }} shadow-sm hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-500">
+                            class="event-category-card group relative block bg-gray-900 shadow-md hover:shadow-2xl cat-parallelogram">
 
                             @if($item['image'])
                                 <!-- Background Image -->
-                                <img src="{{ asset($item['image']) }}" alt="{{ $item['name'] }}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-[1.12]">
+                                <img src="{{ asset($item['image']) }}" alt="{{ $item['name'] }}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-[1.15] opacity-60 group-hover:opacity-80">
                             @else
-                                <div class="absolute inset-0 w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center transition-transform duration-[1.5s] ease-out group-hover:scale-[1.12]">
-                                    <i data-lucide="{{ $item['icon'] }}" class="w-16 h-16 text-gray-400"></i>
-                                </div>
+                                <div class="absolute inset-0 w-full h-full bg-gradient-to-br from-gray-800 to-gray-700 opacity-80 group-hover:opacity-100 transition-opacity"></div>
                             @endif
 
                             <!-- Glassmorphism Gradient Overlay -->
-                            <div class="absolute inset-0 transition-opacity duration-500 opacity-60 group-hover:opacity-80"
-                                 style="background: linear-gradient(to top, rgba(28,20,16,0.95) 0%, rgba(28,20,16,0.2) 60%, transparent 100%);"></div>
+                            <div class="absolute inset-0 transition-opacity duration-500 opacity-60 group-hover:opacity-40"
+                                 style="background: linear-gradient(to right, rgba(28,20,16,0.9) 0%, rgba(28,20,16,0.4) 100%);"></div>
 
-                            <!-- Content -->
-                            <div class="absolute bottom-6 left-6 right-6 z-10 flex flex-col justify-end h-full pointer-events-none">
-                                <div class="transform transition-transform duration-500 translate-y-3 group-hover:translate-y-0">
-                                    <h3 class="text-white text-2xl lg:text-3xl font-black tracking-tight drop-shadow-lg leading-tight mb-3">
-                                        {{ $item['name'] }}
-                                    </h3>
-                                    
-                                    <!-- Badge số lượng sự kiện -->
-                                    <div class="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold shadow-sm transition-all duration-500 opacity-0 group-hover:opacity-100"
-                                         style="background: rgba(255,255,255,0.15); color: #fff; backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.2);">
-                                        <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
-                                        <span>{{ $item['count'] }} sự kiện</span>
-                                    </div>
-                                </div>
+                            <!-- Icon (Absolutely centered in the collapsed shape) -->
+                            <div class="absolute top-0 left-0 flex items-center justify-center z-10 cat-icon-container pointer-events-none">
+                                <i data-lucide="{{ $item['icon'] }}" class="w-10 h-10 lg:w-12 lg:h-12 text-white drop-shadow-md transition-transform duration-500 group-hover:scale-110"></i>
                             </div>
-                            
-                            <!-- Floating icon top right on hover -->
-                            <div class="absolute top-6 right-6 z-10 transform transition-all duration-500 translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100">
-                                <div class="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center">
-                                    <i data-lucide="arrow-up-right" class="w-5 h-5 text-white"></i>
+
+                            <!-- Expanding Text Content -->
+                            <div class="absolute top-0 flex flex-col justify-center cat-text-container z-10 opacity-0 group-hover:opacity-100 transition-all duration-500 delay-75 transform -translate-x-4 group-hover:translate-x-0 pointer-events-none">
+                                <h3 class="text-white text-xl lg:text-3xl font-black tracking-tight drop-shadow-lg leading-tight mb-1 whitespace-normal line-clamp-2 pr-2">
+                                    {{ $item['name'] }}
+                                </h3>
+                                
+                                <div class="inline-flex items-center gap-1.5 text-[#FFE381] text-xs lg:text-sm font-bold uppercase tracking-wider drop-shadow-md mt-1">
+                                    <i data-lucide="calendar" class="w-4 h-4"></i>
+                                    <span>{{ $item['count'] }} sự kiện</span>
                                 </div>
                             </div>
                         </a>
                     @endforeach
-                </div>
 
-                <!-- View All Categories Button -->
-                <div class="mt-10 flex justify-center event-category-title" style="opacity: 0;">
-                    <a href="{{ route('events.index') }}" class="group relative inline-flex items-center justify-center gap-2 px-8 py-3.5 text-sm font-bold uppercase tracking-wider text-white transition-all duration-300 rounded-full overflow-hidden shadow-lg hover:shadow-xl hover:-translate-y-1 bg-[#07A0C3]">
-                        <span class="relative z-10 flex items-center gap-2">Xem tất cả <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i></span>
-                        <div class="absolute inset-0 bg-[#068ba9] transform scale-x-0 origin-left transition-transform duration-500 ease-out group-hover:scale-x-100 z-0"></div>
+                    <!-- Inline View All Button -->
+                    <a href="{{ route('events.index') }}"
+                        style="opacity: 0;"
+                        class="event-category-card group relative block bg-[#07A0C3] hover:bg-[#068ba9] shadow-md hover:shadow-2xl cat-parallelogram-sm"
+                        title="Xem tất cả danh mục">
+                        
+                        <!-- Icon -->
+                        <div class="absolute top-0 left-0 flex items-center justify-center z-10 cat-sm-icon-container pointer-events-none">
+                            <i data-lucide="plus" class="w-8 h-8 lg:w-10 lg:h-10 text-white drop-shadow-md transition-transform duration-500 group-hover:rotate-90"></i>
+                        </div>
+
+                        <!-- Expanding Text Content -->
+                        <div class="absolute top-0 flex flex-col justify-center cat-sm-text-container z-10 opacity-0 group-hover:opacity-100 transition-all duration-500 delay-75 transform -translate-x-4 group-hover:translate-x-0 pointer-events-none">
+                            <h3 class="text-white text-2xl lg:text-3xl font-black tracking-tight drop-shadow-lg leading-tight uppercase whitespace-nowrap">
+                                Xem thêm
+                            </h3>
+                        </div>
                     </a>
                 </div>
 

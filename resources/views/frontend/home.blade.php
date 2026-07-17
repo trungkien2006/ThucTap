@@ -415,40 +415,63 @@
                     }
                 @endphp
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 max-w-[1200px] mx-auto">
-                    @foreach($gridItems as $idx => $item)
+                <style>
+                    .bento-grid {
+                        grid-auto-rows: 180px;
+                    }
+                    @media (min-width: 768px) {
+                        .bento-grid {
+                            grid-auto-rows: 240px;
+                        }
+                    }
+                </style>
+                <div class="grid grid-cols-1 md:grid-cols-4 bento-grid gap-4 lg:gap-6 max-w-[1200px] mx-auto">
+                    @php
+                        $displayItems = array_slice($gridItems, 0, 4);
+                    @endphp
+                    @foreach($displayItems as $idx => $item)
+                        @php
+                            $spanClass = 'md:col-span-1 md:row-span-1'; // default for idx 2 and 3
+                            if ($idx == 0) $spanClass = 'md:col-span-2 md:row-span-2';
+                            elseif ($idx == 1) $spanClass = 'md:col-span-2 md:row-span-1';
+                        @endphp
                         <a href="{{ $item['slug'] ? route('events.index', ['category' => $item['slug']]) : '#events' }}"
-                            style="aspect-ratio: 16/9; min-height: 160px; opacity: 0;"
-                            class="event-category-card group relative block w-full rounded-2xl overflow-hidden {{ $item['image'] ? 'bg-gray-900' : 'bg-gray-200' }} shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                            style="opacity: 0;"
+                            class="event-category-card {{ $spanClass }} group relative block w-full h-full rounded-3xl overflow-hidden {{ $item['image'] ? 'bg-gray-900' : 'bg-gray-200' }} shadow-sm hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-500">
 
                             @if($item['image'])
                                 <!-- Background Image -->
-                                <img src="{{ asset($item['image']) }}" alt="{{ $item['name'] }}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                                <img src="{{ asset($item['image']) }}" alt="{{ $item['name'] }}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-[1.12]">
                             @else
-                                <div class="absolute inset-0 w-full h-full bg-gray-200 flex items-center justify-center">
-                                    <i data-lucide="{{ $item['icon'] }}" class="w-12 h-12 text-gray-400"></i>
+                                <div class="absolute inset-0 w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center transition-transform duration-[1.5s] ease-out group-hover:scale-[1.12]">
+                                    <i data-lucide="{{ $item['icon'] }}" class="w-16 h-16 text-gray-400"></i>
                                 </div>
                             @endif
 
-                            <!-- Category Name (Top Left Badge) -->
-                            <div class="absolute top-4 left-4 lg:top-6 lg:left-6 z-10">
-                                <div class="bg-paper px-4 py-2 lg:px-5 lg:py-2.5 rounded-xl border-2 border-black shadow-lg">
-                                    <h3 class="text-[#1C1410] text-lg lg:text-xl font-bold tracking-tight group-hover:text-[#07A0C3] transition-colors leading-tight">
+                            <!-- Glassmorphism Gradient Overlay -->
+                            <div class="absolute inset-0 transition-opacity duration-500 opacity-60 group-hover:opacity-80"
+                                 style="background: linear-gradient(to top, rgba(28,20,16,0.95) 0%, rgba(28,20,16,0.2) 60%, transparent 100%);"></div>
+
+                            <!-- Content -->
+                            <div class="absolute bottom-6 left-6 right-6 z-10 flex flex-col justify-end h-full pointer-events-none">
+                                <div class="transform transition-transform duration-500 translate-y-3 group-hover:translate-y-0">
+                                    <h3 class="text-white text-2xl lg:text-3xl font-black tracking-tight drop-shadow-lg leading-tight mb-3">
                                         {{ $item['name'] }}
                                     </h3>
+                                    
+                                    <!-- Badge số lượng sự kiện -->
+                                    <div class="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold shadow-sm transition-all duration-500 opacity-0 group-hover:opacity-100"
+                                         style="background: rgba(255,255,255,0.15); color: #fff; backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.2);">
+                                        <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+                                        <span>{{ $item['count'] }} sự kiện</span>
+                                    </div>
                                 </div>
                             </div>
-
-                            <!-- Overlay gradient dưới thẻ (tạo chiều sâu) -->
-                            <div class="absolute inset-x-0 bottom-0 h-1/2 pointer-events-none transition-opacity duration-300 opacity-60 group-hover:opacity-100"
-                                 style="background: linear-gradient(to top, rgba(28,20,16,0.8) 0%, transparent 100%);"></div>
-
-                            <!-- Badge số lượng sự kiện góc dưới phải -->
-                            <div class="absolute bottom-4 right-4 z-10">
-                                <div class="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-bold shadow-sm transition-transform duration-300 group-hover:scale-105"
-                                     style="background: rgba(7,160,195,0.9); color: #fff; backdrop-filter: blur(4px);">
-                                    <i data-lucide="calendar" class="w-3 h-3"></i>
-                                    <span>{{ $item['count'] }} sự kiện</span>
+                            
+                            <!-- Floating icon top right on hover -->
+                            <div class="absolute top-6 right-6 z-10 transform transition-all duration-500 translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100">
+                                <div class="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center">
+                                    <i data-lucide="arrow-up-right" class="w-5 h-5 text-white"></i>
                                 </div>
                             </div>
                         </a>
@@ -495,9 +518,9 @@
                     )
                     // Cards slide up smoothly instead of bouncing
                     .fromTo('.event-category-card', 
-                        { opacity: 0, y: 40 }, 
-                        { opacity: 1, y: 0, duration: 0.6, stagger: 0.1, ease: "power3.out" }, 
-                        "-=0.3"
+                        { opacity: 0, y: 50, scale: 0.95 }, 
+                        { opacity: 1, y: 0, scale: 1, duration: 0.8, stagger: 0.15, ease: "power3.out" }, 
+                        "-=0.4"
                     );
                 }
             });

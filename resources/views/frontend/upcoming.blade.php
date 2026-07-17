@@ -313,7 +313,7 @@
                             trigger: "#master-wipe-container",
                             pin: true,
                             pinSpacing: false, // Allows #archive to slide over it
-                            scrub: 1, // Smooth scrubbing
+                            scrub: 1.5, // Smoother scrubbing for a premium feel
                             start: "top 72px", // Pins right below the site's sticky header
                             // Add extra scroll distance for the section wipe (1.5x) AND the cards scrolling PLUS window height for layered effect
                             end: () => {
@@ -338,7 +338,7 @@
                         
                         tl.to(panels[index - 1], {
                             xPercent: offsetEndX,
-                            ease: "none",
+                            ease: "power1.inOut",
                             duration: 2
                         }, label);
                         
@@ -346,14 +346,14 @@
                         tl.to(panel, {
                             xPercent: midX,
                             yPercent: 0,
-                            ease: "none",
+                            ease: "power1.inOut",
                             duration: 1
                         }, label);
                         
                         // Phase 2: Once aligned vertically, the next panel slides horizontally into the center
                         tl.to(panel, {
                             xPercent: 0,
-                            ease: "none",
+                            ease: "power1.out",
                             duration: 1
                         }, label + "+=1");
                     });

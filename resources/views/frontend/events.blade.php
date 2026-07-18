@@ -2,14 +2,9 @@
 @section('title', 'Sự kiện - UniEvent')
 
 @section('content')
-<section class="relative pt-32 pb-24 lg:pt-40 lg:pb-32 min-h-screen" style="background:linear-gradient(160deg, #FFFDF6 0%, #FFF9E6 45%, #F4FAF5 100%);">
+<section class="relative pt-24 pb-16 lg:pt-32 lg:pb-24 min-h-screen" style="background: transparent;">
     
-    <!-- Soft aesthetic blobs -->
-    <div class="pointer-events-none absolute inset-0 overflow-hidden">
-        <div class="absolute -left-32 top-1/4 h-[450px] w-[450px] rounded-full blur-[140px] opacity-20" style="background:#FFE381;"></div>
-        <div class="absolute -right-32 bottom-10 h-[350px] w-[350px] rounded-full blur-[140px] opacity-15" style="background:#07A0C3;"></div>
-        <div class="absolute left-1/2 bottom-0 h-40 w-[600px] -translate-x-1/2 rounded-full blur-[100px] opacity-10" style="background:#04F06A;"></div>
-    </div>
+
     
     <!-- Top border -->
     <div class="absolute inset-x-0 top-0 h-1.5" style="background:#FFE381;"></div>
@@ -23,10 +18,10 @@
                 <span class="text-sm font-bold uppercase tracking-[0.2em]" style="color:#8A7320;">Khám Phá</span>
                 <div class="h-1 w-8 rounded-full" style="background:#E8C84A;"></div>
             </div>
-            <h1 class="font-['Barlow_Condensed'] text-5xl font-black uppercase tracking-tight text-[#1C1410] lg:text-7xl mb-6">
+            <h1 class="font-['Barlow_Condensed'] text-5xl font-black uppercase tracking-tight text-[#1C1410] lg:text-7xl mb-6" style="text-shadow: -1px -1px 0 #FFFBEA, 1px -1px 0 #FFFBEA, -1px 1px 0 #FFFBEA, 1px 1px 0 #FFFBEA, 0 4px 12px rgba(255,255,255,0.8);">
                 Sự kiện tổng hợp
             </h1>
-            <p class="text-lg text-[#7A6A52] leading-relaxed">
+            <p class="text-lg font-bold text-[#1C1410] leading-relaxed max-w-2xl mx-auto" style="text-shadow: -1px -1px 0 #FFFBEA, 1px -1px 0 #FFFBEA, -1px 1px 0 #FFFBEA, 1px 1px 0 #FFFBEA, 0 4px 12px rgba(255,255,255,0.8);">
                 Nơi hội tụ tất cả các hoạt động, hội thảo, phong trào của sinh viên. Chọn danh mục dưới đây để tìm kiếm sự kiện phù hợp với bạn.
             </p>
         </div>
@@ -161,12 +156,14 @@
 
         <!-- Events Grid -->
         @if($events->count() > 0)
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mb-16">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mb-16" id="events-grid">
             @foreach($events as $index => $event)
-            <div data-aos="fade-up" data-aos-delay="{{ ($index % 3) * 100 }}" class="group flex flex-col rounded-3xl bg-white shadow-sm border border-[#E8E2D5] overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
-                <!-- Image -->
-                <div class="relative h-64 overflow-hidden bg-slate-100">
-                    <img src="{{ $event->bannerImage ? \App\Helpers\FileHelper::url($event->bannerImage->url) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80' }}" 
+            <!-- GSAP animation wrapper -->
+            <div class="event-grid-card-wrapper" style="opacity: 0; transform: translateY(40px);">
+                <div class="group h-full flex flex-col rounded-3xl bg-white shadow-sm border border-[#E8E2D5] overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+                    <!-- Image -->
+                    <div class="relative h-64 overflow-hidden bg-slate-100">
+                    <img src="{{ $event->bannerImage ? \App\Helpers\FileHelper::url($event->bannerImage->url, true) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80' }}" 
                          alt="{{ $event->title }}" 
                          class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105">
                     
@@ -223,10 +220,42 @@
                             Chi tiết <i data-lucide="arrow-right" class="h-4 w-4"></i>
                         </span>
                     </div>
+                    </div>
                 </div>
             </div>
             @endforeach
         </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+                    gsap.registerPlugin(ScrollTrigger);
+                    
+                    ScrollTrigger.batch(".event-grid-card-wrapper", {
+                        interval: 0.1, // time window to batch items that enter at the same time
+                        batchMax: 4,   // max items per batch (matches xl grid cols)
+                        onEnter: batch => {
+                            gsap.to(batch, {
+                                opacity: 1, 
+                                y: 0, 
+                                stagger: 0.15, 
+                                duration: 0.8, 
+                                ease: "power3.out",
+                                overwrite: true
+                            });
+                        },
+                        start: "top 90%",
+                        once: true
+                    });
+                } else {
+                    // Fallback if GSAP fails to load
+                    document.querySelectorAll('.event-grid-card-wrapper').forEach(el => {
+                        el.style.opacity = '1';
+                        el.style.transform = 'translateY(0)';
+                    });
+                }
+            });
+        </script>
 
         <!-- Pagination -->
         <div class="mt-12 flex justify-center">

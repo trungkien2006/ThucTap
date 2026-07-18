@@ -6,10 +6,15 @@ use Illuminate\Support\Facades\Storage;
 
 class FileHelper
 {
-    public static function url($path)
+    public static function url($path, $optimize = false)
     {
         if (empty($path)) {
             return '';
+        }
+        
+        if ($optimize) {
+            // Using ?w=800 by default for event cards, can be expanded if needed
+            return route('image.optimize', ['path' => $path, 'w' => 800, 'q' => 80]);
         }
         
         // If it's already a full URL (e.g. http://...)

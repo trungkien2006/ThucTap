@@ -1,7 +1,8 @@
 @extends('layouts.frontend')
 
 @if(!empty($slides) && isset($slides[0]))
-    @push('styles')
+    <!-- Decorative Preloads commented out for local dev performance -->
+    {{-- @push('styles')
         <link rel="preload" as="image" href="{{ $slides[0]['image'] }}" fetchpriority="high">
         @if(isset($slides[1]))
             <link rel="preload" as="image" href="{{ $slides[1]['image'] }}">
@@ -9,7 +10,7 @@
         @if(isset($slides[2]))
             <link rel="preload" as="image" href="{{ $slides[2]['image'] }}">
         @endif
-    @endpush
+    @endpush --}}
 @endif
 
 @section('content')
@@ -520,7 +521,32 @@
                     }
                 </style>
 
-                <div class="flex flex-nowrap overflow-x-auto lg:overflow-visible justify-start lg:justify-center items-center py-6 px-6 lg:px-0 mx-auto max-w-full lg:w-[68.5rem] cat-ribbon-container">
+                <!-- Mobile and Tablet view (from giaodienmobilemoi) -->
+                <div class="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-6 md:grid md:grid-cols-2 lg:hidden max-w-[1200px] mx-auto hide-scrollbar px-6">
+                    @foreach($gridItems as $idx => $item)
+                        <a href="{{ $item['slug'] ? route('events.index', ['category' => $item['slug']]) : '#events' }}"
+                            style="aspect-ratio: 16/9; min-height: 160px; opacity: 0;"
+                            class="event-category-card snap-start shrink-0 w-[85%] md:w-auto group relative block rounded-2xl overflow-hidden {{ $item['image'] ? 'bg-gray-900' : 'bg-gray-200' }} shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                            @if($item['image'])
+                                <img src="{{ asset($item['image']) }}" alt="{{ $item['name'] }}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-[1.15] opacity-60 group-hover:opacity-80">
+                            @else
+                                <div class="absolute inset-0 w-full h-full bg-gradient-to-br from-gray-800 to-gray-700 opacity-80 group-hover:opacity-100 transition-opacity"></div>
+                            @endif
+                            <div class="absolute inset-0 transition-opacity duration-500 opacity-60 group-hover:opacity-40" style="background: linear-gradient(to right, rgba(28,20,16,0.9) 0%, rgba(28,20,16,0.4) 100%);"></div>
+                            <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-4 z-10 pointer-events-none">
+                                <i data-lucide="{{ $item['icon'] }}" class="w-10 h-10 text-white drop-shadow-md mb-2 transition-transform duration-500 group-hover:scale-110"></i>
+                                <h3 class="text-white text-xl font-black tracking-tight drop-shadow-lg leading-tight">{{ $item['name'] }}</h3>
+                                <div class="inline-flex items-center gap-1.5 text-[#FFE381] text-xs font-bold uppercase tracking-wider drop-shadow-md mt-1">
+                                    <i data-lucide="calendar" class="w-4 h-4"></i>
+                                    <span>{{ $item['count'] }} sự kiện</span>
+                                </div>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+
+                <!-- Desktop Ribbon View (from main) -->
+                <div class="hidden lg:flex flex-nowrap justify-center items-center py-6 px-0 mx-auto w-[68.5rem] cat-ribbon-container">
                     @php
                         $displayItems = array_slice($gridItems, 0, 6);
                     @endphp

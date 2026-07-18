@@ -258,7 +258,7 @@
                     </a>
                     <a href="{{ route('admin.speakers.index') }}" class="sidebar-menu-btn rounded-xl {{ request()->is('admin/speakers*') ? 'active' : '' }}">
                         <i data-lucide="mic" class="h-5 w-5 shrink-0"></i>
-                        <span class="sidebar-text-element">Diễn giả / Khách mời</span>
+                        <span class="sidebar-text-element">Diễn giả</span>
                     </a>
                 </div>
             </div>
@@ -323,7 +323,7 @@
     </aside>
 
     <!-- Top Header -->
-    <header id="topHeader" class="fixed top-0 right-0 h-16 z-30 flex items-center gap-2 bg-transparent px-3 md:px-4 justify-between transition-all">
+    <header id="topHeader" class="fixed top-0 right-0 h-16 z-30 flex items-center gap-2 bg-background/80 backdrop-blur-md border-b border-border/50 px-3 md:px-4 justify-between transition-all">
         <div class="flex items-center gap-2 min-w-0">
             <!-- Mobile Toggle Button -->
             <button id="mobileSidebarToggle" class="md:hidden h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-accent rounded-xl flex items-center justify-center transition-all">
@@ -378,7 +378,10 @@
                 ->where('end_date', '>=', $nowTime)
                 ->get();
             
-            $notificationCount = $startingSoon->count() + $runningEvents->count();
+            $sessionError = session('error');
+            $sessionSuccess = session('success');
+            
+            $notificationCount = $startingSoon->count() + $runningEvents->count() + ($sessionError ? 1 : 0) + ($sessionSuccess ? 1 : 0);
         @endphp
         <div class="flex items-center gap-2 md:gap-3">
             @if(!isset($hideTopMenu) || !$hideTopMenu)
@@ -388,19 +391,7 @@
                 <span id="dateTimeString"></span>
             </div>
 
-            <!-- Create quick dropdown -->
-            <div class="relative">
-                <button id="quickCreateBtn" class="flex items-center gap-1.5 h-11 px-5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white hover:opacity-90 rounded-xl text-sm font-semibold transition-all shadow-md shadow-indigo-500/20">
-                    <i data-lucide="plus" class="h-5 w-5"></i> Tạo mới
-                    <i data-lucide="chevron-down" class="h-3 w-3 opacity-70"></i>
-                </button>
-                <div id="quickCreateDropdown" class="absolute right-0 top-full mt-1.5 w-48 bg-white border border-border rounded-md shadow-lg py-1 hidden z-50">
-                    <div class="px-2.5 py-1.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Tạo nhanh</div>
-                    <div class="h-px bg-border my-1"></div>
-                    <a href="{{ route('admin.speakers.create') }}" wire:navigate class="flex items-center px-2.5 py-1.5 text-xs text-foreground hover:bg-accent rounded-sm mx-1">Diễn giả mới</a>
-                    <a href="{{ route('admin.media.index') }}" wire:navigate class="flex items-center px-2.5 py-1.5 text-xs text-foreground hover:bg-accent rounded-sm mx-1">Tải lên Media</a>
-                </div>
-            </div>
+
             <!-- Notifications Button with Dropdown -->
             <div class="relative">
                 <button id="notificationBtn" class="h-10 w-10 relative text-muted-foreground hover:text-foreground hover:bg-accent rounded-full flex items-center justify-center transition-all">
@@ -425,6 +416,32 @@
                                 <span class="text-[12px] text-muted-foreground">Bạn không có thông báo mới.</span>
                             </div>
                         @else
+                            @if($sessionError)
+                                <div class="block p-3.5 hover:bg-muted/50 transition-colors border-t border-border/50 first:border-0 group bg-red-50/50">
+                                    <div class="flex items-start gap-3">
+                                        <div class="h-8 w-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center shrink-0 mt-0.5 group-hover:scale-110 transition-transform">
+                                            <i data-lucide="alert-triangle" class="h-4 w-4"></i>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-[13px] font-medium text-red-600 line-clamp-1">Có lỗi xảy ra</p>
+                                            <p class="text-[11px] text-muted-foreground mt-0.5">{{ $sessionError }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                            @if($sessionSuccess)
+                                <div class="block p-3.5 hover:bg-muted/50 transition-colors border-t border-border/50 first:border-0 group bg-emerald-50/50">
+                                    <div class="flex items-start gap-3">
+                                        <div class="h-8 w-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5 group-hover:scale-110 transition-transform">
+                                            <i data-lucide="check" class="h-4 w-4"></i>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-[13px] font-medium text-emerald-600 line-clamp-1">Thành công</p>
+                                            <p class="text-[11px] text-muted-foreground mt-0.5">{{ $sessionSuccess }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
                             @foreach($startingSoon as $evt)
                                 @php
                                     $diffMin = max(1, round($nowTime->diffInMinutes($evt->event_date)));
@@ -488,7 +505,7 @@
                 </div>
                 <button onclick="document.getElementById('toast-success').remove()" class="text-muted-foreground hover:text-foreground shrink-0"><i data-lucide="x" class="h-4 w-4"></i></button>
             </div>
-            <script>setTimeout(() => { const t = document.getElementById('toast-success'); if(t) t.remove(); }, 4000);</script>
+            <script>setTimeout(() => { const t = document.getElementById('toast-success'); if(t) t.remove(); }, 8000);</script>
         @endif
         @if(session('error'))
             <div class="bg-card border-l-4 border-red-500 shadow-xl rounded-lg px-4 py-3 flex items-start gap-3 w-80 animate-in slide-in-from-right-8 fade-in pointer-events-auto" id="toast-error">
@@ -501,7 +518,7 @@
                 </div>
                 <button onclick="document.getElementById('toast-error').remove()" class="text-muted-foreground hover:text-foreground shrink-0"><i data-lucide="x" class="h-4 w-4"></i></button>
             </div>
-            <script>setTimeout(() => { const t = document.getElementById('toast-error'); if(t) t.remove(); }, 6000);</script>
+            <script>setTimeout(() => { const t = document.getElementById('toast-error'); if(t) t.remove(); }, 15000);</script>
         @endif
     </div>
 

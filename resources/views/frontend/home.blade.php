@@ -424,110 +424,110 @@
                         display: none;
                     }
                     .cat-parallelogram {
-                        width: 10rem;
-                        height: 7rem;
-                        clip-path: polygon(1.5rem 0, 100% 0, calc(100% - 1.5rem) 100%, 0 100%);
+                        width: 12rem;
+                        height: 8.4rem;
+                        clip-path: polygon(1.8rem 0, 100% 0, calc(100% - 1.8rem) 100%, 0 100%);
                         transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                         flex-shrink: 0;
                     }
                     .cat-parallelogram + .cat-parallelogram {
-                        margin-left: -1rem; /* Creates a small 8px visual gap due to the 1.5rem slant */
+                        margin-left: -1.2rem; /* Creates a small visual gap */
                     }
                     .cat-icon-container {
-                        width: 10rem;
-                        height: 7rem;
+                        width: 12rem;
+                        height: 8.4rem;
                         /* No padding-left needed: geometric center of the bounding box is the visual center */
                     }
                     .cat-text-container {
-                        left: 8.5rem;
-                        height: 7rem;
-                        width: 12rem; /* Safe space on mobile */
+                        left: 10.2rem;
+                        height: 8.4rem;
+                        width: 14.4rem; /* Safe space on mobile */
                     }
                     @media (min-width: 1024px) {
                         .cat-parallelogram {
-                            width: 12rem;
-                            height: 8rem;
-                            clip-path: polygon(2rem 0, 100% 0, calc(100% - 2rem) 100%, 0 100%);
+                            width: 14.4rem;
+                            height: 9.6rem;
+                            clip-path: polygon(2.4rem 0, 100% 0, calc(100% - 2.4rem) 100%, 0 100%);
                         }
                         .cat-parallelogram + .cat-parallelogram {
-                            margin-left: -1.5rem; /* Creates a small 8px visual gap due to the 2rem slant */
+                            margin-left: -1.8rem; /* Creates a small visual gap */
                         }
                         .cat-parallelogram:hover {
-                            width: 28rem; /* Increased to allow more text */
+                            width: 33.6rem; /* Increased to allow more text */
                             transform: scale(1.05);
-                            z-index: 20;
+                            z-index: 50;
                         }
                         .cat-icon-container {
-                            width: 12rem;
-                            height: 8rem;
+                            width: 14.4rem;
+                            height: 9.6rem;
                         }
                         .cat-text-container {
-                            left: 10rem;
-                            height: 8rem;
-                            width: 15rem; /* Increased safe space for text */
+                            left: 12rem;
+                            height: 9.6rem;
+                            width: 18rem; /* Increased safe space for text */
                         }
                     }
                     .cat-parallelogram:hover {
-                        width: 18rem;
-                        z-index: 20;
+                        width: 24rem;
+                        z-index: 50;
                     }
                     .cat-parallelogram-sm {
-                        width: 4.5rem;
-                        height: 7rem;
-                        clip-path: polygon(1.5rem 0, 100% 0, calc(100% - 1.5rem) 100%, 0 100%);
+                        width: 5.4rem;
+                        height: 8.4rem;
+                        clip-path: polygon(1.8rem 0, 100% 0, calc(100% - 1.8rem) 100%, 0 100%);
                         transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease;
                         flex-shrink: 0;
                     }
                     .cat-parallelogram-sm:hover {
-                        width: 14rem;
-                        z-index: 20;
+                        width: 19.2rem;
+                        z-index: 50;
                     }
                     .cat-sm-icon-container {
-                        width: 4.5rem;
-                        height: 7rem;
+                        width: 5.4rem;
+                        height: 8.4rem;
                     }
                     .cat-sm-text-container {
-                        left: 4.5rem;
-                        height: 7rem;
-                        width: 10rem;
+                        left: 5.4rem;
+                        height: 8.4rem;
+                        width: 12rem;
                     }
                     .cat-parallelogram + .cat-parallelogram-sm {
-                        margin-left: -1rem;
+                        margin-left: -1.2rem;
                     }
                     @media (min-width: 1024px) {
                         .cat-parallelogram-sm {
-                            width: 5.5rem;
-                            height: 8rem;
-                            clip-path: polygon(2rem 0, 100% 0, calc(100% - 2rem) 100%, 0 100%);
+                            width: 6.6rem;
+                            height: 9.6rem;
+                            clip-path: polygon(2.4rem 0, 100% 0, calc(100% - 2.4rem) 100%, 0 100%);
                         }
                         .cat-parallelogram + .cat-parallelogram-sm {
-                            margin-left: -1.5rem;
+                            margin-left: -1.8rem;
                         }
                         .cat-parallelogram-sm:hover {
-                            width: 18rem;
+                            width: 24rem;
                             transform: scale(1.05);
-                            z-index: 20;
+                            z-index: 50;
                         }
                         .cat-sm-icon-container {
-                            width: 5.5rem;
-                            height: 8rem;
+                            width: 6.6rem;
+                            height: 9.6rem;
                         }
                         .cat-sm-text-container {
-                            left: 5.5rem;
-                            height: 8rem;
-                            width: 12rem;
+                            left: 6.6rem;
+                            height: 9.6rem;
+                            width: 14.4rem;
                         }
                     }
                 </style>
 
-                <div class="flex flex-nowrap overflow-x-auto lg:overflow-visible justify-start items-center py-6 px-6 lg:px-0 mx-auto max-w-full lg:w-[68.5rem] cat-ribbon-container">
+                <div class="flex flex-nowrap overflow-x-auto lg:overflow-visible justify-start lg:justify-center items-center py-6 px-6 lg:px-0 mx-auto max-w-full lg:w-[68.5rem] cat-ribbon-container">
                     @php
                         $displayItems = array_slice($gridItems, 0, 6);
                     @endphp
                     @foreach($displayItems as $idx => $item)
                         <a href="{{ $item['slug'] ? route('events.index', ['category' => $item['slug']]) : '#events' }}"
                             style="opacity: 0;"
-                            class="event-category-card group relative block bg-gray-900 shadow-md hover:shadow-2xl cat-parallelogram">
+                            class="event-category-card group relative block bg-gray-900 shadow-md hover:shadow-2xl hover:z-50 cat-parallelogram">
 
                             @if($item['image'])
                                 <!-- Background Image -->
@@ -542,12 +542,12 @@
 
                             <!-- Icon (Absolutely centered in the collapsed shape) -->
                             <div class="absolute top-0 left-0 flex items-center justify-center z-10 cat-icon-container pointer-events-none">
-                                <i data-lucide="{{ $item['icon'] }}" class="w-10 h-10 lg:w-12 lg:h-12 text-white drop-shadow-md transition-transform duration-500 group-hover:scale-110"></i>
+                                <i data-lucide="{{ $item['icon'] }}" class="w-12 h-12 lg:w-14 lg:h-14 text-white drop-shadow-md transition-transform duration-500 group-hover:scale-110"></i>
                             </div>
 
                             <!-- Expanding Text Content -->
                             <div class="absolute top-0 flex flex-col justify-center cat-text-container z-10 opacity-0 group-hover:opacity-100 transition-all duration-500 delay-75 transform -translate-x-4 group-hover:translate-x-0 pointer-events-none">
-                                <h3 class="text-white text-xl lg:text-3xl font-black tracking-tight drop-shadow-lg leading-tight mb-1 whitespace-normal line-clamp-2 pr-2">
+                                <h3 class="text-white text-xl lg:text-2xl font-black tracking-tight drop-shadow-lg leading-tight mb-1 whitespace-normal pr-2">
                                     {{ $item['name'] }}
                                 </h3>
                                 
@@ -562,12 +562,12 @@
                     <!-- Inline View All Button -->
                     <a href="{{ route('events.index') }}"
                         style="opacity: 0;"
-                        class="event-category-card group relative block bg-[#07A0C3] hover:bg-[#068ba9] shadow-md hover:shadow-2xl cat-parallelogram-sm"
+                        class="event-category-card group relative block bg-[#07A0C3] hover:bg-[#068ba9] shadow-md hover:shadow-2xl hover:z-50 cat-parallelogram-sm"
                         title="Xem tất cả danh mục">
                         
                         <!-- Icon -->
                         <div class="absolute top-0 left-0 flex items-center justify-center z-10 cat-sm-icon-container pointer-events-none">
-                            <i data-lucide="plus" class="w-8 h-8 lg:w-10 lg:h-10 text-white drop-shadow-md transition-transform duration-500 group-hover:rotate-90"></i>
+                            <i data-lucide="plus" class="w-10 h-10 lg:w-12 lg:h-12 text-white drop-shadow-md transition-transform duration-500 group-hover:rotate-90"></i>
                         </div>
 
                         <!-- Expanding Text Content -->

@@ -79,13 +79,28 @@ class EventController extends Controller
                     if (in_array('upcoming', $statuses)) {
                         $q->orWhere(function ($sub) {
                             $sub->where('is_published', true)
-                                ->where('event_date', '>=', now());
+                                ->where('event_date', '>', now());
+                        });
+                    }
+                    if (in_array('running', $statuses)) {
+                        $q->orWhere(function ($sub) {
+                            $sub->where('is_published', true)
+                                ->where('event_date', '<=', now())
+                                ->where(function($sub2) {
+                                    $sub2->whereNull('end_date')->whereRaw('DATE(event_date) >= ?', [now()->toDateString()])
+                                         ->orWhere('end_date', '>=', now());
+                                });
                         });
                     }
                     if (in_array('completed', $statuses)) {
                         $q->orWhere(function ($sub) {
                             $sub->where('is_published', true)
-                                ->where('event_date', '<', now());
+                                ->where(function($sub2) {
+                                    $sub2->where('end_date', '<', now())
+                                         ->orWhere(function($sub3) {
+                                             $sub3->whereNull('end_date')->whereRaw('DATE(event_date) < ?', [now()->toDateString()]);
+                                         });
+                                });
                         });
                     }
                 });

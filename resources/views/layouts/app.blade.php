@@ -391,7 +391,6 @@
                 <span id="dateTimeString"></span>
             </div>
 
-
             <!-- Notifications Button with Dropdown -->
             <div class="relative">
                 <button id="notificationBtn" class="h-10 w-10 relative text-muted-foreground hover:text-foreground hover:bg-accent rounded-full flex items-center justify-center transition-all">
@@ -560,23 +559,6 @@
         if (mobileOverlay && !mobileOverlay.dataset.initialized) {
             mobileOverlay.dataset.initialized = 'true';
             mobileOverlay.addEventListener('click', closeSidebar);
-        }
-
-        // Quick Create Dropdown Toggle
-        const quickCreateBtn = document.getElementById('quickCreateBtn');
-        const quickCreateDropdown = document.getElementById('quickCreateDropdown');
-
-        if (quickCreateBtn && quickCreateDropdown && !quickCreateBtn.dataset.initialized) {
-            quickCreateBtn.dataset.initialized = 'true';
-            quickCreateBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                quickCreateDropdown.classList.toggle('hidden');
-            });
-            document.addEventListener('click', function(e) {
-                if (!quickCreateDropdown.contains(e.target) && !quickCreateBtn.contains(e.target)) {
-                    quickCreateDropdown.classList.add('hidden');
-                }
-            });
         }
 
         // Admin Avatar Dropdown Toggle

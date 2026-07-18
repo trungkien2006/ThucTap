@@ -223,13 +223,11 @@
   }
 
   /* --- Dropdown menu items: hover/active states --- */
-  body.admin-body #quickCreateDropdown a,
   body.admin-body #adminAvatarDropdown a,
   body.admin-body #adminAvatarDropdown button {
     transition: background-color 0.12s ease;
   }
 
-  body.admin-body #quickCreateDropdown a:active,
   body.admin-body #adminAvatarDropdown a:active,
   body.admin-body #adminAvatarDropdown button:active {
     background-color: var(--accent);

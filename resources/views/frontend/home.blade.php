@@ -1,7 +1,8 @@
 @extends('layouts.frontend')
 
 @if(!empty($slides) && isset($slides[0]))
-    @push('styles')
+    <!-- Decorative Preloads commented out for local dev performance -->
+    {{-- @push('styles')
         <link rel="preload" as="image" href="{{ $slides[0]['image'] }}" fetchpriority="high">
         @if(isset($slides[1]))
             <link rel="preload" as="image" href="{{ $slides[1]['image'] }}">
@@ -9,7 +10,7 @@
         @if(isset($slides[2]))
             <link rel="preload" as="image" href="{{ $slides[2]['image'] }}">
         @endif
-    @endpush
+    @endpush --}}
 @endif
 
 @section('content')
@@ -415,39 +416,128 @@
                     }
                 @endphp
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 max-w-[1200px] mx-auto">
+                <style>
+                    .cat-ribbon-container {
+                        scrollbar-width: none;
+                        -ms-overflow-style: none;
+                    }
+                    .cat-ribbon-container::-webkit-scrollbar {
+                        display: none;
+                    }
+                    .cat-parallelogram {
+                        width: 12rem;
+                        height: 8.4rem;
+                        clip-path: polygon(1.8rem 0, 100% 0, calc(100% - 1.8rem) 100%, 0 100%);
+                        transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                        flex-shrink: 0;
+                    }
+                    .cat-parallelogram + .cat-parallelogram {
+                        margin-left: -1.2rem; /* Creates a small visual gap */
+                    }
+                    .cat-icon-container {
+                        width: 12rem;
+                        height: 8.4rem;
+                        /* No padding-left needed: geometric center of the bounding box is the visual center */
+                    }
+                    .cat-text-container {
+                        left: 10.2rem;
+                        height: 8.4rem;
+                        width: 14.4rem; /* Safe space on mobile */
+                    }
+                    @media (min-width: 1024px) {
+                        .cat-parallelogram {
+                            width: 14.4rem;
+                            height: 9.6rem;
+                            clip-path: polygon(2.4rem 0, 100% 0, calc(100% - 2.4rem) 100%, 0 100%);
+                        }
+                        .cat-parallelogram + .cat-parallelogram {
+                            margin-left: -1.8rem; /* Creates a small visual gap */
+                        }
+                        .cat-parallelogram:hover {
+                            width: 33.6rem; /* Increased to allow more text */
+                            transform: scale(1.05);
+                            z-index: 50;
+                        }
+                        .cat-icon-container {
+                            width: 14.4rem;
+                            height: 9.6rem;
+                        }
+                        .cat-text-container {
+                            left: 12rem;
+                            height: 9.6rem;
+                            width: 18rem; /* Increased safe space for text */
+                        }
+                    }
+                    .cat-parallelogram:hover {
+                        width: 24rem;
+                        z-index: 50;
+                    }
+                    .cat-parallelogram-sm {
+                        width: 5.4rem;
+                        height: 8.4rem;
+                        clip-path: polygon(1.8rem 0, 100% 0, calc(100% - 1.8rem) 100%, 0 100%);
+                        transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease;
+                        flex-shrink: 0;
+                    }
+                    .cat-parallelogram-sm:hover {
+                        width: 19.2rem;
+                        z-index: 50;
+                    }
+                    .cat-sm-icon-container {
+                        width: 5.4rem;
+                        height: 8.4rem;
+                    }
+                    .cat-sm-text-container {
+                        left: 5.4rem;
+                        height: 8.4rem;
+                        width: 12rem;
+                    }
+                    .cat-parallelogram + .cat-parallelogram-sm {
+                        margin-left: -1.2rem;
+                    }
+                    @media (min-width: 1024px) {
+                        .cat-parallelogram-sm {
+                            width: 6.6rem;
+                            height: 9.6rem;
+                            clip-path: polygon(2.4rem 0, 100% 0, calc(100% - 2.4rem) 100%, 0 100%);
+                        }
+                        .cat-parallelogram + .cat-parallelogram-sm {
+                            margin-left: -1.8rem;
+                        }
+                        .cat-parallelogram-sm:hover {
+                            width: 24rem;
+                            transform: scale(1.05);
+                            z-index: 50;
+                        }
+                        .cat-sm-icon-container {
+                            width: 6.6rem;
+                            height: 9.6rem;
+                        }
+                        .cat-sm-text-container {
+                            left: 6.6rem;
+                            height: 9.6rem;
+                            width: 14.4rem;
+                        }
+                    }
+                </style>
+
+                <!-- Mobile and Tablet view (from giaodienmobilemoi) -->
+                <div class="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-6 md:grid md:grid-cols-2 lg:hidden max-w-[1200px] mx-auto hide-scrollbar px-6">
                     @foreach($gridItems as $idx => $item)
                         <a href="{{ $item['slug'] ? route('events.index', ['category' => $item['slug']]) : '#events' }}"
                             style="aspect-ratio: 16/9; min-height: 160px; opacity: 0;"
-                            class="event-category-card group relative block w-full rounded-2xl overflow-hidden {{ $item['image'] ? 'bg-gray-900' : 'bg-gray-200' }} shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-
+                            class="event-category-card snap-start shrink-0 w-[85%] md:w-auto group relative block rounded-2xl overflow-hidden {{ $item['image'] ? 'bg-gray-900' : 'bg-gray-200' }} shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
                             @if($item['image'])
-                                <!-- Background Image -->
-                                <img src="{{ asset($item['image']) }}" alt="{{ $item['name'] }}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                                <img src="{{ asset($item['image']) }}" alt="{{ $item['name'] }}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-[1.15] opacity-60 group-hover:opacity-80">
                             @else
-                                <div class="absolute inset-0 w-full h-full bg-gray-200 flex items-center justify-center">
-                                    <i data-lucide="{{ $item['icon'] }}" class="w-12 h-12 text-gray-400"></i>
-                                </div>
+                                <div class="absolute inset-0 w-full h-full bg-gradient-to-br from-gray-800 to-gray-700 opacity-80 group-hover:opacity-100 transition-opacity"></div>
                             @endif
-
-                            <!-- Category Name (Top Left Badge) -->
-                            <div class="absolute top-4 left-4 lg:top-6 lg:left-6 z-10">
-                                <div class="bg-paper px-4 py-2 lg:px-5 lg:py-2.5 rounded-xl border-2 border-black shadow-lg">
-                                    <h3 class="text-[#1C1410] text-lg lg:text-xl font-bold tracking-tight group-hover:text-[#07A0C3] transition-colors leading-tight">
-                                        {{ $item['name'] }}
-                                    </h3>
-                                </div>
-                            </div>
-
-                            <!-- Overlay gradient dưới thẻ (tạo chiều sâu) -->
-                            <div class="absolute inset-x-0 bottom-0 h-1/2 pointer-events-none transition-opacity duration-300 opacity-60 group-hover:opacity-100"
-                                 style="background: linear-gradient(to top, rgba(28,20,16,0.8) 0%, transparent 100%);"></div>
-
-                            <!-- Badge số lượng sự kiện góc dưới phải -->
-                            <div class="absolute bottom-4 right-4 z-10">
-                                <div class="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-bold shadow-sm transition-transform duration-300 group-hover:scale-105"
-                                     style="background: rgba(7,160,195,0.9); color: #fff; backdrop-filter: blur(4px);">
-                                    <i data-lucide="calendar" class="w-3 h-3"></i>
+                            <div class="absolute inset-0 transition-opacity duration-500 opacity-60 group-hover:opacity-40" style="background: linear-gradient(to right, rgba(28,20,16,0.9) 0%, rgba(28,20,16,0.4) 100%);"></div>
+                            <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-4 z-10 pointer-events-none">
+                                <i data-lucide="{{ $item['icon'] }}" class="w-10 h-10 text-white drop-shadow-md mb-2 transition-transform duration-500 group-hover:scale-110"></i>
+                                <h3 class="text-white text-xl font-black tracking-tight drop-shadow-lg leading-tight">{{ $item['name'] }}</h3>
+                                <div class="inline-flex items-center gap-1.5 text-[#FFE381] text-xs font-bold uppercase tracking-wider drop-shadow-md mt-1">
+                                    <i data-lucide="calendar" class="w-4 h-4"></i>
                                     <span>{{ $item['count'] }} sự kiện</span>
                                 </div>
                             </div>
@@ -455,11 +545,63 @@
                     @endforeach
                 </div>
 
-                <!-- View All Categories Button -->
-                <div class="mt-10 flex justify-center event-category-title" style="opacity: 0;">
-                    <a href="{{ route('events.index') }}" class="group relative inline-flex items-center justify-center gap-2 px-8 py-3.5 text-sm font-bold uppercase tracking-wider text-white transition-all duration-300 rounded-full overflow-hidden shadow-lg hover:shadow-xl hover:-translate-y-1 bg-[#07A0C3]">
-                        <span class="relative z-10 flex items-center gap-2">Xem tất cả <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i></span>
-                        <div class="absolute inset-0 bg-[#068ba9] transform scale-x-0 origin-left transition-transform duration-500 ease-out group-hover:scale-x-100 z-0"></div>
+                <!-- Desktop Ribbon View (from main) -->
+                <div class="hidden lg:flex flex-nowrap justify-center items-center py-6 px-0 mx-auto w-[68.5rem] cat-ribbon-container">
+                    @php
+                        $displayItems = array_slice($gridItems, 0, 6);
+                    @endphp
+                    @foreach($displayItems as $idx => $item)
+                        <a href="{{ $item['slug'] ? route('events.index', ['category' => $item['slug']]) : '#events' }}"
+                            style="opacity: 0;"
+                            class="event-category-card group relative block bg-gray-900 shadow-md hover:shadow-2xl hover:z-50 cat-parallelogram">
+
+                            @if($item['image'])
+                                <!-- Background Image -->
+                                <img src="{{ asset($item['image']) }}" alt="{{ $item['name'] }}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-[1.15] opacity-60 group-hover:opacity-80">
+                            @else
+                                <div class="absolute inset-0 w-full h-full bg-gradient-to-br from-gray-800 to-gray-700 opacity-80 group-hover:opacity-100 transition-opacity"></div>
+                            @endif
+
+                            <!-- Glassmorphism Gradient Overlay -->
+                            <div class="absolute inset-0 transition-opacity duration-500 opacity-60 group-hover:opacity-40"
+                                 style="background: linear-gradient(to right, rgba(28,20,16,0.9) 0%, rgba(28,20,16,0.4) 100%);"></div>
+
+                            <!-- Icon (Absolutely centered in the collapsed shape) -->
+                            <div class="absolute top-0 left-0 flex items-center justify-center z-10 cat-icon-container pointer-events-none">
+                                <i data-lucide="{{ $item['icon'] }}" class="w-12 h-12 lg:w-14 lg:h-14 text-white drop-shadow-md transition-transform duration-500 group-hover:scale-110"></i>
+                            </div>
+
+                            <!-- Expanding Text Content -->
+                            <div class="absolute top-0 flex flex-col justify-center cat-text-container z-10 opacity-0 group-hover:opacity-100 transition-all duration-500 delay-75 transform -translate-x-4 group-hover:translate-x-0 pointer-events-none">
+                                <h3 class="text-white text-xl lg:text-2xl font-black tracking-tight drop-shadow-lg leading-tight mb-1 whitespace-normal pr-2">
+                                    {{ $item['name'] }}
+                                </h3>
+                                
+                                <div class="inline-flex items-center gap-1.5 text-[#FFE381] text-xs lg:text-sm font-bold uppercase tracking-wider drop-shadow-md mt-1">
+                                    <i data-lucide="calendar" class="w-4 h-4"></i>
+                                    <span>{{ $item['count'] }} sự kiện</span>
+                                </div>
+                            </div>
+                        </a>
+                    @endforeach
+
+                    <!-- Inline View All Button -->
+                    <a href="{{ route('events.index') }}"
+                        style="opacity: 0;"
+                        class="event-category-card group relative block bg-[#07A0C3] hover:bg-[#068ba9] shadow-md hover:shadow-2xl hover:z-50 cat-parallelogram-sm"
+                        title="Xem tất cả danh mục">
+                        
+                        <!-- Icon -->
+                        <div class="absolute top-0 left-0 flex items-center justify-center z-10 cat-sm-icon-container pointer-events-none">
+                            <i data-lucide="plus" class="w-10 h-10 lg:w-12 lg:h-12 text-white drop-shadow-md transition-transform duration-500 group-hover:rotate-90"></i>
+                        </div>
+
+                        <!-- Expanding Text Content -->
+                        <div class="absolute top-0 flex flex-col justify-center cat-sm-text-container z-10 opacity-0 group-hover:opacity-100 transition-all duration-500 delay-75 transform -translate-x-4 group-hover:translate-x-0 pointer-events-none">
+                            <h3 class="text-white text-2xl lg:text-3xl font-black tracking-tight drop-shadow-lg leading-tight uppercase whitespace-nowrap">
+                                Xem thêm
+                            </h3>
+                        </div>
                     </a>
                 </div>
 
@@ -495,9 +637,9 @@
                     )
                     // Cards slide up smoothly instead of bouncing
                     .fromTo('.event-category-card', 
-                        { opacity: 0, y: 40 }, 
-                        { opacity: 1, y: 0, duration: 0.6, stagger: 0.1, ease: "power3.out" }, 
-                        "-=0.3"
+                        { opacity: 0, y: 50, scale: 0.95 }, 
+                        { opacity: 1, y: 0, scale: 1, duration: 0.8, stagger: 0.15, ease: "power3.out" }, 
+                        "-=0.4"
                     );
                 }
             });

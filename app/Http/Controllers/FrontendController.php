@@ -354,11 +354,18 @@ class FrontendController extends Controller
         $selectedYear = $request->input('year');
 
         $query = Event::with(['bannerImage', 'category', 'galleryImages', 'speakers'])
-            ->published()
             ->where(function($q) {
                 $q->where('status', 'archived')
-                  ->orWhere('event_date', '<', now());
+                  ->orWhere(function($q2) {
+                      $q2->where('is_published', true)
+                         ->where(function($q3) {
+                             $q3->where('event_date', '<', now())
+                                ->orWhere('end_date', '<', now());
+                         });
+                  });
             })
+            ->whereNotNull('recap_drive_link')
+            ->where('recap_drive_link', '!=', '')
             ->orderBy('event_date', 'desc');
 
         $events = $query->get();

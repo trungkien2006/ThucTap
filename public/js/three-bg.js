@@ -165,7 +165,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         // Strength decays with age
                         const decay = Math.max(0, 1 - (age / 4.0));
                         const waveShape = Math.cos((distanceToWaveFront / pulseWidth) * (Math.PI / 2));
-                        
+
                         y += waveShape * 2.0 * decay; // 2.0 is max pulse height
                     }
                 }

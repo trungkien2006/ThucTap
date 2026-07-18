@@ -2,7 +2,7 @@
 @section('content')
 @php $archiveJson = json_encode($archive); @endphp
 <section id="archive" class="relative py-24 lg:py-32"
-         style="background: transparent;"
+         style="background:linear-gradient(160deg, #FFFDF6 0%, #FFF9E6 45%, #F4FAF5 100%);"
          x-data="{
             idx: 0,
             archive: {{ $archiveJson }},
@@ -16,6 +16,7 @@
             filterSearch: '',
             searchInput: '',
             _searchTimer: null,
+            activeMobileFilter: null,
             debounceSearch(val) {
                 clearTimeout(this._searchTimer);
                 this._searchTimer = setTimeout(() => {
@@ -69,7 +70,27 @@
                 const list = this.filteredArchive;
                 return list.length > 0 ? list[Math.min(this.idx, list.length - 1)] : null;
             },
-            resetIdx() { this.idx = 0; }
+            resetIdx() { 
+                this.idx = 0; 
+                this.mobilePage = 0;
+            },
+            mobilePage: 0,
+            mobilePerPage: 10,
+            get mobileTotalPages() {
+                return Math.ceil(this.filteredArchive.length / this.mobilePerPage);
+            },
+            get mobilePagedArchive() {
+                const start = this.mobilePage * this.mobilePerPage;
+                return this.filteredArchive.slice(start, start + this.mobilePerPage);
+            },
+            goToMobilePage(p) {
+                this.mobilePage = p;
+                this.$nextTick(() => {
+                    if (this.$refs.mobileArchiveScrollBox) {
+                        this.$refs.mobileArchiveScrollBox.scrollTop = 0;
+                    }
+                });
+            }
          }">
 
     <style>

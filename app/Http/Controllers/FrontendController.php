@@ -420,6 +420,10 @@ class FrontendController extends Controller
             ];
         })->toArray();
 
-        return view('frontend.archive', compact('archive', 'categories', 'selectedYear'));
+        $totalArchivedEvents = \App\Models\Event::published()->count();
+        $totalImages = \App\Models\EventMedia::where('type', 'image')->count();
+        $totalVideos = \App\Models\EventMedia::where('type', 'video')->count();
+
+        return view('frontend.archive', compact('archive', 'categories', 'selectedYear', 'totalArchivedEvents', 'totalImages', 'totalVideos'));
     }
 }

@@ -73,10 +73,17 @@
                          onmouseout="this.style.boxShadow='0 2px 16px rgba(255,227,129,0.4)'">
                     
                     <div class="relative z-10 h-48 w-full shrink-0 overflow-hidden">
-                        <a href="{{ route('events.show', $ev->slug) }}" class="block h-full w-full">
+                        <a href="{{ route('events.show', $ev->slug) }}" class="block h-full w-full relative">
                             <img src="{{ $ev->bannerImage ? \App\Helpers\FileHelper::url($ev->bannerImage->url) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80' }}" 
                                  alt="{{ $ev->title }}" loading="lazy"
                                  class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                            
+                            <!-- Hover Description Overlay -->
+                            <div class="absolute inset-0 p-4 flex flex-col justify-center backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none" style="background-color: rgba(0,0,0,0.4);">
+                                <p class="text-white text-xs md:text-sm leading-relaxed line-clamp-6 font-medium drop-shadow-md">
+                                    {{ Str::limit(strip_tags($ev->description), 200) }}
+                                </p>
+                            </div>
                         </a>
                         <div class="absolute bottom-0 left-0 right-0 h-1" style="background:#FFE381;"></div>
                     </div>

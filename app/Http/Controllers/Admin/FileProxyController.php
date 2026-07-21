@@ -51,8 +51,10 @@ class FileProxyController extends Controller
         $optimizedPath = 'optimized/' . md5($path . $width . $quality) . '.webp';
 
         if ($localDisk->exists($optimizedPath)) {
-            return $this->cachedResponse($localDisk, $optimizedPath);
+            // Redirect to the static file URL so the browser caches it directly
+            return redirect()->away(asset('storage/' . $optimizedPath), 301);
         }
+
 
         // Fetch original file
         $fileContents = null;
@@ -105,7 +107,8 @@ class FileProxyController extends Controller
                 imagedestroy($image);
 
                 $localDisk->put($optimizedPath, $optimizedContents);
-                return $this->cachedResponse($localDisk, $optimizedPath);
+                // Redirect to static file — browser will cache the webp URL permanently
+                return redirect()->away(asset('storage/' . $optimizedPath), 301);
             }
         } catch (\Exception $e) {
             // Fallback to original if GD fails

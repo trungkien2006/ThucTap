@@ -142,14 +142,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Base gentle floating wave (perpetual motion)
                 let y = 0; // Removed auto wave
 
-                // Mouse hover wave effect
-                const dist = Math.sqrt(Math.pow(pos.x - targetX, 2) + Math.pow(pos.z - targetZ, 2));
+                // Hover effect removed, keeping only click pulses
 
-                if (dist < waveRadius) {
-                    // Smooth falloff curve
-                    const influence = 1 - (dist / waveRadius);
-                    y += Math.sin(influence * (Math.PI / 2)) * waveHeight;
-                }
 
                 // Pulse effects from clicks
                 for (let p = 0; p < pulses.length; p++) {

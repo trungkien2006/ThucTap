@@ -203,7 +203,7 @@ class EventController extends Controller
     public function saveTemplate(Request $request, Event $event)
     {
         $request->validate([
-            'page_template' => 'required|integer|in:1,2,3,4,5,6,7'
+            'page_template' => 'required|integer|in:1,2,3,4,5,6'
         ]);
         
         $event->page_template = $request->page_template;

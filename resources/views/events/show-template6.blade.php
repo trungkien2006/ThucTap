@@ -2,365 +2,438 @@
 
 {{--
   ================================================================
-  MẪU 6 — TRƯỜNG HỌC / SỰ KIỆN HỌC THUẬT (School / Academic Event)
+  MẪU 7 — TẠP CHÍ TỐT NGHIỆP (Graduation Magazine / Editorial)
   ----------------------------------------------------------------
-  - Phù hợp cho sự kiện trường: Hội thảo, Lễ Tốt Nghiệp, Khai Giảng.
-  - Màu sắc: Xanh Navy, Vàng Gold, Trắng (chuyên nghiệp, học thuật).
-  - Bố cục: Hiện đại, các khối thẻ nổi (card), mảng màu rõ ràng.
+  - Phù hợp cho sự kiện: Lễ Tốt Nghiệp, Lễ Trưởng Thành, Kỷ Yếu
+  - Màu sắc: Trắng Kem (Cream), Đen Tuyền (Ink), Vàng Đồng (Gold)
+  - Bố cục: Cổ điển, thanh lịch, typography lớn (Serif), giống bài báo
   ================================================================
 --}}
 
 @push('styles')
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
 /* Removed hide navbar rule to comply with layout rule */
 
 :root {
-    --school-bg: #F8FAFC;
-    --school-primary: #1E3A8A; /* Navy Blue */
-    --school-secondary: #3B82F6; /* Bright Blue */
-    --school-accent: #F59E0B; /* Gold/Amber */
-    --school-text: #1E293B;
-    --school-muted: #64748B;
-    --school-card: #FFFFFF;
-    --school-border: #E2E8F0;
+    --mag-bg: #F9F8F3;        /* Cream/Paper */
+    --mag-ink: #1C1A17;       /* Deep dark */
+    --mag-gold: #C5A059;      /* Elegant Gold */
+    --mag-gray: #78736B;
+    --mag-border: #E8E5DF;
+    
+    --font-serif: 'Playfair Display', serif;
+    --font-sans: 'DM Sans', sans-serif;
     
     --container-w: 800px;
 }
 
-body { background-color: #f1f5f9; }
+body { background-color: #EFECE5; }
 
-.w6-body {
-    background: var(--school-bg);
-    color: var(--school-text);
-    font-family: 'Inter', sans-serif;
-    font-size: 15px;
-    line-height: 1.6;
-    min-height: 100vh;
-}
-
-/* CONTAINER */
-.w6-container {
+.t7-wrapper {
     max-width: var(--container-w);
     margin: 0 auto;
-    background: var(--school-card);
+    background: var(--mag-bg);
+    color: var(--mag-ink);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.8;
     min-height: 100vh;
-    box-shadow: 0 0 40px rgba(0,0,0,0.05);
-    padding-bottom: 60px;
+    box-shadow: 0 0 50px rgba(0,0,0,0.05);
 }
 
-/* HERO SECTION */
-.w6-hero {
+/* ── HERO ── */
+.t7-hero {
     position: relative;
     width: 100%;
-    background: var(--school-primary);
-    overflow: hidden;
-}
-.w6-hero-bg {
-    width: 100%;
-    height: 400px;
-    object-fit: cover;
-    opacity: 0.8;
-}
-.w6-hero-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(0deg, var(--school-primary) 0%, rgba(30,58,138,0.4) 100%);
-}
-.w6-hero-content {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    padding: 40px 30px;
-    text-align: center;
-    color: #fff;
-    z-index: 10;
-}
-.w6-hero-badge {
-    display: inline-block;
-    background: var(--school-accent);
-    color: #fff;
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 700;
-    font-size: 12px;
-    text-transform: uppercase;
-    padding: 6px 16px;
-    border-radius: 20px;
-    margin-bottom: 16px;
-    letter-spacing: 1px;
-}
-.w6-hero h1 {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 800;
-    font-size: clamp(28px, 5vw, 42px);
-    line-height: 1.2;
-    margin-bottom: 16px;
-    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-}
-.w6-hero-meta {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 20px;
-    font-size: 14px;
-    font-weight: 500;
-    color: #e2e8f0;
-}
-.w6-hero-meta-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-.w6-hero-meta-item svg { width: 18px; height: 18px; color: var(--school-accent); }
-
-/* COUNTDOWN */
-.w6-cd-bar {
-    background: var(--school-secondary);
-    color: #fff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 30px;
-    padding: 20px;
-}
-.w6-cd-title {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 700;
-    font-size: 16px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-.w6-cd-units { display: flex; gap: 15px; }
-.w6-cd-unit { text-align: center; }
-.w6-cd-num {
-    display: block;
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 800;
-    font-size: 24px;
-    background: rgba(255,255,255,0.2);
-    border-radius: 8px;
-    padding: 5px 12px;
-    min-width: 50px;
-}
-.w6-cd-label { font-size: 11px; text-transform: uppercase; margin-top: 4px; opacity: 0.9; }
-
-/* CONTENT BLOCKS */
-.w6-content-wrap {
-    padding: 40px 30px;
-}
-.w6-section-title {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 800;
-    font-size: 24px;
-    color: var(--school-primary);
-    text-align: center;
-    margin-bottom: 30px;
-    position: relative;
-    text-transform: uppercase;
-}
-.w6-section-title::after {
-    content: '';
-    display: block;
-    width: 60px;
-    height: 4px;
-    background: var(--school-accent);
-    margin: 12px auto 0;
-    border-radius: 2px;
-}
-.w6-desc {
-    color: var(--school-muted);
-    text-align: justify;
-    margin-bottom: 40px;
-    font-size: 16px;
-}
-
-/* GALLERY (CARDS) */
-.w6-gallery {
+    height: 100vh;
+    min-height: 600px;
     display: flex;
     flex-direction: column;
-    gap: 30px;
-    margin-bottom: 50px;
-}
-.w6-gal-card {
-    background: #fff;
-    border: 1px solid var(--school-border);
-    border-radius: 12px;
+    justify-content: flex-end;
     overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
 }
-.w6-gal-media { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; }
-.w6-gal-body { padding: 20px; }
-.w6-gal-caption {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 700;
-    font-size: 18px;
-    color: var(--school-text);
-    margin-bottom: 8px;
-}
-.w6-gal-text { font-size: 14px; color: var(--school-muted); margin-bottom: 15px; }
-
-/* SPEAKERS */
-.w6-speakers {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 20px;
-    margin-bottom: 50px;
-}
-.w6-speaker-card {
-    text-align: center;
-    padding: 20px;
-    border-radius: 12px;
-    background: #f8fafc;
-    border: 1px solid var(--school-border);
-    transition: transform 0.2s;
-}
-.w6-speaker-card:hover { transform: translateY(-5px); }
-.w6-speaker-img {
-    width: 100px; height: 100px;
-    border-radius: 50%;
+.t7-hero-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
-    border: 3px solid var(--school-secondary);
-    margin: 0 auto 15px;
-    padding: 3px;
-    background: #fff;
 }
-.w6-speaker-name {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 700;
-    font-size: 16px;
-    color: var(--school-primary);
+.t7-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(28,26,23,0) 0%, rgba(28,26,23,0.2) 40%, rgba(28,26,23,0.85) 100%);
 }
-.w6-speaker-role { font-size: 13px; color: var(--school-muted); margin-top: 4px; }
+.t7-hero-content {
+    position: relative;
+    z-index: 10;
+    padding: 60px 40px;
+    text-align: center;
+    color: #fff;
+}
+.t7-hero-issue {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--mag-gold);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+.t7-hero-issue::before, .t7-hero-issue::after {
+    content: '';
+    width: 40px;
+    height: 1px;
+    background: var(--mag-gold);
+}
+.t7-hero h1 {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: clamp(40px, 8vw, 64px);
+    line-height: 1.1;
+    margin-bottom: 15px;
+    letter-spacing: -0.02em;
+}
+.t7-hero-sub {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 20px;
+    color: rgba(255,255,255,0.9);
+    margin-bottom: 30px;
+}
+.t7-hero-meta {
+    display: inline-flex;
+    gap: 30px;
+    border-top: 1px solid rgba(255,255,255,0.2);
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+    padding: 15px 0;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
 
-/* SCHEDULE */
-.w6-schedule { margin-bottom: 50px; }
-.w6-sch-item {
+/* ── COUNTDOWN ── */
+.t7-cd-wrap {
+    background: var(--mag-ink);
+    color: #fff;
+    padding: 30px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.t7-cd-text {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 22px;
+    color: var(--mag-gold);
+}
+.t7-cd-timer {
     display: flex;
     gap: 20px;
-    margin-bottom: 20px;
-    background: #fff;
-    padding: 15px 20px;
-    border-radius: 8px;
-    border-left: 4px solid var(--school-accent);
-    box-shadow: 0 2px 10px rgba(0,0,0,0.03);
 }
-.w6-sch-time {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 700;
-    color: var(--school-primary);
-    min-width: 60px;
-    flex-shrink: 0;
-}
-.w6-sch-info h4 { font-weight: 600; font-size: 16px; margin: 0 0 4px; }
-.w6-sch-info p { font-size: 13px; color: var(--school-muted); margin: 0; }
-
-/* PREV/NEXT EVENTS */
-.w6-nav-events {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    margin-bottom: 50px;
-    padding-top: 30px;
-    border-top: 1px solid var(--school-border);
-}
-.w6-nav-item {
+.t7-cd-item { text-align: center; }
+.t7-cd-num {
     display: block;
-    text-decoration: none;
-    color: var(--school-text);
-    padding: 15px;
-    border-radius: 8px;
-    transition: background 0.2s;
+    font-family: var(--font-serif);
+    font-size: 32px;
+    line-height: 1;
 }
-.w6-nav-item:hover {
-    background: #f8fafc;
-}
-.w6-nav-label {
-    font-size: 11px;
+.t7-cd-label {
+    font-size: 10px;
     text-transform: uppercase;
-    color: var(--school-muted);
-    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.6);
+    margin-top: 5px;
+}
+
+/* ── CONTENT CONTAINER ── */
+.t7-content {
+    padding: 60px 40px;
+}
+
+/* ── SECTION HEADER ── */
+.t7-section-hd {
+    text-align: center;
+    margin-bottom: 40px;
+}
+.t7-section-kicker {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--mag-gray);
+    margin-bottom: 10px;
+}
+.t7-section-title {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: 36px;
+    color: var(--mag-ink);
+    position: relative;
+    padding-bottom: 15px;
+}
+.t7-section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 2px;
+    background: var(--mag-gold);
+}
+
+/* ── INTRO ── */
+.t7-intro {
+    font-size: 16px;
+    line-height: 2;
+    text-align: center;
+    color: var(--mag-gray);
+    margin-bottom: 60px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+/* ── GALLERY (MAGAZINE STYLE) ── */
+.t7-gallery { margin-bottom: 80px; }
+.t7-gal-item {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 50px;
+}
+.t7-gal-img-wrap {
+    width: 100%;
+    position: relative;
+    padding-bottom: 20px;
+}
+.t7-gal-img-wrap::before {
+    content: '';
+    position: absolute;
+    top: -15px; left: -15px;
+    width: 40%; height: 40%;
+    border-top: 1px solid var(--mag-ink);
+    border-left: 1px solid var(--mag-ink);
+    z-index: 1;
+}
+.t7-gal-img {
+    width: 100%;
+    aspect-ratio: 4/5;
+    object-fit: cover;
+    position: relative;
+    z-index: 2;
+    filter: grayscale(20%) contrast(110%);
+}
+.t7-gal-content {
+    padding: 20px 0 0 20px;
+    border-left: 1px solid var(--mag-border);
+    margin-left: 20px;
+}
+.t7-gal-caption {
+    font-family: var(--font-serif);
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+.t7-gal-text {
+    font-size: 14px;
+    color: var(--mag-gray);
+}
+@media (min-width: 600px) {
+    .t7-gal-item:nth-child(even) {
+        flex-direction: row-reverse;
+        align-items: center;
+        gap: 40px;
+    }
+    .t7-gal-item:nth-child(odd) {
+        flex-direction: row;
+        align-items: center;
+        gap: 40px;
+    }
+    .t7-gal-img-wrap { width: 55%; padding-bottom: 0; }
+    .t7-gal-content { width: 45%; padding: 0; border: none; margin: 0; }
+    .t7-gal-img { aspect-ratio: 3/4; }
+}
+
+/* ── SPEAKERS / GUESTS ── */
+.t7-speakers { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 60px; }
+@media (max-width:768px){
+    .t7-speakers { grid-template-columns: 1fr; }
+}
+.t7-speaker-card { text-align: center; }
+.t7-speaker-img { 
+    width: 100px; height: 100px; border-radius: 50%; object-fit: cover; 
+    margin: 0 auto 15px; border: 1px solid var(--mag-border); padding: 4px; 
+    filter: grayscale(100%); transition: filter 0.3s ease; 
+}
+.t7-speaker-card:hover .t7-speaker-img { filter: grayscale(0%); }
+.t7-speaker-name { 
+    font-family: var(--font-serif); font-size: 18px; font-weight: 600; 
+    margin-bottom: 4px; 
+}
+.t7-speaker-role { 
+    font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mag-gold); 
+}
+
+/* ── SCHEDULE (TIMELINE) ── */
+.t7-timeline {
+    position: relative;
+    max-width: 600px;
+    margin: 0 auto 80px;
+}
+.t7-timeline::before {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 1px;
+    background: var(--mag-border);
+}
+.t7-tl-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+    position: relative;
+}
+.t7-tl-time {
+    width: 45%;
+    text-align: right;
+    font-family: var(--font-serif);
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--mag-gold);
+}
+.t7-tl-dot {
+    width: 11px; height: 11px;
+    border-radius: 50%;
+    background: var(--mag-ink);
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 3px solid var(--mag-bg);
+}
+.t7-tl-content {
+    width: 45%;
+    text-align: left;
+}
+.t7-tl-title {
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+.t7-tl-desc {
+    font-size: 13px;
+    color: var(--mag-gray);
+    line-height: 1.5;
+}
+/* Alternate */
+.t7-tl-item:nth-child(even) { flex-direction: row-reverse; }
+.t7-tl-item:nth-child(even) .t7-tl-time { text-align: left; }
+.t7-tl-item:nth-child(even) .t7-tl-content { text-align: right; }
+
+@media (max-width: 600px) {
+    .t7-timeline::before { left: 20px; }
+    .t7-tl-item, .t7-tl-item:nth-child(even) { flex-direction: column; align-items: flex-start; padding-left: 50px; }
+    .t7-tl-time { width: 100%; text-align: left !important; font-size: 20px; margin-bottom: 5px; }
+    .t7-tl-dot { left: 20px; }
+    .t7-tl-content { width: 100%; text-align: left !important; }
+}
+
+/* ── EVENT TIMING ── */
+.t7-event-time {
+    font-family: var(--font-serif);
+    font-size: 18px;
+    text-align: center;
+    margin-bottom: 60px;
+    color: var(--mag-gold);
+    font-style: italic;
+}
+
+/* ── PREV / NEXT NAV ── */
+.t7-nav {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 40px;
+    border-top: 1px solid var(--mag-border);
+    padding-top: 30px;
+}
+.t7-nav-item {
+    text-decoration: none;
+    color: var(--mag-ink);
+    transition: opacity 0.2s;
+}
+.t7-nav-item:hover { opacity: 0.7; }
+.t7-nav-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--mag-gray);
     margin-bottom: 4px;
 }
-.w6-nav-title {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 700;
-    font-size: 15px;
+.t7-nav-title {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: 18px;
 }
 
-/* BOTTOM BAR */
-.w6-bottom {
+/* ── BOTTOM ACTIONS ── */
+.t7-bottom {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 15px;
-    padding-top: 20px;
-    border-top: 1px solid var(--school-border);
+    gap: 20px;
+    padding: 40px 0;
+    border-top: 1px solid var(--mag-border);
 }
-.w6-btn {
+.t7-btn {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 10px 24px;
-    border-radius: 30px;
-    font-family: 'Montserrat', sans-serif;
+    padding: 12px 30px;
+    font-family: var(--font-sans);
     font-weight: 600;
-    font-size: 14px;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
     cursor: pointer;
-    border: none;
-    transition: all 0.2s;
+    border: 1px solid var(--mag-ink);
+    transition: all 0.3s;
+    background: transparent;
+    color: var(--mag-ink);
     text-decoration: none;
 }
-.w6-btn-like {
-    background: #fff;
-    color: var(--school-primary);
-    border: 1px solid var(--school-primary);
-}
-.w6-btn-like.liked {
-    background: var(--school-primary);
+.t7-btn-like.liked {
+    background: var(--mag-ink);
     color: #fff;
 }
-.w6-btn-views {
-    background: #f1f5f9;
-    color: var(--school-muted);
-}
-.w6-btn-share {
-    background: #1877F2;
+.t7-btn-like:hover { background: var(--mag-ink); color: #fff; }
+.t7-btn-views { border-color: transparent; pointer-events: none; color: var(--mag-gray); }
+.t7-btn-share {
+    background: var(--mag-ink);
     color: #fff;
 }
-.w6-btn-copy {
-    background: #fff;
-    color: var(--school-text);
-    border: 1px solid var(--school-border);
-    position: relative;
-}
+.t7-btn-share:hover { background: var(--mag-gray); border-color: var(--mag-gray); }
 
-.w6-footer {
+.t7-footer {
     text-align: center;
-    padding: 20px;
-    font-size: 13px;
-    color: var(--school-muted);
-    background: #e2e8f0;
+    padding: 30px;
+    font-size: 12px;
+    color: var(--mag-gray);
+    letter-spacing: 0.05em;
+    background: #EFECE5;
 }
 
-@media (max-width: 768px) {
-    .w6-hero-bg { height: 300px; }
-    .w6-hero-content { position: relative; padding: 24px 16px; background: var(--school-primary); }
-    .w6-cd-bar { flex-direction: column; gap: 12px; text-align: center; }
-    .w6-content-wrap { padding: 24px 16px; }
-}
-@media (max-width: 480px) {
-    .w6-hero-bg { height: 220px; }
-    .w6-nav-events { grid-template-columns: 1fr; gap: 12px; }
-    .w6-sch-item { flex-direction: column; gap: 8px; }
-    .w6-bottom { flex-direction: column; width: 100%; }
-    .w6-bottom .w6-btn { width: 100%; justify-content: center; }
-}
 </style>
 @endpush
 
 @php
     $titleStyles = [];
     if (!empty($event->title_font_family)) {
-        $titleStyles[] = "font-family: '{$event->title_font_family}', sans-serif;";
+        $titleStyles[] = "font-family: '{$event->title_font_family}', serif;";
     }
     if (!empty($event->title_font_size)) {
         $titleStyles[] = "font-size: {$event->title_font_size}px;";
@@ -384,221 +457,228 @@ body { background-color: #f1f5f9; }
 @endphp
 
 @section('content')
-<div class="w6-body">
-    <div class="w6-container">
+<div class="t7-wrapper">
+    
+    {{-- HERO --}}
+    <div class="t7-hero">
+        @if($event->bannerImage)
+            <img src="{{ \App\Helpers\FileHelper::url($event->bannerImage->url) }}" class="t7-hero-bg" alt="{{ $event->title }}">
+        @else
+            <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=1600" class="t7-hero-bg" alt="Graduation">
+        @endif
+        <div class="t7-hero-overlay"></div>
+        <div class="t7-hero-content">
+            <div class="t7-hero-issue">{{ $event->category ? $event->category->name : 'LỄ TỐT NGHIỆP' }}</div>
+            <h1 style="{!! $titleStyleStr !!}">{!! nl2br(e($event->title)) !!}</h1>
+            <div class="t7-hero-sub">Ấn Bản Đặc Biệt</div>
+            <div class="t7-hero-meta">
+                <span>{{ $event->event_date->format('d.m.Y') }}</span>
+                <span>•</span>
+                <span>{{ $event->location ?? 'Địa điểm đang cập nhật' }}</span>
+            </div>
+        </div>
+    </div>
+
+    {{-- COUNTDOWN --}}
+    @if($event->event_date > now())
+    <div class="t7-cd-wrap" id="t7-countdown" data-date="{{ $event->event_date->format('Y-m-d\TH:i:s') }}">
+        <div class="t7-cd-text">Chờ đón khoảnh khắc...</div>
+        <div class="t7-cd-timer">
+            <div class="t7-cd-item"><span class="t7-cd-num" id="t7-days">00</span><div class="t7-cd-label">Ngày</div></div>
+            <div class="t7-cd-item"><span class="t7-cd-num" id="t7-hours">00</span><div class="t7-cd-label">Giờ</div></div>
+            <div class="t7-cd-item"><span class="t7-cd-num" id="t7-mins">00</span><div class="t7-cd-label">Phút</div></div>
+        </div>
+    </div>
+    @endif
+
+    <div class="t7-content">
         
-        {{-- HERO --}}
-        <div class="w6-hero">
-            @if($event->bannerImage)
-                <img src="{{ \App\Helpers\FileHelper::url($event->bannerImage->url) }}" class="w6-hero-bg" alt="{{ $event->title }}">
-            @else
-                <div class="w6-hero-bg" style="background:#1E3A8A;"></div>
+        {{-- DESCRIPTION --}}
+        <div class="t7-section-hd">
+            <div class="t7-section-kicker">Chương 1</div>
+            <h2 class="t7-section-title">Câu Chuyện Của Chúng Tôi</h2>
+        </div>
+        <div class="t7-intro" style="{!! $descStyleStr !!}">
+            {!! $event->description !!}
+        </div>
+
+        {{-- TIME DISPLAY --}}
+        <div class="t7-event-time">
+            Bắt đầu: {{ $event->event_date->format('H:i A') }} 
+            @if($event->end_date)
+                — Kết thúc: {{ $event->end_date->format('H:i A') }}
             @endif
-            <div class="w6-hero-overlay"></div>
-            <div class="w6-hero-content">
-                <div class="w6-hero-badge">{{ $event->category ? $event->category->name : 'Sự kiện trường' }}</div>
-                <h1 style="{!! $titleStyleStr !!}">{!! nl2br(e($event->title)) !!}</h1>
-                <div class="w6-hero-meta">
-                    <div class="w6-hero-meta-item">
-                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-                        {{ $event->event_date->format('d/m/Y') }}
-                    </div>
-                    <div class="w6-hero-meta-item">
-                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                        {{ $event->event_date->format('H:i') }} 
-                        @if($event->end_date) — {{ $event->end_date->format('H:i') }} @endif
-                    </div>
-                    @if($event->location)
-                    <div class="w6-hero-meta-item">
-                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                        {{ $event->location }}
-                    </div>
+        </div>
+
+        {{-- GALLERY --}}
+        @if($event->galleryImages->count() > 0 && $event->event_date <= now())
+        <div class="t7-section-hd">
+            <div class="t7-section-kicker">Chương 2</div>
+            <h2 class="t7-section-title">Khung Hình Kỷ Niệm</h2>
+        </div>
+        <div class="t7-gallery">
+            @foreach($event->galleryImages as $block)
+            <div class="t7-gal-item">
+                <div class="t7-gal-img-wrap">
+                    @if($block->url)
+                        @if($block->type === 'video')
+                            <video src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="t7-gal-img" autoplay loop muted playsinline controls></video>
+                        @else
+                            <img src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="t7-gal-img" alt="">
+                        @endif
                     @endif
+                </div>
+                <div class="t7-gal-content">
+                    @if($block->caption) <h3 class="t7-gal-caption">{{ $block->caption }}</h3> @endif
+                    @if(!empty($block->content)) <div class="t7-gal-text">{!! $block->content !!}</div> @endif
+                </div>
+            </div>
+            @endforeach
+        </div>
+        @endif
+
+        {{-- SPEAKERS / GUESTS --}}
+        @if($event->speakers->count() > 0)
+        <div class="t7-section-hd">
+            <div class="t7-section-kicker">Chương 3</div>
+            <h2 class="t7-section-title">Gương Mặt Tiêu Biểu</h2>
+        </div>
+        <div class="t7-speakers">
+            @foreach($event->speakers as $speaker)
+            <div class="t7-speaker-card">
+                @if($speaker->photo_url)
+                    <img src="{{ \App\Helpers\FileHelper::url($speaker->photo_url) }}" class="t7-speaker-img" alt="{{ $speaker->name }}">
+                @else
+                    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80" class="t7-speaker-img" alt="{{ $speaker->name }}">
+                @endif
+                <div class="t7-speaker-name">{{ $speaker->name }}</div>
+                <div class="t7-speaker-role">{{ $speaker->title }}</div>
+            </div>
+            @endforeach
+        </div>
+        @endif
+
+        {{-- SCHEDULE --}}
+        @if($event->scheduleItems->count() > 0)
+        <div class="t7-section-hd">
+            <div class="t7-section-kicker">Chương 4</div>
+            <h2 class="t7-section-title">Lịch Trình Sự Kiện</h2>
+        </div>
+        <div class="t7-timeline" x-data="{ activeIndex: 0 }">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6 mt-6">
+                <!-- Left panel: Time slots selector -->
+                <div class="md:col-span-4 flex md:flex-col gap-2 overflow-x-auto md:overflow-x-visible pb-3 md:pb-0 scrollbar-none" style="-ms-overflow-style: none; scrollbar-width: none;">
+                    @foreach($event->scheduleItems as $index => $item)
+                    <button 
+                        @click="activeIndex = {{ $index }}"
+                        :class="activeIndex === {{ $index }} ? 'bg-[#C5A880] text-white border-[#C5A880]' : 'bg-slate-50 text-slate-700 hover:bg-slate-100 border-slate-200'"
+                        class="flex items-center justify-center md:justify-start gap-3 px-4 py-3 rounded-xl border text-sm font-bold transition-all shrink-0 w-auto md:w-full text-left"
+                    >
+                        <span class="material-symbols-outlined text-[18px]">schedule</span>
+                        <span>{{ $item->start_time ? \Carbon\Carbon::parse($item->start_time)->format('H:i') : '' }}{{ $item->end_time ? ' - ' . \Carbon\Carbon::parse($item->end_time)->format('H:i') : '' }}</span>
+                    </button>
+                    @endforeach
+                </div>
+                
+                <!-- Right panel: Content corresponding to chosen time slot -->
+                <div class="md:col-span-8 bg-slate-50 border border-slate-200/60 rounded-xl p-6 min-h-[160px] flex flex-col justify-center text-left">
+                    @foreach($event->scheduleItems as $index => $item)
+                    <div x-show="activeIndex === {{ $index }}" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" class="space-y-4">
+                        <div>
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#C5A880]/10 text-[#C5A880] mb-3">
+                                <span class="material-symbols-outlined text-[14px]">schedule</span>
+                                {{ $item->start_time ? \Carbon\Carbon::parse($item->start_time)->format('H:i') : '' }}{{ $item->end_time ? ' - ' . \Carbon\Carbon::parse($item->end_time)->format('H:i') : '' }}
+                            </span>
+                            <h3 class="font-extrabold text-xl text-slate-800 tracking-tight leading-tight">{{ $item->title }}</h3>
+                        </div>
+                        
+                        @if($item->speaker)
+                        <div class="flex items-center gap-3 bg-white p-3 rounded-xl border border-slate-200/60 w-fit">
+                            <img src="{{ $item->speaker->photo_url ? asset($item->speaker->photo_url) : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80' }}"
+                                 alt="{{ $item->speaker->name }}" class="w-10 h-10 rounded-full object-cover border border-slate-100 shadow-sm">
+                            <div>
+                                <div class="font-bold text-sm text-slate-800 leading-none mb-1 text-left">{{ $item->speaker->name }}</div>
+                                <div class="text-xs text-slate-500 leading-none text-left">{{ $item->speaker->title ?? 'Diễn giả' }}</div>
+                            </div>
+                        </div>
+                        @endif
+                        
+                        @if($item->description)
+                        <p class="text-slate-600 text-sm leading-relaxed whitespace-pre-line">{{ $item->description }}</p>
+                        @endif
+                    </div>
+                    @endforeach
                 </div>
             </div>
         </div>
-
-        {{-- COUNTDOWN --}}
-        @if($event->event_date > now())
-        <div class="w6-cd-bar">
-            <div class="w6-cd-title">Sự kiện sẽ bắt đầu sau</div>
-            <div class="w6-cd-units" id="w6-countdown" data-date="{{ $event->event_date->format('Y-m-d\TH:i:s') }}">
-                <div class="w6-cd-unit"><span class="w6-cd-num" id="w6-days">00</span><div class="w6-cd-label">Ngày</div></div>
-                <div class="w6-cd-unit"><span class="w6-cd-num" id="w6-hours">00</span><div class="w6-cd-label">Giờ</div></div>
-                <div class="w6-cd-unit"><span class="w6-cd-num" id="w6-mins">00</span><div class="w6-cd-label">Phút</div></div>
+        @endif
+        
+        {{-- PREV / NEXT NAV --}}
+        @if(isset($previousEvent) || isset($nextEvent))
+        <div class="t7-nav">
+            <div style="text-align: left;">
+                @if(isset($previousEvent) && $previousEvent)
+                <a href="{{ route('events.show', $previousEvent->slug) }}" class="t7-nav-item">
+                    <div class="t7-nav-label">Sự kiện trước</div>
+                    <div class="t7-nav-title">{{ $previousEvent->title }}</div>
+                </a>
+                @endif
+            </div>
+            <div style="text-align: right;">
+                @if(isset($nextEvent) && $nextEvent)
+                <a href="{{ route('events.show', $nextEvent->slug) }}" class="t7-nav-item">
+                    <div class="t7-nav-label">Sự kiện tiếp</div>
+                    <div class="t7-nav-title">{{ $nextEvent->title }}</div>
+                </a>
+                @endif
             </div>
         </div>
         @endif
 
-        <div class="w6-content-wrap">
-            {{-- DESCRIPTION --}}
-            <h2 class="w6-section-title">Giới Thiệu</h2>
-            <div class="w6-desc" style="{!! $descStyleStr !!}">
-                {!! $event->description !!}
+        {{-- ACTIONS --}}
+        <div class="t7-bottom" x-data="{ copied: false }">
+            <button id="like-btn" data-event-id="{{ $event->id }}" class="t7-btn t7-btn-like {{ session()->has('liked_events.' . $event->id) ? 'liked' : '' }}">
+                YÊU THÍCH <span id="likes-count">({{ $event->likes_count }})</span>
+            </button>
+            <div class="t7-btn t7-btn-views">
+                LƯỢT XEM ({{ $event->views_count }})
             </div>
-
-            {{-- GALLERY --}}
-            @if($event->galleryImages->count() > 0 && $event->event_date <= now())
-            <h2 class="w6-section-title">Khoảnh Khắc Nổi Bật</h2>
-            <div class="w6-gallery">
-                @foreach($event->galleryImages as $block)
-                <div class="w6-gal-card">
-                    @if($block->url)
-                        @if($block->type === 'video')
-                            <video src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="w6-gal-media" autoplay loop muted playsinline controls></video>
-                        @else
-                            <img src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="w6-gal-media" alt="">
-                        @endif
-                    @endif
-                    <div class="w6-gal-body">
-                        @if($block->caption) <h3 class="w6-gal-caption">{{ $block->caption }}</h3> @endif
-                        @if(!empty($block->content)) <div class="w6-gal-text">{!! $block->content !!}</div> @endif
-                    </div>
-                </div>
-                @endforeach
-            </div>
-            @endif
-
-            {{-- SPEAKERS --}}
-            @if($event->speakers->count() > 0)
-            <h2 class="w6-section-title">Diễn giả tham gia</h2>
-            <div class="w6-speakers">
-                @foreach($event->speakers as $speaker)
-                <div class="w6-speaker-card">
-                    @if($speaker->photo_url)
-                        <img src="{{ \App\Helpers\FileHelper::url($speaker->photo_url) }}" class="w6-speaker-img" alt="{{ $speaker->name }}">
-                    @else
-                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80" class="w6-speaker-img" alt="{{ $speaker->name }}">
-                    @endif
-                    <div class="w6-speaker-name">{{ $speaker->name }}</div>
-                    <div class="w6-speaker-role">{{ $speaker->title }}</div>
-                </div>
-                @endforeach
-            </div>
-            @endif
-
-            {{-- SCHEDULE --}}
-            @if($event->scheduleItems->count() > 0)
-            <h2 class="w6-section-title">Lịch Trình</h2>
-            <div class="w6-schedule" x-data="{ activeIndex: 0 }">
-                <div class="grid grid-cols-1 md:grid-cols-12 gap-6 mt-6">
-                    <!-- Left panel: Time slots selector -->
-                    <div class="md:col-span-4 flex md:flex-col gap-2 overflow-x-auto md:overflow-x-visible pb-3 md:pb-0 scrollbar-none" style="-ms-overflow-style: none; scrollbar-width: none;">
-                        @foreach($event->scheduleItems as $index => $item)
-                        <button 
-                            @click="activeIndex = {{ $index }}"
-                            :class="activeIndex === {{ $index }} ? 'bg-[#ff5a36] text-white border-[#ff5a36]' : 'bg-white/5 text-white/80 hover:bg-white/10 border-white/10'"
-                            class="flex items-center justify-center md:justify-start gap-3 px-4 py-3 rounded-xl border text-sm font-bold transition-all shrink-0 w-auto md:w-full text-left"
-                        >
-                            <span class="material-symbols-outlined text-[18px]">schedule</span>
-                            <span>{{ $item->start_time ? \Carbon\Carbon::parse($item->start_time)->format('H:i') : '' }}{{ $item->end_time ? ' - ' . \Carbon\Carbon::parse($item->end_time)->format('H:i') : '' }}</span>
-                        </button>
-                        @endforeach
-                    </div>
-                    
-                    <!-- Right panel: Content corresponding to chosen time slot -->
-                    <div class="md:col-span-8 bg-white/5 border border-white/10 rounded-xl p-6 min-h-[160px] flex flex-col justify-center text-left">
-                        @foreach($event->scheduleItems as $index => $item)
-                        <div x-show="activeIndex === {{ $index }}" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" class="space-y-4">
-                            <div>
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#ff5a36]/20 text-[#ff5a36] mb-3">
-                                    <span class="material-symbols-outlined text-[14px]">schedule</span>
-                                    {{ $item->start_time ? \Carbon\Carbon::parse($item->start_time)->format('H:i') : '' }}{{ $item->end_time ? ' - ' . \Carbon\Carbon::parse($item->end_time)->format('H:i') : '' }}
-                                </span>
-                                <h3 class="font-extrabold text-xl text-white tracking-tight leading-tight">{{ $item->title }}</h3>
-                            </div>
-                            
-                            @if($item->speaker)
-                            <div class="flex items-center gap-3 bg-white/5 p-3 rounded-xl border border-white/10 w-fit">
-                                <img src="{{ $item->speaker->photo_url ? asset($item->speaker->photo_url) : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80' }}"
-                                     alt="{{ $item->speaker->name }}" class="w-10 h-10 rounded-full object-cover border border-white/10 shadow-sm">
-                                <div>
-                                    <div class="font-bold text-sm text-white leading-none mb-1 text-left">{{ $item->speaker->name }}</div>
-                                    <div class="text-xs text-white/60 leading-none text-left">{{ $item->speaker->title ?? 'Diễn giả' }}</div>
-                                </div>
-                            </div>
-                            @endif
-                            
-                            @if($item->description)
-                            <p class="text-white/80 text-sm leading-relaxed whitespace-pre-line">{{ $item->description }}</p>
-                            @endif
-                        </div>
-                        @endforeach
-                    </div>
-                </div>
-            </div>
-            @endif
-            
-            {{-- PREV/NEXT EVENTS --}}
-            @if(isset($previousEvent) || isset($nextEvent))
-            <div class="w6-nav-events">
-                <div style="text-align: left;">
-                    @if(isset($previousEvent) && $previousEvent)
-                    <a href="{{ route('events.show', $previousEvent->slug) }}" class="w6-nav-item">
-                        <div class="w6-nav-label">← Sự kiện trước</div>
-                        <div class="w6-nav-title">{{ $previousEvent->title }}</div>
-                    </a>
-                    @endif
-                </div>
-                <div style="text-align: right;">
-                    @if(isset($nextEvent) && $nextEvent)
-                    <a href="{{ route('events.show', $nextEvent->slug) }}" class="w6-nav-item">
-                        <div class="w6-nav-label">Sự kiện tiếp →</div>
-                        <div class="w6-nav-title">{{ $nextEvent->title }}</div>
-                    </a>
-                    @endif
-                </div>
-            </div>
-            @endif
-
-            {{-- BOTTOM ACTIONS --}}
-            <div class="w6-bottom" x-data="{ copied: false }">
-                <button id="like-btn" data-event-id="{{ $event->id }}" class="w6-btn w6-btn-like {{ session()->has('liked_events.' . $event->id) ? 'liked' : '' }}">
-                    <span class="material-symbols-outlined">favorite</span>
-                    <span id="likes-count">{{ $event->likes_count }}</span> Thích
-                </button>
-                <div class="w6-btn w6-btn-views">
-                    <span class="material-symbols-outlined">visibility</span>
-                    {{ $event->views_count }} Lượt xem
-                </div>
-                <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}" target="_blank" class="w6-btn w6-btn-share">
-                    Chia sẻ
-                </a>
-                <button @click="navigator.clipboard.writeText(window.location.href); copied=true; setTimeout(()=>copied=false, 2000)" class="w6-btn w6-btn-copy">
-                    <span class="material-symbols-outlined" style="font-size:18px;">link</span> Copy Link
-                    <span x-show="copied" x-transition style="display:none;position:absolute;bottom:110%;left:50%;transform:translateX(-50%);background:#1E293B;color:white;font-size:12px;padding:4px 8px;border-radius:4px;white-space:nowrap;">Đã sao chép!</span>
-                </button>
-            </div>
+            <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}" target="_blank" class="t7-btn t7-btn-share">
+                CHIA SẺ
+            </a>
+            <button @click="navigator.clipboard.writeText(window.location.href); copied=true; setTimeout(()=>copied=false, 2000)" class="t7-btn" style="position: relative;">
+                SAO CHÉP LINK
+                <span x-show="copied" x-transition style="display:none;position:absolute;bottom:100%;left:50%;transform:translateX(-50%);margin-bottom:10px;background:#1C1A17;color:white;font-size:10px;padding:4px 8px;border-radius:4px;white-space:nowrap;letter-spacing:0;">Đã sao chép!</span>
+            </button>
         </div>
-        
     </div>
     
-    <footer class="w6-footer">
-        © {{ date('Y') }} UniEvent — Hệ thống quản lý sự kiện học đường
+    <footer class="t7-footer">
+        © {{ date('Y') }} UniEvent — Lưu giữ những khoảnh khắc đáng nhớ.
     </footer>
 </div>
 
 @include('components.event-fab-menu', ['event' => $event])
 
 <script>
-    const cdEl = document.getElementById('w6-countdown');
+    const cdEl = document.getElementById('t7-countdown');
     if (cdEl) {
         const targetDate = new Date(cdEl.getAttribute('data-date')).getTime();
         function updateCountdown() {
             const now = new Date().getTime();
             const diff = targetDate - now;
             if (diff < 0) {
-                document.getElementById('w6-days').innerText = "00";
-                document.getElementById('w6-hours').innerText = "00";
-                document.getElementById('w6-mins').innerText = "00";
+                document.getElementById('t7-days').innerText = "00";
+                document.getElementById('t7-hours').innerText = "00";
+                document.getElementById('t7-mins').innerText = "00";
                 return;
             }
             const days = Math.floor(diff / (1000 * 60 * 60 * 24));
             const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            document.getElementById('w6-days').innerText = String(days).padStart(2, '0');
-            document.getElementById('w6-hours').innerText = String(hours).padStart(2, '0');
-            document.getElementById('w6-mins').innerText = String(mins).padStart(2, '0');
+            document.getElementById('t7-days').innerText = String(days).padStart(2, '0');
+            document.getElementById('t7-hours').innerText = String(hours).padStart(2, '0');
+            document.getElementById('t7-mins').innerText = String(mins).padStart(2, '0');
         }
         setInterval(updateCountdown, 1000);
         updateCountdown();
@@ -616,7 +696,7 @@ body { background-color: #f1f5f9; }
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    countSpan.innerText = data.likes_count;
+                    countSpan.innerText = '(' + data.likes_count + ')';
                     if (data.liked) {
                         likeBtn.classList.add('liked');
                     } else {

@@ -269,76 +269,6 @@
     font-weight: 700;
 }
 
-/* ─── STICKY BOTTOM BAR ─── */
-.t4-bottom-bar {
-    position: fixed;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
-    max-width: 1000px;
-    background: #FFFFFF;
-    border-top: 1px solid var(--t4-border);
-    padding: 12px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    z-index: 100;
-    box-shadow: 0 -4px 20px rgba(44, 37, 32, 0.06);
-}
-.t4-interaction-group {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-.t4-action-btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 16px;
-    border-radius: 20px;
-    border: 1px solid var(--t4-border);
-    background: #FAF8F2;
-    font-weight: 600;
-    font-size: 13px;
-    color: var(--t4-text);
-    cursor: pointer;
-    transition: all 0.2s;
-    text-decoration: none;
-}
-.t4-action-btn:hover {
-    background: #FEF3C7;
-    border-color: var(--t4-gold);
-}
-.t4-heart-btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 16px;
-    border-radius: 20px;
-    border: 1px solid var(--t4-border);
-    background: #FAF8F2;
-    font-weight: 600;
-    font-size: 13px;
-    color: var(--t4-text);
-    cursor: pointer;
-    transition: all 0.2s;
-}
-.t4-heart-btn.liked {
-    color: #EF4444;
-    border-color: #FCA5A5;
-    background: #FEF2F2;
-}
-.t4-heart-btn:hover {
-    background: #FEF2F2;
-}
-@media (max-width: 600px) {
-    .t4-bottom-bar {
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-}
 </style>
 @endpush
 
@@ -477,6 +407,31 @@
         </div>
         @endif
 
+        {{-- Tương tác & Chia sẻ --}}
+        <div class="t4-card">
+            <div class="flex flex-wrap justify-center gap-4 mt-8" x-data="{ copied: false }">
+                <button id="like-btn" data-event-id="{{ $event->id }}" class="flex items-center gap-2 px-6 py-3 rounded-full font-bold transition-all shadow-sm {{ session()->has('liked_events.' . $event->id) ? 'bg-orange-50 text-[#f97316] border border-orange-200' : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50' }}">
+                    <span class="material-symbols-outlined {{ session()->has('liked_events.' . $event->id) ? 'font-fill' : '' }}">favorite</span>
+                    <span id="likes-count">{{ $event->likes_count }}</span> Lượt thích
+                </button>
+                <div class="flex items-center gap-2 px-6 py-3 rounded-full bg-white text-slate-700 border border-slate-200 shadow-sm font-bold">
+                    <span class="material-symbols-outlined text-[#f97316]">visibility</span>
+                    <span>{{ $event->views_count }}</span> Lượt xem
+                </div>
+                
+                <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}" target="_blank" 
+                   class="flex items-center gap-2 bg-[#1877F2] text-white px-6 py-3 rounded-full font-bold shadow-[0_4px_12px_rgba(24,119,242,0.3)] hover:scale-105 transition-transform" style="text-decoration:none;">
+                    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                    Chia sẻ
+                </a>
+                <button @click="navigator.clipboard.writeText(window.location.href); copied=true; setTimeout(()=>copied=false, 2000)" 
+                        class="relative flex items-center gap-2 bg-white text-slate-700 border border-slate-200 px-6 py-3 rounded-full font-bold shadow-sm hover:bg-slate-50 transition-all cursor-pointer">
+                    <span class="material-symbols-outlined" style="font-size:18px;">link</span> Copy Link
+                    <span x-show="copied" x-transition style="display:none;" class="absolute -top-10 left-1/2 -translate-x-1/2 bg-[#1C1410] text-white text-xs px-2.5 py-1.5 rounded shadow-lg pointer-events-none whitespace-nowrap">Đã sao chép!</span>
+                </button>
+            </div>
+        </div>
+
         {{-- SECTION 8: PREV/NEXT EVENTS --}}
         @if(isset($previousEvent) || isset($nextEvent))
         <div class="t4-card" style="display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap;">
@@ -499,33 +454,6 @@
         </div>
         @endif
 
-    </div>
-</div>
-
-{{-- FIXED BOTTOM INTERACTION BAR --}}
-<div class="t4-bottom-bar" x-data="{ copied: false }">
-    <div class="t4-interaction-group">
-        <a href="{{ route('home') }}" class="t4-action-btn" title="Về trang chủ">
-            <span class="material-symbols-outlined">home</span>
-        </a>
-        <div class="t4-action-btn" title="Lượt xem">
-            <span class="material-symbols-outlined">visibility</span>
-            <span>{{ $event->views_count }}</span>
-        </div>
-    </div>
-    
-    <div class="t4-interaction-group">
-        <button id="t4-like-btn" class="t4-heart-btn {{ session()->has('liked_events.' . $event->id) ? 'liked' : '' }}" title="Thích sự kiện" data-event-id="{{ $event->id }}">
-            <span class="material-symbols-outlined {{ session()->has('liked_events.' . $event->id) ? 'font-fill' : '' }}">favorite</span>
-            <span id="likes-count">{{ $event->likes_count }}</span>
-        </button>
-        <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}" target="_blank" class="t4-action-btn" style="background: #1877F2; color: #fff; border: none;">
-            Chia sẻ
-        </a>
-        <button @click="navigator.clipboard.writeText(window.location.href); copied=true; setTimeout(()=>copied=false, 2000)" class="t4-action-btn relative">
-            <span class="material-symbols-outlined" style="font-size: 18px;">link</span>
-            <span x-show="copied" x-transition style="display:none;position:absolute;bottom:100%;left:50%;transform:translateX(-50%);margin-bottom:10px;background:#2C2520;color:white;font-size:11px;padding:4px 8px;border-radius:4px;white-space:nowrap;">Đã sao chép!</span>
-        </button>
     </div>
 </div>
 
@@ -565,7 +493,7 @@
     }
 
     // Lượt thích
-    const likeBtn = document.getElementById('t4-like-btn');
+    const likeBtn = document.getElementById('like-btn');
     if (likeBtn) {
         likeBtn.addEventListener('click', function() {
             const eventId = this.dataset.eventId;
@@ -583,10 +511,12 @@
                 if (data.success) {
                     countSpan.innerText = data.likes_count;
                     if (data.liked) {
-                        likeBtn.classList.add('liked');
+                        likeBtn.classList.remove('bg-white', 'text-slate-700', 'border-slate-200');
+                        likeBtn.classList.add('bg-orange-50', 'text-[#f97316]', 'border-orange-200');
                         likeBtn.querySelector('.material-symbols-outlined').classList.add('font-fill');
                     } else {
-                        likeBtn.classList.remove('liked');
+                        likeBtn.classList.remove('bg-orange-50', 'text-[#f97316]', 'border-orange-200');
+                        likeBtn.classList.add('bg-white', 'text-slate-700', 'border-slate-200');
                         likeBtn.querySelector('.material-symbols-outlined').classList.remove('font-fill');
                     }
                 } else {

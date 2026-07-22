@@ -719,7 +719,7 @@
         }
     </script>
 
-    @push('scripts')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js" referrerpolicy="origin"></script>
     <script>
         tinymce.init({
             selector: 'textarea[id^="content"]',
@@ -735,70 +735,162 @@
             }
         });
     </script>
-</body>
-</html>
 
 @php
     $apData = $allSpeakers->map(fn($s) => ['id' => $s->id, 'name' => $s->name, 'bio' => Str::limit($s->bio, 30), 'photo' => $s->photo_url ? asset($s->photo_url) : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80', 'type' => $s->type ?? 'speaker'])->values()->toArray();
     $ssData = $event->speakers->where('pivot.role', 'speaker')->values()->map(fn($s) => ['id' => $s->id, 'name' => $s->name, 'photo' => $s->photo_url ? asset($s->photo_url) : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80'])->toArray();
-
 @endphp
-<script>
-    document.addEventListener('alpine:init', () => {
-        Alpine.data('scheduleManager', (initialItems = []) => ({
-            items: initialItems.map(i => ({ ...i, _saved: true })),
-            addItem() {
-                this.items.push({ id: Date.now().toString(), start_time: '', end_time: '', title: '', _saved: false });
-                this.$nextTick(() => { this.syncData(); });
-            },
-            removeItem(index) {
-                this.items.splice(index, 1);
-                this.$nextTick(() => { this.syncData(); });
-            },
-            syncData() {
-                if (typeof window.syncData === 'function') {
-                    window.syncData();
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('scheduleManager', (initialItems = []) => ({
+                items: initialItems.map(i => ({ ...i, _saved: true })),
+                addItem() {
+                    this.items.push({ id: Date.now().toString(), start_time: '', end_time: '', title: '', _saved: false });
+                    this.$nextTick(() => { this.syncData(); });
+                },
+                removeItem(index) {
+                    this.items.splice(index, 1);
+                    this.$nextTick(() => { this.syncData(); });
+                },
+                syncData() {
+                    if (typeof window.syncData === 'function') {
+                        window.syncData();
+                    }
                 }
+            }));
+
+            Alpine.data('speakerManager', () => ({
+                allPersons: @json($apData),
+                selectedSpeakers: @json($ssData),
+                dropdownOpen: false,
+                searchQuery: '',
+
+                openDropdown() {
+                    this.searchQuery = '';
+                    this.dropdownOpen = true;
+                    setTimeout(() => this.$refs.searchInput.focus(), 100);
+                },
+                
+                closeDropdown() {
+                    this.dropdownOpen = false;
+                },
+
+                get filteredPersons() {
+                    let baseList = this.allPersons;
+                    if (this.searchQuery === '') return baseList;
+                    return baseList.filter(p => p.name.toLowerCase().includes(this.searchQuery.toLowerCase()));
+                },
+
+                isSelected(id) {
+                    return this.selectedSpeakers.some(p => p.id === id);
+                },
+
+                togglePerson(person) {
+                    if (this.isSelected(person.id)) {
+                        this.selectedSpeakers = this.selectedSpeakers.filter(p => p.id !== person.id);
+                    } else {
+                        this.selectedSpeakers.push(person);
+                    }
+                },
+
+                removePerson(id) {
+                    this.selectedSpeakers = this.selectedSpeakers.filter(p => p.id !== id);
+                }
+            }))
+        });
+
+        window.syncData = function() {
+            // Optional: called on input change, could be used for auto-save
+        };
+
+        async function saveDesignThen(callback) {
+            // Collect data
+            const payload = {
+                _token: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                title: document.getElementById('inTieuDe') ? document.getElementById('inTieuDe').value : '',
+                description: document.getElementById('inMoTa') ? document.getElementById('inMoTa').value : '',
+                sub_banner_path: document.getElementById('inSubBannerPath') ? document.getElementById('inSubBannerPath').value : '',
+                event_template: document.getElementById('inEventTemplate') ? document.getElementById('inEventTemplate').value : '',
+            };
+
+            // Collect schedule
+            const scheduleEl = document.getElementById('inLichHoatDongData');
+            if (scheduleEl) {
+                payload.schedule_data = scheduleEl.value;
             }
-        }));
 
-        Alpine.data('speakerManager', () => ({
-            allPersons: @json($apData),
-            selectedSpeakers: @json($ssData),
-            dropdownOpen: false,
-            searchQuery: '',
+            // Collect speakers from Alpine
+            const speakerManagerEl = document.querySelector('[x-data^="speakerManager"]');
+            if (speakerManagerEl) {
+                try {
+                    const speakerData = Alpine.evaluate(speakerManagerEl, 'selectedSpeakers');
+                    if (speakerData) {
+                        payload.speaker_ids = speakerData.map(s => s.id);
+                    }
+                } catch(e) {}
+            }
 
-            openDropdown() {
-                this.searchQuery = '';
-                this.dropdownOpen = true;
-                setTimeout(() => this.$refs.searchInput.focus(), 100);
-            },
-            
-            closeDropdown() {
-                this.dropdownOpen = false;
-            },
-
-            get filteredPersons() {
-                let baseList = this.allPersons;
-                if (this.searchQuery === '') return baseList;
-                return baseList.filter(p => p.name.toLowerCase().includes(this.searchQuery.toLowerCase()));
-            },
-
-            isSelected(id) {
-                return this.selectedSpeakers.some(p => p.id === id);
-            },
-
-            togglePerson(person) {
-                if (this.isSelected(person.id)) {
-                    this.selectedSpeakers = this.selectedSpeakers.filter(p => p.id !== person.id);
+            // Collect media slots
+            payload.media_slots = [];
+            const slots = document.querySelectorAll('.media-slot-wrapper');
+            slots.forEach(slotEl => {
+                const i = slotEl.getAttribute('data-slot-wrap');
+                if (!i) return;
+                
+                let content = '';
+                if (window.tinymce && tinymce.get('content' + i)) {
+                    content = tinymce.get('content' + i).getContent();
                 } else {
-                    this.selectedSpeakers.push(person);
+                    const ta = document.getElementById('content' + i);
+                    if (ta) content = ta.value;
                 }
-            },
+                
+                let mediaPath = '';
+                const mediaEl = document.getElementById('slot' + i)?.querySelector('[data-path]');
+                if (mediaEl) {
+                    mediaPath = mediaEl.getAttribute('data-path');
+                }
+                
+                payload.media_slots.push({
+                    content: content,
+                    url: mediaPath,
+                    caption: document.getElementById('caption' + i) ? document.getElementById('caption' + i).value : '',
+                    action_url: document.getElementById('actionUrl' + i) ? document.getElementById('actionUrl' + i).value : '',
+                    document_url: document.getElementById('docFileUrl' + i) ? document.getElementById('docFileUrl' + i).value : '',
+                    document_name: document.getElementById('docFileName' + i) ? document.getElementById('docFileName' + i).value : '',
+                });
+            });
 
-            removePerson(id) {
-                this.selectedSpeakers = this.selectedSpeakers.filter(p => p.id !== id);
+            // Prevent double click by disabling buttons temporarily
+            const btns = document.querySelectorAll('button');
+            btns.forEach(b => b.disabled = true);
+
+            try {
+                const response = await fetch("{{ route('admin.events.save_design', $event) }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (response.ok) {
+                    if (callback) callback();
+                } else {
+                    alert('Có lỗi xảy ra khi lưu thiết kế.');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Có lỗi xảy ra khi kết nối đến máy chủ.');
+            } finally {
+                btns.forEach(b => b.disabled = false);
             }
-        }))
-    });
-</script>
+        }
+
+        function closeEditor() {
+            window.location.href = "{{ route('admin.events.index') }}";
+        }
+    </script>
+</body>
+</html>

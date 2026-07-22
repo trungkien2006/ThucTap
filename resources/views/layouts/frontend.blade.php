@@ -202,8 +202,8 @@
         </div>
 
         <!-- Mobile Menu -->
-        <div x-show="mobileOpen" style="display: none;" class="fixed inset-0 z-50 lg:hidden">
-            <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="mobileOpen = false"
+        <div x-show="mobileOpen" style="display: none;" class="fixed inset-0 z-[9999] lg:hidden">
+            <div x-show="mobileOpen" class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="mobileOpen = false"
                  x-transition:enter="transition-opacity ease-linear duration-300"
                  x-transition:enter-start="opacity-0"
                  x-transition:enter-end="opacity-100"
@@ -211,7 +211,7 @@
                  x-transition:leave-start="opacity-100"
                  x-transition:leave-end="opacity-0"></div>
             
-            <div class="absolute inset-y-0 right-0 w-full max-w-sm bg-[#FFFBEA] p-6 shadow-2xl flex flex-col"
+            <div x-show="mobileOpen" class="absolute inset-y-0 right-0 w-full max-w-sm bg-paper p-6 shadow-2xl flex flex-col"
                  x-transition:enter="transition ease-in-out duration-300 transform"
                  x-transition:enter-start="translate-x-full"
                  x-transition:enter-end="translate-x-0"

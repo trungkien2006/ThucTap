@@ -64,6 +64,11 @@
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js" data-navigate-track></script>
 
     @stack('styles')
+    <style>
+        html, body {
+            touch-action: pan-y !important;
+        }
+    </style>
 </head>
 <body class="frontend-body antialiased bg-paper text-ink relative" x-data="{ scrolled: false, mobileOpen: false }" @scroll.window="scrolled = (window.pageYOffset > 40)">
     

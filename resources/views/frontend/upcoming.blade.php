@@ -30,30 +30,6 @@
             will-change: transform;
         }
     }
-    
-    /* Mobile Vertical Stack Fallback */
-    @media (max-width: 1023px) {
-        .upcoming-pinned-container {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-        .upcoming-vertical-stack {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-        }
-        .upcoming-panel {
-            width: 100%;
-            min-height: 100vh;
-            padding: 4rem 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
-    }
 
     /* Image Frame */
     .slide-image-frame {
@@ -68,14 +44,14 @@
     .slide-image-inner {
         width: 100%;
         height: 100%;
-        max-width: 90vw;
+        max-width: 100%;
         max-height: 60vh;
         border-radius: 24px;
         overflow: hidden;
         box-shadow: 0 30px 80px rgba(0,0,0,0.4);
         position: relative;
         /* Mobile adjustment */
-        margin-top: 15vh;
+        margin-top: 12vh;
     }
     
     @media (min-width: 1024px) {
@@ -102,7 +78,7 @@
 </style>
 
 <section id="upcoming-vertical" class="relative w-full z-[30] rounded-t-[3rem] shadow-[0_-20px_40px_-15px_rgba(0,0,0,0.05)] pt-12 lg:pt-16" style="background:#FFFBEA; font-family: 'Inter', sans-serif;">
-    <div class="upcoming-pinned-container">
+    <div class="upcoming-pinned-container hidden lg:block">
         
         <!-- Tiêu đề cố định -->
         <div class="absolute top-6 md:top-8 left-0 w-full z-30 pointer-events-none text-center px-6" data-aos="fade-down">
@@ -112,14 +88,14 @@
                 <div class="h-1.5 w-8 rounded-full" style="background:#FFE381;"></div>
             </div>
             <h2 class="font-barlow-condensed text-4xl md:text-5xl lg:text-5xl font-black uppercase tracking-tight text-[#1C1410] drop-shadow-md">
-                Các sự kiện <span style="color:#07A0C3;">sắp diễn ra</span>
+                Các sự kiện <span style="color:#07A0C3;">nổi bật</span>
             </h2>
         </div>
 
         <div class="upcoming-vertical-stack">
             
             @if($hasEvents)
-                @foreach($upcoming as $idx => $u)
+                @foreach(array_slice($upcoming, 0, 5) as $idx => $u)
                     @php 
                         $img = !empty($u['images']) ? $u['images'][0] : (!empty($u['img']) ? $u['img'] : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80');
                         $zIndex = $idx + 1;
@@ -240,6 +216,102 @@
         </script>
         @endif
     </div>
+
+    <!-- MOBILE VIEW (Horizontal Category Style Slider + Alpine Pagination) -->
+    <div class="block lg:hidden px-4 pb-8 pt-6"
+         x-data="{
+            items: {{ json_encode(collect($upcoming)->map(function($u) {
+                $img = !empty($u['images']) ? $u['images'][0] : (!empty($u['img']) ? $u['img'] : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80');
+                return ['name' => $u['name'], 'slug' => $u['slug'], 'date' => $u['date'], 'category' => $u['category'] ?? 'Sự kiện', 'img' => $img];
+            })->values()) }},
+            perPage: 3,
+            page: 0,
+            get totalPages() { return Math.ceil(this.items.length / this.perPage); },
+            get paged() { return this.items.slice(this.page * this.perPage, (this.page + 1) * this.perPage); },
+            goTo(p) { this.page = p; this.$nextTick(() => { if(this.$refs.featScrollBox) this.$refs.featScrollBox.scrollLeft = 0; }); }
+         }">
+        <!-- Tiêu đề -->
+        <div class="text-center mb-5">
+            <div class="flex items-center justify-center gap-2 mb-1">
+                <div class="h-1 w-6 rounded-full" style="background:#FFE381;"></div>
+                <span class="text-[11px] font-bold uppercase tracking-wider text-gray-500">Đừng bỏ lỡ</span>
+                <div class="h-1 w-6 rounded-full" style="background:#FFE381;"></div>
+            </div>
+            <h2 class="font-barlow-condensed text-3xl font-black uppercase text-[#1C1410]">
+                Các sự kiện <span style="color:#07A0C3;">sắp diễn ra</span>
+            </h2>
+        </div>
+
+        <template x-if="items.length === 0">
+            <p class="text-center text-gray-500 py-4">Hiện chưa có sự kiện nào sắp diễn ra.</p>
+        </template>
+
+        <!-- Horizontal scrollable category-style container -->
+        <div class="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 hide-scrollbar" x-ref="featScrollBox">
+            <template x-for="(item, i) in paged" :key="page + '-' + i">
+                <a :href="'/events/' + item.slug"
+                   class="snap-start shrink-0 w-[85%] group relative block rounded-2xl overflow-hidden bg-gray-900 shadow-sm transition-all duration-300"
+                   style="aspect-ratio: 16/9; min-height: 160px; text-decoration: none;">
+                    
+                    <!-- Background Image -->
+                    <img :src="item.img" :alt="item.name" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+
+                    <!-- Category Tag (Top Left Badge) -->
+                    <div class="absolute top-4 left-4 z-10">
+                        <div class="bg-white/95 px-3 py-1.5 rounded-xl border border-black shadow">
+                            <span class="text-[#1C1410] text-xs font-bold" x-text="item.category"></span>
+                        </div>
+                    </div>
+
+                    <!-- Overlay Gradient -->
+                    <div class="absolute inset-x-0 bottom-0 h-2/3 pointer-events-none"
+                         style="background: linear-gradient(to top, rgba(28,20,16,0.9) 0%, transparent 100%);"></div>
+
+                    <!-- Event Name Title (Bottom Left) -->
+                    <div class="absolute bottom-4 left-4 right-24 z-10 text-white">
+                        <h3 class="font-bold text-sm tracking-tight line-clamp-1 leading-tight" x-text="item.name"></h3>
+                    </div>
+
+                    <!-- Date Badge (Bottom Right) -->
+                    <div class="absolute bottom-4 right-4 z-10">
+                        <div class="flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-[10px] font-bold shadow-sm"
+                             style="background: rgba(7,160,195,0.95); color: #fff; backdrop-filter: blur(4px);">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                <line x1="16" y1="2" x2="16" y2="6"/>
+                                <line x1="8" y1="2" x2="8" y2="6"/>
+                                <line x1="3" y1="10" x2="21" y2="10"/>
+                            </svg>
+                            <span x-text="item.date"></span>
+                        </div>
+                    </div>
+                </a>
+            </template>
+        </div>
+
+        <!-- Pagination -->
+        <template x-if="totalPages > 1">
+            <div class="flex items-center justify-center gap-2 mt-2">
+                <button @click="goTo(page - 1)" :disabled="page === 0"
+                        class="w-8 h-8 rounded-full flex items-center justify-center text-sm border transition-all"
+                        :class="page === 0 ? 'border-gray-200 text-gray-300 cursor-not-allowed' : 'border-gray-300 text-gray-600 active:bg-gray-100'">
+                    ‹
+                </button>
+                <template x-for="p in totalPages" :key="p">
+                    <button @click="goTo(p - 1)"
+                            class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all"
+                            :class="page === p - 1 ? 'bg-[#07A0C3] text-white shadow' : 'text-gray-500 active:bg-gray-100'">
+                        <span x-text="p"></span>
+                    </button>
+                </template>
+                <button @click="goTo(page + 1)" :disabled="page >= totalPages - 1"
+                        class="w-8 h-8 rounded-full flex items-center justify-center text-sm border transition-all"
+                        :class="page >= totalPages - 1 ? 'border-gray-200 text-gray-300 cursor-not-allowed' : 'border-gray-300 text-gray-600 active:bg-gray-100'">
+                    ›
+                </button>
+            </div>
+        </template>
+    </div>
 </section>
 
 <!-- GSAP Animation Logic -->
@@ -255,7 +327,7 @@
                 const wrapper = document.querySelector('.upcoming-pinned-container');
                 const panels = gsap.utils.toArray('.upcoming-panel');
                 
-                if (panels.length > 1 && wrapper) {
+                if (wrapper) {
                     // Set initial positions: all panels start off-screen to the bottom-right
                     const isMobile = window.innerWidth < 1024;
                     const startX = isMobile ? 95 : 70;
@@ -313,7 +385,7 @@
                             trigger: "#master-wipe-container",
                             pin: true,
                             pinSpacing: false, // Allows #archive to slide over it
-                            scrub: 1, // Smooth scrubbing
+                            scrub: 1.5, // Smoother scrubbing for a premium feel
                             start: "top 72px", // Pins right below the site's sticky header
                             // Add extra scroll distance for the section wipe (1.5x) AND the cards scrolling PLUS window height for layered effect
                             end: () => {
@@ -338,7 +410,7 @@
                         
                         tl.to(panels[index - 1], {
                             xPercent: offsetEndX,
-                            ease: "none",
+                            ease: "power1.inOut",
                             duration: 2
                         }, label);
                         
@@ -346,14 +418,14 @@
                         tl.to(panel, {
                             xPercent: midX,
                             yPercent: 0,
-                            ease: "none",
+                            ease: "power1.inOut",
                             duration: 1
                         }, label);
                         
                         // Phase 2: Once aligned vertically, the next panel slides horizontally into the center
                         tl.to(panel, {
                             xPercent: 0,
-                            ease: "none",
+                            ease: "power1.out",
                             duration: 1
                         }, label + "+=1");
                     });
@@ -410,6 +482,16 @@
              panels.forEach(panel => {
                  panel.style.transform = 'none';
              });
+             
+             // Reset layout for mobile to flow normally instead of overlapping
+             const masterWipe = document.getElementById('master-wipe-container');
+             if (masterWipe) {
+                 masterWipe.style.display = 'block';
+             }
+             const featuredWrapper = document.getElementById('featured-events-wrapper');
+             if (featuredWrapper) {
+                 featuredWrapper.style.transform = 'none';
+             }
         }
     });
 </script>

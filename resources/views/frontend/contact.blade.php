@@ -1,13 +1,11 @@
 @extends('layouts.frontend')
 
 @section('content')
-<div class="bg-[#FFFBEA] min-h-screen relative overflow-hidden">
+<div class="min-h-screen relative overflow-hidden" style="background: transparent;">
     
     <!-- Hero Header (Cinematic) -->
-    <section class="relative w-full overflow-hidden" style="background:#1C1410; padding: 180px 0 160px 0;">
-        <!-- Ambient Blobs -->
-        <div class="absolute w-[400px] h-[400px] rounded-full blur-[100px] animate-drift" style="background: rgba(255, 227, 129, 0.15); top: -100px; left: -100px;"></div>
-        <div class="absolute w-[500px] h-[500px] rounded-full blur-[120px] animate-drift-reverse" style="background: rgba(7, 160, 195, 0.12); bottom: -150px; right: -150px;"></div>
+    <section class="relative w-full overflow-hidden" style="background: rgba(28, 20, 16, 0.85); backdrop-filter: blur(12px); padding: 180px 0 160px 0;">
+        <!-- Ambient Blobs Removed -->
         
         <!-- Grain Texture -->
         <div class="absolute inset-0 pointer-events-none animated-grain" style="opacity: 0.1;"></div>
@@ -66,7 +64,7 @@
     <div class="max-w-[1200px] mx-auto px-6 grid grid-cols-1 lg:grid-cols-5 gap-12 items-start py-20">
         
         <!-- Left Column: Form -->
-        <div class="lg:col-span-3 bg-white rounded-3xl p-8 md:p-10 shadow-sm" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="300">
+        <div class="lg:col-span-3 bg-white/80 backdrop-blur-xl border border-white/50 rounded-3xl p-8 md:p-10 shadow-sm" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="300">
             <div class="flex items-center gap-4 mb-8">
                 <div class="w-2 h-8 rounded-full" style="background: #E8C84A;"></div>
                 <h3 class="font-['Barlow_Condensed'] text-3xl font-bold uppercase text-[#1C1410]">Gửi tin nhắn</h3>
@@ -116,7 +114,7 @@
         <!-- Right Column: Map & Social -->
         <div class="lg:col-span-2 space-y-8 h-full flex flex-col" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="400">
             <!-- Map -->
-            <div class="bg-white p-2 rounded-[28px] shadow-sm flex-1 min-h-[400px] border border-slate-100 flex flex-col">
+            <div class="bg-white/80 backdrop-blur-xl p-2 rounded-[28px] shadow-sm flex-1 min-h-[400px] border border-white/50 flex flex-col">
                 <div class="w-full flex-1 rounded-[20px] overflow-hidden relative">
                     <iframe 
                         src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d8145.549605659171!2d105.93575372767192!3d20.598225418016444!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135cf62d752dc67%3A0xd79f03899b4e83d8!2zVHLGsOG7nW5nIENhbyDEkeG6s25nIEZQVCBQb2x5dGVjaG5pYyBjxqEgc-G7nyBIw6AgTmFt!5e0!3m2!1svi!2s!4v1782551811425!5m2!1svi!2s" 

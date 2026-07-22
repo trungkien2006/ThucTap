@@ -15,6 +15,7 @@ Route::get('/events/{slug}', [PublicEventController::class, 'show'])->name('even
 Route::post('/events/{id}/like', [PublicEventController::class, 'like'])->name('events.like');
 
 Route::get('/drive-proxy', [\App\Http\Controllers\Admin\FileProxyController::class, 'stream'])->name('file.proxy');
+Route::get('/image-optimize', [\App\Http\Controllers\Admin\FileProxyController::class, 'optimize'])->name('image.optimize');
 Route::get('/dashboard', function () {
     return redirect()->route('admin.dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -29,7 +30,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::get('/', function () {
         $currentYear = now()->year;
         $lastYear = now()->subYear()->year;
-        
+
         $totalViews = \App\Models\Event::sum('views_count') ?? 0;
         $totalLikes = \App\Models\Event::sum('likes_count') ?? 0;
         $totalEvents = \App\Models\Event::count();
@@ -105,9 +106,11 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
         }
 
         $popularCategories = \App\Models\Category::eventTypes()
-            ->withCount(['events' => function ($q) {
-                $q->where('created_at', '>=', now()->subYear());
-            }])
+            ->withCount([
+                'events' => function ($q) {
+                    $q->where('created_at', '>=', now()->subYear());
+                }
+            ])
             ->orderByDesc('events_count')
             ->take(6)
             ->get();
@@ -128,7 +131,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
             ->whereYear('created_at', $currentYear)
             ->groupBy('type', \Illuminate\Support\Facades\DB::raw($monthExpr))
             ->get();
-        
+
         $mediaTrendCollection = $mediaByMonth->groupBy('month');
         $imagesTrend = [];
         $videosTrend = [];
@@ -139,10 +142,21 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
         }
 
         return view('admin.dashboard', compact(
-            'totalViews', 'totalLikes', 'totalEvents', 'upcomingEventsCount',
-            'completedEventsCount', 'draftEventsCount', 'totalSpeakers', 'totalMedia',
-            'upcomingEvents', 'mostViewed', 'deltas', 'eventsTrend', 'categoriesData',
-            'imagesTrend', 'videosTrend'
+            'totalViews',
+            'totalLikes',
+            'totalEvents',
+            'upcomingEventsCount',
+            'completedEventsCount',
+            'draftEventsCount',
+            'totalSpeakers',
+            'totalMedia',
+            'upcomingEvents',
+            'mostViewed',
+            'deltas',
+            'eventsTrend',
+            'categoriesData',
+            'imagesTrend',
+            'videosTrend'
         ));
     })->name('dashboard');
 
@@ -187,4 +201,4 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::delete('/users/{user}', [\App\Http\Controllers\Admin\AdminUserController::class, 'destroy'])->name('users.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

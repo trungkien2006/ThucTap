@@ -79,13 +79,28 @@ class EventController extends Controller
                     if (in_array('upcoming', $statuses)) {
                         $q->orWhere(function ($sub) {
                             $sub->where('is_published', true)
-                                ->where('event_date', '>=', now());
+                                ->where('event_date', '>', now());
+                        });
+                    }
+                    if (in_array('running', $statuses)) {
+                        $q->orWhere(function ($sub) {
+                            $sub->where('is_published', true)
+                                ->where('event_date', '<=', now())
+                                ->where(function($sub2) {
+                                    $sub2->whereNull('end_date')->whereRaw('DATE(event_date) >= ?', [now()->toDateString()])
+                                         ->orWhere('end_date', '>=', now());
+                                });
                         });
                     }
                     if (in_array('completed', $statuses)) {
                         $q->orWhere(function ($sub) {
                             $sub->where('is_published', true)
-                                ->where('event_date', '<', now());
+                                ->where(function($sub2) {
+                                    $sub2->where('end_date', '<', now())
+                                         ->orWhere(function($sub3) {
+                                             $sub3->whereNull('end_date')->whereRaw('DATE(event_date) < ?', [now()->toDateString()]);
+                                         });
+                                });
                         });
                     }
                 });
@@ -676,7 +691,16 @@ class EventController extends Controller
     public function archiveIndex(Request $request)
     {
         $query = Event::query()->with('bannerImage', 'category', 'departments', 'creator')
-            ->where('status', 'archived')
+            ->where(function($q) {
+                $q->where('status', 'archived')
+                  ->orWhere(function($q2) {
+                      $q2->where('is_published', true)
+                         ->where(function($q3) {
+                             $q3->where('event_date', '<', now())
+                                ->orWhere('end_date', '<', now());
+                         });
+                  });
+            })
             ->whereNotNull('recap_drive_link')
             ->where('recap_drive_link', '!=', '');
 

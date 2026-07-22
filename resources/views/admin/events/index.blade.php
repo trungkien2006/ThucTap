@@ -28,6 +28,7 @@
         
         $statusOptions = [
             'upcoming' => 'Sắp diễn ra',
+            'running' => 'Đang diễn ra',
             'completed' => 'Đã kết thúc',
             'draft' => 'Bản nháp',
         ];
@@ -65,30 +66,30 @@
                 </label>
                 
                 <!-- Category Control -->
+                @if(count($selectedCategories) == 0)
                 <label class="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors group">
                     <i data-lucide="tag" class="w-4 h-4 shrink-0 pointer-events-none"></i>
                     <select onchange="addFilterTag('category_id', this)" class="font-medium bg-transparent border-none appearance-none focus:outline-none focus:ring-0 cursor-pointer hover:text-primary text-sm max-w-[150px] truncate">
                         <option value="">+ Danh mục</option>
                         @foreach($categories as $cat)
-                            @if(!in_array($cat->id, $selectedCategories))
-                                <option value="{{ $cat->id }}">{{ $cat->name }}</option>
-                            @endif
+                            <option value="{{ $cat->id }}">{{ $cat->name }}</option>
                         @endforeach
                     </select>
                 </label>
+                @endif
 
                 <!-- Department Control -->
+                @if(count($selectedDepartments) == 0)
                 <label class="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors group">
                     <i data-lucide="building" class="w-4 h-4 shrink-0 pointer-events-none"></i>
                     <select onchange="addFilterTag('department_id', this)" class="font-medium bg-transparent border-none appearance-none focus:outline-none focus:ring-0 cursor-pointer hover:text-primary text-sm max-w-[150px] truncate">
                         <option value="">+ Chuyên ngành</option>
                         @foreach($departments as $dept)
-                            @if(!in_array($dept->id, $selectedDepartments))
-                                <option value="{{ $dept->id }}">{{ $dept->name }}</option>
-                            @endif
+                            <option value="{{ $dept->id }}">{{ $dept->name }}</option>
                         @endforeach
                     </select>
                 </label>
+                @endif
 
                 <!-- Status Control -->
                 <label class="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors group">
@@ -112,20 +113,22 @@
 
             <!-- Secondary Filters Row (Year Slider and Active Tags) -->
             <div class="flex flex-wrap items-center justify-between gap-4 mt-2">
-                <!-- Year Range Slider -->
-                <div class="flex items-center gap-3 h-8 rounded-lg bg-transparent border-none group" style="min-width: 280px; max-width: 320px;">
-                    <i data-lucide="calendar-range" class="w-4 h-4 shrink-0 text-muted-foreground group-hover:text-primary transition-colors"></i>
-                    <span class="text-xs font-medium text-muted-foreground shrink-0 group-hover:text-primary transition-colors">Năm:</span>
-                    <span id="yearValStart" class="text-xs font-semibold shrink-0 w-8 text-right">{{ request('year_start', 2015) }}</span>
+                <!-- Year Range Combobox -->
+                <div class="flex items-center gap-2 h-9 rounded-lg bg-slate-50/80 border border-border/80 px-3 group focus-within:bg-white focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/10 transition-all">
+                    <i data-lucide="calendar-range" class="w-4 h-4 shrink-0 text-muted-foreground group-focus-within:text-primary transition-colors"></i>
+                    <span class="text-xs font-medium text-muted-foreground shrink-0 group-focus-within:text-primary transition-colors">Năm:</span>
                     
-                    <div class="flex-1 px-2 relative" style="height: 10px;">
-                        <div id="year-slider" style="height: 4px; border: none; box-shadow: none; background: #e2e8f0;" class="mt-1"></div>
-                    </div>
+                    <input list="year_suggestions" type="text" name="year_start" value="{{ request('year_start') }}" placeholder="Từ năm" class="w-[75px] text-xs font-semibold bg-transparent border-none p-0 focus:ring-0 text-center text-foreground placeholder:text-muted-foreground/60 placeholder:font-normal" onchange="document.getElementById('filterForm').submit()">
                     
-                    <span id="yearValEnd" class="text-xs font-semibold shrink-0 w-8">{{ request('year_end', date('Y') + 2) }}</span>
+                    <span class="text-muted-foreground text-xs font-medium">-</span>
                     
-                    <input type="hidden" name="year_start" id="year_start_input" value="{{ request('year_start', 2015) }}">
-                    <input type="hidden" name="year_end" id="year_end_input" value="{{ request('year_end', date('Y') + 2) }}">
+                    <input list="year_suggestions" type="text" name="year_end" value="{{ request('year_end') }}" placeholder="Đến năm" class="w-[75px] text-xs font-semibold bg-transparent border-none p-0 focus:ring-0 text-center text-foreground placeholder:text-muted-foreground/60 placeholder:font-normal" onchange="document.getElementById('filterForm').submit()">
+
+                    <datalist id="year_suggestions">
+                        @for($y = date('Y') + 5; $y >= 2015; $y--)
+                            <option value="{{ $y }}">
+                        @endfor
+                    </datalist>
                 </div>
 
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.css">
@@ -337,6 +340,8 @@
                                 <span class="inline-flex items-center h-5 px-2 rounded text-[10px] font-medium bg-amber-100 text-amber-700 whitespace-nowrap">Bản nháp</span>
                             @elseif($event->event_date < now())
                                 <span class="inline-flex items-center h-5 px-2 rounded text-[10px] font-medium bg-slate-100 text-slate-700 whitespace-nowrap">Đã kết thúc</span>
+                            @elseif($event->event_date <= now() && (!$event->end_date || $event->end_date >= now()))
+                                <span class="inline-flex items-center h-5 px-2 rounded text-[10px] font-medium bg-blue-100 text-blue-700 whitespace-nowrap">Đang diễn ra</span>
                             @else
                                 <span class="inline-flex items-center h-5 px-2 rounded text-[10px] font-medium bg-emerald-100 text-emerald-700 whitespace-nowrap">Sắp diễn ra</span>
                             @endif

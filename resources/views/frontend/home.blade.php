@@ -1,10 +1,99 @@
 @extends('layouts.frontend')
 
 @if(!empty($slides) && isset($slides[0]))
-    @push('styles')
-        <link rel="preload" as="image" href="{{ $slides[0]['image'] }}">
-    @endpush
+    <!-- Decorative Preloads commented out for local dev performance -->
+    {{-- @push('styles')
+        <link rel="preload" as="image" href="{{ $slides[0]['image'] }}" fetchpriority="high">
+        @if(isset($slides[1]))
+            <link rel="preload" as="image" href="{{ $slides[1]['image'] }}">
+        @endif
+        @if(isset($slides[2]))
+            <link rel="preload" as="image" href="{{ $slides[2]['image'] }}">
+        @endif
+    @endpush --}}
 @endif
+
+@push('styles')
+    <style>
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        @media (max-width: 1023px) {
+            #master-wipe-container {
+                display: flex !important;
+                flex-direction: column !important;
+                grid-template-columns: none !important;
+                height: auto !important;
+                overflow: hidden !important;
+            }
+            #master-wipe-container > div {
+                grid-area: auto !important;
+                position: relative !important;
+                width: 100% !important;
+                height: auto !important;
+            }
+            #featured-events-wrapper {
+                grid-area: auto !important;
+                position: relative !important;
+                width: 100% !important;
+                height: auto !important;
+                transform: none !important;
+                z-index: auto !important;
+            }
+            
+            /* Hero Slider Mobile Overrides */
+            .slider-content {
+                padding: 0 20px !important;
+                align-items: flex-end !important;
+                justify-content: flex-start !important;
+                padding-bottom: 60px !important;
+            }
+            .slide-info {
+                flex: 1 1 auto !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                margin-bottom: 0 !important;
+            }
+            .slide-title {
+                font-size: clamp(24px, 7vw, 36px) !important;
+                line-height: 1.1 !important;
+                margin-bottom: 12px !important;
+                word-wrap: break-word !important;
+                overflow-wrap: break-word !important;
+                white-space: normal !important;
+            }
+            .slide-desc {
+                font-size: 13px !important;
+                max-width: 100% !important;
+                margin-bottom: 20px !important;
+                line-height: 1.5 !important;
+            }
+            .slide-eyebrow {
+                font-size: 11px !important;
+                margin-bottom: 8px !important;
+            }
+            .btn-cta {
+                padding: 8px 18px !important;
+                font-size: 10px !important;
+            }
+            .btn-play {
+                width: 36px !important;
+                height: 36px !important;
+            }
+            .btn-play svg {
+                width: 12px !important;
+                height: 12px !important;
+            }
+            .card-strip {
+                display: none !important;
+            }
+        }
+    </style>
+@endpush
 
 @section('content')
 
@@ -76,14 +165,41 @@
         const progressBar  = document.getElementById('progressBar');
         const sliderEl     = document.getElementById('slider');
 
-        // Lazy load remaining background images after initial render
-        setTimeout(() => {
+        // Lazy load remaining background images when browser is idle
+        const loadRemainingBg = () => {
             bgLayers.forEach((layer, idx) => {
                 if (idx !== 0 && slides[idx]) {
-                    layer.style.backgroundImage = `url('${slides[idx].image}')`;
+                    const img = new Image();
+                    img.onload = () => { layer.style.backgroundImage = `url('${slides[idx].image}')`; };
+                    img.src = slides[idx].image;
                 }
             });
-        }, 500);
+        };
+        if ('requestIdleCallback' in window) {
+            requestIdleCallback(loadRemainingBg, { timeout: 1500 });
+        } else {
+            setTimeout(loadRemainingBg, 300);
+        }
+
+        /* ─── Shift title animation ─── */
+        function shiftTitle(text) {
+            slideTitle.innerHTML = '';
+            const chars = text.split('');
+            chars.forEach((char, i) => {
+                const span = document.createElement('span');
+                span.className = 'shift-char';
+                span.textContent = char === ' ' ? '\u00A0' : char;
+                span.style.transitionDelay = `${i * 25}ms`;
+                slideTitle.appendChild(span);
+            });
+            // Trigger the animation on next frame
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+                slideTitle.querySelectorAll('.shift-char').forEach(s => s.classList.add('is-visible'));
+            }));
+        }
+
+        // Initial title shift animation
+        shiftTitle(slides[0].title);
 
         /* ─── Card helpers ─── */
         function liveCards() { return Array.from(cardTrack.querySelectorAll('.dest-card')); }
@@ -94,7 +210,7 @@
             card.className     = 'dest-card';
             card.dataset.index = slideIdx;
             card.innerHTML =
-                `<img src="${sl.image}" alt="${sl.title}" loading="lazy">` +
+                `<img src="${sl.image}" alt="${sl.title}" loading="lazy" decoding="async">` +
                 `<div class="dest-card-overlay"></div>` +
                 `<div class="dest-card-info">` +
                     `<div class="dest-card-tag">${sl.tag}</div>` +
@@ -185,60 +301,67 @@
             }
 
             /* --- Card Track DOM updates with FLIP Animation --- */
-            // 1. Record original positions
-            const cards = Array.from(cardTrack.children);
+            // 1. Record original positions of DOM nodes
+            const oldCards = Array.from(cardTrack.children);
             const firstRects = new Map();
-            cards.forEach(c => firstRects.set(c.dataset.index, c.getBoundingClientRect()));
+            oldCards.forEach(c => firstRects.set(c, c.getBoundingClientRect()));
 
-            // 2. Extract the clicked card from queue, keep others intact, push to end
+            // 2. Remove the clicked card from the track
+            const clickedCard = oldCards[jumpQueueIndex];
+            if (clickedCard) {
+                clickedCard.remove();
+                firstRects.delete(clickedCard);
+            }
+
+            // 3. Update queue
             queue.splice(jumpQueueIndex, 1);
             queue.push(nextSlideIdx);
 
-            // 3. Rebuild track completely
-            cardTrack.innerHTML = '';
-            const count = Math.min(MAX_CARDS, queue.length);
-            for (let i = 0; i < count; i++) {
-                cardTrack.appendChild(makeCard(queue[i]));
-            }
+            // 4. Append new card to the end
+            const newSlideIdx = queue[Math.min(MAX_CARDS, queue.length) - 1];
+            const newCard = makeCard(newSlideIdx);
+            cardTrack.appendChild(newCard);
 
-            // 4. Invert and Play (FLIP) for smooth sliding
+            // 5. Update active class FIRST (this triggers flex-basis transition natively)
+            markFirstActive();
+
+            // 6. Invert and Play (FLIP) for smooth sliding
             const newCards = Array.from(cardTrack.children);
             newCards.forEach(c => {
-                if (parseInt(c.dataset.index) === nextSlideIdx) {
-                    return; // Bá» qua animation bay từ trái qua phải cho thẻ vừa click
-                }
-
-                const firstRect = firstRects.get(c.dataset.index);
+                const firstRect = firstRects.get(c);
                 if (firstRect) {
                     const lastRect = c.getBoundingClientRect();
                     const dx = firstRect.left - lastRect.left;
                     if (dx !== 0) {
-                        c.style.transition = 'none';
+                        // FIX: Only disable transform. Disabling all transitions ('none') kills flex-basis animation
+                        c.style.transition = 'transform 0s';
                         c.style.transform = `translateX(${dx}px)`;
                         requestAnimationFrame(() => requestAnimationFrame(() => {
-                            c.style.transition = 'transform 600ms cubic-bezier(0.4,0,0.2,1)';
-                            c.style.transform = 'translateX(0px)';
+                            // Restore CSS transitions for perfectly composed animations
+                            c.style.transition = '';
+                            c.style.transform = '';
                         }));
                     }
                 } else {
-                    // New card sliding in from right
+                    // New card sliding and fading in from right
                     const dx = (jumpQueueIndex + 1) * STEP;
-                    c.style.transition = 'none';
+                    c.style.transition = 'transform 0s, opacity 0s';
+                    c.style.opacity = '0';
                     c.style.transform = `translateX(${dx}px)`;
                     requestAnimationFrame(() => requestAnimationFrame(() => {
-                        c.style.transition = 'transform 550ms cubic-bezier(0.4,0,0.2,1)';
-                        c.style.transform = 'translateX(0px)';
+                        c.style.transition = 'transform 600ms cubic-bezier(0.4,0,0.2,1), opacity 600ms ease';
+                        c.style.opacity = '1';
+                        c.style.transform = '';
+                        setTimeout(() => { c.style.transition = ''; }, 600);
                     }));
                 }
             });
-
-            markFirstActive();
 
             /* --- Update text --- */
             slideInfo.classList.remove('is-active');
             setTimeout(() => {
                 slideEyebrow.textContent = slides[current].eyebrow;
-                slideTitle.textContent   = slides[current].title;
+                shiftTitle(slides[current].title);
                 slideDesc.textContent    = slides[current].description;
                 slideCta.textContent     = slides[current].cta_label;
                 slideCta.href            = slides[current].cta_url;
@@ -375,48 +498,64 @@
                     }
                 @endphp
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 max-w-[1200px] mx-auto">
+                <div class="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-6 md:grid md:grid-cols-2 lg:grid-cols-3 lg:gap-6 max-w-[1200px] mx-auto hide-scrollbar">
                     @foreach($gridItems as $idx => $item)
                         <a href="{{ $item['slug'] ? route('events.index', ['category' => $item['slug']]) : '#events' }}"
                             style="aspect-ratio: 16/9; min-height: 160px; opacity: 0;"
-                            class="event-category-card group relative block w-full rounded-2xl overflow-hidden {{ $item['image'] ? 'bg-gray-900' : 'bg-gray-200' }} shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                            class="event-category-card snap-start shrink-0 w-[85%] md:w-auto group relative block rounded-2xl overflow-hidden {{ $item['image'] ? 'bg-gray-900' : 'bg-gray-200' }} shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
 
                             @if($item['image'])
                                 <!-- Background Image -->
-                                <img src="{{ asset($item['image']) }}" alt="{{ $item['name'] }}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                                <img src="{{ asset($item['image']) }}" alt="{{ $item['name'] }}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-[1.15] opacity-60 group-hover:opacity-80">
                             @else
-                                <div class="absolute inset-0 w-full h-full bg-gray-200 flex items-center justify-center">
-                                    <i data-lucide="{{ $item['icon'] }}" class="w-12 h-12 text-gray-400"></i>
-                                </div>
+                                <div class="absolute inset-0 w-full h-full bg-gradient-to-br from-gray-800 to-gray-700 opacity-80 group-hover:opacity-100 transition-opacity"></div>
                             @endif
 
-                            <!-- Category Name (Top Left Badge) -->
-                            <div class="absolute top-4 left-4 lg:top-6 lg:left-6 z-10">
-                                <div class="bg-paper px-4 py-2 lg:px-5 lg:py-2.5 rounded-xl border-2 border-black shadow-lg">
-                                    <h3 class="text-[#1C1410] text-lg lg:text-xl font-bold tracking-tight group-hover:text-[#07A0C3] transition-colors leading-tight">
-                                        {{ $item['name'] }}
-                                    </h3>
-                                </div>
+                            <!-- Glassmorphism Gradient Overlay -->
+                            <div class="absolute inset-0 transition-opacity duration-500 opacity-60 group-hover:opacity-40"
+                                 style="background: linear-gradient(to right, rgba(28,20,16,0.9) 0%, rgba(28,20,16,0.4) 100%);"></div>
+
+                            <!-- Icon (Absolutely centered in the collapsed shape) -->
+                            <div class="absolute top-0 left-0 flex items-center justify-center z-10 cat-icon-container pointer-events-none">
+                                <i data-lucide="{{ $item['icon'] }}" class="w-12 h-12 lg:w-14 lg:h-14 text-white drop-shadow-md transition-transform duration-500 group-hover:scale-110"></i>
                             </div>
 
-                            <!-- Overlay gradient dưới thẻ (tạo chiều sâu) -->
-                            <div class="absolute inset-x-0 bottom-0 h-1/2 pointer-events-none transition-opacity duration-300 opacity-60 group-hover:opacity-100"
-                                 style="background: linear-gradient(to top, rgba(28,20,16,0.8) 0%, transparent 100%);"></div>
-
-                            <!-- Badge số lượng sự kiện góc dưới phải -->
-                            <div class="absolute bottom-4 right-4 z-10">
-                                <div class="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-bold shadow-sm transition-transform duration-300 group-hover:scale-105"
-                                     style="background: rgba(7,160,195,0.9); color: #fff; backdrop-filter: blur(4px);">
-                                    <i data-lucide="calendar" class="w-3 h-3"></i>
+                            <!-- Expanding Text Content -->
+                            <div class="absolute top-0 flex flex-col justify-center cat-text-container z-10 opacity-0 group-hover:opacity-100 transition-all duration-500 delay-75 transform -translate-x-4 group-hover:translate-x-0 pointer-events-none">
+                                <h3 class="text-white text-xl lg:text-2xl font-black tracking-tight drop-shadow-lg leading-tight mb-1 whitespace-normal pr-2">
+                                    {{ $item['name'] }}
+                                </h3>
+                                
+                                <div class="inline-flex items-center gap-1.5 text-[#FFE381] text-xs lg:text-sm font-bold uppercase tracking-wider drop-shadow-md mt-1">
+                                    <i data-lucide="calendar" class="w-4 h-4"></i>
                                     <span>{{ $item['count'] }} sự kiện</span>
                                 </div>
                             </div>
                         </a>
                     @endforeach
+
+                    <!-- Inline View All Button -->
+                    <a href="{{ route('events.index') }}"
+                        style="opacity: 0;"
+                        class="event-category-card group relative block bg-[#07A0C3] hover:bg-[#068ba9] shadow-md hover:shadow-2xl hover:z-50 cat-parallelogram-sm"
+                        title="Xem tất cả danh mục">
+                        
+                        <!-- Icon -->
+                        <div class="absolute top-0 left-0 flex items-center justify-center z-10 cat-sm-icon-container pointer-events-none">
+                            <i data-lucide="plus" class="w-10 h-10 lg:w-12 lg:h-12 text-white drop-shadow-md transition-transform duration-500 group-hover:rotate-90"></i>
+                        </div>
+
+                        <!-- Expanding Text Content -->
+                        <div class="absolute top-0 flex flex-col justify-center cat-sm-text-container z-10 opacity-0 group-hover:opacity-100 transition-all duration-500 delay-75 transform -translate-x-4 group-hover:translate-x-0 pointer-events-none">
+                            <h3 class="text-white text-2xl lg:text-3xl font-black tracking-tight drop-shadow-lg leading-tight uppercase whitespace-nowrap">
+                                Xem thêm
+                            </h3>
+                        </div>
+                    </a>
                 </div>
 
                 <!-- Decorative bottom — nằm ngoài vùng GSAP animation -->
-                <div class="mt-8 flex items-center justify-center gap-4 pointer-events-none select-none">
+                <div class="mt-10 flex items-center justify-center gap-4 pointer-events-none select-none">
                     <div class="h-px flex-1 max-w-[120px]" style="background: linear-gradient(to right, transparent, rgba(7,160,195,0.2));"></div>
                     <span class="text-[10px] font-bold uppercase tracking-[0.3em]" style="color: rgba(122,106,82,0.3);">
                         {{ $totalCount }} sự kiện đa dạng
@@ -447,9 +586,9 @@
                     )
                     // Cards slide up smoothly instead of bouncing
                     .fromTo('.event-category-card', 
-                        { opacity: 0, y: 40 }, 
-                        { opacity: 1, y: 0, duration: 0.6, stagger: 0.1, ease: "power3.out" }, 
-                        "-=0.3"
+                        { opacity: 0, y: 50, scale: 0.95 }, 
+                        { opacity: 1, y: 0, scale: 1, duration: 0.8, stagger: 0.15, ease: "power3.out" }, 
+                        "-=0.4"
                     );
                 }
             });
@@ -469,7 +608,7 @@
         </div>
 
         <!-- FEATURED EVENTS WRAPPER -->
-        <div id="featured-events-wrapper"
+        <div id="featured-events-wrapper" class="hidden lg:block"
             style="grid-area: 1 / 1; width: 100%; height: 100%; z-index: 40; background: #FFFBEA; transform: translateX(100%);">
             <section id="featured-events" class="relative z-10 h-full w-full pt-10 lg:pt-12 pb-16 overflow-hidden">
                 <div class="mx-auto max-w-[1400px] px-6 lg:px-10 h-full flex flex-col justify-start">
@@ -496,7 +635,7 @@
                         <div id="featured-cards-container"
                             class="flex gap-6 flex-nowrap absolute top-0 left-0 h-full items-center"
                             style="width: max-content; padding-right: 2rem;">
-                            @foreach($featuredEvents as $i => $ev)
+                            @foreach(array_slice($featuredEvents, 0, 4) as $i => $ev)
                                 <div class="shrink-0 featured-card-item rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
                                     style="width: 350px; height: 480px; max-width: 85vw;">
                                     <x-event-card :event="$ev" mode="grid" />
@@ -506,6 +645,76 @@
                     </div>
                 </div>
             </section>
+        </div>
+
+        <!-- MOBILE FEATURED EVENTS VIEW (Scrollable Container + Pagination) -->
+        <div class="block lg:hidden px-4 pb-10 pt-6" style="background:#FFFBEA;"
+             x-data="{
+                items: {{ json_encode(collect($featuredEvents)->map(function($ev) {
+                    return ['title' => $ev['title'], 'slug' => $ev['slug'], 'date' => $ev['date'], 'category' => $ev['category'] ?? 'Sự kiện', 'img' => $ev['img'] ?? 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80'];
+                })->values()) }},
+                perPage: 10,
+                page: 0,
+                get totalPages() { return Math.ceil(this.items.length / this.perPage); },
+                get paged() { return this.items.slice(this.page * this.perPage, (this.page + 1) * this.perPage); },
+                goTo(p) { this.page = p; this.$nextTick(() => { if(this.$refs.featScrollBox) this.$refs.featScrollBox.scrollTop = 0; }); }
+             }">
+            <!-- Tiêu đề -->
+            <div class="mb-4">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="h-6 w-1 rounded-full" style="background:#07A0C3;"></div>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-[#07A0C3]">Featured Events</span>
+                </div>
+                <h2 class="font-barlow-condensed text-3xl font-black uppercase text-[#1C1410]">
+                    Sự kiện nổi bật
+                </h2>
+            </div>
+
+            <!-- Scrollable inner container -->
+            <div class="relative rounded-2xl border border-black/5 bg-white/50" style="backdrop-filter: blur(4px);">
+                <div x-ref="featScrollBox" class="overflow-y-auto px-2 py-2 flex flex-col gap-2.5" style="max-height: 340px; scrollbar-width: thin;">
+                    <template x-for="(item, i) in paged" :key="page + '-' + i">
+                        <a :href="'/events/' + item.slug" class="flex gap-3 items-center bg-white p-2.5 rounded-xl shadow-sm border border-black/5 active:scale-[0.98] transition-all shrink-0" style="text-decoration: none;">
+                            <div class="w-[100px] h-[72px] shrink-0 rounded-lg overflow-hidden bg-gray-200">
+                                <img :src="item.img" :alt="item.title" class="w-full h-full object-cover">
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-[#07A0C3]" x-text="item.category"></span>
+                                <h3 class="font-bold text-[13px] text-[#1C1410] line-clamp-2 mt-0.5 leading-snug" x-text="item.title"></h3>
+                                <div class="flex items-center gap-1.5 text-[11px] text-gray-500 mt-1">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-width="2"/><line x1="16" y1="2" x2="16" y2="6" stroke-width="2"/><line x1="8" y1="2" x2="8" y2="6" stroke-width="2"/><line x1="3" y1="10" x2="21" y2="10" stroke-width="2"/></svg>
+                                    <span x-text="item.date"></span>
+                                </div>
+                            </div>
+                        </a>
+                    </template>
+                </div>
+                <!-- Bottom fade hint -->
+                <div class="absolute bottom-0 left-0 right-0 h-8 rounded-b-2xl pointer-events-none" style="background: linear-gradient(to top, rgba(255,251,234,0.95), transparent);"></div>
+            </div>
+
+            <!-- Pagination -->
+            <template x-if="totalPages > 1">
+                <div class="flex items-center justify-center gap-2 mt-4">
+                    <button @click="goTo(page - 1)" :disabled="page === 0"
+                            class="w-8 h-8 rounded-full flex items-center justify-center text-sm border transition-all"
+                            :class="page === 0 ? 'border-gray-200 text-gray-300 cursor-not-allowed' : 'border-gray-300 text-gray-600 active:bg-gray-100'">
+                        ‹
+                    </button>
+                    <template x-for="p in totalPages" :key="p">
+                        <button @click="goTo(p - 1)"
+                                class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all"
+                                :class="page === p - 1 ? 'bg-[#07A0C3] text-white shadow' : 'text-gray-500 active:bg-gray-100'">
+                            <span x-text="p"></span>
+                        </button>
+                    </template>
+                    <button @click="goTo(page + 1)" :disabled="page >= totalPages - 1"
+                            class="w-8 h-8 rounded-full flex items-center justify-center text-sm border transition-all"
+                            :class="page >= totalPages - 1 ? 'border-gray-200 text-gray-300 cursor-not-allowed' : 'border-gray-300 text-gray-600 active:bg-gray-100'">
+                        ›
+                    </button>
+                </div>
+            </template>
         </div>
     </div>
 
@@ -559,7 +768,26 @@
     @php $archiveJson = json_encode($archive); @endphp
 <section id="archive" class="relative overflow-hidden py-12 lg:py-16"
          style="position: -webkit-sticky; position: sticky; top: 72px; background:linear-gradient(160deg,#2D1F0A 0%,#3D2A0E 50%,#1C2A10 100%); z-index: 50;"
-         x-data="{ idx:0, archive:{{ $archiveJson }}, dir:1, get current(){return this.archive[this.idx];}, go(d){this.dir=d;let n=this.idx+d;if(n>=0&&n<this.archive.length)this.idx=n;} }">
+         x-data="{ 
+            yearIdx: 0, 
+            eventIdx: 0,
+            archive: {{ $archiveJson }}, 
+            dir: 1, 
+            get currentYear() { return this.archive[this.yearIdx]; }, 
+            get currentEvent() { return this.currentYear.events[this.eventIdx]; },
+            go(d) {
+                this.dir = d;
+                let n = this.eventIdx + d;
+                if(n >= 0 && n < this.currentYear.events.length) {
+                    this.eventIdx = n;
+                }
+            },
+            setYear(i) {
+                this.dir = i > this.yearIdx ? 1 : -1;
+                this.yearIdx = i;
+                this.eventIdx = 0;
+            }
+         }">
 
     <!-- Warm glow blobs -->
     <div class="pointer-events-none absolute inset-0 overflow-hidden">
@@ -585,14 +813,14 @@
                 </p>
             </div>
             <div class="hidden gap-3 lg:flex">
-                <button @click="go(-1)" :disabled="idx===0"
+                <button @click="go(-1)" :disabled="eventIdx === 0"
                     class="grid h-12 w-12 place-items-center rounded-full border-2 text-white/70 transition-all disabled:opacity-30"
                     style="border-color:rgba(255,227,129,0.3); background:rgba(255,227,129,0.05);"
                     onmouseover="this.style.borderColor='#FFE381';this.style.color='#FFE381'"
                     onmouseout="this.style.borderColor='rgba(255,227,129,0.3)';this.style.color='rgba(255,255,255,0.7)'">
                     <i data-lucide="chevron-left" class="h-5 w-5"></i>
                 </button>
-                <button @click="go(1)" :disabled="idx===archive.length-1"
+                <button @click="go(1)" :disabled="eventIdx === currentYear.events.length - 1"
                     class="grid h-12 w-12 place-items-center rounded-full border-2 text-white/70 transition-all disabled:opacity-30"
                     style="border-color:rgba(255,227,129,0.3); background:rgba(255,227,129,0.05);"
                     onmouseover="this.style.borderColor='#FFE381';this.style.color='#FFE381'"
@@ -608,24 +836,24 @@
                 <div class="font-barlow-condensed text-[28vw] font-black leading-[0.85] tracking-tighter lg:text-[18vw] pl-4 lg:pl-6 pr-4"
                      style="-webkit-text-fill-color:transparent;-webkit-background-clip:text;background-clip:text;
                             background-image:linear-gradient(160deg,#FFE381 30%,#E8C84A 70%,#07A0C3 100%);"
-                     x-text="current.year"
+                     x-text="currentYear.year"
                      x-transition:enter="transition ease-out duration-500"
                      x-transition:enter-start="opacity-0 translate-y-10"
                      x-transition:enter-end="opacity-100 translate-y-0"></div>
 
                 <div class="mt-6 pl-4 lg:pl-6">
-                    <a :href="'{{ route('archive') }}?year=' + current.year" class="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold transition-all hover:scale-105"
+                    <a :href="'{{ route('archive') }}?year=' + currentYear.year" class="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold transition-all hover:scale-105"
                        style="background:#FFE381; color:#1C1410;">
-                        Xem chi tiết năm <span x-text="current.year"></span> <i data-lucide="arrow-right" class="h-4 w-4"></i>
+                        Xem chi tiết năm <span x-text="currentYear.year"></span> <i data-lucide="arrow-right" class="h-4 w-4"></i>
                     </a>
                 </div>
 
                 <!-- Year tabs -->
                 <div class="mt-7 flex flex-wrap items-center gap-2 pl-4 lg:pl-6">
                     <template x-for="(a,i) in archive" :key="a.year">
-                        <button @click="dir=i>idx?1:-1;idx=i"
+                        <button @click="setYear(i)"
                             class="rounded-full px-4 py-1.5 text-sm font-bold font-mono transition-all"
-                            :style="i===idx
+                            :style="i===yearIdx
                                 ? 'background:#FFE381;color:#1C1410;box-shadow:0 4px 12px rgba(255,227,129,0.4);'
                                 : 'background:rgba(255,227,129,0.08);color:rgba(255,227,129,0.45);'">
                             <span x-text="a.year"></span>
@@ -633,19 +861,19 @@
                     </template>
                 </div>
 
-                <!-- THÊM MỚI — Timeline mini strip, chèn sau phần year tabs trong cột trái -->
+                <!-- Timeline mini strip -->
                 <div class="mt-10 pl-4 lg:pl-6 pr-4 hidden lg:block">
                     <div class="relative border-l-2 space-y-4" style="border-color: rgba(255,227,129,0.2);">
                         <template x-for="(a, i) in archive" :key="a.year">
-                            <div class="relative pl-5 cursor-pointer" @click="dir=i>idx?1:-1;idx=i">
+                            <div class="relative pl-5 cursor-pointer" @click="setYear(i)">
                                 <!-- Timeline dot -->
                                 <div class="absolute -left-[5px] top-1.5 h-2 w-2 rounded-full transition-all duration-300"
-                                     :style="i === idx 
+                                     :style="i === yearIdx 
                                         ? 'background:#FFE381; box-shadow:0 0 8px rgba(255,227,129,0.6); transform:scale(1.5);' 
                                         : 'background:rgba(255,227,129,0.25);'"></div>
                                 
                                 <div class="text-xs font-bold font-mono transition-colors duration-300"
-                                     :style="i === idx ? 'color:#FFE381;' : 'color:rgba(255,227,129,0.35);'"
+                                     :style="i === yearIdx ? 'color:#FFE381;' : 'color:rgba(255,227,129,0.35);'"
                                      x-text="a.year + ' · ' + (a.achievements[0] || '')"></div>
                             </div>
                         </template>
@@ -654,9 +882,9 @@
             </div>
 
             <div>
-                <a :href="current.featured_url" class="group relative block h-[280px] overflow-hidden rounded-2xl lg:h-[360px]"
+                <a :href="currentEvent.featured_url" class="group relative block h-[280px] overflow-hidden rounded-2xl lg:h-[360px]"
                      style="box-shadow:0 20px 60px rgba(255,227,129,0.15);">
-                    <img :src="current.img" :alt="current.featured_title" loading="lazy"
+                    <img :src="currentEvent.img" :alt="currentEvent.featured_title" loading="lazy"
                          class="h-full w-full object-cover transition-transform duration-[1500ms] group-hover:scale-105" />
                     <div class="absolute inset-0"
                          style="background:linear-gradient(to top,rgba(45,31,10,0.92) 0%,rgba(45,31,10,0.25) 60%,transparent 100%);"></div>
@@ -665,14 +893,14 @@
                     <div class="absolute bottom-6 left-5 right-5 z-20">
                         <div class="block w-fit">
                             <h3 class="font-barlow-condensed text-3xl font-black uppercase tracking-wide text-white lg:text-4xl transition-colors group-hover:text-[#FFE381]"
-                                x-text="current.featured_title"></h3>
+                                x-text="currentEvent.featured_title"></h3>
                         </div>
                     </div>
                 </a>
 
-                <p class="mt-5 text-base leading-relaxed lg:text-lg" style="color:rgba(255,227,129,0.7);" x-text="current.desc"></p>
+                <p class="mt-5 text-base leading-relaxed lg:text-lg" style="color:rgba(255,227,129,0.7);" x-text="currentEvent.desc"></p>
 
-                <!-- THÊM MỚI — Thêm thông tin chi tiết trên achievements, chèn sau <p class="mt-5 text-base..."> -->
+                <!-- Thêm thông tin chi tiết trên achievements -->
                 <div class="mt-5 flex flex-wrap gap-4">
                     <!-- Stat: Số sự kiện -->
                     <div class="flex items-center gap-2">
@@ -682,7 +910,7 @@
                         </div>
                         <div>
                             <div class="text-xs font-bold uppercase tracking-widest" style="color:rgba(255,227,129,0.5);">Tổ chức</div>
-                            <div class="text-sm font-bold text-white" x-text="current.achievements[0]"></div>
+                            <div class="text-sm font-bold text-white" x-text="currentYear.achievements[0]"></div>
                         </div>
                     </div>
                     <!-- Separator -->
@@ -695,27 +923,25 @@
                         </div>
                         <div>
                             <div class="text-xs font-bold uppercase tracking-widest" style="color:rgba(7,160,195,0.5);">Năm hoạt động</div>
-                            <div class="text-sm font-bold text-white" x-text="current.year"></div>
+                            <div class="text-sm font-bold text-white" x-text="currentYear.year"></div>
                         </div>
                     </div>
                 </div>
 
                 <div class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
-                    <template x-for="achieve in current.achievements" :key="achieve">
+                    <template x-for="achieve in currentYear.achievements" :key="achieve">
                         <div class="rounded-xl px-4 py-3 text-sm font-medium text-white"
                              style="background:rgba(255,227,129,0.10); border:1px solid rgba(255,227,129,0.25);"
                              x-text="achieve"></div>
                     </template>
                 </div>
 
-
-
                 <div class="mt-6 flex gap-3 lg:hidden">
-                    <button @click="go(-1)" :disabled="idx===0"
+                    <button @click="go(-1)" :disabled="eventIdx === 0"
                         class="grid h-11 w-11 place-items-center rounded-full border border-[#FFE381]/30 disabled:opacity-30">
                         <i data-lucide="chevron-left" class="h-5 w-5 text-white"></i>
                     </button>
-                    <button @click="go(1)" :disabled="idx===archive.length-1"
+                    <button @click="go(1)" :disabled="eventIdx === currentYear.events.length - 1"
                         class="grid h-11 w-11 place-items-center rounded-full border border-[#FFE381]/30 disabled:opacity-30">
                         <i data-lucide="chevron-right" class="h-5 w-5 text-white"></i>
                     </button>
@@ -957,7 +1183,6 @@
     <!-- Bottom gradient line -->
     <div class="absolute inset-x-0 bottom-0 h-1" style="background: linear-gradient(to right, transparent, rgba(4,240,106,0.3), rgba(7,160,195,0.3), transparent);"></div>
 </section>
-<div style="height: 40vh;"></div>
 </div>
 
 

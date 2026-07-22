@@ -20,6 +20,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Hanken+Grotesk:wght@600;700&family=Be+Vietnam+Pro:wght@400;600;700&family=Charm:wght@400;700&family=Montserrat:wght@400;600;700&family=Pacifico&family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Rowdies:wght@400;700&family=Barlow:wght@400;500;600;700;800;900&family=Barlow+Condensed:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
+    <!-- Three.js for 3D Background -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
     <!-- GSAP + ScrollTrigger -->
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
@@ -30,9 +33,19 @@
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js" data-navigate-track></script>
 
     @stack('styles')
+    <style>
+        html, body {
+            touch-action: pan-y !important;
+        }
+    </style>
 </head>
-<body class="frontend-body antialiased bg-paper text-ink relative" x-data="{ scrolled: false }" @scroll.window="scrolled = (window.pageYOffset > 40)">
+<body class="frontend-body antialiased bg-paper text-ink relative" x-data="{ scrolled: false, mobileOpen: false }" @scroll.window="scrolled = (window.pageYOffset > 40)">
     
+    <!-- 3D Interactive Background -->
+    @if(!request()->routeIs('home') && !request()->routeIs('archive'))
+        <canvas id="three-bg-canvas" class="fixed inset-0 z-[-1] pointer-events-none w-full h-full"></canvas>
+    @endif
+
     @php 
         $isHome = request()->routeIs('home'); 
     @endphp
@@ -42,7 +55,7 @@
         {!! $isHome ? ":class=\"scrolled ? 'backdrop-blur-xl border-b shadow-sm' : 'bg-transparent'\"" : "" !!}
         style="{{ !$isHome ? 'background:rgba(255,248,208,0.97);border-color:rgba(232,200,74,0.5);' : '' }}"
         {!! $isHome ? ":style=\"scrolled ? 'background:rgba(255,248,208,0.97);border-color:rgba(232,200,74,0.5);' : ''\"" : "" !!}
-        x-data="{ mobileOpen: false, megaMenuOpen: false }"
+        x-data="{ megaMenuOpen: false }"
     >
         <div class="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-5 lg:px-10 relative">
             <a href="{{ route('home') }}#top" wire:navigate class="group relative flex items-center h-8 w-[160px] sm:w-[240px]" x-data="{ showUni: true }" x-init="setInterval(() => { showUni = !showUni }, 3000)">
@@ -192,75 +205,75 @@
                 <i data-lucide="menu" class="h-6 w-6"></i>
             </button>
         </div>
+    </header>
 
-        <!-- Mobile Menu -->
-        <div x-show="mobileOpen" style="display: none;" class="fixed inset-0 z-50 lg:hidden">
-            <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="mobileOpen = false"
-                 x-transition:enter="transition-opacity ease-linear duration-300"
-                 x-transition:enter-start="opacity-0"
-                 x-transition:enter-end="opacity-100"
-                 x-transition:leave="transition-opacity ease-linear duration-300"
-                 x-transition:leave-start="opacity-100"
-                 x-transition:leave-end="opacity-0"></div>
+    <!-- Mobile Menu -->
+    <div x-show="mobileOpen" style="display: none;" class="fixed inset-0 z-[9999] lg:hidden">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="mobileOpen = false"
+             x-transition:enter="transition-opacity ease-linear duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition-opacity ease-linear duration-300"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"></div>
+        
+        <div class="absolute right-0 w-full max-w-sm bg-[#FFFBEA] p-6 shadow-2xl flex flex-col {{ $isHome ? 'inset-y-0' : 'top-0 h-fit rounded-b-[2rem]' }}"
+             x-transition:enter="transition ease-in-out duration-300 transform"
+             x-transition:enter-start="translate-x-full"
+             x-transition:enter-end="translate-x-0"
+             x-transition:leave="transition ease-in-out duration-300 transform"
+             x-transition:leave-start="translate-x-0"
+             x-transition:leave-end="translate-x-full">
             
-            <div class="absolute inset-y-0 right-0 w-full max-w-sm bg-[#FFFBEA] p-6 shadow-2xl flex flex-col"
-                 x-transition:enter="transition ease-in-out duration-300 transform"
-                 x-transition:enter-start="translate-x-full"
-                 x-transition:enter-end="translate-x-0"
-                 x-transition:leave="transition ease-in-out duration-300 transform"
-                 x-transition:leave-start="translate-x-0"
-                 x-transition:leave-end="translate-x-full">
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center gap-3">
+                    <img src="{{ asset('images/unievent-logo.png') }}?v={{ time() }}" alt="UniEvent" class="h-8 w-auto object-contain">
+                    <div class="h-5 w-[1px] bg-slate-300"></div>
+                    <img src="{{ asset('images/fpt-polytechnic.png') }}?v={{ time() }}" alt="FPT Polytechnic" class="h-8 w-auto object-contain">
+                </div>
+                <button @click="mobileOpen = false" class="p-2 text-[#7A6A52] hover:text-[#1C1410] bg-white rounded-full shadow-sm">
+                    <i data-lucide="x" class="h-5 w-5"></i>
+                </button>
+            </div>
+
+            <nav class="flex flex-col gap-4">
+                <a href="{{ route('home') }}#top" wire:navigate @click="mobileOpen = false" class="flex items-center justify-between py-3 text-lg font-semibold text-[#1C1410] border-b border-[#E8C84A]/20">
+                    Trang chủ
+                    <i data-lucide="chevron-right" class="h-4 w-4 text-[#7A6A52]"></i>
+                </a>
                 
-                <div class="flex items-center justify-between mb-8">
-                    <div class="flex items-center gap-3">
-                        <img src="{{ asset('images/unievent-logo.png') }}?v={{ time() }}" alt="UniEvent" class="h-8 w-auto object-contain">
-                        <div class="h-5 w-[1px] bg-slate-300"></div>
-                        <img src="{{ asset('images/fpt-polytechnic.png') }}?v={{ time() }}" alt="FPT Polytechnic" class="h-8 w-auto object-contain">
-                    </div>
-                    <button @click="mobileOpen = false" class="p-2 text-[#7A6A52] hover:text-[#1C1410] bg-white rounded-full shadow-sm">
-                        <i data-lucide="x" class="h-5 w-5"></i>
+                <div x-data="{ expanded: false }" class="border-b border-[#E8C84A]/20 pb-3">
+                    <button @click="expanded = !expanded" class="flex w-full items-center justify-between py-3 text-lg font-semibold text-[#1C1410]">
+                        Danh mục sự kiện
+                        <i data-lucide="chevron-down" class="h-4 w-4 text-[#7A6A52] transition-transform" :class="expanded ? 'rotate-180' : ''"></i>
                     </button>
-                </div>
-
-                <nav class="flex flex-col gap-4">
-                    <a href="{{ route('home') }}#top" wire:navigate @click="mobileOpen = false" class="flex items-center justify-between py-3 text-lg font-semibold text-[#1C1410] border-b border-[#E8C84A]/20">
-                        Trang chủ
-                        <i data-lucide="chevron-right" class="h-4 w-4 text-[#7A6A52]"></i>
-                    </a>
-                    
-                    <div x-data="{ expanded: false }" class="border-b border-[#E8C84A]/20 pb-3">
-                        <button @click="expanded = !expanded" class="flex w-full items-center justify-between py-3 text-lg font-semibold text-[#1C1410]">
-                            Danh mục sự kiện
-                            <i data-lucide="chevron-down" class="h-4 w-4 text-[#7A6A52] transition-transform" :class="expanded ? 'rotate-180' : ''"></i>
-                        </button>
-                        <div x-show="expanded" class="grid grid-cols-1 gap-2 pt-2 pb-2 pl-4">
-                            @if(isset($categories))
-                                @foreach($categories as $c)
-                                <a href="{{ isset($c['slug']) ? route('events.index', ['category' => $c['slug']]) : '#' }}" wire:navigate class="py-2 text-[#7A6A52] hover:text-[#07A0C3] font-medium" @click="mobileOpen = false">{{ $c['name'] }}</a>
-                                @endforeach
-                            @endif
-                        </div>
+                    <div x-show="expanded" class="grid grid-cols-1 gap-2 pt-2 pb-2 pl-4">
+                        @if(isset($categories))
+                            @foreach($categories as $c)
+                            <a href="{{ isset($c['slug']) ? route('events.index', ['category' => $c['slug']]) : '#' }}" wire:navigate class="py-2 text-[#7A6A52] hover:text-[#07A0C3] font-medium" @click="mobileOpen = false">{{ $c['name'] }}</a>
+                            @endforeach
+                        @endif
                     </div>
-
-                    <a href="{{ route('archive') }}" wire:navigate @click="mobileOpen = false" class="flex items-center justify-between py-3 text-lg font-semibold text-[#1C1410] border-b border-[#E8C84A]/20">
-                        Kho lưu trữ
-                        <i data-lucide="chevron-right" class="h-4 w-4 text-[#7A6A52]"></i>
-                    </a>
-                    <a href="{{ route('contact') }}" wire:navigate @click="mobileOpen = false" class="flex items-center justify-between py-3 text-lg font-semibold {{ request()->routeIs('contact') ? 'text-[#07A0C3]' : 'text-[#1C1410]' }} border-b border-[#E8C84A]/20">
-                        Liên hệ
-                        <i data-lucide="chevron-right" class="h-4 w-4 text-[#7A6A52]"></i>
-                    </a>
-                </nav>
-
-                <div class="mt-auto pt-6">
-                    <a href="{{ route('events.index') }}" wire:navigate @click="mobileOpen = false" class="flex w-full items-center justify-center gap-2 rounded-xl py-4 text-center text-lg font-bold text-[#1C1410] shadow-md transition-transform active:scale-95" style="background: #FFE381;">
-                        Khám phá ngay
-                        <i data-lucide="arrow-right" class="h-5 w-5"></i>
-                    </a>
                 </div>
+
+                <a href="{{ route('archive') }}" wire:navigate @click="mobileOpen = false" class="flex items-center justify-between py-3 text-lg font-semibold text-[#1C1410] border-b border-[#E8C84A]/20">
+                    Kho lưu trữ
+                    <i data-lucide="chevron-right" class="h-4 w-4 text-[#7A6A52]"></i>
+                </a>
+                <a href="{{ route('contact') }}" wire:navigate @click="mobileOpen = false" class="flex items-center justify-between py-3 text-lg font-semibold {{ request()->routeIs('contact') ? 'text-[#07A0C3]' : 'text-[#1C1410]' }} border-b border-[#E8C84A]/20">
+                    Liên hệ
+                    <i data-lucide="chevron-right" class="h-4 w-4 text-[#7A6A52]"></i>
+                </a>
+            </nav>
+
+            <div class="{{ $isHome ? 'mt-auto pt-6' : 'mt-8' }}">
+                <a href="{{ route('events.index') }}" wire:navigate @click="mobileOpen = false" class="flex w-full items-center justify-center gap-2 rounded-xl py-4 text-center text-lg font-bold text-[#1C1410] shadow-md transition-transform active:scale-95" style="background: #FFE381;">
+                    Khám phá ngay
+                    <i data-lucide="arrow-right" class="h-5 w-5"></i>
+                </a>
             </div>
         </div>
-    </header>
+    </div>
 
     <main class="w-full">
         @yield('content')
@@ -386,6 +399,10 @@
     
     @if(request()->is('events/*') || request()->is('admin/events/*/preview*') || request()->is('admin/template-preview/*'))
         @include('components.event-fab-menu')
+    @endif
+
+    @if(!request()->routeIs('home') && !request()->routeIs('archive'))
+        <script src="{{ asset('js/three-bg.js') }}"></script>
     @endif
 
 @if(request()->routeIs('home'))

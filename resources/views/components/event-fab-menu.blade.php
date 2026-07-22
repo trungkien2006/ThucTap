@@ -13,7 +13,32 @@
     }
 @endphp
 
-<div x-data="{ fabOpen: false, qrFullscreen: false }" class="fixed top-[90px] right-6 z-[60]">
+<div x-data="{ 
+    fabOpen: false, 
+    qrFullscreen: false,
+    touchStartX: 0,
+    touchStartY: 0,
+    handleTouchStart(e) {
+        this.touchStartX = e.changedTouches[0].screenX;
+        this.touchStartY = e.changedTouches[0].screenY;
+    },
+    handleTouchMove(e) {
+        const currentX = e.changedTouches[0].screenX;
+        const currentY = e.changedTouches[0].screenY;
+        const diffX = currentX - this.touchStartX;
+        const diffY = currentY - this.touchStartY;
+        
+        // If movement is horizontal, block browser history navigation swipe
+        if (Math.abs(diffX) > Math.abs(diffY)) {
+            if (e.cancelable) {
+                e.preventDefault();
+            }
+        }
+    }
+}" x-effect="
+    document.body.classList.toggle('overflow-hidden', fabOpen);
+    document.documentElement.classList.toggle('overflow-hidden', fabOpen);
+" class="fixed top-[90px] right-6 z-[60]">
     <!-- FAB Button -->
     <button @click="fabOpen = true" 
             class="flex items-center justify-center w-14 h-14 rounded-full shadow-[0_8px_20px_rgba(232,200,74,0.4)] transition-transform hover:scale-110 active:scale-95"
@@ -25,18 +50,21 @@
     <div x-show="fabOpen" 
          x-transition.opacity.duration.300ms
          @click="fabOpen = false"
+         @touchmove.prevent
          class="fixed inset-0 bg-black/50 z-40 backdrop-blur-sm"
          style="display: none;"></div>
 
     <!-- Drawer -->
     <div x-show="fabOpen"
+         @touchstart="handleTouchStart($event)"
+         @touchmove="handleTouchMove($event)"
          x-transition:enter="transition ease-out duration-400"
          x-transition:enter-start="translate-x-full"
          x-transition:enter-end="translate-x-0"
          x-transition:leave="transition ease-in duration-300"
          x-transition:leave-start="translate-x-0"
          x-transition:leave-end="translate-x-full"
-         class="fixed top-0 right-0 h-[100dvh] w-full md:w-[450px] bg-[#FFFBEA] z-50 shadow-2xl overflow-y-auto flex flex-col"
+         class="fixed top-0 right-0 h-[100dvh] w-2/3 md:w-[450px] bg-[#FFFBEA] z-50 shadow-2xl overflow-y-auto flex flex-col"
          style="display: none; border-left: 1px solid rgba(255,227,129,0.5);">
          
         <div class="flex items-center justify-between p-6 border-b sticky top-0 z-10" style="border-color: rgba(255,227,129,0.5); background: rgba(255,248,208,0.97); backdrop-filter: blur(8px);">

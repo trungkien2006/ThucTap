@@ -5,7 +5,7 @@
     $name = $isModel ? ($event->title ?? 'SỰ KIỆN ĐANG CẬP NHẬT') : ($event['name'] ?? $event['title'] ?? 'SỰ KIỆN ĐANG CẬP NHẬT');
     $slug = $isModel ? ($event->slug ?? '#') : ($event['slug'] ?? '#');
     $category = $isModel ? ($event->category->name ?? 'SỰ KIỆN') : ($event['category'] ?? 'SỰ KIỆN');
-    $images = $isModel ? ($event->bannerImage ? [\App\Helpers\FileHelper::url($event->bannerImage->url)] : []) : ($event['images'] ?? (isset($event['img']) ? [$event['img']] : []));
+    $images = $isModel ? ($event->bannerImage ? [\App\Helpers\FileHelper::url($event->bannerImage->url, true)] : []) : ($event['images'] ?? (isset($event['img']) ? [$event['img']] : []));
     $bgImg = !empty($images) && isset($images[0]) ? $images[0] : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80';
     
     $date = $isModel ? (isset($event->event_date) ? $event->event_date->format('d.m.Y') : 'Đang cập nhật') : ($event['date'] ?? 'Đang cập nhật');
@@ -64,7 +64,7 @@
     <a href="{{ route('events.show', $slug) }}" class="{{ $wrapperClass }}">
         
         <!-- 1. Background Image -->
-        <img src="{{ $bgImg }}" alt="{{ $name }}" class="absolute inset-0 w-full h-full object-cover transition-all duration-700 custom-blur-img group-hover:scale-110">
+        <img src="{{ $bgImg }}" alt="{{ $name }}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover transition-all duration-700 custom-blur-img group-hover:scale-110">
         
         <!-- 2. Dark Hover Overlay -->
         <div class="absolute inset-0 bg-[#1C1410]/60 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10"></div>

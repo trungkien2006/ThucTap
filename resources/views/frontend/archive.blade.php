@@ -205,35 +205,139 @@
 </section>
 
 <!-- SEARCH/FILTER SECTION -->
-<section class="mb-16 flex flex-col md:flex-row justify-between items-end gap-8 border-b border-tertiary/10 pb-8">
-<div class="w-full md:w-1/2">
-<div class="flex items-center gap-2 group border-b border-primary/30 focus-within:border-secondary transition-colors py-2">
-<span class="material-symbols-outlined text-tertiary">search</span>
-<input x-model="searchQuery" class="bg-transparent border-none focus:ring-0 w-full placeholder:italic text-lg" placeholder="Tìm kiếm ký ức..." type="text"/>
-</div>
-</div>
-<div class="flex flex-wrap items-center gap-4">
-<select x-model="selectedYear" class="bg-white/50 pl-4 pr-10 py-2 rounded-full border border-tertiary/20 text-sm cursor-pointer hover:bg-white transition-colors focus:ring-secondary outline-none text-on-surface">
-    <option value="">Tất cả các năm</option>
-    @foreach($archiveYears as $year)
-        <option value="{{ $year }}">Năm {{ $year }}</option>
-    @endforeach
-</select>
-<select x-model="selectedMonth" class="bg-white/50 pl-4 pr-10 py-2 rounded-full border border-tertiary/20 text-sm cursor-pointer hover:bg-white transition-colors focus:ring-secondary outline-none text-on-surface">
-    <option value="">Tất cả tháng</option>
-    <template x-for="month in 12" :key="month">
-        <option :value="month" x-text="'Tháng ' + month"></option>
-    </template>
-</select>
-<select x-model="selectedCategory" class="bg-white/50 pl-4 pr-10 py-2 rounded-full border border-tertiary/20 text-sm cursor-pointer hover:bg-white transition-colors focus:ring-secondary outline-none text-on-surface">
-    <option value="">Mọi danh mục</option>
-    @foreach($categories as $cat)
-        <option value="{{ $cat['name'] }}">{{ $cat['desc'] }}</option>
-    @endforeach
-</select>
-<div class="ml-4 text-on-surface-variant font-label-handwritten text-xl" x-text="'📸 Đang hiển thị ' + filteredEvents.length + ' kỷ niệm'">
+<section class="mb-16 bg-white/70 backdrop-blur-md rounded-2xl p-6 md:p-8 border border-tertiary/20 shadow-md relative overflow-hidden">
+    <!-- Decorative Washi Tape -->
+    <div class="absolute -top-3 right-10 washi-tape-amber h-7 w-28 rotate-[4deg] z-10 opacity-70 jagged-tape"></div>
+
+    <div class="flex flex-col gap-6">
+        <!-- Top bar: Heading & Stats Counter Badge -->
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-tertiary/10 pb-4">
+            <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-tertiary text-2xl">tune</span>
+                <h2 class="font-label-handwritten text-2xl text-on-surface font-bold">Bộ lọc tìm kiếm ký ức</h2>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <div class="bg-primary/10 text-primary px-4 py-1.5 rounded-full text-sm font-semibold flex items-center gap-2">
+                    <span class="material-symbols-outlined text-base">photo_library</span>
+                    <span x-text="'Hiển thị ' + filteredEvents.length + ' / ' + events.length + ' kỷ niệm'"></span>
                 </div>
-</div>
+                
+                <button x-show="hasActiveFilters" 
+                        @click="resetFilters()"
+                        x-transition:enter="transition ease-out duration-200"
+                        x-transition:enter-start="opacity-0 scale-95"
+                        x-transition:enter-end="opacity-100 scale-100"
+                        class="text-xs text-error hover:text-error/80 font-bold bg-error/10 hover:bg-error/20 px-3 py-1.5 rounded-full transition-all flex items-center gap-1 cursor-pointer">
+                    <span class="material-symbols-outlined text-sm">restart_alt</span>
+                    Xóa lọc
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Controls Grid: Search Input + Select Dropdowns -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+            <!-- Search Input (Span 5 cols) -->
+            <div class="md:col-span-5 relative">
+                <div class="flex items-center gap-2 bg-[#fff8f5] px-4 py-2.5 rounded-xl border border-tertiary/20 focus-within:border-secondary focus-within:ring-2 focus-within:ring-secondary/30 transition-all shadow-sm">
+                    <span class="material-symbols-outlined text-tertiary">search</span>
+                    <input x-model="searchQuery" 
+                           class="bg-transparent border-none focus:ring-0 w-full placeholder:italic text-base text-on-surface placeholder:text-on-surface-variant/50 outline-none" 
+                           placeholder="Tìm theo tên sự kiện, nội dung..." 
+                           type="text"/>
+                    <button x-show="searchQuery.length > 0" 
+                            @click="searchQuery = ''" 
+                            class="text-on-surface-variant/50 hover:text-on-surface transition-colors p-0.5 rounded-full"
+                            title="Xóa từ khóa">
+                        <span class="material-symbols-outlined text-base block">close</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dropdown Selects Container (Span 7 cols) -->
+            <div class="md:col-span-7 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <!-- Year Select -->
+                <div class="relative flex items-center">
+                    <span class="material-symbols-outlined text-tertiary text-lg absolute left-3 pointer-events-none z-10">calendar_today</span>
+                    <select x-model="selectedYear" 
+                            class="w-full bg-[#fff8f5] hover:bg-white pl-9 pr-8 py-2.5 rounded-xl border border-tertiary/20 text-sm cursor-pointer transition-all focus:border-secondary focus:ring-2 focus:ring-secondary/30 outline-none text-on-surface font-medium appearance-none shadow-sm">
+                        <option value="">Tất cả các năm</option>
+                        @foreach($archiveYears as $year)
+                            <option value="{{ $year }}">Năm {{ $year }}</option>
+                        @endforeach
+                    </select>
+                    <span class="material-symbols-outlined text-tertiary/60 text-lg absolute right-2.5 pointer-events-none">expand_more</span>
+                </div>
+
+                <!-- Month Select -->
+                <div class="relative flex items-center">
+                    <span class="material-symbols-outlined text-tertiary text-lg absolute left-3 pointer-events-none z-10">event</span>
+                    <select x-model="selectedMonth" 
+                            class="w-full bg-[#fff8f5] hover:bg-white pl-9 pr-8 py-2.5 rounded-xl border border-tertiary/20 text-sm cursor-pointer transition-all focus:border-secondary focus:ring-2 focus:ring-secondary/30 outline-none text-on-surface font-medium appearance-none shadow-sm">
+                        <option value="">Tất cả tháng</option>
+                        <template x-for="month in 12" :key="month">
+                            <option :value="month" x-text="'Tháng ' + month"></option>
+                        </template>
+                    </select>
+                    <span class="material-symbols-outlined text-tertiary/60 text-lg absolute right-2.5 pointer-events-none">expand_more</span>
+                </div>
+
+                <!-- Category Select -->
+                <div class="relative flex items-center">
+                    <span class="material-symbols-outlined text-tertiary text-lg absolute left-3 pointer-events-none z-10">category</span>
+                    <select x-model="selectedCategory" 
+                            class="w-full bg-[#fff8f5] hover:bg-white pl-9 pr-8 py-2.5 rounded-xl border border-tertiary/20 text-sm cursor-pointer transition-all focus:border-secondary focus:ring-2 focus:ring-secondary/30 outline-none text-on-surface font-medium appearance-none shadow-sm">
+                        <option value="">Mọi danh mục</option>
+                        @foreach($categories as $cat)
+                            <option value="{{ $cat['name'] }}">{{ $cat['desc'] }}</option>
+                        @endforeach
+                    </select>
+                    <span class="material-symbols-outlined text-tertiary/60 text-lg absolute right-2.5 pointer-events-none">expand_more</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Filter Badges Bar (Dynamic Chips) -->
+        <div x-show="hasActiveFilters" 
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 -translate-y-1"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             class="flex flex-wrap items-center gap-2 pt-2 border-t border-tertiary/10 text-xs">
+            <span class="text-on-surface-variant font-medium">Bộ lọc đang dùng:</span>
+
+            <!-- Search Query Tag -->
+            <template x-if="searchQuery.trim() !== ''">
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 border border-amber-300 font-medium">
+                    <span>Từ khóa: "<strong x-text="searchQuery"></strong>"</span>
+                    <button @click="searchQuery = ''" class="hover:text-red-700 ml-0.5" title="Xóa từ khóa"><span class="material-symbols-outlined text-xs block">close</span></button>
+                </span>
+            </template>
+
+            <!-- Year Tag -->
+            <template x-if="selectedYear !== ''">
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300 font-medium">
+                    <span x-text="'Năm ' + selectedYear"></span>
+                    <button @click="selectedYear = ''" class="hover:text-red-700 ml-0.5" title="Bỏ lọc năm"><span class="material-symbols-outlined text-xs block">close</span></button>
+                </span>
+            </template>
+
+            <!-- Month Tag -->
+            <template x-if="selectedMonth !== ''">
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-sky-100 text-sky-900 border border-sky-300 font-medium">
+                    <span x-text="'Tháng ' + selectedMonth"></span>
+                    <button @click="selectedMonth = ''" class="hover:text-red-700 ml-0.5" title="Bỏ lọc tháng"><span class="material-symbols-outlined text-xs block">close</span></button>
+                </span>
+            </template>
+
+            <!-- Category Tag -->
+            <template x-if="selectedCategory !== ''">
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-purple-100 text-purple-900 border border-purple-300 font-medium">
+                    <span x-text="'Danh mục: ' + selectedCategory"></span>
+                    <button @click="selectedCategory = ''" class="hover:text-red-700 ml-0.5" title="Bỏ lọc danh mục"><span class="material-symbols-outlined text-xs block">close</span></button>
+                </span>
+            </template>
+        </div>
+    </div>
 </section>
 
 <!-- PHOTO WALL GRID -->
@@ -336,6 +440,20 @@
             
             initData(data) {
                 this.events = data;
+            },
+
+            resetFilters() {
+                this.searchQuery = '';
+                this.selectedCategory = '';
+                this.selectedMonth = '';
+                this.selectedYear = '';
+            },
+
+            get hasActiveFilters() {
+                return this.searchQuery.trim() !== '' || 
+                       this.selectedCategory !== '' || 
+                       this.selectedMonth !== '' || 
+                       this.selectedYear !== '';
             },
             
             get filteredEvents() {

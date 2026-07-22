@@ -65,7 +65,7 @@
 
     @stack('styles')
 </head>
-<body class="frontend-body antialiased bg-paper text-ink relative" x-data="{ scrolled: false }" @scroll.window="scrolled = (window.pageYOffset > 40)">
+<body class="frontend-body antialiased bg-paper text-ink relative" x-data="{ scrolled: false, mobileOpen: false }" @scroll.window="scrolled = (window.pageYOffset > 40)">
     
     <!-- 3D Interactive Background -->
     @if(!request()->routeIs('home') && !request()->routeIs('archive'))
@@ -81,7 +81,7 @@
         {!! $isHome ? ":class=\"scrolled ? 'backdrop-blur-xl border-b shadow-sm' : 'bg-transparent'\"" : "" !!}
         style="{{ !$isHome ? 'background:rgba(255,248,208,0.97);border-color:rgba(232,200,74,0.5);' : '' }}"
         {!! $isHome ? ":style=\"scrolled ? 'background:rgba(255,248,208,0.97);border-color:rgba(232,200,74,0.5);' : ''\"" : "" !!}
-        x-data="{ mobileOpen: false, megaMenuOpen: false }"
+        x-data="{ megaMenuOpen: false }"
     >
         <div class="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-5 lg:px-10 relative">
             <a href="{{ route('home') }}#top" wire:navigate class="group relative flex items-center h-8 w-[160px] sm:w-[240px]" x-data="{ showUni: true }" x-init="setInterval(() => { showUni = !showUni }, 3000)">

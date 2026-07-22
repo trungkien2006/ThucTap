@@ -1,6 +1,37 @@
 <!DOCTYPE html>
 <html lang="vi" class="scroll-smooth">
 <head>
+    <script>
+        (function() {
+            function getDeviceCookie() {
+                var match = document.cookie.match(new RegExp('(^| )device_view=([^;]+)'));
+                return match ? match[2] : null;
+            }
+            function setDeviceCookie(value) {
+                var d = new Date();
+                d.setTime(d.getTime() + (365*24*60*60*1000));
+                document.cookie = "device_view=" + value + ";path=/;expires=" + d.toUTCString();
+            }
+            
+            var width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+            var currentDevice = width < 1024 ? 'mobile' : 'desktop';
+            var cookieVal = getDeviceCookie();
+            
+            if (cookieVal !== currentDevice) {
+                setDeviceCookie(currentDevice);
+                window.location.reload();
+            }
+            
+            window.addEventListener('resize', function() {
+                var newWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+                var newDevice = newWidth < 1024 ? 'mobile' : 'desktop';
+                if (getDeviceCookie() !== newDevice) {
+                    setDeviceCookie(newDevice);
+                    window.location.reload();
+                }
+            });
+        })();
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'UniEvent — Nền tảng sự kiện học đường')</title>

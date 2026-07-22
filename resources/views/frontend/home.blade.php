@@ -13,6 +13,88 @@
     @endpush --}}
 @endif
 
+@push('styles')
+    <style>
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        @media (max-width: 1023px) {
+            #master-wipe-container {
+                display: flex !important;
+                flex-direction: column !important;
+                grid-template-columns: none !important;
+                height: auto !important;
+                overflow: hidden !important;
+            }
+            #master-wipe-container > div {
+                grid-area: auto !important;
+                position: relative !important;
+                width: 100% !important;
+                height: auto !important;
+            }
+            #featured-events-wrapper {
+                grid-area: auto !important;
+                position: relative !important;
+                width: 100% !important;
+                height: auto !important;
+                transform: none !important;
+                z-index: auto !important;
+            }
+            
+            /* Hero Slider Mobile Overrides */
+            .slider-content {
+                padding: 0 20px !important;
+                align-items: flex-end !important;
+                justify-content: flex-start !important;
+                padding-bottom: 60px !important;
+            }
+            .slide-info {
+                flex: 1 1 auto !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                margin-bottom: 0 !important;
+            }
+            .slide-title {
+                font-size: clamp(24px, 7vw, 36px) !important;
+                line-height: 1.1 !important;
+                margin-bottom: 12px !important;
+                word-wrap: break-word !important;
+                overflow-wrap: break-word !important;
+                white-space: normal !important;
+            }
+            .slide-desc {
+                font-size: 13px !important;
+                max-width: 100% !important;
+                margin-bottom: 20px !important;
+                line-height: 1.5 !important;
+            }
+            .slide-eyebrow {
+                font-size: 11px !important;
+                margin-bottom: 8px !important;
+            }
+            .btn-cta {
+                padding: 8px 18px !important;
+                font-size: 10px !important;
+            }
+            .btn-play {
+                width: 36px !important;
+                height: 36px !important;
+            }
+            .btn-play svg {
+                width: 12px !important;
+                height: 12px !important;
+            }
+            .card-strip {
+                display: none !important;
+            }
+        }
+    </style>
+@endpush
+
 @section('content')
 
 {{-- ======================================================================
@@ -416,58 +498,59 @@
                     }
                 @endphp
 
-                <!-- Unified Academic/News Grid View -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-[1200px] mx-auto px-6">
-                    @php
-                        $displayItems = array_slice($gridItems, 0, 7);
-                    @endphp
-                    @foreach($displayItems as $idx => $item)
+                <div class="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-6 md:grid md:grid-cols-2 lg:grid-cols-3 lg:gap-6 max-w-[1200px] mx-auto hide-scrollbar">
+                    @foreach($gridItems as $idx => $item)
                         <a href="{{ $item['slug'] ? route('events.index', ['category' => $item['slug']]) : '#events' }}"
-                            style="opacity: 0; transform: translateY(20px);"
-                            class="event-category-card group flex flex-col bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 overflow-hidden">
-                            
-                            <!-- Card Image Header -->
-                            <div class="relative h-40 w-full overflow-hidden bg-gray-100">
-                                @if($item['image'])
-                                    <img src="{{ asset($item['image']) }}" alt="{{ $item['name'] }}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
-                                @else
-                                    <div class="absolute inset-0 w-full h-full bg-gradient-to-br from-[#07A0C3]/10 to-[#07A0C3]/20"></div>
-                                @endif
-                                
-                                <!-- Subtle Overlay for better contrast -->
-                                <div class="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-300"></div>
+                            style="aspect-ratio: 16/9; min-height: 160px; opacity: 0;"
+                            class="event-category-card snap-start shrink-0 w-[85%] md:w-auto group relative block rounded-2xl overflow-hidden {{ $item['image'] ? 'bg-gray-900' : 'bg-gray-200' }} shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
 
-                                <!-- Floating Icon Badge -->
-                                <div class="absolute top-4 left-4 bg-white/95 backdrop-blur shadow-sm p-2.5 rounded-xl border border-gray-50 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300">
-                                    <i data-lucide="{{ $item['icon'] }}" class="w-6 h-6 text-[#07A0C3]"></i>
-                                </div>
+                            @if($item['image'])
+                                <!-- Background Image -->
+                                <img src="{{ asset($item['image']) }}" alt="{{ $item['name'] }}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-[1.15] opacity-60 group-hover:opacity-80">
+                            @else
+                                <div class="absolute inset-0 w-full h-full bg-gradient-to-br from-gray-800 to-gray-700 opacity-80 group-hover:opacity-100 transition-opacity"></div>
+                            @endif
+
+                            <!-- Glassmorphism Gradient Overlay -->
+                            <div class="absolute inset-0 transition-opacity duration-500 opacity-60 group-hover:opacity-40"
+                                 style="background: linear-gradient(to right, rgba(28,20,16,0.9) 0%, rgba(28,20,16,0.4) 100%);"></div>
+
+                            <!-- Icon (Absolutely centered in the collapsed shape) -->
+                            <div class="absolute top-0 left-0 flex items-center justify-center z-10 cat-icon-container pointer-events-none">
+                                <i data-lucide="{{ $item['icon'] }}" class="w-12 h-12 lg:w-14 lg:h-14 text-white drop-shadow-md transition-transform duration-500 group-hover:scale-110"></i>
                             </div>
-                            
-                            <!-- Card Body -->
-                            <div class="p-5 flex flex-col flex-1 bg-white">
-                                <h3 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-[#07A0C3] transition-colors line-clamp-2">
+
+                            <!-- Expanding Text Content -->
+                            <div class="absolute top-0 flex flex-col justify-center cat-text-container z-10 opacity-0 group-hover:opacity-100 transition-all duration-500 delay-75 transform -translate-x-4 group-hover:translate-x-0 pointer-events-none">
+                                <h3 class="text-white text-xl lg:text-2xl font-black tracking-tight drop-shadow-lg leading-tight mb-1 whitespace-normal pr-2">
                                     {{ $item['name'] }}
                                 </h3>
                                 
-                                <div class="mt-auto flex items-center gap-2 text-gray-500 text-sm font-medium">
-                                    <div class="flex items-center justify-center w-6 h-6 rounded-full bg-gray-50 text-gray-400 group-hover:bg-[#07A0C3]/10 group-hover:text-[#07A0C3] transition-colors">
-                                        <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
-                                    </div>
+                                <div class="inline-flex items-center gap-1.5 text-[#FFE381] text-xs lg:text-sm font-bold uppercase tracking-wider drop-shadow-md mt-1">
+                                    <i data-lucide="calendar" class="w-4 h-4"></i>
                                     <span>{{ $item['count'] }} sự kiện</span>
                                 </div>
                             </div>
                         </a>
                     @endforeach
 
-                    <!-- View All Card -->
+                    <!-- Inline View All Button -->
                     <a href="{{ route('events.index') }}"
-                        style="opacity: 0; transform: translateY(20px);"
-                        class="event-category-card group flex flex-col items-center justify-center bg-transparent rounded-2xl border-2 border-dashed border-gray-300 hover:border-[#07A0C3] hover:bg-[#07A0C3]/5 transition-all duration-300 min-h-[240px] sm:min-h-0">
-                        <div class="w-14 h-14 rounded-full bg-white shadow-sm flex items-center justify-center text-gray-400 group-hover:text-[#07A0C3] mb-4 group-hover:scale-110 transition-transform duration-300">
-                            <i data-lucide="arrow-right" class="w-6 h-6"></i>
+                        style="opacity: 0;"
+                        class="event-category-card group relative block bg-[#07A0C3] hover:bg-[#068ba9] shadow-md hover:shadow-2xl hover:z-50 cat-parallelogram-sm"
+                        title="Xem tất cả danh mục">
+                        
+                        <!-- Icon -->
+                        <div class="absolute top-0 left-0 flex items-center justify-center z-10 cat-sm-icon-container pointer-events-none">
+                            <i data-lucide="plus" class="w-10 h-10 lg:w-12 lg:h-12 text-white drop-shadow-md transition-transform duration-500 group-hover:rotate-90"></i>
                         </div>
-                        <h3 class="text-lg font-bold text-gray-600 group-hover:text-[#07A0C3] transition-colors">Xem tất cả</h3>
-                        <p class="text-sm text-gray-400 mt-1">Khám phá thêm sự kiện</p>
+
+                        <!-- Expanding Text Content -->
+                        <div class="absolute top-0 flex flex-col justify-center cat-sm-text-container z-10 opacity-0 group-hover:opacity-100 transition-all duration-500 delay-75 transform -translate-x-4 group-hover:translate-x-0 pointer-events-none">
+                            <h3 class="text-white text-2xl lg:text-3xl font-black tracking-tight drop-shadow-lg leading-tight uppercase whitespace-nowrap">
+                                Xem thêm
+                            </h3>
+                        </div>
                     </a>
                 </div>
 
@@ -525,7 +608,7 @@
         </div>
 
         <!-- FEATURED EVENTS WRAPPER -->
-        <div id="featured-events-wrapper"
+        <div id="featured-events-wrapper" class="hidden lg:block"
             style="grid-area: 1 / 1; width: 100%; height: 100%; z-index: 40; background: #FFFBEA; transform: translateX(100%);">
             <section id="featured-events" class="relative z-10 h-full w-full pt-10 lg:pt-12 pb-16 overflow-hidden">
                 <div class="mx-auto max-w-[1400px] px-6 lg:px-10 h-full flex flex-col justify-start">
@@ -552,7 +635,7 @@
                         <div id="featured-cards-container"
                             class="flex gap-6 flex-nowrap absolute top-0 left-0 h-full items-center"
                             style="width: max-content; padding-right: 2rem;">
-                            @foreach($featuredEvents as $i => $ev)
+                            @foreach(array_slice($featuredEvents, 0, 4) as $i => $ev)
                                 <div class="shrink-0 featured-card-item rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
                                     style="width: 350px; height: 480px; max-width: 85vw;">
                                     <x-event-card :event="$ev" mode="grid" />
@@ -562,6 +645,76 @@
                     </div>
                 </div>
             </section>
+        </div>
+
+        <!-- MOBILE FEATURED EVENTS VIEW (Scrollable Container + Pagination) -->
+        <div class="block lg:hidden px-4 pb-10 pt-6" style="background:#FFFBEA;"
+             x-data="{
+                items: {{ json_encode(collect($featuredEvents)->map(function($ev) {
+                    return ['title' => $ev['title'], 'slug' => $ev['slug'], 'date' => $ev['date'], 'category' => $ev['category'] ?? 'Sự kiện', 'img' => $ev['img'] ?? 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80'];
+                })->values()) }},
+                perPage: 10,
+                page: 0,
+                get totalPages() { return Math.ceil(this.items.length / this.perPage); },
+                get paged() { return this.items.slice(this.page * this.perPage, (this.page + 1) * this.perPage); },
+                goTo(p) { this.page = p; this.$nextTick(() => { if(this.$refs.featScrollBox) this.$refs.featScrollBox.scrollTop = 0; }); }
+             }">
+            <!-- Tiêu đề -->
+            <div class="mb-4">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="h-6 w-1 rounded-full" style="background:#07A0C3;"></div>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-[#07A0C3]">Featured Events</span>
+                </div>
+                <h2 class="font-barlow-condensed text-3xl font-black uppercase text-[#1C1410]">
+                    Sự kiện nổi bật
+                </h2>
+            </div>
+
+            <!-- Scrollable inner container -->
+            <div class="relative rounded-2xl border border-black/5 bg-white/50" style="backdrop-filter: blur(4px);">
+                <div x-ref="featScrollBox" class="overflow-y-auto px-2 py-2 flex flex-col gap-2.5" style="max-height: 340px; scrollbar-width: thin;">
+                    <template x-for="(item, i) in paged" :key="page + '-' + i">
+                        <a :href="'/events/' + item.slug" class="flex gap-3 items-center bg-white p-2.5 rounded-xl shadow-sm border border-black/5 active:scale-[0.98] transition-all shrink-0" style="text-decoration: none;">
+                            <div class="w-[100px] h-[72px] shrink-0 rounded-lg overflow-hidden bg-gray-200">
+                                <img :src="item.img" :alt="item.title" class="w-full h-full object-cover">
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-[#07A0C3]" x-text="item.category"></span>
+                                <h3 class="font-bold text-[13px] text-[#1C1410] line-clamp-2 mt-0.5 leading-snug" x-text="item.title"></h3>
+                                <div class="flex items-center gap-1.5 text-[11px] text-gray-500 mt-1">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-width="2"/><line x1="16" y1="2" x2="16" y2="6" stroke-width="2"/><line x1="8" y1="2" x2="8" y2="6" stroke-width="2"/><line x1="3" y1="10" x2="21" y2="10" stroke-width="2"/></svg>
+                                    <span x-text="item.date"></span>
+                                </div>
+                            </div>
+                        </a>
+                    </template>
+                </div>
+                <!-- Bottom fade hint -->
+                <div class="absolute bottom-0 left-0 right-0 h-8 rounded-b-2xl pointer-events-none" style="background: linear-gradient(to top, rgba(255,251,234,0.95), transparent);"></div>
+            </div>
+
+            <!-- Pagination -->
+            <template x-if="totalPages > 1">
+                <div class="flex items-center justify-center gap-2 mt-4">
+                    <button @click="goTo(page - 1)" :disabled="page === 0"
+                            class="w-8 h-8 rounded-full flex items-center justify-center text-sm border transition-all"
+                            :class="page === 0 ? 'border-gray-200 text-gray-300 cursor-not-allowed' : 'border-gray-300 text-gray-600 active:bg-gray-100'">
+                        ‹
+                    </button>
+                    <template x-for="p in totalPages" :key="p">
+                        <button @click="goTo(p - 1)"
+                                class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all"
+                                :class="page === p - 1 ? 'bg-[#07A0C3] text-white shadow' : 'text-gray-500 active:bg-gray-100'">
+                            <span x-text="p"></span>
+                        </button>
+                    </template>
+                    <button @click="goTo(page + 1)" :disabled="page >= totalPages - 1"
+                            class="w-8 h-8 rounded-full flex items-center justify-center text-sm border transition-all"
+                            :class="page >= totalPages - 1 ? 'border-gray-200 text-gray-300 cursor-not-allowed' : 'border-gray-300 text-gray-600 active:bg-gray-100'">
+                        ›
+                    </button>
+                </div>
+            </template>
         </div>
     </div>
 

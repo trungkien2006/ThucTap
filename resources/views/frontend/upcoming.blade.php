@@ -327,7 +327,7 @@
                 const wrapper = document.querySelector('.upcoming-pinned-container');
                 const panels = gsap.utils.toArray('.upcoming-panel');
                 
-                if (wrapper) {
+                if (panels.length > 1 && wrapper) {
                     // Set initial positions: all panels start off-screen to the bottom-right
                     const isMobile = window.innerWidth < 1024;
                     const startX = isMobile ? 95 : 70;
@@ -385,7 +385,7 @@
                             trigger: "#master-wipe-container",
                             pin: true,
                             pinSpacing: false, // Allows #archive to slide over it
-                            scrub: 1.5, // Smoother scrubbing for a premium feel
+                            scrub: 1, // Smooth scrubbing
                             start: "top 72px", // Pins right below the site's sticky header
                             // Add extra scroll distance for the section wipe (1.5x) AND the cards scrolling PLUS window height for layered effect
                             end: () => {
@@ -410,7 +410,7 @@
                         
                         tl.to(panels[index - 1], {
                             xPercent: offsetEndX,
-                            ease: "power1.inOut",
+                            ease: "none",
                             duration: 2
                         }, label);
                         
@@ -418,14 +418,14 @@
                         tl.to(panel, {
                             xPercent: midX,
                             yPercent: 0,
-                            ease: "power1.inOut",
+                            ease: "none",
                             duration: 1
                         }, label);
                         
                         // Phase 2: Once aligned vertically, the next panel slides horizontally into the center
                         tl.to(panel, {
                             xPercent: 0,
-                            ease: "power1.out",
+                            ease: "none",
                             duration: 1
                         }, label + "+=1");
                     });
@@ -482,16 +482,6 @@
              panels.forEach(panel => {
                  panel.style.transform = 'none';
              });
-             
-             // Reset layout for mobile to flow normally instead of overlapping
-             const masterWipe = document.getElementById('master-wipe-container');
-             if (masterWipe) {
-                 masterWipe.style.display = 'block';
-             }
-             const featuredWrapper = document.getElementById('featured-events-wrapper');
-             if (featuredWrapper) {
-                 featuredWrapper.style.transform = 'none';
-             }
         }
     });
 </script>

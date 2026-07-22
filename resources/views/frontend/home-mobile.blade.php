@@ -1,4 +1,4 @@
-@extends('layouts.frontend')
+@extends('layouts.frontend-mobile')
 
 @if(!empty($slides) && isset($slides[0]))
     <!-- Decorative Preloads commented out for local dev performance -->
@@ -12,6 +12,88 @@
         @endif
     @endpush --}}
 @endif
+
+@push('styles')
+    <style>
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        @media (max-width: 1023px) {
+            #master-wipe-container {
+                display: flex !important;
+                flex-direction: column !important;
+                grid-template-columns: none !important;
+                height: auto !important;
+                overflow: hidden !important;
+            }
+            #master-wipe-container > div {
+                grid-area: auto !important;
+                position: relative !important;
+                width: 100% !important;
+                height: auto !important;
+            }
+            #featured-events-wrapper {
+                grid-area: auto !important;
+                position: relative !important;
+                width: 100% !important;
+                height: auto !important;
+                transform: none !important;
+                z-index: auto !important;
+            }
+            
+            /* Hero Slider Mobile Overrides */
+            .slider-content {
+                padding: 0 20px !important;
+                align-items: flex-end !important;
+                justify-content: flex-start !important;
+                padding-bottom: 60px !important;
+            }
+            .slide-info {
+                flex: 1 1 auto !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                margin-bottom: 0 !important;
+            }
+            .slide-title {
+                font-size: clamp(24px, 7vw, 36px) !important;
+                line-height: 1.1 !important;
+                margin-bottom: 12px !important;
+                word-wrap: break-word !important;
+                overflow-wrap: break-word !important;
+                white-space: normal !important;
+            }
+            .slide-desc {
+                font-size: 13px !important;
+                max-width: 100% !important;
+                margin-bottom: 20px !important;
+                line-height: 1.5 !important;
+            }
+            .slide-eyebrow {
+                font-size: 11px !important;
+                margin-bottom: 8px !important;
+            }
+            .btn-cta {
+                padding: 8px 18px !important;
+                font-size: 10px !important;
+            }
+            .btn-play {
+                width: 36px !important;
+                height: 36px !important;
+            }
+            .btn-play svg {
+                width: 12px !important;
+                height: 12px !important;
+            }
+            .card-strip {
+                display: none !important;
+            }
+        }
+    </style>
+@endpush
 
 @section('content')
 
@@ -416,144 +498,11 @@
                     }
                 @endphp
 
-                <style>
-                    .cat-ribbon-container {
-                        scrollbar-width: none;
-                        -ms-overflow-style: none;
-                    }
-                    .cat-ribbon-container::-webkit-scrollbar {
-                        display: none;
-                    }
-                    .cat-parallelogram {
-                        width: 12rem;
-                        height: 8.4rem;
-                        clip-path: polygon(1.8rem 0, 100% 0, calc(100% - 1.8rem) 100%, 0 100%);
-                        transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-                        flex-shrink: 0;
-                    }
-                    .cat-parallelogram + .cat-parallelogram {
-                        margin-left: -1.2rem; /* Creates a small visual gap */
-                    }
-                    .cat-icon-container {
-                        width: 12rem;
-                        height: 8.4rem;
-                        /* No padding-left needed: geometric center of the bounding box is the visual center */
-                    }
-                    .cat-text-container {
-                        left: 10.2rem;
-                        height: 8.4rem;
-                        width: 14.4rem; /* Safe space on mobile */
-                    }
-                    @media (min-width: 1024px) {
-                        .cat-parallelogram {
-                            width: 14.4rem;
-                            height: 9.6rem;
-                            clip-path: polygon(2.4rem 0, 100% 0, calc(100% - 2.4rem) 100%, 0 100%);
-                        }
-                        .cat-parallelogram + .cat-parallelogram {
-                            margin-left: -1.8rem; /* Creates a small visual gap */
-                        }
-                        .cat-parallelogram:hover {
-                            width: 33.6rem; /* Increased to allow more text */
-                            transform: scale(1.05);
-                            z-index: 50;
-                        }
-                        .cat-icon-container {
-                            width: 14.4rem;
-                            height: 9.6rem;
-                        }
-                        .cat-text-container {
-                            left: 12rem;
-                            height: 9.6rem;
-                            width: 18rem; /* Increased safe space for text */
-                        }
-                    }
-                    .cat-parallelogram:hover {
-                        width: 24rem;
-                        z-index: 50;
-                    }
-                    .cat-parallelogram-sm {
-                        width: 5.4rem;
-                        height: 8.4rem;
-                        clip-path: polygon(1.8rem 0, 100% 0, calc(100% - 1.8rem) 100%, 0 100%);
-                        transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease;
-                        flex-shrink: 0;
-                    }
-                    .cat-parallelogram-sm:hover {
-                        width: 19.2rem;
-                        z-index: 50;
-                    }
-                    .cat-sm-icon-container {
-                        width: 5.4rem;
-                        height: 8.4rem;
-                    }
-                    .cat-sm-text-container {
-                        left: 5.4rem;
-                        height: 8.4rem;
-                        width: 12rem;
-                    }
-                    .cat-parallelogram + .cat-parallelogram-sm {
-                        margin-left: -1.2rem;
-                    }
-                    @media (min-width: 1024px) {
-                        .cat-parallelogram-sm {
-                            width: 6.6rem;
-                            height: 9.6rem;
-                            clip-path: polygon(2.4rem 0, 100% 0, calc(100% - 2.4rem) 100%, 0 100%);
-                        }
-                        .cat-parallelogram + .cat-parallelogram-sm {
-                            margin-left: -1.8rem;
-                        }
-                        .cat-parallelogram-sm:hover {
-                            width: 24rem;
-                            transform: scale(1.05);
-                            z-index: 50;
-                        }
-                        .cat-sm-icon-container {
-                            width: 6.6rem;
-                            height: 9.6rem;
-                        }
-                        .cat-sm-text-container {
-                            left: 6.6rem;
-                            height: 9.6rem;
-                            width: 14.4rem;
-                        }
-                    }
-                </style>
-
-                <!-- Mobile and Tablet view (from giaodienmobilemoi) -->
-                <div class="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-6 md:grid md:grid-cols-2 lg:hidden max-w-[1200px] mx-auto hide-scrollbar px-6">
+                <div class="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-6 md:grid md:grid-cols-2 lg:grid-cols-3 lg:gap-6 max-w-[1200px] mx-auto hide-scrollbar">
                     @foreach($gridItems as $idx => $item)
                         <a href="{{ $item['slug'] ? route('events.index', ['category' => $item['slug']]) : '#events' }}"
                             style="aspect-ratio: 16/9; min-height: 160px; opacity: 0;"
                             class="event-category-card snap-start shrink-0 w-[85%] md:w-auto group relative block rounded-2xl overflow-hidden {{ $item['image'] ? 'bg-gray-900' : 'bg-gray-200' }} shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-                            @if($item['image'])
-                                <img src="{{ asset($item['image']) }}" alt="{{ $item['name'] }}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-[1.15] opacity-60 group-hover:opacity-80">
-                            @else
-                                <div class="absolute inset-0 w-full h-full bg-gradient-to-br from-gray-800 to-gray-700 opacity-80 group-hover:opacity-100 transition-opacity"></div>
-                            @endif
-                            <div class="absolute inset-0 transition-opacity duration-500 opacity-60 group-hover:opacity-40" style="background: linear-gradient(to right, rgba(28,20,16,0.9) 0%, rgba(28,20,16,0.4) 100%);"></div>
-                            <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-4 z-10 pointer-events-none">
-                                <i data-lucide="{{ $item['icon'] }}" class="w-10 h-10 text-white drop-shadow-md mb-2 transition-transform duration-500 group-hover:scale-110"></i>
-                                <h3 class="text-white text-xl font-black tracking-tight drop-shadow-lg leading-tight">{{ $item['name'] }}</h3>
-                                <div class="inline-flex items-center gap-1.5 text-[#FFE381] text-xs font-bold uppercase tracking-wider drop-shadow-md mt-1">
-                                    <i data-lucide="calendar" class="w-4 h-4"></i>
-                                    <span>{{ $item['count'] }} sự kiện</span>
-                                </div>
-                            </div>
-                        </a>
-                    @endforeach
-                </div>
-
-                <!-- Desktop Ribbon View (from main) -->
-                <div class="hidden lg:flex flex-nowrap justify-center items-center py-6 px-0 mx-auto w-[68.5rem] cat-ribbon-container">
-                    @php
-                        $displayItems = array_slice($gridItems, 0, 6);
-                    @endphp
-                    @foreach($displayItems as $idx => $item)
-                        <a href="{{ $item['slug'] ? route('events.index', ['category' => $item['slug']]) : '#events' }}"
-                            style="opacity: 0;"
-                            class="event-category-card group relative block bg-gray-900 shadow-md hover:shadow-2xl hover:z-50 cat-parallelogram">
 
                             @if($item['image'])
                                 <!-- Background Image -->
@@ -655,11 +604,11 @@
         style="display: grid; grid-template-columns: 1fr; width: 100%; overflow-x: hidden; position: relative; z-index: 30;">
 
         <div style="grid-area: 1 / 1; width: 100%; height: 100%; z-index: 30;">
-            @include('frontend.upcoming', ['upcoming' => $upcoming])
+            @include('frontend.upcoming-mobile', ['upcoming' => $upcoming])
         </div>
 
         <!-- FEATURED EVENTS WRAPPER -->
-        <div id="featured-events-wrapper"
+        <div id="featured-events-wrapper" class="hidden lg:block"
             style="grid-area: 1 / 1; width: 100%; height: 100%; z-index: 40; background: #FFFBEA; transform: translateX(100%);">
             <section id="featured-events" class="relative z-10 h-full w-full pt-10 lg:pt-12 pb-16 overflow-hidden">
                 <div class="mx-auto max-w-[1400px] px-6 lg:px-10 h-full flex flex-col justify-start">
@@ -686,7 +635,7 @@
                         <div id="featured-cards-container"
                             class="flex gap-6 flex-nowrap absolute top-0 left-0 h-full items-center"
                             style="width: max-content; padding-right: 2rem;">
-                            @foreach($featuredEvents as $i => $ev)
+                            @foreach(array_slice($featuredEvents, 0, 4) as $i => $ev)
                                 <div class="shrink-0 featured-card-item rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
                                     style="width: 350px; height: 480px; max-width: 85vw;">
                                     <x-event-card :event="$ev" mode="grid" />
@@ -696,6 +645,76 @@
                     </div>
                 </div>
             </section>
+        </div>
+
+        <!-- MOBILE FEATURED EVENTS VIEW (Scrollable Container + Pagination) -->
+        <div class="block lg:hidden px-4 pb-10 pt-6" style="background:#FFFBEA;"
+             x-data="{
+                items: {{ json_encode(collect($featuredEvents)->map(function($ev) {
+                    return ['title' => $ev['title'], 'slug' => $ev['slug'], 'date' => $ev['date'], 'category' => $ev['category'] ?? 'Sự kiện', 'img' => $ev['img'] ?? 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80'];
+                })->values()) }},
+                perPage: 10,
+                page: 0,
+                get totalPages() { return Math.ceil(this.items.length / this.perPage); },
+                get paged() { return this.items.slice(this.page * this.perPage, (this.page + 1) * this.perPage); },
+                goTo(p) { this.page = p; this.$nextTick(() => { if(this.$refs.featScrollBox) this.$refs.featScrollBox.scrollTop = 0; }); }
+             }">
+            <!-- Tiêu đề -->
+            <div class="mb-4">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="h-6 w-1 rounded-full" style="background:#07A0C3;"></div>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-[#07A0C3]">Featured Events</span>
+                </div>
+                <h2 class="font-barlow-condensed text-3xl font-black uppercase text-[#1C1410]">
+                    Sự kiện nổi bật
+                </h2>
+            </div>
+
+            <!-- Scrollable inner container -->
+            <div class="relative rounded-2xl border border-black/5 bg-white/50" style="backdrop-filter: blur(4px);">
+                <div x-ref="featScrollBox" class="overflow-y-auto px-2 py-2 flex flex-col gap-2.5" style="max-height: 340px; scrollbar-width: thin;">
+                    <template x-for="(item, i) in paged" :key="page + '-' + i">
+                        <a :href="'/events/' + item.slug" class="flex gap-3 items-center bg-white p-2.5 rounded-xl shadow-sm border border-black/5 active:scale-[0.98] transition-all shrink-0" style="text-decoration: none;">
+                            <div class="w-[100px] h-[72px] shrink-0 rounded-lg overflow-hidden bg-gray-200">
+                                <img :src="item.img" :alt="item.title" class="w-full h-full object-cover">
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-[#07A0C3]" x-text="item.category"></span>
+                                <h3 class="font-bold text-[13px] text-[#1C1410] line-clamp-2 mt-0.5 leading-snug" x-text="item.title"></h3>
+                                <div class="flex items-center gap-1.5 text-[11px] text-gray-500 mt-1">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-width="2"/><line x1="16" y1="2" x2="16" y2="6" stroke-width="2"/><line x1="8" y1="2" x2="8" y2="6" stroke-width="2"/><line x1="3" y1="10" x2="21" y2="10" stroke-width="2"/></svg>
+                                    <span x-text="item.date"></span>
+                                </div>
+                            </div>
+                        </a>
+                    </template>
+                </div>
+                <!-- Bottom fade hint -->
+                <div class="absolute bottom-0 left-0 right-0 h-8 rounded-b-2xl pointer-events-none" style="background: linear-gradient(to top, rgba(255,251,234,0.95), transparent);"></div>
+            </div>
+
+            <!-- Pagination -->
+            <template x-if="totalPages > 1">
+                <div class="flex items-center justify-center gap-2 mt-4">
+                    <button @click="goTo(page - 1)" :disabled="page === 0"
+                            class="w-8 h-8 rounded-full flex items-center justify-center text-sm border transition-all"
+                            :class="page === 0 ? 'border-gray-200 text-gray-300 cursor-not-allowed' : 'border-gray-300 text-gray-600 active:bg-gray-100'">
+                        ‹
+                    </button>
+                    <template x-for="p in totalPages" :key="p">
+                        <button @click="goTo(p - 1)"
+                                class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all"
+                                :class="page === p - 1 ? 'bg-[#07A0C3] text-white shadow' : 'text-gray-500 active:bg-gray-100'">
+                            <span x-text="p"></span>
+                        </button>
+                    </template>
+                    <button @click="goTo(page + 1)" :disabled="page >= totalPages - 1"
+                            class="w-8 h-8 rounded-full flex items-center justify-center text-sm border transition-all"
+                            :class="page >= totalPages - 1 ? 'border-gray-200 text-gray-300 cursor-not-allowed' : 'border-gray-300 text-gray-600 active:bg-gray-100'">
+                        ›
+                    </button>
+                </div>
+            </template>
         </div>
     </div>
 

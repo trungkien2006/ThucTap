@@ -1,4 +1,4 @@
-@extends('layouts.frontend')
+@extends('layouts.frontend-mobile')
 
 @section('content')
 
@@ -31,7 +31,11 @@
     .tp1-text a { color: #f97316; text-decoration: underline; }
     
     @media (max-width: 768px) {
+        .tp1-wrapper { background: #ffffff !important; }
+        .tp1-container { padding: 20px 0px; }
+        .tp1-card { border-radius: 0 !important; padding: 24px 16px !important; margin-bottom: 16px !important; box-shadow: none !important; }
         .tp1-grid.left-img, .tp1-grid.right-img { grid-template-columns: 1fr; gap: 24px; }
+        .tp1-img-col { order: -1; }
         .tp1-title { font-size: 32px; }
         .tp1-meta { flex-direction: column; gap: 12px; }
     }
@@ -93,7 +97,6 @@
 
         </div>
     </div>
-    </div>
     
     <div class="tp1-container">
             <!-- Giới thiệu sự kiện -->
@@ -113,7 +116,7 @@
             @foreach($event->galleryImages as $index => $block)
             <div class="tp1-grid {{ $index % 2 == 0 ? 'left-img' : 'right-img' }}" style="{{ $index > 0 ? 'margin-top: 64px;' : '' }}">
                 @if($index % 2 == 0)
-                    <div>
+                    <div class="tp1-img-col">
                         @if($block->url)
                             @if($block->type === 'video')
                                 <video src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="tp1-img" autoplay loop muted playsinline controls></video>
@@ -153,7 +156,7 @@
                             @endif
                         </div>
                     </div>
-                    <div>
+                    <div class="tp1-img-col">
                         @if($block->url)
                             @if($block->type === 'video')
                                 <video src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="tp1-img" autoplay loop muted playsinline controls></video>
@@ -271,7 +274,7 @@
         
         <!-- Điều hướng Sự kiện Trước / Sau -->
         @if(isset($previousEvent) || isset($nextEvent))
-        <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t border-slate-200">
+        <div class="mt-8 grid grid-cols-2 gap-4 md:gap-8 pt-8 border-t border-slate-200">
             <div>
                 @if(isset($previousEvent) && $previousEvent)
                 <a href="{{ route('events.show', $previousEvent->slug) }}" class="group block max-w-[280px] mr-auto">
@@ -279,12 +282,12 @@
                         <span class="material-symbols-outlined text-2xl -ml-1">arrow_left_alt</span>
                         <div class="h-[2px] bg-current flex-1"></div>
                     </div>
-                    <div class="w-full h-[154px] rounded-xl overflow-hidden bg-slate-100 shadow-sm border border-slate-200">
+                    <div class="w-full h-[100px] md:h-[154px] rounded-xl overflow-hidden bg-slate-100 shadow-sm border border-slate-200">
                         @if($previousEvent->bannerImage)
                             <img src="{{ \App\Helpers\FileHelper::url($previousEvent->bannerImage->url) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                         @endif
                     </div>
-                    <h4 class="mt-3 font-bold text-slate-800 group-hover:text-[#f97316] transition-colors line-clamp-2 text-left">{{ $previousEvent->title }}</h4>
+                    <h4 class="mt-2 text-xs md:text-sm font-bold text-slate-800 group-hover:text-[#f97316] transition-colors line-clamp-2 text-left">{{ $previousEvent->title }}</h4>
                 </a>
                 @endif
             </div>
@@ -295,12 +298,12 @@
                         <div class="h-[2px] bg-current flex-1"></div>
                         <span class="material-symbols-outlined text-2xl -mr-1">arrow_right_alt</span>
                     </div>
-                    <div class="w-full h-[154px] rounded-xl overflow-hidden bg-slate-100 shadow-sm border border-slate-200">
+                    <div class="w-full h-[100px] md:h-[154px] rounded-xl overflow-hidden bg-slate-100 shadow-sm border border-slate-200">
                         @if($nextEvent->bannerImage)
                             <img src="{{ \App\Helpers\FileHelper::url($nextEvent->bannerImage->url) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                         @endif
                     </div>
-                    <h4 class="mt-3 font-bold text-slate-800 group-hover:text-[#f97316] transition-colors line-clamp-2 text-right">{{ $nextEvent->title }}</h4>
+                    <h4 class="mt-2 text-xs md:text-sm font-bold text-slate-800 group-hover:text-[#f97316] transition-colors line-clamp-2 text-right">{{ $nextEvent->title }}</h4>
                 </a>
                 @endif
             </div>

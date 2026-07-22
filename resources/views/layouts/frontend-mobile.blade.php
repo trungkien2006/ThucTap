@@ -248,7 +248,7 @@
              x-transition:leave-start="opacity-100"
              x-transition:leave-end="opacity-0"></div>
         
-        <div x-show="mobileOpen" class="absolute inset-y-0 right-0 w-full max-w-sm bg-paper p-6 shadow-2xl flex flex-col" style="background-color: #FFFBEA !important;"
+        <div x-show="mobileOpen" class="absolute right-0 w-full max-w-sm bg-paper p-6 shadow-2xl flex flex-col {{ $isHome ? 'inset-y-0' : 'top-0 h-fit rounded-b-[2rem]' }}" style="background-color: #FFFBEA !important;"
              x-transition:enter="transition ease-in-out duration-300 transform"
              x-transition:enter-start="translate-x-full"
              x-transition:enter-end="translate-x-0"
@@ -297,7 +297,7 @@
                 </a>
             </nav>
 
-            <div class="mt-auto pt-6">
+            <div class="{{ $isHome ? 'mt-auto pt-6' : 'mt-8' }}">
                 <a href="{{ route('events.index') }}" wire:navigate @click="mobileOpen = false" class="flex w-full items-center justify-center gap-2 rounded-xl py-4 text-center text-lg font-bold text-[#1C1410] shadow-md transition-transform active:scale-95" style="background: #FFE381;">
                     Khám phá ngay
                     <i data-lucide="arrow-right" class="h-5 w-5"></i>

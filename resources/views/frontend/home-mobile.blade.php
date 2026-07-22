@@ -1,4 +1,4 @@
-@extends('layouts.frontend')
+@extends('layouts.frontend-mobile')
 
 @if(!empty($slides) && isset($slides[0]))
     <!-- Decorative Preloads commented out for local dev performance -->
@@ -141,7 +141,7 @@
         /* ─── State ─── */
         let current  = 0;
         let isAnim   = false;
-        const INTERVAL = 5000; // 5 seconds
+        const INTERVAL = 2000; // 2 seconds
 
         /* ─── Constants ─── */
         const MAX_CARDS = 4;
@@ -450,27 +450,15 @@
             style="background:#FFFBEA;">
 
             <div id="categories-section" class="relative z-[15] pt-2 pb-8 lg:pt-4 lg:pb-10" style="background:#FFFBEA;">
-                <!-- Subtle Ambient Orbs -->
-                <div class="pointer-events-none absolute inset-0 overflow-hidden select-none">
-                    <div class="absolute -top-32 -left-32 w-[500px] h-[500px] rounded-full" style="background:radial-gradient(circle, rgba(7,160,195,0.07) 0%, transparent 70%);"></div>
-                    <div class="absolute -bottom-32 -right-32 w-[500px] h-[500px] rounded-full" style="background:radial-gradient(circle, rgba(255,193,7,0.07) 0%, transparent 70%);"></div>
-                </div>
+                <div class="mx-auto w-full max-w-[1400px] px-6 lg:px-10">
 
-                <div class="relative z-10 mx-auto w-full max-w-[1400px] px-6 lg:px-10">
-
-                <div class="mb-10 text-center event-category-title" style="opacity: 0;">
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#07A0C3]/10 text-[#07A0C3] text-xs font-extrabold uppercase tracking-widest mb-3">
-                        <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>
-                        <span>Danh mục sự kiện</span>
-                    </div>
-                    <h2 class="font-barlow-condensed text-4xl font-black uppercase tracking-tight text-[#1C1410] lg:text-5xl">
-                        Khám phá theo chủ đề
+                <div class="mb-8 text-center event-category-title" style="opacity: 0;">
+                    <h2
+                        class="font-barlow-condensed text-4xl font-black uppercase tracking-tight text-[#1C1410] lg:text-5xl">
+                        Danh mục sự kiện
                     </h2>
-                    <p class="mt-2 text-sm text-gray-500 max-w-xl mx-auto font-medium">
-                        Lựa chọn các sự kiện, hội thảo và hoạt động ngoại khóa phù hợp với định hướng của bạn
-                    </p>
-                    <div class="mt-4 flex justify-center">
-                        <div class="h-1.5 w-14 rounded-full bg-gradient-to-r from-[#07A0C3] to-cyan-400"></div>
+                    <div class="mt-3 flex justify-center">
+                        <div class="h-1.5 w-12 rounded-full" style="background:#07A0C3;"></div>
                     </div>
                 </div>
 
@@ -502,7 +490,6 @@
                     foreach ($categories as $cat) {
                         $gridItems[] = [
                             'name' => $cat['name'],
-                            'desc' => $cat['desc'] ?? $cat['name'],
                             'slug' => $cat['slug'],
                             'count' => $cat['event_count'] ?? 0,
                             'icon' => $catIcons[$cat['slug']] ?? 'folder',
@@ -511,69 +498,59 @@
                     }
                 @endphp
 
-                <!-- Modern Category Grid View -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-[1250px] mx-auto px-4">
-                    @php
-                        $displayItems = array_slice($gridItems, 0, 7);
-                    @endphp
-                    @foreach($displayItems as $idx => $item)
+                <div class="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-6 md:grid md:grid-cols-2 lg:grid-cols-3 lg:gap-6 max-w-[1200px] mx-auto hide-scrollbar">
+                    @foreach($gridItems as $idx => $item)
                         <a href="{{ $item['slug'] ? route('events.index', ['category' => $item['slug']]) : '#events' }}"
-                            class="event-category-card group flex flex-col bg-white rounded-2xl shadow-sm hover:shadow-2xl hover:shadow-[#07A0C3]/20 hover:-translate-y-2 border border-gray-100/80 hover:border-[#07A0C3]/40 overflow-hidden relative"
-                            style="opacity: 0; transform: translateY(30px); transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.45s ease;">
-                            
-                            <!-- Card Image Header -->
-                            <div class="relative h-44 w-full overflow-hidden bg-gray-100">
-                                @if($item['image'])
-                                    <img src="{{ asset($item['image']) }}" alt="{{ $item['name'] }}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110">
-                                @else
-                                    <div class="absolute inset-0 w-full h-full bg-gradient-to-br from-[#07A0C3]/20 via-cyan-500/10 to-[#07A0C3]/5"></div>
-                                @endif
-                                
-                                <!-- Gradient Overlays for optimal contrast -->
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent group-hover:from-black/75 transition-colors duration-500"></div>
+                            style="aspect-ratio: 16/9; min-height: 160px; opacity: 0;"
+                            class="event-category-card snap-start shrink-0 w-[85%] md:w-auto group relative block rounded-2xl overflow-hidden {{ $item['image'] ? 'bg-gray-900' : 'bg-gray-200' }} shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
 
-                                <!-- Floating Icon Badge (Top Left) -->
-                                <div class="absolute top-3.5 left-3.5 bg-white/95 backdrop-blur shadow-md p-2.5 rounded-xl border border-white/60 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-500 cubic-bezier(0.34, 1.56, 0.64, 1)">
-                                    <i data-lucide="{{ $item['icon'] }}" class="w-5 h-5 text-[#07A0C3]"></i>
-                                </div>
+                            @if($item['image'])
+                                <!-- Background Image -->
+                                <img src="{{ asset($item['image']) }}" alt="{{ $item['name'] }}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-[1.15] opacity-60 group-hover:opacity-80">
+                            @else
+                                <div class="absolute inset-0 w-full h-full bg-gradient-to-br from-gray-800 to-gray-700 opacity-80 group-hover:opacity-100 transition-opacity"></div>
+                            @endif
 
-                                <!-- Event Count Pill Badge (Top Right) -->
-                                <div class="absolute top-3.5 right-3.5 bg-black/40 backdrop-blur-md border border-white/20 text-white text-xs font-semibold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
-                                    <i data-lucide="sparkles" class="w-3 h-3 text-amber-300"></i>
-                                    <span>{{ $item['count'] }} sự kiện</span>
-                                </div>
+                            <!-- Glassmorphism Gradient Overlay -->
+                            <div class="absolute inset-0 transition-opacity duration-500 opacity-60 group-hover:opacity-40"
+                                 style="background: linear-gradient(to right, rgba(28,20,16,0.9) 0%, rgba(28,20,16,0.4) 100%);"></div>
 
-                                <!-- Category Name Overlay on Image -->
-                                <div class="absolute bottom-3 left-4 right-4">
-                                    <span class="text-[11px] font-semibold text-white/80 uppercase tracking-wider block mb-0.5">{{ $item['name'] }}</span>
-                                    <h3 class="text-base font-bold text-white leading-tight drop-shadow-sm group-hover:text-cyan-200 transition-colors duration-300">
-                                        {{ $item['desc'] }}
-                                    </h3>
-                                </div>
+                            <!-- Icon (Absolutely centered in the collapsed shape) -->
+                            <div class="absolute top-0 left-0 flex items-center justify-center z-10 cat-icon-container pointer-events-none">
+                                <i data-lucide="{{ $item['icon'] }}" class="w-12 h-12 lg:w-14 lg:h-14 text-white drop-shadow-md transition-transform duration-500 group-hover:scale-110"></i>
                             </div>
-                            
-                            <!-- Card Footer Action Bar -->
-                            <div class="p-4 bg-white flex items-center justify-between border-t border-gray-50 text-xs font-semibold text-gray-500 group-hover:text-[#07A0C3] transition-colors duration-300">
-                                <span class="flex items-center gap-1.5">
-                                    <i data-lucide="compass" class="w-3.5 h-3.5 text-gray-400 group-hover:text-[#07A0C3] transition-colors duration-300"></i>
-                                    Khám phá danh mục
-                                </span>
-                                <div class="w-7 h-7 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-[#07A0C3] group-hover:text-white transition-all duration-300 transform group-hover:translate-x-1">
-                                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+
+                            <!-- Expanding Text Content -->
+                            <div class="absolute top-0 flex flex-col justify-center cat-text-container z-10 opacity-0 group-hover:opacity-100 transition-all duration-500 delay-75 transform -translate-x-4 group-hover:translate-x-0 pointer-events-none">
+                                <h3 class="text-white text-xl lg:text-2xl font-black tracking-tight drop-shadow-lg leading-tight mb-1 whitespace-normal pr-2">
+                                    {{ $item['name'] }}
+                                </h3>
+                                
+                                <div class="inline-flex items-center gap-1.5 text-[#FFE381] text-xs lg:text-sm font-bold uppercase tracking-wider drop-shadow-md mt-1">
+                                    <i data-lucide="calendar" class="w-4 h-4"></i>
+                                    <span>{{ $item['count'] }} sự kiện</span>
                                 </div>
                             </div>
                         </a>
                     @endforeach
 
-                    <!-- View All Card -->
+                    <!-- Inline View All Button -->
                     <a href="{{ route('events.index') }}"
-                        class="event-category-card group flex flex-col items-center justify-center bg-gradient-to-br from-[#07A0C3]/10 via-[#07A0C3]/5 to-amber-500/5 hover:from-[#07A0C3] hover:to-[#057f9b] hover:-translate-y-2 rounded-2xl border-2 border-dashed border-[#07A0C3]/30 hover:border-transparent transition-all duration-500 p-6 min-h-[220px] shadow-sm hover:shadow-xl hover:shadow-[#07A0C3]/25"
-                        style="opacity: 0; transform: translateY(30px); transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1);">
-                        <div class="w-14 h-14 rounded-2xl bg-white shadow-md flex items-center justify-center text-[#07A0C3] group-hover:bg-white/20 group-hover:text-white mb-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
-                            <i data-lucide="arrow-right" class="w-7 h-7"></i>
+                        style="opacity: 0;"
+                        class="event-category-card group relative block bg-[#07A0C3] hover:bg-[#068ba9] shadow-md hover:shadow-2xl hover:z-50 cat-parallelogram-sm"
+                        title="Xem tất cả danh mục">
+                        
+                        <!-- Icon -->
+                        <div class="absolute top-0 left-0 flex items-center justify-center z-10 cat-sm-icon-container pointer-events-none">
+                            <i data-lucide="plus" class="w-10 h-10 lg:w-12 lg:h-12 text-white drop-shadow-md transition-transform duration-500 group-hover:rotate-90"></i>
                         </div>
-                        <h3 class="text-xl font-extrabold text-gray-800 group-hover:text-white transition-colors duration-300">Xem tất cả</h3>
-                        <p class="text-xs font-medium text-gray-500 group-hover:text-white/80 mt-1 text-center">Khám phá toàn bộ danh mục sự kiện</p>
+
+                        <!-- Expanding Text Content -->
+                        <div class="absolute top-0 flex flex-col justify-center cat-sm-text-container z-10 opacity-0 group-hover:opacity-100 transition-all duration-500 delay-75 transform -translate-x-4 group-hover:translate-x-0 pointer-events-none">
+                            <h3 class="text-white text-2xl lg:text-3xl font-black tracking-tight drop-shadow-lg leading-tight uppercase whitespace-nowrap">
+                                Xem thêm
+                            </h3>
+                        </div>
                     </a>
                 </div>
 
@@ -595,33 +572,23 @@
                     
                     const tl = gsap.timeline({
                         scrollTrigger: {
-                            trigger: "#categories-section",
-                            start: "top 85%",
+                            trigger: "#events",
+                            start: "top 80%", 
+                            // Chỉ chạy 1 lần khi cuộn xuống, cuộn lên sẽ không bị ẩn đi gây rối mắt
                             toggleActions: "play none none none", 
                         }
                     });
                     
-                    // Title fades in and slides up with smooth exponential curve
+                    // Title fades in and slides up
                     tl.fromTo('.event-category-title', 
-                        { opacity: 0, y: 25 }, 
-                        { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }
+                        { opacity: 0, y: 30 }, 
+                        { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }
                     )
-                    // Cards slide up with ultra-smooth cascading wave effect
+                    // Cards slide up smoothly instead of bouncing
                     .fromTo('.event-category-card', 
-                        { opacity: 0, y: 35, scale: 0.96 }, 
-                        { 
-                            opacity: 1, 
-                            y: 0, 
-                            scale: 1, 
-                            duration: 0.85, 
-                            stagger: { amount: 0.35, from: "start" }, 
-                            ease: "power4.out",
-                            onComplete: () => {
-                                // Xóa thuộc tính transform của GSAP sau khi xuất hiện để trả lại hiệu ứng hover CSS mượt 100%
-                                gsap.set('.event-category-card', { clearProps: "transform" });
-                            }
-                        }, 
-                        "-=0.3"
+                        { opacity: 0, y: 50, scale: 0.95 }, 
+                        { opacity: 1, y: 0, scale: 1, duration: 0.8, stagger: 0.15, ease: "power3.out" }, 
+                        "-=0.4"
                     );
                 }
             });
@@ -637,7 +604,7 @@
         style="display: grid; grid-template-columns: 1fr; width: 100%; overflow-x: hidden; position: relative; z-index: 30;">
 
         <div style="grid-area: 1 / 1; width: 100%; height: 100%; z-index: 30;">
-            @include('frontend.upcoming', ['upcoming' => $upcoming])
+            @include('frontend.upcoming-mobile', ['upcoming' => $upcoming])
         </div>
 
         <!-- FEATURED EVENTS WRAPPER -->
@@ -656,7 +623,7 @@
                                 class="font-barlow-condensed text-5xl font-black uppercase tracking-tight text-[#1C1410] lg:text-6xl">
                                 Sự kiện nổi bật</h2>
                         </div>
-                        <a href="{{ route('events.index') }}" class="hidden items-center gap-2 text-sm font-semibold lg:inline-flex transition-colors"
+                        <a href="#" class="hidden items-center gap-2 text-sm font-semibold lg:inline-flex transition-colors"
                             style="color:#07A0C3;" onmouseover="this.style.color='#04F06A'"
                             onmouseout="this.style.color='#07A0C3'">
                             Xem tất cả <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
@@ -990,32 +957,32 @@
 </section>
 
 {{-- ——————————————————————————————————————————————————————
-     MEDIA — Nền Cream/Jasmine Ấm
+     MEDIA — Nền Jasmine ấm, thoáng sáng
 —————————————————————————————————————————————————————————— --}}
-<div id="media-sticky-wrapper" style="background: #FFF8E7; position: relative; z-index: 60;">
+<div id="media-sticky-wrapper" style="background: #FFF3C4; position: relative; z-index: 60;">
 @php $mediaJson = json_encode($media); @endphp
-<section id="media" class="relative overflow-hidden py-10 lg:py-14" style="position: -webkit-sticky; position: sticky; top: 72px; background:#FFF8E7; z-index: 60;"
+<section id="media" class="relative overflow-hidden py-8 lg:py-10" style="position: -webkit-sticky; position: sticky; top: 72px; background:#FFF3C4; z-index: 60;"
          x-data="mediaPlayer({{ $mediaJson }})" x-init="initPlayer()">
-    <!-- Top accent border - mảnh nhẹ hòa hợp với tổng thể -->
-    <div class="absolute inset-x-0 top-0 h-1" style="background: linear-gradient(to right, transparent, #07A0C3, transparent);"></div>
-    
-    <!-- Subtle warm ambient blobs -->
-    <div class="pointer-events-none absolute inset-0 overflow-hidden select-none">
-        <div class="absolute right-0 top-0 w-[400px] h-[400px] rounded-full" style="background: radial-gradient(circle, rgba(7,160,195,0.08) 0%, transparent 70%);"></div>
-        <div class="absolute left-0 bottom-0 w-[350px] h-[350px] rounded-full" style="background: radial-gradient(circle, rgba(4,240,106,0.06) 0%, transparent 70%);"></div>
-        <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full" style="background: radial-gradient(circle, rgba(255,193,7,0.05) 0%, transparent 70%);"></div>
+    <!-- Top Jasmine border -->
+    <div class="absolute inset-x-0 top-0 h-1.5" style="background:#FFE381;"></div>
+    <!-- Subtle accent blobs -->
+    <div class="pointer-events-none absolute inset-0 overflow-hidden">
+        <div class="absolute right-0 top-0 h-80 w-80 rounded-full blur-[120px] opacity-30" style="background:#07A0C3;"></div>
+        <div class="absolute -left-20 bottom-0 h-64 w-64 rounded-full blur-[100px] opacity-20" style="background:#04F06A;"></div>
+        <!-- Blob trang trí phụ — lấp khoảng trống giữa -->
+        <div class="absolute left-1/3 top-1/2 h-[180px] w-[180px] rounded-full blur-[100px] opacity-15" style="background:#FFE381;"></div>
     </div>
 
-    <div class="relative z-10 mx-auto max-w-[1400px] px-6 lg:px-10">
+    <div class="relative mx-auto max-w-[1400px] px-6 lg:px-10">
         <div data-aos="fade-up" class="flex items-end justify-between pb-6">
             <div>
                 <div class="flex items-center gap-3 mb-2">
-                    <div class="h-7 w-1 rounded-full" style="background:#07A0C3;"></div>
-                    <span class="text-xs font-bold uppercase tracking-[0.25em]" style="color:#07A0C3;">Media Gallery</span>
+                    <div class="h-7 w-1 rounded-full" style="background:#04F06A;"></div>
+                    <span class="text-xs font-bold uppercase tracking-[0.25em]" style="color:#04B050;">Media</span>
                 </div>
                 <h2 class="font-barlow-condensed text-4xl font-black uppercase tracking-tight text-[#1C1410] lg:text-5xl">Album & Recap</h2>
             </div>
-            <a href="{{ route('events.index') }}" class="group inline-flex items-center gap-1.5 text-sm font-semibold text-[#07A0C3] transition-colors hover:text-[#04B050]">
+            <a href="#" class="group inline-flex items-center gap-1.5 text-sm font-semibold text-[#07A0C3] transition-colors hover:text-[#04F06A]">
                 Thư viện đầy đủ <i data-lucide="arrow-right" class="h-4 w-4 transition-transform group-hover:translate-x-1"></i>
             </a>
         </div>
@@ -1023,7 +990,7 @@
         <template x-if="items.length > 0">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <!-- Left Side: Main Player -->
-                <div class="lg:col-span-8 bg-black rounded-2xl overflow-hidden relative border border-white/10 shadow-2xl" style="box-shadow:0 16px 50px rgba(7,160,195,0.2); height: 380px;">
+                <div class="lg:col-span-8 bg-black rounded-2xl overflow-hidden relative" style="box-shadow:0 16px 50px rgba(7,160,195,0.15); height: 380px;">
                     <template x-for="(item, index) in items" :key="index">
                         <div x-show="currentIndex === index" 
                              x-transition:enter="transition ease-out duration-700 transform"
@@ -1044,37 +1011,37 @@
                     
                     <!-- THÊM MỚI — Counter và label media, chèn trong player box, sau progress bar -->
                     <div class="absolute top-4 left-4 z-20 flex items-center gap-2">
-                        <div class="flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold shadow-md border border-white/20"
-                             style="background:rgba(0,0,0,0.65); color:white; backdrop-filter:blur(8px);">
+                        <div class="flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold shadow-md"
+                             style="background:rgba(0,0,0,0.55); color:white; backdrop-filter:blur(6px);">
                             <span x-text="currentIndex + 1"></span>
                             <span style="color:rgba(255,255,255,0.4);">/</span>
                             <span x-text="items.length"></span>
                         </div>
-                        <div class="rounded-full px-3 py-1 text-xs font-bold shadow-md border border-amber-300/30"
-                             style="background:rgba(255,227,129,0.9); color:#1C1410;"
+                        <div class="rounded-full px-3 py-1 text-xs font-bold shadow-md"
+                             style="background:rgba(255,227,129,0.85); color:#1C1410;"
                              x-text="currentItem.type === 'video' ? '▶ Video' : '🖼 Ảnh'"></div>
                     </div>
 
                     <!-- Progress Bar at the bottom of the player -->
-                    <div class="absolute bottom-0 left-0 right-0 h-1.5 bg-black/60 z-20">
-                        <div class="h-full bg-gradient-to-r from-[#07A0C3] to-[#04F06A] transition-all duration-100" :style="`width: ${progress}%`"></div>
+                    <div class="absolute bottom-0 left-0 right-0 h-1.5 bg-black/50 z-20">
+                        <div class="h-full bg-[#07A0C3] transition-all duration-100" :style="`width: ${progress}%`"></div>
                     </div>
                 </div>
 
                 <!-- Right Side: Info and Thumbnails -->
                 <div class="lg:col-span-4 flex flex-col gap-4 h-[380px]">
                     <!-- Top Info Box (2/3) -->
-                    <div class="flex-1 rounded-2xl p-6 flex flex-col justify-center relative overflow-hidden group border border-[#07A0C3]/20 shadow-lg" style="background: rgba(255,255,255,0.7); backdrop-filter: blur(12px);">
-                        <div class="mb-4 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.25em] text-[#1C1410] bg-[#FFE381]" x-text="currentItem.type === 'video' ? '▶ Video Highlight' : '🖼 Ảnh lưu niệm'"></div>
+                    <div class="flex-1 rounded-2xl p-6 flex flex-col justify-center relative overflow-hidden group" style="background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); box-shadow: 0 4px 20px rgba(255,200,60,0.15); border: 1px solid rgba(255, 227, 129, 0.5);">
+                        <div class="mb-4 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.25em] text-[#1C1410]" style="background:#FFE381;" x-text="currentItem.type === 'video' ? 'Video' : 'Hình ảnh'"></div>
                         
-                        <h3 class="font-barlow-condensed text-3xl font-black uppercase tracking-wide text-[#1C1410] leading-snug line-clamp-3" x-text="currentItem.title"></h3>
+                        <h3 class="font-barlow-condensed text-3xl font-black uppercase tracking-wide text-[#1C1410] leading-snug line-clamp-4" x-text="currentItem.title"></h3>
                         
                         <div class="mt-4 flex items-center gap-2">
-                            <div class="h-8 w-1 rounded-full" style="background:#07A0C3;"></div>
-                            <a :href="currentItem.event_url" class="text-sm font-semibold text-[#5A4A3A] hover:text-[#07A0C3] transition-colors" x-text="currentItem.event_name"></a>
+                            <div class="h-10 w-1 rounded-full" style="background:#04F06A;"></div>
+                            <a :href="currentItem.event_url" class="text-sm font-semibold text-[#7A6A52] hover:text-[#07A0C3] transition-colors" x-text="currentItem.event_name"></a>
                         </div>
 
-                        <!-- Nút xem tất cả + progress dots -->
+                        <!-- THÊM MỚI — Nút xem tất cả + progress dots, chèn cuối info box bên phải -->
                         <div class="mt-auto pt-3 flex items-center justify-between">
                             <!-- Dots indicator -->
                             <div class="flex gap-1.5 items-center">
@@ -1082,13 +1049,15 @@
                                     <div class="rounded-full transition-all duration-300"
                                          :style="i === currentIndex 
                                             ? 'width:1.25rem; height:0.35rem; background:#07A0C3;' 
-                                            : 'width:0.35rem; height:0.35rem; background:rgba(7,160,195,0.2);'"></div>
+                                            : 'width:0.35rem; height:0.35rem; background:rgba(7,160,195,0.25);'"></div>
                                 </template>
-                                <span x-show="items.length > 8" class="text-[10px] font-bold ml-1 text-[#1C1410]/40"
+                                <span x-show="items.length > 8" class="text-[10px] font-bold ml-1" style="color:rgba(122,106,82,0.5);"
                                       x-text="'+' + (items.length - 8)"></span>
                             </div>
                             <!-- Link xem thêm -->
-                            <a href="{{ route('events.index') }}" class="text-xs font-extrabold uppercase tracking-widest text-[#07A0C3] hover:text-[#04B050] transition-colors">
+                            <a href="{{ route('events.index') }}" class="text-xs font-bold uppercase tracking-widest transition-colors"
+                               style="color:rgba(7,160,195,0.7);"
+                               onmouseover="this.style.color='#04F06A'" onmouseout="this.style.color='rgba(7,160,195,0.7)'">
                                 Xem tất cả &rarr;
                             </a>
                         </div>

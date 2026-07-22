@@ -112,6 +112,18 @@
             Kỷ niệm
         </div>
 </div>
+        <!-- HERO SECTION -->
+        <div class="relative z-40 flex flex-col items-center text-center mt-2 mb-10 px-4" data-aos="fade-up">
+            <h1 class="font-barlow-condensed text-5xl font-black uppercase tracking-tight mb-2" style="color: #1C1410;">
+                Kho Lưu Trữ
+            </h1>
+            <p class="text-lg italic font-medium mb-3" style="color: #8A7320;">
+                Những khoảnh khắc đáng nhớ nhất...
+            </p>
+            <p class="text-sm leading-relaxed max-w-[280px] mx-auto" style="color: #7A6A52;">
+                Hành trình thanh xuân được dệt nên từ những nụ cười, những lần hội ngộ và những thành tựu rực rỡ tại UniEvent. Hãy cùng lật lại những trang ký ức đầy màu sắc của chúng ta.
+            </p>
+        </div>
 
         <!-- ── Unified Filter Bar ── -->
         <div data-aos="fade-up" data-aos-delay="100" 

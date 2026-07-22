@@ -498,7 +498,7 @@
                     }
                 @endphp
 
-                <div class="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-6 md:grid md:grid-cols-2 lg:grid-cols-3 lg:gap-6 max-w-[1200px] mx-auto hide-scrollbar">
+                <div class="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-6 md:grid md:grid-cols-2 lg:grid-cols-3 lg:gap-6 max-w-[1200px] mx-auto hide-scrollbar px-4 md:px-0">
                     @foreach($gridItems as $idx => $item)
                         <a href="{{ $item['slug'] ? route('events.index', ['category' => $item['slug']]) : '#events' }}"
                             style="aspect-ratio: 16/9; min-height: 160px; opacity: 0;"
@@ -512,12 +512,12 @@
                             @endif
 
                             <!-- Glassmorphism Gradient Overlay -->
-                            <div class="absolute inset-0 transition-opacity duration-500 opacity-60 group-hover:opacity-40"
+                            <div class="absolute inset-0 transition-opacity duration-500 opacity-40 group-hover:opacity-20"
                                  style="background: linear-gradient(to right, rgba(28,20,16,0.9) 0%, rgba(28,20,16,0.4) 100%);"></div>
 
                             <!-- Icon (Absolutely centered in the collapsed shape) -->
                             <div class="absolute top-0 left-0 flex items-center justify-center z-10 cat-icon-container pointer-events-none">
-                                <i data-lucide="{{ $item['icon'] }}" class="w-12 h-12 lg:w-14 lg:h-14 text-white drop-shadow-md transition-transform duration-500 group-hover:scale-110"></i>
+                                <i data-lucide="{{ $item['icon'] }}" class="w-8 h-8 lg:w-10 lg:h-10 text-white drop-shadow-md transition-transform duration-500 group-hover:scale-110"></i>
                             </div>
 
                             <!-- Expanding Text Content -->
@@ -767,7 +767,7 @@
     <div id="archive-sticky-wrapper" style="background: #2D1F0A; position: relative; z-index: 50;">
     @php $archiveJson = json_encode($archive); @endphp
 <section id="archive" class="relative overflow-hidden py-12 lg:py-16"
-         style="position: -webkit-sticky; position: sticky; top: 72px; background:linear-gradient(160deg,#2D1F0A 0%,#3D2A0E 50%,#1C2A10 100%); z-index: 50;"
+         style="background:linear-gradient(160deg,#2D1F0A 0%,#3D2A0E 50%,#1C2A10 100%); z-index: 50;"
          x-data="{ 
             yearIdx: 0, 
             eventIdx: 0,
@@ -833,7 +833,17 @@
         <div class="relative mt-14 grid grid-cols-1 gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
             <!-- Chữ số năm — Jasmine gradient & Buttons -->
             <div class="relative flex flex-col items-start z-10">
-                <div class="font-barlow-condensed text-[28vw] font-black leading-[0.85] tracking-tighter lg:text-[18vw] pl-4 lg:pl-6 pr-4"
+                <!-- Mobile Clean Header -->
+                <div class="flex items-center gap-4 lg:hidden pl-4 pr-4 w-full">
+                     <h3 class="font-barlow-condensed text-4xl font-black"
+                         style="-webkit-text-fill-color:transparent;-webkit-background-clip:text;background-clip:text;
+                                background-image:linear-gradient(160deg,#FFE381 30%,#E8C84A 70%,#07A0C3 100%);"
+                         x-text="'NĂM ' + currentYear.year"></h3>
+                     <div class="h-px flex-1" style="background:rgba(255,227,129,0.2);"></div>
+                </div>
+
+                <!-- Desktop Huge Text -->
+                <div class="hidden lg:block font-barlow-condensed font-black leading-[0.85] tracking-tighter text-[18vw] pl-6 pr-4"
                      style="-webkit-text-fill-color:transparent;-webkit-background-clip:text;background-clip:text;
                             background-image:linear-gradient(160deg,#FFE381 30%,#E8C84A 70%,#07A0C3 100%);"
                      x-text="currentYear.year"
@@ -841,7 +851,7 @@
                      x-transition:enter-start="opacity-0 translate-y-10"
                      x-transition:enter-end="opacity-100 translate-y-0"></div>
 
-                <div class="mt-6 pl-4 lg:pl-6">
+                <div class="mt-6 pl-6 hidden lg:block">
                     <a :href="'{{ route('archive') }}?year=' + currentYear.year" class="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold transition-all hover:scale-105"
                        style="background:#FFE381; color:#1C1410;">
                         Xem chi tiết năm <span x-text="currentYear.year"></span> <i data-lucide="arrow-right" class="h-4 w-4"></i>
@@ -849,10 +859,10 @@
                 </div>
 
                 <!-- Year tabs -->
-                <div class="mt-7 flex flex-wrap items-center gap-2 pl-4 lg:pl-6">
+                <div class="mt-5 lg:mt-7 flex overflow-x-auto hide-scrollbar items-center gap-2 pl-4 pr-4 lg:pl-6 pb-2 w-full max-w-[100vw]">
                     <template x-for="(a,i) in archive" :key="a.year">
                         <button @click="setYear(i)"
-                            class="rounded-full px-4 py-1.5 text-sm font-bold font-mono transition-all"
+                            class="rounded-full px-4 py-1.5 text-sm font-bold font-mono transition-all shrink-0"
                             :style="i===yearIdx
                                 ? 'background:#FFE381;color:#1C1410;box-shadow:0 4px 12px rgba(255,227,129,0.4);'
                                 : 'background:rgba(255,227,129,0.08);color:rgba(255,227,129,0.45);'">
@@ -882,69 +892,99 @@
             </div>
 
             <div>
-                <a :href="currentEvent.featured_url" class="group relative block h-[280px] overflow-hidden rounded-2xl lg:h-[360px]"
-                     style="box-shadow:0 20px 60px rgba(255,227,129,0.15);">
-                    <img :src="currentEvent.img" :alt="currentEvent.featured_title" loading="lazy"
-                         class="h-full w-full object-cover transition-transform duration-[1500ms] group-hover:scale-105" />
-                    <div class="absolute inset-0"
-                         style="background:linear-gradient(to top,rgba(45,31,10,0.92) 0%,rgba(45,31,10,0.25) 60%,transparent 100%);"></div>
-                    <!-- Jasmine accent bar -->
-                    <div class="absolute bottom-0 left-0 right-0 h-1.5" style="background:#FFE381;"></div>
-                    <div class="absolute bottom-6 left-5 right-5 z-20">
-                        <div class="block w-fit">
-                            <h3 class="font-barlow-condensed text-3xl font-black uppercase tracking-wide text-white lg:text-4xl transition-colors group-hover:text-[#FFE381]"
-                                x-text="currentEvent.featured_title"></h3>
+                <div class="rounded-2xl lg:rounded-none overflow-hidden lg:overflow-visible mx-4 lg:mx-0" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 227, 129, 0.05);">
+                    <a :href="currentEvent.featured_url" class="group relative block h-[220px] lg:rounded-2xl lg:h-[360px]"
+                         style="box-shadow:0 20px 60px rgba(255,227,129,0.15);">
+                        <img :src="currentEvent.img" :alt="currentEvent.featured_title" loading="lazy"
+                             class="h-full w-full object-cover transition-transform duration-[1500ms] group-hover:scale-105" />
+                        <div class="absolute inset-0"
+                             style="background:linear-gradient(to top,rgba(45,31,10,0.92) 0%,rgba(45,31,10,0.25) 60%,transparent 100%);"></div>
+                        <!-- Jasmine accent bar -->
+                        <div class="absolute bottom-0 left-0 right-0 h-1.5" style="background:#FFE381;"></div>
+                        <!-- Tiêu đề trên PC -->
+                        <div class="absolute bottom-6 left-5 right-5 z-20 hidden lg:block">
+                            <div class="block w-fit">
+                                <h3 class="font-barlow-condensed text-2xl font-black uppercase tracking-wide text-white lg:text-4xl transition-colors group-hover:text-[#FFE381]"
+                                    x-text="currentEvent.featured_title"></h3>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- Card Body cho Mobile & PC -->
+                    <div class="p-5 lg:p-0 lg:mt-5">
+                        <!-- Tiêu đề trên Mobile -->
+                        <h3 class="font-barlow-condensed text-2xl font-black uppercase tracking-wide text-white transition-colors lg:hidden"
+                            x-text="currentEvent.featured_title"></h3>
+                            
+                        <p class="mt-3 lg:mt-0 text-sm leading-relaxed lg:text-lg" style="color:rgba(255,227,129,0.7);" x-text="currentEvent.desc"></p>
+
+                        <!-- Thống kê tinh gọn cho Mobile -->
+                        <div class="mt-4 flex flex-wrap items-center gap-4 lg:hidden">
+                            <!-- Stat: Số sự kiện -->
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="calendar-check" class="h-4 w-4" style="color:#FFE381;"></i>
+                                <span class="text-xs font-bold text-white" x-text="currentYear.achievements[0]"></span>
+                            </div>
+                            <!-- Separator -->
+                            <div class="h-3 w-px bg-white/20"></div>
+                            <!-- Stat: Năm hoạt động -->
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="history" class="h-4 w-4" style="color:#07A0C3;"></i>
+                                <span class="text-xs font-bold text-white" x-text="currentYear.year"></span>
+                            </div>
+                        </div>
+
+                        <!-- Thống kê gốc cho PC -->
+                        <div class="mt-5 hidden lg:flex flex-wrap gap-4">
+                            <div class="flex items-center gap-2">
+                                <div class="h-8 w-8 rounded-full flex items-center justify-center flex-shrink-0" style="background:rgba(255,227,129,0.12); border:1px solid rgba(255,227,129,0.25);">
+                                    <i data-lucide="calendar-check" class="h-4 w-4" style="color:#FFE381;"></i>
+                                </div>
+                                <div>
+                                    <div class="text-xs font-bold uppercase tracking-widest" style="color:rgba(255,227,129,0.5);">Tổ chức</div>
+                                    <div class="text-sm font-bold text-white" x-text="currentYear.achievements[0]"></div>
+                                </div>
+                            </div>
+                            <div class="h-auto w-px self-stretch" style="background:rgba(255,227,129,0.15);"></div>
+                            <div class="flex items-center gap-2">
+                                <div class="h-8 w-8 rounded-full flex items-center justify-center flex-shrink-0" style="background:rgba(7,160,195,0.12); border:1px solid rgba(7,160,195,0.25);">
+                                    <i data-lucide="history" class="h-4 w-4" style="color:#07A0C3;"></i>
+                                </div>
+                                <div>
+                                    <div class="text-xs font-bold uppercase tracking-widest" style="color:rgba(7,160,195,0.5);">Năm hoạt động</div>
+                                    <div class="text-sm font-bold text-white" x-text="currentYear.year"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tags (chỉ PC) -->
+                        <div class="mt-5 hidden lg:grid grid-cols-1 gap-3 sm:grid-cols-3">
+                            <template x-for="achieve in currentYear.achievements" :key="achieve">
+                                <div class="rounded-xl px-4 py-3 text-sm font-medium text-white"
+                                     style="background:rgba(255,227,129,0.10); border:1px solid rgba(255,227,129,0.25);"
+                                     x-text="achieve"></div>
+                            </template>
+                        </div>
+
+                        <!-- Action Bar cho Mobile -->
+                        <div class="mt-6 flex items-center justify-between lg:hidden border-t border-[#FFE381]/10 pt-4">
+                            <a :href="'{{ route('archive') }}?year=' + currentYear.year" class="inline-flex items-center gap-2 rounded-full px-5 py-2 text-xs font-bold transition-all"
+                               style="background:#FFE381; color:#1C1410;">
+                                Xem thêm <i data-lucide="arrow-right" class="h-3 w-3"></i>
+                            </a>
+                            
+                            <div class="flex gap-2">
+                                <button @click="go(-1)" :disabled="eventIdx === 0"
+                                    class="grid h-9 w-9 place-items-center rounded-full border border-[#FFE381]/30 disabled:opacity-30">
+                                    <i data-lucide="chevron-left" class="h-4 w-4 text-white"></i>
+                                </button>
+                                <button @click="go(1)" :disabled="eventIdx === currentYear.events.length - 1"
+                                    class="grid h-9 w-9 place-items-center rounded-full border border-[#FFE381]/30 disabled:opacity-30">
+                                    <i data-lucide="chevron-right" class="h-4 w-4 text-white"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </a>
-
-                <p class="mt-5 text-base leading-relaxed lg:text-lg" style="color:rgba(255,227,129,0.7);" x-text="currentEvent.desc"></p>
-
-                <!-- Thêm thông tin chi tiết trên achievements -->
-                <div class="mt-5 flex flex-wrap gap-4">
-                    <!-- Stat: Số sự kiện -->
-                    <div class="flex items-center gap-2">
-                        <div class="h-8 w-8 rounded-full flex items-center justify-center flex-shrink-0"
-                             style="background:rgba(255,227,129,0.12); border:1px solid rgba(255,227,129,0.25);">
-                            <i data-lucide="calendar-check" class="h-4 w-4" style="color:#FFE381;"></i>
-                        </div>
-                        <div>
-                            <div class="text-xs font-bold uppercase tracking-widest" style="color:rgba(255,227,129,0.5);">Tổ chức</div>
-                            <div class="text-sm font-bold text-white" x-text="currentYear.achievements[0]"></div>
-                        </div>
-                    </div>
-                    <!-- Separator -->
-                    <div class="h-auto w-px self-stretch" style="background:rgba(255,227,129,0.15);"></div>
-                    <!-- Stat: Năm hoạt động -->
-                    <div class="flex items-center gap-2">
-                        <div class="h-8 w-8 rounded-full flex items-center justify-center flex-shrink-0"
-                             style="background:rgba(7,160,195,0.12); border:1px solid rgba(7,160,195,0.25);">
-                            <i data-lucide="history" class="h-4 w-4" style="color:#07A0C3;"></i>
-                        </div>
-                        <div>
-                            <div class="text-xs font-bold uppercase tracking-widest" style="color:rgba(7,160,195,0.5);">Năm hoạt động</div>
-                            <div class="text-sm font-bold text-white" x-text="currentYear.year"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
-                    <template x-for="achieve in currentYear.achievements" :key="achieve">
-                        <div class="rounded-xl px-4 py-3 text-sm font-medium text-white"
-                             style="background:rgba(255,227,129,0.10); border:1px solid rgba(255,227,129,0.25);"
-                             x-text="achieve"></div>
-                    </template>
-                </div>
-
-                <div class="mt-6 flex gap-3 lg:hidden">
-                    <button @click="go(-1)" :disabled="eventIdx === 0"
-                        class="grid h-11 w-11 place-items-center rounded-full border border-[#FFE381]/30 disabled:opacity-30">
-                        <i data-lucide="chevron-left" class="h-5 w-5 text-white"></i>
-                    </button>
-                    <button @click="go(1)" :disabled="eventIdx === currentYear.events.length - 1"
-                        class="grid h-11 w-11 place-items-center rounded-full border border-[#FFE381]/30 disabled:opacity-30">
-                        <i data-lucide="chevron-right" class="h-5 w-5 text-white"></i>
-                    </button>
                 </div>
             </div>
         </div>
@@ -961,7 +1001,7 @@
 —————————————————————————————————————————————————————————— --}}
 <div id="media-sticky-wrapper" style="background: #FFF3C4; position: relative; z-index: 60;">
 @php $mediaJson = json_encode($media); @endphp
-<section id="media" class="relative overflow-hidden py-8 lg:py-10" style="position: -webkit-sticky; position: sticky; top: 72px; background:#FFF3C4; z-index: 60;"
+<section id="media" class="relative overflow-hidden py-8 lg:py-10" style="background:#FFF3C4; z-index: 60;"
          x-data="mediaPlayer({{ $mediaJson }})" x-init="initPlayer()">
     <!-- Top Jasmine border -->
     <div class="absolute inset-x-0 top-0 h-1.5" style="background:#FFE381;"></div>
@@ -1029,12 +1069,12 @@
                 </div>
 
                 <!-- Right Side: Info and Thumbnails -->
-                <div class="lg:col-span-4 flex flex-col gap-4 h-[380px]">
+                <div class="lg:col-span-4 flex flex-col gap-4 h-auto lg:h-[380px]">
                     <!-- Top Info Box (2/3) -->
                     <div class="flex-1 rounded-2xl p-6 flex flex-col justify-center relative overflow-hidden group" style="background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); box-shadow: 0 4px 20px rgba(255,200,60,0.15); border: 1px solid rgba(255, 227, 129, 0.5);">
                         <div class="mb-4 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.25em] text-[#1C1410]" style="background:#FFE381;" x-text="currentItem.type === 'video' ? 'Video' : 'Hình ảnh'"></div>
                         
-                        <h3 class="font-barlow-condensed text-3xl font-black uppercase tracking-wide text-[#1C1410] leading-snug line-clamp-4" x-text="currentItem.title"></h3>
+                        <h3 class="font-barlow-condensed text-2xl lg:text-3xl font-bold tracking-tight text-[#1C1410] leading-snug line-clamp-3" x-text="currentItem.title"></h3>
                         
                         <div class="mt-4 flex items-center gap-2">
                             <div class="h-10 w-1 rounded-full" style="background:#04F06A;"></div>

@@ -300,8 +300,9 @@
             </button>
         </div>
 
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-12">
              <!-- Left Column: Scrollable Event List -->
-             <div data-aos="fade-right" class="relative" x-data="{ archiveReady: false }" x-init="setTimeout(() => archiveReady = true, 500)">
+             <div data-aos="fade-right" class="lg:col-span-4 relative" x-data="{ archiveReady: false }" x-init="setTimeout(() => archiveReady = true, 500)">
                  <style>
                      @keyframes archiveShimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
                      .archive-skeleton { background: linear-gradient(90deg, rgba(232,226,213,0.5) 25%, rgba(255,253,249,0.8) 50%, rgba(232,226,213,0.5) 75%); background-size: 200% 100%; animation: archiveShimmer 1.5s infinite; }
@@ -435,7 +436,7 @@
              <!-- Right Column: Detail Viewer Pane (Read-Only) -->
              <div id="detail-pane"
                   data-aos="fade-left" 
-                  class="rounded-3xl p-6 lg:p-8 flex flex-col justify-between min-h-[500px] transition-all duration-300 border"
+                  class="lg:col-span-8 rounded-3xl p-6 lg:p-8 flex flex-col justify-between min-h-[500px] transition-all duration-300 border"
                   style="background:#FFFFFF; border-color:#E8E2D5; box-shadow:0 12px 40px rgba(28,20,16,0.04);">
                 
                 <div x-show="current">
@@ -556,94 +557,81 @@
                             </div>
                         </div>
                     </div>
-                    <p class="font-display-lg italic text-on-surface-variant" x-text="event.date_str"></p>
+                    <!-- Fallback if no event selected -->
+                    <div x-show="!current" class="flex flex-col items-center justify-center py-20 text-[#7A6A52]/50">
+                        <i data-lucide="archive" class="h-12 w-12 mb-3 opacity-60"></i>
+                        <p class="text-sm font-semibold">Vui lòng chọn một sự kiện để xem chi tiết.</p>
+                    </div>
                 </div>
-            </template>
-            <template x-if="index % 5 !== 0">
-                <div>
-                    <span class="bg-surface-variant text-on-surface-variant px-2 py-0.5 rounded text-[10px] font-bold mb-1 inline-block uppercase tracking-wider" x-text="event.category"></span>
-                    <h3 class="font-label-handwritten text-2xl" x-text="event.title"></h3>
-                    <p class="font-display-lg italic text-sm text-on-surface-variant opacity-60" x-text="event.date_str"></p>
+            </div>
+        </div>
+
+        <!-- Image/Video Lightbox Modal -->
+        <div x-show="lightboxImg || lightboxVideo" 
+             class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md"
+             style="display: none;"
+             @keydown.escape.window="lightboxImg = null; lightboxVideo = null;"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100 scale-100"
+             x-transition:leave-end="opacity-0 scale-95">
+            <button @click="lightboxImg = null; lightboxVideo = null;" class="absolute top-6 right-6 text-white/70 hover:text-white transition-colors bg-white/10 hover:bg-white/20 p-2 rounded-full focus:outline-none">
+                <i data-lucide="x" class="h-6 w-6"></i>
+            </button>
+            <div class="max-w-4xl max-h-[85vh] flex flex-col items-center" @click.away="lightboxImg = null; lightboxVideo = null;">
+                <div x-show="lightboxImg" class="w-full flex justify-center">
+                    <img :src="lightboxImg" class="max-w-full max-h-[75vh] object-contain rounded-lg shadow-2xl" />
                 </div>
-            </template>
-            
+                <div x-show="lightboxVideo" class="w-full flex justify-center bg-black rounded-lg overflow-hidden">
+                    <video :src="lightboxVideo" controls autoplay class="max-w-full max-h-[75vh] object-contain"></video>
+                </div>
+                <p class="mt-4 text-white/90 text-sm text-center max-w-lg" x-text="lightboxCaption"></p>
+            </div>
         </div>
-    </template>
-    
-    <template x-if="filteredEvents.length === 0">
-        <div class="col-span-full text-center py-24 text-on-surface-variant/50">
-            <span class="material-symbols-outlined text-6xl mb-4">search_off</span>
-            <p class="text-xl">Không tìm thấy kỷ niệm nào phù hợp.</p>
+    </section>
+
+    <!-- FOOTER CTA SECTION -->
+    <section class="mb-32 text-center flex flex-col items-center">
+        <h2 class="font-label-handwritten text-4xl text-tertiary mb-8">Còn rất nhiều kỷ niệm đang chờ được tạo ra...</h2>
+        <div class="flex flex-col md:flex-row items-center gap-12">
+            <a href="{{ route('events.index', ['status' => 'upcoming']) }}" class="bg-secondary text-on-secondary px-8 py-4 rounded-full font-bold shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center gap-3 group">
+                Khám phá sự kiện sắp tới
+                <span class="material-symbols-outlined group-hover:translate-x-2 transition-transform">arrow_forward</span>
+            </a>
+            <!-- Empty Tilted Polaroid -->
+            <div class="polaroid-card bg-white p-3 pt-3 pb-10 w-48 h-56 rotate-[-6deg] border border-dashed border-tertiary/30 shadow-none flex flex-col justify-center items-center">
+                <div class="w-full h-32 bg-surface-container-lowest border border-dashed border-tertiary/20 flex items-center justify-center mb-2">
+                    <span class="font-display-lg text-4xl text-tertiary/30">?</span>
+                </div>
+                <p class="font-label-handwritten text-tertiary/40 italic">Khoảnh khắc tiếp theo...</p>
+            </div>
         </div>
-    </template>
-</section>
+    </section>
 
-<!-- FOOTER CTA SECTION -->
-<section class="mb-32 text-center flex flex-col items-center">
-<h2 class="font-label-handwritten text-4xl text-tertiary mb-8">Còn rất nhiều kỷ niệm đang chờ được tạo ra...</h2>
-<div class="flex flex-col md:flex-row items-center gap-12">
-<a href="{{ route('events.index', ['status' => 'upcoming']) }}" class="bg-secondary text-on-secondary px-8 py-4 rounded-full font-bold shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center gap-3 group">
-                    Khám phá sự kiện sắp tới
-                    <span class="material-symbols-outlined group-hover:translate-x-2 transition-transform">arrow_forward</span>
-</a>
-<!-- Empty Tilted Polaroid -->
-<div class="polaroid-card bg-white p-3 pt-3 pb-10 w-48 h-56 rotate-[-6deg] border border-dashed border-tertiary/30 shadow-none flex flex-col justify-center items-center">
-<div class="w-full h-32 bg-surface-container-lowest border border-dashed border-tertiary/20 flex items-center justify-center mb-2">
-<span class="font-display-lg text-4xl text-tertiary/30">?</span>
-</div>
-<p class="font-label-handwritten text-tertiary/40 italic">Khoảnh khắc tiếp theo...</p>
-</div>
-</div>
-</section>
-</main>
-<!-- Scroll to Top Button -->
-<button class="fixed bottom-8 right-8 w-14 h-14 bg-secondary text-on-secondary rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-90 transition-all z-50 group" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
-<span class="material-symbols-outlined group-hover:-translate-y-1 transition-transform">keyboard_arrow_up</span>
-</button>
-<script>
-    function archiveApp() {
-        return {
-            events: [],
-            searchQuery: '',
-            selectedCategory: '',
-            selectedMonth: '',
-            selectedYear: '',
-            
-            initData(data) {
-                this.events = data;
-            },
-            
-            get filteredEvents() {
-                return this.events.filter(event => {
-                    const matchesSearch = this.searchQuery === '' || 
-                        event.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-                        event.desc.toLowerCase().includes(this.searchQuery.toLowerCase());
-                    const matchesCategory = this.selectedCategory === '' || event.category === this.selectedCategory;
-                    const matchesMonth = this.selectedMonth === '' || event.month == this.selectedMonth;
-                    const matchesYear = this.selectedYear === '' || event.year == this.selectedYear;
-                    
-                    return matchesSearch && matchesCategory && matchesMonth && matchesYear;
-                });
-            }
-        }
-    }
+    <!-- Scroll to Top Button -->
+    <button class="fixed bottom-8 right-8 w-14 h-14 bg-secondary text-on-secondary rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-90 transition-all z-50 group" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+        <span class="material-symbols-outlined group-hover:-translate-y-1 transition-transform">keyboard_arrow_up</span>
+    </button>
 
-    // Sticky notes subtle animation
-    const notes = document.querySelectorAll('.bg-\\[\\#FDF2B5\\], .bg-\\[\\#E2F0D9\\], .bg-\\[\\#FFE4E1\\]');
-    notes.forEach(note => {
-        note.addEventListener('mousemove', (e) => {
-            const rect = note.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-            const rotateX = (y - centerY) / 10;
-            const rotateY = (centerX - x) / 10;
-            note.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
+    <script>
+        // Sticky notes subtle animation
+        const notes = document.querySelectorAll('.bg-\\[\\#FDF2B5\\], .bg-\\[\\#E2F0D9\\], .bg-\\[\\#FFE4E1\\]');
+        notes.forEach(note => {
+            note.addEventListener('mousemove', (e) => {
+                const rect = note.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = (y - centerY) / 10;
+                const rotateY = (centerX - x) / 10;
+                note.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
+            });
+            note.addEventListener('mouseleave', () => {
+                note.style.transform = '';
+            });
         });
-        note.addEventListener('mouseleave', () => {
-            note.style.transform = '';
-        });
-    });
-</script>
+    </script>
 @endsection

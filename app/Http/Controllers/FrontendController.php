@@ -13,7 +13,7 @@ class FrontendController extends Controller
 {
     public function contact()
     {
-        return view('frontend.contact');
+        return $this->renderView('frontend.contact');
     }
 
     public function submitContact(Request $request)
@@ -265,7 +265,7 @@ class FrontendController extends Controller
 
         extract($data);
 
-        return view('frontend.home', compact('categories', 'featuredEvents', 'upcoming', 'archive', 'media', 'stats', 'slides'));
+        return $this->renderView('frontend.home', compact('categories', 'featuredEvents', 'upcoming', 'archive', 'media', 'stats', 'slides'));
     }
 
     public function events(Request $request)
@@ -343,7 +343,7 @@ class FrontendController extends Controller
             ];
         })->toArray();
 
-        return view('frontend.events', compact(
+        return $this->renderView('frontend.events', compact(
             'events', 'categories', 'selectedCategory', 'searchQuery',
             'availableYears', 'selectedYear', 'selectedMonth', 'selectedStatus'
         ));
@@ -424,6 +424,6 @@ class FrontendController extends Controller
         $totalImages = \App\Models\EventMedia::where('type', 'image')->count();
         $totalVideos = \App\Models\EventMedia::where('type', 'video')->count();
 
-        return view('frontend.archive', compact('archive', 'categories', 'selectedYear', 'totalArchivedEvents', 'totalImages', 'totalVideos'));
+        return $this->renderView('frontend.archive', compact('archive', 'categories', 'selectedYear', 'totalArchivedEvents', 'totalImages', 'totalVideos'));
     }
 }

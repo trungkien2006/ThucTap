@@ -34,7 +34,7 @@ class PublicEventController extends Controller
         $events = $query->paginate(12);
         $categories = Category::eventTypes()->get();
 
-        return view('welcome', compact('events', 'categories'));
+        return $this->renderView('welcome', compact('events', 'categories'));
     }
 
     public function show($slug)
@@ -113,7 +113,7 @@ class PublicEventController extends Controller
             $viewName = "events.show-template{$event->page_template}";
         }
 
-        return view($viewName, compact('event', 'newestEvents', 'prominentEvents', 'previousEvent', 'nextEvent'));
+        return $this->renderView($viewName, compact('event', 'newestEvents', 'prominentEvents', 'previousEvent', 'nextEvent'));
     }
 
     public function like($event_id)

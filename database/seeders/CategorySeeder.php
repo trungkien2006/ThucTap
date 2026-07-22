@@ -20,7 +20,6 @@ class CategorySeeder extends Seeder
             'Cultural',
             'Sports',
             'Orientation',
-            'Other',
         ];
 
         foreach ($eventTypes as $type) {
@@ -36,9 +35,9 @@ class CategorySeeder extends Seeder
         // ── Chuyên ngành ───────────────────────────────────
         $departments = [
             'Lập trình web',
-            'Digital Marketing',
-            'Marketing và bán hàng / Marketing & Sales',
-            'Quản lí vận tải và dịch vụ logistics',
+            'Digital marketing',
+            'Marketing & Sales',
+            'Logistics',
             'Công nghệ kĩ thuật điều khiển và tự động hóa',
             'Thiết kế đồ họa',
             'Tiếng Trung Quốc',

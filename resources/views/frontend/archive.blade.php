@@ -1,4 +1,6 @@
 @extends('layouts.frontend')
+@section('title', 'Kho Lưu Trữ Ký Ức - UniEvent')
+
 @section('content')
 @php $archiveJson = json_encode($archive); @endphp
 <section id="archive" class="relative py-24 lg:py-32"
@@ -76,54 +78,40 @@
         .custom-scrollbar::-webkit-scrollbar {
             width: 6px;
         }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: rgba(28, 20, 16, 0.02);
-            border-radius: 10px;
+        .washi-tape-amber { background-color: rgba(212, 168, 67, 0.4); }
+        .washi-tape-sage { background-color: rgba(138, 154, 91, 0.4); }
+        .washi-tape-rose { background-color: rgba(220, 156, 156, 0.4); }
+        .jagged-tape { clip-path: polygon(2% 0, 98% 0, 100% 10%, 98% 20%, 100% 30%, 98% 40%, 100% 50%, 98% 60%, 100% 70%, 98% 80%, 100% 90%, 98% 100%, 2% 100%, 0 90%, 2% 80%, 0 70%, 2% 60%, 0 50%, 2% 40%, 0 30%, 2% 20%, 0 10%); }
+        
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: rgba(28, 20, 16, 0.15);
-            border-radius: 10px;
+        
+        .polaroid-card {
+            box-shadow: 0 4px 15px rgba(61, 43, 31, 0.08);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
         }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: rgba(28, 20, 16, 0.3);
+        .polaroid-card:hover {
+            transform: rotate(0deg) translateY(-8px) scale(1.02) !important;
+            box-shadow: 0 15px 30px rgba(61, 43, 31, 0.15);
+            z-index: 50;
         }
-        #archive select {
-            border: none !important;
-            outline: none !important;
-            box-shadow: none !important;
-            background-color: transparent !important;
-            -webkit-appearance: none !important;
-            -moz-appearance: none !important;
-            appearance: none !important;
-            padding-right: 1.5rem !important;
+        
+        .timeline-line {
+            background: linear-gradient(to right, transparent, #715b3e 15%, #715b3e 85%, transparent);
         }
-        #archive select::-ms-expand {
-            display: none !important;
+
+        .floating-ribbon {
+            clip-path: polygon(0 0, 100% 0, 85% 100%, 0 100%);
         }
     </style>
 
-    <!-- Soft aesthetic blobs -->
-    <div class="pointer-events-none absolute inset-0 overflow-hidden">
-        <div class="absolute -left-32 top-1/4 h-[450px] w-[450px] rounded-full blur-[140px] opacity-20" style="background:#FFE381;"></div>
-        <div class="absolute -right-32 bottom-10 h-[350px] w-[350px] rounded-full blur-[140px] opacity-15" style="background:#07A0C3;"></div>
-        <div class="absolute left-1/2 bottom-0 h-40 w-[600px] -translate-x-1/2 rounded-full blur-[100px] opacity-10" style="background:#04F06A;"></div>
-    </div>
-    <!-- Top border Jasmine -->
-    <div class="absolute inset-x-0 top-0 h-1.5" style="background:#FFE381;"></div>
-
-    <div class="relative mx-auto max-w-[1400px] px-6 lg:px-10">
-        <div data-aos="fade-up" class="flex items-end justify-between">
-            <div>
-                <div class="flex items-center gap-3 mb-2">
-                    <div class="h-7 w-1 rounded-full" style="background:#8A7320;"></div>
-                    <span class="text-xs font-bold uppercase tracking-[0.25em]" style="color:#8A7320;">Archive</span>
-                </div>
-                <h2 class="font-['Barlow_Condensed'] text-5xl font-black uppercase tracking-tight text-[#1C1410] lg:text-7xl">Kho lưu trữ sự kiện</h2>
-                <p class="mt-3 max-w-md leading-relaxed text-[#7A6A52]">
-                    Khám phá các sự kiện đã qua, cùng với hình ảnh ghi niệm và tài liệu học thuật đính kèm.
-                </p>
-            </div>
+<!-- Diagonal Amber Ribbon -->
+<div class="absolute -left-12 top-[100px] md:top-[120px] z-50 transform -rotate-45">
+<div class="bg-secondary text-on-secondary px-16 py-2 shadow-lg floating-ribbon font-bold tracking-widest text-sm uppercase">
+            Kỷ niệm
         </div>
+</div>
 
         <!-- ── Unified Filter Bar ── -->
         <div data-aos="fade-up" data-aos-delay="100" 
@@ -568,41 +556,94 @@
                             </div>
                         </div>
                     </div>
+                    <p class="font-display-lg italic text-on-surface-variant" x-text="event.date_str"></p>
                 </div>
-                
-                <div x-show="!current" class="flex flex-col items-center justify-center py-20 text-[#7A6A52]/50">
-                    <i data-lucide="archive" class="h-12 w-12 mb-3 opacity-60"></i>
-                    <p class="text-sm font-semibold">Vui lòng chọn một sự kiện để xem chi tiết.</p>
+            </template>
+            <template x-if="index % 5 !== 0">
+                <div>
+                    <span class="bg-surface-variant text-on-surface-variant px-2 py-0.5 rounded text-[10px] font-bold mb-1 inline-block uppercase tracking-wider" x-text="event.category"></span>
+                    <h3 class="font-label-handwritten text-2xl" x-text="event.title"></h3>
+                    <p class="font-display-lg italic text-sm text-on-surface-variant opacity-60" x-text="event.date_str"></p>
                 </div>
-            </div>
+            </template>
+            
         </div>
-    </div>
-
-    <!-- Image/Video Lightbox Modal -->
-    <div x-show="lightboxImg || lightboxVideo" 
-         class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md"
-         style="display: none;"
-         @keydown.escape.window="lightboxImg = null; lightboxVideo = null;"
-         x-transition:enter="transition ease-out duration-300"
-         x-transition:enter-start="opacity-0 scale-95"
-         x-transition:enter-end="opacity-100 scale-100"
-         x-transition:leave="transition ease-in duration-200"
-         x-transition:leave-start="opacity-100 scale-100"
-         x-transition:leave-end="opacity-0 scale-95">
-        <button @click="lightboxImg = null; lightboxVideo = null;" class="absolute top-6 right-6 text-white/70 hover:text-white transition-colors bg-white/10 hover:bg-white/20 p-2 rounded-full focus:outline-none">
-            <i data-lucide="x" class="h-6 w-6"></i>
-        </button>
-        <div class="max-w-4xl max-h-[85vh] flex flex-col items-center" @click.away="lightboxImg = null; lightboxVideo = null;">
-            <div x-show="lightboxImg" class="w-full flex justify-center">
-                <img :src="lightboxImg" class="max-w-full max-h-[75vh] object-contain rounded-lg shadow-2xl" />
-            </div>
-            <div x-show="lightboxVideo" class="w-full flex justify-center bg-black rounded-lg overflow-hidden">
-                <video :src="lightboxVideo" controls autoplay class="max-w-full max-h-[75vh] object-contain"></video>
-            </div>
-            <p class="mt-4 text-white/90 text-sm text-center max-w-lg" x-text="lightboxCaption"></p>
+    </template>
+    
+    <template x-if="filteredEvents.length === 0">
+        <div class="col-span-full text-center py-24 text-on-surface-variant/50">
+            <span class="material-symbols-outlined text-6xl mb-4">search_off</span>
+            <p class="text-xl">Không tìm thấy kỷ niệm nào phù hợp.</p>
         </div>
-    </div>
+    </template>
 </section>
 
+<!-- FOOTER CTA SECTION -->
+<section class="mb-32 text-center flex flex-col items-center">
+<h2 class="font-label-handwritten text-4xl text-tertiary mb-8">Còn rất nhiều kỷ niệm đang chờ được tạo ra...</h2>
+<div class="flex flex-col md:flex-row items-center gap-12">
+<a href="{{ route('events.index', ['status' => 'upcoming']) }}" class="bg-secondary text-on-secondary px-8 py-4 rounded-full font-bold shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center gap-3 group">
+                    Khám phá sự kiện sắp tới
+                    <span class="material-symbols-outlined group-hover:translate-x-2 transition-transform">arrow_forward</span>
+</a>
+<!-- Empty Tilted Polaroid -->
+<div class="polaroid-card bg-white p-3 pt-3 pb-10 w-48 h-56 rotate-[-6deg] border border-dashed border-tertiary/30 shadow-none flex flex-col justify-center items-center">
+<div class="w-full h-32 bg-surface-container-lowest border border-dashed border-tertiary/20 flex items-center justify-center mb-2">
+<span class="font-display-lg text-4xl text-tertiary/30">?</span>
+</div>
+<p class="font-label-handwritten text-tertiary/40 italic">Khoảnh khắc tiếp theo...</p>
+</div>
+</div>
+</section>
+</main>
+<!-- Scroll to Top Button -->
+<button class="fixed bottom-8 right-8 w-14 h-14 bg-secondary text-on-secondary rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-90 transition-all z-50 group" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+<span class="material-symbols-outlined group-hover:-translate-y-1 transition-transform">keyboard_arrow_up</span>
+</button>
+<script>
+    function archiveApp() {
+        return {
+            events: [],
+            searchQuery: '',
+            selectedCategory: '',
+            selectedMonth: '',
+            selectedYear: '',
+            
+            initData(data) {
+                this.events = data;
+            },
+            
+            get filteredEvents() {
+                return this.events.filter(event => {
+                    const matchesSearch = this.searchQuery === '' || 
+                        event.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+                        event.desc.toLowerCase().includes(this.searchQuery.toLowerCase());
+                    const matchesCategory = this.selectedCategory === '' || event.category === this.selectedCategory;
+                    const matchesMonth = this.selectedMonth === '' || event.month == this.selectedMonth;
+                    const matchesYear = this.selectedYear === '' || event.year == this.selectedYear;
+                    
+                    return matchesSearch && matchesCategory && matchesMonth && matchesYear;
+                });
+            }
+        }
+    }
 
+    // Sticky notes subtle animation
+    const notes = document.querySelectorAll('.bg-\\[\\#FDF2B5\\], .bg-\\[\\#E2F0D9\\], .bg-\\[\\#FFE4E1\\]');
+    notes.forEach(note => {
+        note.addEventListener('mousemove', (e) => {
+            const rect = note.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            const rotateX = (y - centerY) / 10;
+            const rotateY = (centerX - x) / 10;
+            note.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
+        });
+        note.addEventListener('mouseleave', () => {
+            note.style.transform = '';
+        });
+    });
+</script>
 @endsection

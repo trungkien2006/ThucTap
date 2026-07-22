@@ -23,11 +23,11 @@ class Event extends Model
 
     public function isEnded()
     {
-        if ($this->status === 'ended') {
-            return true;
+        if ($this->end_date) {
+            return $this->end_date < now();
         }
-        $date = $this->end_date ?: $this->event_date;
-        return $date && $date < now();
+        
+        return $this->event_date && $this->event_date->copy()->endOfDay() < now();
     }
 
     public function isMissingRecap()

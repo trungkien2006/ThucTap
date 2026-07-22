@@ -21,10 +21,10 @@
     .tp1-section-title::before { content: ''; display: block; width: 4px; height: 24px; background: #f97316; border-radius: 4px; }
     
     .tp1-text { font-size: 16px; color: #475569; margin-bottom: 20px; }
-    .tp1-grid { display: grid; gap: 64px; align-items: center; }
-    .tp1-grid.left-img { grid-template-columns: 1.8fr 1fr; }
-    .tp1-grid.right-img { grid-template-columns: 1fr 1.8fr; }
-    .tp1-img { width: 100%; border-radius: 12px; object-fit: cover; aspect-ratio: 4/3; }
+    .tp1-grid { display: grid; gap: 40px; align-items: start; }
+    .tp1-grid.left-img { grid-template-columns: 1.2fr 1fr; }
+    .tp1-grid.right-img { grid-template-columns: 1fr 1.2fr; }
+    .tp1-img { width: 100%; border-radius: 12px; object-fit: cover; max-height: 400px; }
 
     /* For Markdown and rich content */
     .tp1-text img { max-width: 100%; border-radius: 12px; margin: 16px 0; }

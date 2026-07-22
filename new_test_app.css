@@ -1,6 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Hanken+Grotesk:wght@600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0');
 
+/* =========================================================================
+   DESIGN TOKENS
+   shadcn/ui-compatible OKLCH palette. Every color used further down the
+   file should trace back to one of these variables (via `var()` or
+   `color-mix()`) so that toggling `.dark` on <html>/<body> re-themes the
+   whole page instead of only the parts that happen to reference a token.
+   ========================================================================= */
 :root {
   --radius: 0.5rem;
   --background: oklch(0.985 0.002 247);
@@ -78,6 +85,14 @@
 @tailwind components;
 @tailwind utilities;
 
+/* =========================================================================
+   BASE
+   Keep this layer to genuine resets/defaults only. Anything that should
+   reliably beat a Tailwind utility class (interactive/hover/press effects)
+   lives in @layer components below instead — `base` is the lowest-priority
+   layer, so a rule placed there can be silently overridden by *any*
+   conflicting utility class regardless of source order or specificity.
+   ========================================================================= */
 @layer base {
   body.admin-body {
     font-family: 'Inter', sans-serif;
@@ -89,88 +104,134 @@
     font-family: 'Hanken Grotesk', sans-serif;
   }
 
-  /* ===== Interactive Click & Hover Effects (matching shadcn/ui) ===== */
+  /* Keyboard-navigation focus ring. Custom components below only style
+     :hover/:active, so without this, Tab-ing through the UI leaves no
+     visible focus indicator on buttons, links, or sidebar items. */
+  body.admin-body button:focus-visible,
+  body.admin-body a:focus-visible,
+  body.admin-body input:focus-visible,
+  body.admin-body textarea:focus-visible,
+  body.admin-body select:focus-visible,
+  body.admin-body .sidebar-nav-item:focus-visible,
+  body.admin-body .time-range-btn:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
 
-  /* --- Buttons: press-down scale + smooth color transitions --- */
+  /* Respect OS-level "reduce motion" preference. Applies globally since
+     nearly every interactive rule below relies on transform/transition. */
+  @media (prefers-reduced-motion: reduce) {
+
+    body.admin-body *,
+    body.admin-body *::before,
+    body.admin-body *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* =========================================================================
+   COMPONENTS
+   Component styles + their interaction states (hover/active/press) live
+   together here, one layer above `base` and one below Tailwind's
+   `utilities`, so a one-off utility class on an element can still win when
+   needed, but these will never lose to plain base styles.
+   ========================================================================= */
+@layer components {
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+  }
+
+  /* ----- Interactive click & hover effects (matching shadcn/ui) ----- */
+
+  /* Buttons: press-down scale + smooth color transitions.
+     `~=` (not `*=`) matches a whole class token, so e.g. "bg-primary"
+     no longer accidentally matches an element classed "bg-primary-foreground". */
   body.admin-body button,
-  body.admin-body a[class*="inline-flex"],
+  body.admin-body a[class~="inline-flex"],
   body.admin-body .sidebar-menu-btn {
     transition: background-color 0.15s ease, color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
   }
 
   body.admin-body button:active:not(:disabled),
-  body.admin-body a[class*="inline-flex"]:active {
+  body.admin-body a[class~="inline-flex"]:active {
     transform: scale(0.97);
   }
 
-  /* --- Primary buttons: subtle glow on hover --- */
-  body.admin-body button[class*="bg-primary"]:hover,
-  body.admin-body a[class*="bg-primary"]:hover {
-    box-shadow: 0 0 0 3px rgba(84, 106, 191, 0.15);
+  /* Primary buttons: subtle glow on hover, derived from --primary so it
+     stays correct if the token changes or the page is in dark mode. */
+  body.admin-body button[class~="bg-primary"]:hover,
+  body.admin-body a[class~="bg-primary"]:hover {
+    box-shadow: 0 0 0 3px color-mix(in oklch, var(--primary) 15%, transparent);
   }
 
-  /* --- Outline/ghost buttons: gentle background fade --- */
-  body.admin-body button[class*="border-border"]:hover,
-  body.admin-body a[class*="border-border"]:hover {
+  /* Outline/ghost buttons: gentle background fade */
+  body.admin-body button[class~="border-border"]:hover,
+  body.admin-body a[class~="border-border"]:hover {
     background-color: var(--accent);
     color: var(--foreground);
   }
 
-  /* --- Stat cards: hover lift + subtle shadow --- */
-  body.admin-body .stat-card-interactive {
+  /* Stat cards: hover lift + subtle shadow */
+  .stat-card-interactive {
     transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
     cursor: default;
   }
 
-  body.admin-body .stat-card-interactive:hover {
+  .stat-card-interactive:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
     border-color: var(--ring);
   }
 
-  /* --- Chart cards: hover border highlight --- */
-  body.admin-body .chart-card-interactive {
+  /* Chart cards: hover border highlight */
+  .chart-card-interactive {
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
   }
 
-  body.admin-body .chart-card-interactive:hover {
+  .chart-card-interactive:hover {
     border-color: var(--ring);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   }
 
-  /* --- Table rows: smooth transition with cursor pointer --- */
+  /* Table rows: hover/active tint mixed from --foreground so it inverts
+     correctly in dark mode instead of the old flat rgba(0,0,0,x), which
+     is nearly invisible once the page background itself is dark. */
   body.admin-body table tbody tr {
     transition: background-color 0.15s ease;
     cursor: pointer;
   }
 
   body.admin-body table tbody tr:hover {
-    background-color: rgba(0, 0, 0, 0.03);
+    background-color: color-mix(in oklch, var(--foreground) 4%, transparent);
   }
 
   body.admin-body table tbody tr:active {
-    background-color: rgba(0, 0, 0, 0.06);
+    background-color: color-mix(in oklch, var(--foreground) 7%, transparent);
   }
 
-  /* --- Time range toggle buttons: active state click toggle --- */
-  body.admin-body .time-range-btn {
+  /* Time range toggle buttons: active state click toggle */
+  .time-range-btn {
     transition: background-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
     cursor: pointer;
     user-select: none;
   }
 
-  body.admin-body .time-range-btn:active {
+  .time-range-btn:active {
     transform: scale(0.95);
   }
 
-  body.admin-body .time-range-btn.active {
+  .time-range-btn.active {
     background-color: var(--secondary);
     color: var(--secondary-foreground);
     font-weight: 600;
   }
 
-  /* --- Activity items: hover highlight --- */
-  body.admin-body .activity-item {
+  /* Activity items: hover highlight */
+  .activity-item {
     transition: background-color 0.15s ease;
     border-radius: 0.5rem;
     padding: 0.375rem;
@@ -178,12 +239,12 @@
     cursor: pointer;
   }
 
-  body.admin-body .activity-item:hover {
-    background-color: rgba(0, 0, 0, 0.025);
+  .activity-item:hover {
+    background-color: color-mix(in oklch, var(--foreground) 3.5%, transparent);
   }
 
-  /* --- Most viewed items: hover highlight --- */
-  body.admin-body .most-viewed-item {
+  /* Most viewed items: hover highlight */
+  .most-viewed-item {
     transition: background-color 0.15s ease, transform 0.1s ease;
     border-radius: 0.375rem;
     padding: 0.25rem 0.375rem;
@@ -191,26 +252,26 @@
     cursor: pointer;
   }
 
-  body.admin-body .most-viewed-item:hover {
-    background-color: rgba(0, 0, 0, 0.025);
+  .most-viewed-item:hover {
+    background-color: color-mix(in oklch, var(--foreground) 3.5%, transparent);
   }
 
-  /* --- Sidebar menu items: active feedback --- */
-  body.admin-body .sidebar-menu-btn:active {
+  /* Sidebar menu items: active feedback */
+  .sidebar-menu-btn:active {
     transform: scale(0.97);
   }
 
-  /* --- Badge hover effect --- */
-  body.admin-body span[class*="bg-secondary"] {
-    transition: background-color 0.15s ease;
+  /* Badge hover effect */
+  body.admin-body span[class~="bg-secondary"] {
+    transition: opacity 0.15s ease;
   }
 
-  body.admin-body span[class*="bg-secondary"]:hover {
+  body.admin-body span[class~="bg-secondary"]:hover {
     opacity: 0.85;
   }
 
-  /* --- Category legend items: hover feedback --- */
-  body.admin-body .category-legend-item {
+  /* Category legend items: hover feedback */
+  .category-legend-item {
     transition: background-color 0.15s ease;
     border-radius: 0.25rem;
     padding: 0.125rem 0.25rem;
@@ -218,53 +279,50 @@
     cursor: pointer;
   }
 
-  body.admin-body .category-legend-item:hover {
-    background-color: rgba(0, 0, 0, 0.03);
+  .category-legend-item:hover {
+    background-color: color-mix(in oklch, var(--foreground) 4.5%, transparent);
   }
 
-  /* --- Dropdown menu items: hover/active states --- */
-  body.admin-body #adminAvatarDropdown a,
-  body.admin-body #adminAvatarDropdown button {
+  /* Dropdown menu items: hover/active states */
+  #quickCreateDropdown a,
+  #adminAvatarDropdown a,
+  #adminAvatarDropdown button {
     transition: background-color 0.12s ease;
   }
 
-  body.admin-body #adminAvatarDropdown a:active,
-  body.admin-body #adminAvatarDropdown button:active {
+  #quickCreateDropdown a:active,
+  #adminAvatarDropdown a:active,
+  #adminAvatarDropdown button:active {
     background-color: var(--accent);
     transform: scale(0.98);
   }
 
-  /* --- Header search input: focus ring --- */
+  /* Header search input: focus ring, tied to --ring */
   body.admin-body input[type="text"]:focus {
-    box-shadow: 0 0 0 2px rgba(84, 106, 191, 0.2);
+    box-shadow: 0 0 0 2px color-mix(in oklch, var(--ring) 20%, transparent);
   }
 
-  /* --- Notification bell: pulse on hover --- */
-  body.admin-body button[class*="rounded-xl"]:hover .animate-pulse-dot {
+  /* Notification bell: pulse on hover, tied to --destructive so the
+     alert color stays consistent with the rest of the theme */
+  button[class~="rounded-xl"]:hover .animate-pulse-dot {
     animation: pulse-ring 1.2s ease infinite;
   }
 
   @keyframes pulse-ring {
     0% {
-      box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5);
+      box-shadow: 0 0 0 0 color-mix(in oklch, var(--destructive) 50%, transparent);
     }
 
     70% {
-      box-shadow: 0 0 0 6px rgba(239, 68, 68, 0);
+      box-shadow: 0 0 0 6px color-mix(in oklch, var(--destructive) 0%, transparent);
     }
 
     100% {
-      box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+      box-shadow: 0 0 0 0 color-mix(in oklch, var(--destructive) 0%, transparent);
     }
   }
-}
 
-@layer components {
-  .material-symbols-outlined {
-    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
-  }
-
-  /* Card system */
+  /* ----- Card system ----- */
   .uni-card {
     @apply bg-white rounded-2xl border border-slate-100 shadow-card;
   }
@@ -278,12 +336,12 @@
     transform: translateY(-2px);
   }
 
-  /* Hero overlay gradient */
+  /* ----- Hero overlay gradient ----- */
   .hero-overlay {
     background: linear-gradient(180deg, rgba(15, 23, 42, 0.2) 0%, rgba(15, 23, 42, 0.85) 100%);
   }
 
-  /* Sidebar styles */
+  /* ----- Sidebar ----- */
   .sidebar-nav-item {
     @apply flex items-center gap-3 px-4 py-3.5 text-slate-500 hover:bg-slate-50 hover:text-primary rounded-xl text-[14px] font-medium transition-all duration-150;
   }
@@ -292,7 +350,7 @@
     @apply bg-slate-50 text-primary font-semibold;
   }
 
-  /* Form styles */
+  /* ----- Forms ----- */
   .uni-input {
     @apply w-full text-[14px] border-slate-200 rounded-xl focus:ring-1 focus:ring-primary focus:border-primary py-3.5 px-4 bg-white transition-all;
   }
@@ -305,7 +363,7 @@
     @apply text-[12px] font-bold text-slate-400 uppercase tracking-wider;
   }
 
-  /* Button styles */
+  /* ----- Buttons ----- */
   .btn-primary {
     @apply px-6 py-3.5 bg-primary hover:bg-slate-800 text-white font-semibold rounded-xl text-[14px] shadow-sm transition-all duration-150;
   }
@@ -318,7 +376,7 @@
     @apply px-5 py-3.5 text-slate-500 hover:bg-slate-50 hover:text-primary font-medium rounded-xl text-[14px] transition-all duration-150;
   }
 
-  /* Drawer animation */
+  /* ----- Drawer ----- */
   .app-layout {
     display: flex;
     width: 100%;
@@ -326,16 +384,24 @@
     position: relative;
   }
 
+  /* Slides via `transform` instead of animating `left`, so the closed
+     position is always "fully off-canvas" (translateX(-100%)) regardless
+     of whether `.wide` is applied. The previous fixed `left: -380px`
+     under-hid the drawer by 120px whenever `.wide` (500px) was active
+     while closed, and animating `left` is also layout-triggering rather
+     than compositor-only like `transform`. Colors now come from tokens
+     so the drawer re-themes correctly under `.dark`. */
   .control-drawer {
     width: 380px;
     position: fixed;
     top: 0;
-    left: -380px;
+    left: 0;
     height: 100vh;
-    background: #ffffff;
-    border-right: 1px solid #e2e8f0;
+    background: var(--card);
+    border-right: 1px solid var(--border);
     z-index: 50;
-    transition: left 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.3s ease;
+    transform: translateX(-100%);
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.3s ease;
   }
 
   .control-drawer.wide {
@@ -344,7 +410,7 @@
 
   .main-content-canvas {
     width: 100%;
-    background-color: #f8fafc;
+    background-color: var(--muted);
     transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
       border-radius 0.5s ease,
       box-shadow 0.5s ease;
@@ -352,14 +418,23 @@
   }
 
   .drawer-open .control-drawer {
-    left: 0;
+    transform: translateX(0);
   }
 
-  .drawer-open .main-content-canvas {
-    /* No longer scaling or pushing the canvas, let the drawer overlay */
+  /* Intentionally no `.drawer-open .main-content-canvas` rule: by design
+     the drawer overlays the canvas rather than pushing/scaling it. */
+
+  /* Small screens: let the drawer take the full viewport width instead of
+     a fixed 380/500px, which would otherwise overflow a phone screen. */
+  @media (max-width: 480px) {
+
+    .control-drawer,
+    .control-drawer.wide {
+      width: 100vw;
+    }
   }
 
-  /* Stats card */
+  /* ----- Stats card ----- */
   .stat-card {
     @apply uni-card p-5 flex flex-col justify-between hover:shadow-card-hover transition-all duration-200;
   }
@@ -372,12 +447,16 @@
     @apply text-[11px] font-bold text-slate-400 uppercase tracking-wider;
   }
 
-  /* Badge system */
+  /* ----- Badge system ----- */
   .badge {
     @apply px-2.5 py-0.5 rounded-full text-[11px] font-semibold;
   }
 
-  .badge-success {
+  /* `badge-success` and `badge-live` were previously two identical
+     @apply blocks; merged since they share one visual meaning
+     ("this is currently active/published"). */
+  .badge-success,
+  .badge-live {
     @apply badge bg-emerald-50 text-emerald-600 border border-emerald-200;
   }
 
@@ -393,11 +472,7 @@
     @apply badge bg-slate-100 text-slate-500 border border-slate-200;
   }
 
-  .badge-live {
-    @apply badge bg-emerald-50 text-emerald-600 border border-emerald-200;
-  }
-
-  /* Table styles */
+  /* ----- Table ----- */
   .uni-table thead th {
     @apply px-5 py-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider bg-slate-50/50;
   }
@@ -410,7 +485,7 @@
     @apply hover:bg-slate-50/50 transition-colors border-b border-slate-100;
   }
 
-  /* Media grid (file explorer style) */
+  /* ----- Media grid (file explorer style) ----- */
   .media-grid-item {
     @apply relative rounded-xl border border-slate-200 overflow-hidden cursor-pointer transition-all duration-200;
   }
@@ -423,7 +498,7 @@
     @apply absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all flex items-center justify-center;
   }
 
-  /* Progress stepper */
+  /* ----- Progress stepper ----- */
   .step-indicator {
     @apply relative z-10 flex flex-col items-center gap-1.5;
   }
@@ -444,7 +519,7 @@
     @apply bg-slate-100 text-slate-400;
   }
 
-  /* Mobile sidebar */
+  /* ----- Mobile sidebar ----- */
   @media (max-width: 767px) {
     .admin-sidebar {
       transform: translateX(-100%);

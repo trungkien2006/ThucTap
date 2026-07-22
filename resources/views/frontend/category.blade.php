@@ -6,14 +6,14 @@
 {{-- ════════════════════════════════════════
      HERO SECTION - 1 NEWEST EVENT
 ════════════════════════════════════════════ --}}
-<section class="relative pt-32 pb-16 lg:pt-40 lg:pb-24" style="background:#FFFBEA;">
+<section class="relative pt-24 pb-16 lg:pt-32 lg:pb-24" style="background: transparent;">
     <div class="mx-auto max-w-[1400px] px-6 lg:px-10">
         <div class="mb-8">
             <div class="flex items-center gap-3 mb-2">
                 <div class="h-7 w-1 rounded-full" style="background:#07A0C3;"></div>
                 <span class="text-xs font-bold uppercase tracking-[0.25em]" style="color:#07A0C3;">Danh mục</span>
             </div>
-            <h1 class="font-['Barlow_Condensed'] text-5xl font-black uppercase tracking-tight text-[#1C1410] lg:text-7xl">{{ $category->name }}</h1>
+            <h1 class="font-['Barlow_Condensed'] text-5xl font-black uppercase tracking-tight text-[#1C1410] lg:text-7xl" style="text-shadow: -1px -1px 0 #FFFBEA, 1px -1px 0 #FFFBEA, -1px 1px 0 #FFFBEA, 1px 1px 0 #FFFBEA, 0 4px 12px rgba(255,255,255,0.8);">{{ $category->name }}</h1>
         </div>
 
         @if($newestEvent)
@@ -73,10 +73,17 @@
                          onmouseout="this.style.boxShadow='0 2px 16px rgba(255,227,129,0.4)'">
                     
                     <div class="relative z-10 h-48 w-full shrink-0 overflow-hidden">
-                        <a href="{{ route('events.show', $ev->slug) }}" class="block h-full w-full">
+                        <a href="{{ route('events.show', $ev->slug) }}" class="block h-full w-full relative">
                             <img src="{{ $ev->bannerImage ? \App\Helpers\FileHelper::url($ev->bannerImage->url) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80' }}" 
                                  alt="{{ $ev->title }}" loading="lazy"
                                  class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                            
+                            <!-- Hover Description Overlay -->
+                            <div class="absolute inset-0 p-4 flex flex-col justify-center backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none" style="background-color: rgba(0,0,0,0.4);">
+                                <p class="text-white text-xs md:text-sm leading-relaxed line-clamp-6 font-medium drop-shadow-md">
+                                    {{ Str::limit(strip_tags($ev->description), 200) }}
+                                </p>
+                            </div>
                         </a>
                         <div class="absolute bottom-0 left-0 right-0 h-1" style="background:#FFE381;"></div>
                     </div>

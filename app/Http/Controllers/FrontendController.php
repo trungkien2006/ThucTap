@@ -88,7 +88,7 @@ class FrontendController extends Controller
                     'location' => $event->location ?? 'Đang cập nhật',
                     'summary'  => Str::limit(strip_tags($event->description), 100),
                     'category' => $event->category ? $event->category->name : 'Sự kiện',
-                    'img'      => $event->bannerImage ? \App\Helpers\FileHelper::url($event->bannerImage->url) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80',
+                    'img'      => $event->bannerImage ? \App\Helpers\FileHelper::url($event->bannerImage->url, true) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80',
                     'views_count' => $event->views_count,
                     'likes_count' => $event->likes_count,
                 ];
@@ -103,10 +103,10 @@ class FrontendController extends Controller
             $upcoming = $dbUpcoming->map(function ($event) {
                 $images = [];
                 if ($event->bannerImage) {
-                    $images[] = \App\Helpers\FileHelper::url($event->bannerImage->url);
+                    $images[] = \App\Helpers\FileHelper::url($event->bannerImage->url, true);
                 }
                 foreach ($event->galleryImages->where('type', 'image')->take(2) as $gal) {
-                    $images[] = \App\Helpers\FileHelper::url($gal->url);
+                    $images[] = \App\Helpers\FileHelper::url($gal->url, true);
                 }
                 if (empty($images)) {
                     $images[] = 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80';
@@ -145,14 +145,24 @@ class FrontendController extends Controller
 
             $archive = [];
             foreach ($archiveGroups as $year => $events) {
-                $featured = $events->first();
+                // Sort by likes and views priority
+                $topEvents = $events->sortByDesc(function($e) {
+                    return ($e->likes_count * 3) + $e->views_count;
+                })->take(5)->values();
+
+                $eventsArray = $topEvents->map(function($ev) {
+                    return [
+                        'featured_title' => $ev->title,
+                        'featured_url' => route('events.show', $ev->slug),
+                        'img' => $ev->bannerImage ? \App\Helpers\FileHelper::url($ev->bannerImage->url, true) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80',
+                        'desc' => 'Kho lưu trữ chứa sự kiện đã diễn ra trong năm. Từ hội thảo, hội nghị đến các hoạt động ngoại khóa.',
+                    ];
+                })->toArray();
+
                 $archive[] = [
                     'year' => $year,
                     'title' => 'Tổng kết năm ' . $year,
-                    'featured_title' => $featured->title,
-                    'featured_url' => route('events.show', $featured->slug),
-                    'img' => $featured->bannerImage ? \App\Helpers\FileHelper::url($featured->bannerImage->url) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80',
-                    'desc' => 'Kho lưu trữ chứa ' . $events->count() . ' sự kiện đã diễn ra trong năm ' . $year . '. Từ hội thảo, hội nghị đến các hoạt động ngoại khóa.',
+                    'events' => $eventsArray,
                     'achievements' => [$events->count() . ' sự kiện đã tổ chức'],
                 ];
             }
@@ -179,7 +189,7 @@ class FrontendController extends Controller
 
                 return [
                     'id' => $m->id,
-                    'src' => \App\Helpers\FileHelper::url($m->url),
+                    'src' => \App\Helpers\FileHelper::url($m->url, true),
                     'type' => $m->type,
                     'format' => $ext,
                     'label' => $labelType . ' · ' . ($m->event ? $m->event->title : 'Sự kiện'),
@@ -228,7 +238,7 @@ class FrontendController extends Controller
                     'eyebrow'     => $event->location ?? 'Toàn trường',
                     'title'       => $event->title,
                     'description' => Str::limit(strip_tags($event->description), 120),
-                    'image'       => $event->bannerImage ? \App\Helpers\FileHelper::url($event->bannerImage->url) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80',
+                    'image'       => $event->bannerImage ? \App\Helpers\FileHelper::url($event->bannerImage->url, true) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80',
                     'tag'         => $event->category ? $event->category->name : 'Sự kiện',
                     'cta_label'   => 'Xem chi tiết',
                     'cta_url'     => route('events.show', $event->slug),
@@ -344,11 +354,18 @@ class FrontendController extends Controller
         $selectedYear = $request->input('year');
 
         $query = Event::with(['bannerImage', 'category', 'galleryImages', 'speakers'])
-            ->published()
             ->where(function($q) {
                 $q->where('status', 'archived')
-                  ->orWhere('event_date', '<', now());
+                  ->orWhere(function($q2) {
+                      $q2->where('is_published', true)
+                         ->where(function($q3) {
+                             $q3->where('event_date', '<', now())
+                                ->orWhere('end_date', '<', now());
+                         });
+                  });
             })
+            ->whereNotNull('recap_drive_link')
+            ->where('recap_drive_link', '!=', '')
             ->orderBy('event_date', 'desc');
 
         $events = $query->get();
@@ -364,13 +381,13 @@ class FrontendController extends Controller
                 'date_str' => \Carbon\Carbon::parse($event->event_date)->format('d/m/Y'),
                 'desc' => Str::limit(strip_tags($event->description), 100),
                 'url' => route('events.show', $event->slug),
-                'img' => $event->bannerImage ? \App\Helpers\FileHelper::url($event->bannerImage->url) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80',
+                'img' => $event->bannerImage ? \App\Helpers\FileHelper::url($event->bannerImage->url, true) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80',
                 'achievements' => [],
                 'images' => $event->galleryImages->where('type', 'image')->map(function($media) {
-                    return ['url' => \App\Helpers\FileHelper::url($media->url), 'caption' => $media->caption];
+                    return ['url' => \App\Helpers\FileHelper::url($media->url, true), 'caption' => $media->caption];
                 })->values()->toArray(),
                 'videos' => $event->galleryImages->where('type', 'video')->map(function($media) {
-                    return ['url' => \App\Helpers\FileHelper::url($media->url), 'caption' => $media->caption];
+                    return ['url' => \App\Helpers\FileHelper::url($media->url, true), 'caption' => $media->caption];
                 })->values()->toArray(),
                 'documents' => [],
                 'speakers' => $event->speakers->map(function($speaker) {
@@ -403,6 +420,10 @@ class FrontendController extends Controller
             ];
         })->toArray();
 
-        return view('frontend.archive', compact('archive', 'categories', 'selectedYear'));
+        $totalArchivedEvents = \App\Models\Event::published()->count();
+        $totalImages = \App\Models\EventMedia::where('type', 'image')->count();
+        $totalVideos = \App\Models\EventMedia::where('type', 'video')->count();
+
+        return view('frontend.archive', compact('archive', 'categories', 'selectedYear', 'totalArchivedEvents', 'totalImages', 'totalVideos'));
     }
 }

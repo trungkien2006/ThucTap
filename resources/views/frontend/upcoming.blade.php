@@ -69,11 +69,15 @@
         object-fit: cover;
     }
     
-    .slide-image-overlay {
         position: absolute;
         inset: 0;
         background: rgba(0,0,0,0.1);
         mix-blend-mode: multiply;
+    }
+
+    /* Custom CSS để đảm bảo hiệu ứng blur hoạt động 100% không phụ thuộc Tailwind JIT */
+    .group:hover .custom-blur-img-upcoming {
+        filter: blur(12px) brightness(0.35) !important;
     }
 </style>
 
@@ -106,13 +110,6 @@
                             <div tabindex="0" class="slide-image-inner bg-gray-200 relative group overflow-hidden cursor-pointer focus:outline-none"
                                  x-data="{ active: 0, images: {{ json_encode(!empty($u['images']) ? $u['images'] : (!empty($u['img']) ? [$u['img']] : ['https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80'])) }} }">
                                  
-<style>
-    /* Custom CSS để đảm bảo hiệu ứng blur hoạt động 100% không phụ thuộc Tailwind JIT */
-    .group:hover .custom-blur-img-upcoming {
-        filter: blur(12px) brightness(0.35) !important;
-    }
-</style>
-
                                 <template x-for="(imgSrc, i) in images" :key="i">
                                     <img :src="imgSrc" :alt="`{{ $u['name'] ?? $u['title'] ?? '' }} - Hình ${i+1}`" 
                                          class="absolute inset-0 w-full h-full object-cover transition-all duration-700 custom-blur-img-upcoming group-hover:scale-110"

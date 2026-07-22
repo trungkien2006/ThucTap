@@ -802,24 +802,7 @@
     break-inside: avoid;
 }
 
-/* Gradient overlay nhẹ trên category cards — tạo chiều sâu */
-.event-category-card::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to top,
-            rgba(28, 20, 16, 0.5) 0%,
-            rgba(28, 20, 16, 0.1) 40%,
-            transparent 100%);
-    border-radius: inherit;
-    pointer-events: none;
-    z-index: 1;
-    transition: opacity 0.3s ease;
-}
-
-.event-category-card:hover::after {
-    opacity: 0.7;
-}
+/* Overlay trên ảnh category được xử lý trực tiếp trong HTML template */
 
 .line-clamp-3 {
     display: -webkit-box;

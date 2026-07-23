@@ -107,13 +107,20 @@ class PublicEventController extends Controller
             ->orderBy('event_date', 'asc')
             ->first();
 
+        // Lấy tất cả ảnh của sự kiện (gồm ảnh Drive, ảnh tạo sự kiện và ảnh banner)
+        $recapImages = $event->media()->where('type', 'image')->get();
+
         // Template routing
         $viewName = 'events.show';
         if ($event->page_template && view()->exists("events.show-template{$event->page_template}")) {
             $viewName = "events.show-template{$event->page_template}";
         }
 
+<<<<<<< HEAD
         return $this->renderView($viewName, compact('event', 'newestEvents', 'prominentEvents', 'previousEvent', 'nextEvent'));
+=======
+        return view($viewName, compact('event', 'newestEvents', 'prominentEvents', 'previousEvent', 'nextEvent', 'recapImages'));
+>>>>>>> 2b68430 (Update layout and logic)
     }
 
     public function like($event_id)

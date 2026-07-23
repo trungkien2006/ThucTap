@@ -712,6 +712,28 @@
                 </div>
             </div>
 
+            @php
+                $hasRecap = isset($recapImages) && $recapImages->count() > 0 && $event->isEnded();
+            @endphp
+
+            @if($hasRecap)
+            <div x-data="{ activeTab: 'info' }" class="w-full">
+                <div style="display:flex; justify-content:center; gap:30px; margin: 10px auto 30px; border-bottom:1px solid rgba(0,0,0,0.1); padding-bottom:0px; flex-wrap:wrap; max-width: 800px;">
+                    <button @click="activeTab = 'info'" 
+                            :style="activeTab === 'info' ? 'border-bottom: 2px solid #f97316; color: #f97316; font-weight: 600;' : 'color: #64748b; font-weight: 500;'"
+                            style="padding: 10px 5px; font-size:1.1rem; transition:all 0.3s; background:none; border:none; cursor:pointer; font-family:'DM Sans', sans-serif;">
+                        Giới thiệu sự kiện
+                    </button>
+                    <button @click="activeTab = 'images'" 
+                            :style="activeTab === 'images' ? 'border-bottom: 2px solid #f97316; color: #f97316; font-weight: 600;' : 'color: #64748b; font-weight: 500;'"
+                            style="padding: 10px 5px; font-size:1.1rem; transition:all 0.3s; background:none; border:none; cursor:pointer; font-family:'DM Sans', sans-serif;">
+                        Hình ảnh sự kiện
+                    </button>
+                </div>
+
+                <div x-show="activeTab === 'info'" class="tab-content-info">
+            @endif
+
             <div class="t3-section-eyebrow">Giới thiệu</div>
             <h2 class="t3-section-title">Về sự kiện này</h2>
             <div class="t3-section-body">
@@ -851,6 +873,24 @@
                     <span x-show="copied" x-transition style="display:none;position:absolute;top:-40px;left:50%;transform:translateX(-50%);background:#1E3A8A;color:white;font-size:12px;padding:4px 8px;border-radius:4px;white-space:nowrap;">Đã sao chép!</span>
                 </button>
             </div>
+
+            @if($hasRecap)
+                </div>
+
+                {{-- Tab 2: Hình ảnh sự kiện --}}
+                <div x-show="activeTab === 'images'" class="tab-content-images" style="display: none; width: 100%; margin-top: 2rem;">
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-4 max-w-[1140px] mx-auto mb-8">
+                        @foreach($recapImages as $img)
+                        <div class="aspect-square relative rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all group cursor-pointer bg-slate-100">
+                            <img src="{{ \App\Helpers\FileHelper::url($img->url) }}" 
+                                 alt="{{ $img->caption ?? 'Hình ảnh sự kiện' }}" 
+                                 class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+            @endif
 
             <!-- Điều hướng Sự kiện Trước / Sau -->
             @if(isset($previousEvent) || isset($nextEvent))

@@ -168,9 +168,11 @@ body { background-color: #f1f5f9; }
 }
 .w6-desc {
     color: var(--school-muted);
-    text-align: justify;
+    text-align: center;
+    font-weight: bold;
+    line-height: 1.8;
+    font-size: 15px;
     margin-bottom: 40px;
-    font-size: 16px;
 }
 
 /* GALLERY (CARDS) */
@@ -180,23 +182,48 @@ body { background-color: #f1f5f9; }
     gap: 30px;
     margin-bottom: 50px;
 }
-.w6-gal-card {
-    background: #fff;
+.w6-gallery-block {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 40px;
+    align-items: center;
+    margin-bottom: 60px;
+    background: #f8fafc;
+    padding: 30px;
+    border-radius: 20px;
     border: 1px solid var(--school-border);
+}
+.w6-gallery-block.reverse {
+    grid-template-columns: 1.2fr 1fr;
+}
+.w6-gallery-media-col {
     border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    box-shadow: 0 20px 40px -10px rgba(0,0,0,0.1);
 }
-.w6-gal-media { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; }
-.w6-gal-body { padding: 20px; }
-.w6-gal-caption {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 700;
-    font-size: 18px;
-    color: var(--school-text);
-    margin-bottom: 8px;
+@media (max-width: 768px) {
+    .w6-gallery-block, .w6-gallery-block.reverse {
+        grid-template-columns: 1fr !important;
+        gap: 16px;
+        padding: 16px;
+    }
+    .w6-gallery-media-col {
+        order: -1;
+    }
 }
-.w6-gal-text { font-size: 14px; color: var(--school-muted); margin-bottom: 15px; }
+.w6-gal-media {
+    width: 100%; height: auto;
+    display: block;
+    border-radius: 12px;
+}
+.w6-scrollable-text {
+    max-height: 200px;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+.w6-scrollable-text::-webkit-scrollbar { width: 5px; }
+.w6-scrollable-text::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 4px; }
+.w6-scrollable-text::-webkit-scrollbar-thumb { background: var(--school-primary); border-radius: 4px; }
 
 /* SPEAKERS */
 .w6-speakers {
@@ -308,6 +335,8 @@ body { background-color: #f1f5f9; }
     border: none;
     transition: all 0.2s;
     text-decoration: none;
+    background: var(--school-primary);
+    color: #fff;
 }
 .w6-btn-like {
     background: #fff;
@@ -438,22 +467,58 @@ body { background-color: #f1f5f9; }
             </div>
 
             {{-- GALLERY --}}
-            @if($event->galleryImages->count() > 0 && $event->event_date <= now())
+            @if($event->galleryImages->count() > 0 && ($event->event_date <= now() || request()->routeIs('admin.events.template_preview')))
             <h2 class="w6-section-title">Khoảnh Khắc Nổi Bật</h2>
-            <div class="w6-gallery">
-                @foreach($event->galleryImages as $block)
-                <div class="w6-gal-card">
-                    @if($block->url)
-                        @if($block->type === 'video')
-                            <video src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="w6-gal-media" autoplay loop muted playsinline controls></video>
-                        @else
-                            <img src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="w6-gal-media" alt="">
-                        @endif
+            <div>
+                @foreach($event->galleryImages as $index => $block)
+                <div class="w6-gallery-block {{ $index % 2 == 1 ? 'reverse' : '' }}">
+                    @if($index % 2 == 0)
+                        <div>
+                            @if($block->caption)
+                                <h3 style="font-family: 'Montserrat', sans-serif; font-size: 18px; font-weight: 700; margin-bottom: 8px; color: var(--school-primary);">{{ $block->caption }}</h3>
+                            @endif
+                            @if(!empty($block->content))
+                                <div class="w6-scrollable-text" style="color: var(--school-muted); font-size: 14px; line-height: 1.7;">{!! $block->content !!}</div>
+                            @endif
+                            <div class="flex flex-wrap gap-2 mt-4">
+                                @if($block->action_url)
+                                    <a href="{{ $block->action_url }}" target="_blank" class="w6-btn" style="padding: 6px 14px; font-size: 12px; border-radius: 6px; text-decoration: none;">Liên kết</a>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="w6-gallery-media-col">
+                            @if($block->url)
+                                @if($block->type === 'video')
+                                    <video src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="w6-gal-media" autoplay loop muted playsinline controls></video>
+                                @else
+                                    <img src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="w6-gal-media" alt="">
+                                @endif
+                            @endif
+                        </div>
+                    @else
+                        <div class="w6-gallery-media-col">
+                            @if($block->url)
+                                @if($block->type === 'video')
+                                    <video src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="w6-gal-media" autoplay loop muted playsinline controls></video>
+                                @else
+                                    <img src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="w6-gal-media" alt="">
+                                @endif
+                            @endif
+                        </div>
+                        <div>
+                            @if($block->caption)
+                                <h3 style="font-family: 'Montserrat', sans-serif; font-size: 18px; font-weight: 700; margin-bottom: 8px; color: var(--school-primary);">{{ $block->caption }}</h3>
+                            @endif
+                            @if(!empty($block->content))
+                                <div class="w6-scrollable-text" style="color: var(--school-muted); font-size: 14px; line-height: 1.7;">{!! $block->content !!}</div>
+                            @endif
+                            <div class="flex flex-wrap gap-2 mt-4">
+                                @if($block->action_url)
+                                    <a href="{{ $block->action_url }}" target="_blank" class="w6-btn" style="padding: 6px 14px; font-size: 12px; border-radius: 6px; text-decoration: none;">Liên kết</a>
+                                @endif
+                            </div>
+                        </div>
                     @endif
-                    <div class="w6-gal-body">
-                        @if($block->caption) <h3 class="w6-gal-caption">{{ $block->caption }}</h3> @endif
-                        @if(!empty($block->content)) <div class="w6-gal-text">{!! $block->content !!}</div> @endif
-                    </div>
                 </div>
                 @endforeach
             </div>
@@ -529,27 +594,7 @@ body { background-color: #f1f5f9; }
             </div>
             @endif
             
-            {{-- PREV/NEXT EVENTS --}}
-            @if(isset($previousEvent) || isset($nextEvent))
-            <div class="w6-nav-events">
-                <div style="text-align: left;">
-                    @if(isset($previousEvent) && $previousEvent)
-                    <a href="{{ route('events.show', $previousEvent->slug) }}" class="w6-nav-item">
-                        <div class="w6-nav-label">← Sự kiện trước</div>
-                        <div class="w6-nav-title">{{ $previousEvent->title }}</div>
-                    </a>
-                    @endif
-                </div>
-                <div style="text-align: right;">
-                    @if(isset($nextEvent) && $nextEvent)
-                    <a href="{{ route('events.show', $nextEvent->slug) }}" class="w6-nav-item">
-                        <div class="w6-nav-label">Sự kiện tiếp →</div>
-                        <div class="w6-nav-title">{{ $nextEvent->title }}</div>
-                    </a>
-                    @endif
-                </div>
-            </div>
-            @endif
+
 
             {{-- BOTTOM ACTIONS --}}
             <div class="w6-bottom" x-data="{ copied: false }">

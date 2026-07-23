@@ -511,7 +511,7 @@ body { background-color: #EFECE5; }
         </div>
 
         {{-- GALLERY --}}
-        @if($event->galleryImages->count() > 0 && $event->event_date <= now())
+        @if($event->galleryImages->count() > 0 && ($event->event_date <= now() || request()->routeIs('admin.events.template_preview')))
         <div class="t7-section-hd">
             <div class="t7-section-kicker">Chương 2</div>
             <h2 class="t7-section-title">Khung Hình Kỷ Niệm</h2>
@@ -613,27 +613,7 @@ body { background-color: #EFECE5; }
         </div>
         @endif
         
-        {{-- PREV / NEXT NAV --}}
-        @if(isset($previousEvent) || isset($nextEvent))
-        <div class="t7-nav">
-            <div style="text-align: left;">
-                @if(isset($previousEvent) && $previousEvent)
-                <a href="{{ route('events.show', $previousEvent->slug) }}" class="t7-nav-item">
-                    <div class="t7-nav-label">Sự kiện trước</div>
-                    <div class="t7-nav-title">{{ $previousEvent->title }}</div>
-                </a>
-                @endif
-            </div>
-            <div style="text-align: right;">
-                @if(isset($nextEvent) && $nextEvent)
-                <a href="{{ route('events.show', $nextEvent->slug) }}" class="t7-nav-item">
-                    <div class="t7-nav-label">Sự kiện tiếp</div>
-                    <div class="t7-nav-title">{{ $nextEvent->title }}</div>
-                </a>
-                @endif
-            </div>
-        </div>
-        @endif
+
 
         {{-- ACTIONS --}}
         <div class="t7-bottom" x-data="{ copied: false }">
@@ -709,3 +689,4 @@ body { background-color: #EFECE5; }
     }
 </script>
 @endsection
+

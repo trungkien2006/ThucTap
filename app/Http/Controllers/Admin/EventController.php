@@ -244,8 +244,13 @@ class EventController extends Controller
         $event->setRelation('subBannerImage', $subBanner);
         
         $gallery = collect([
-            new \App\Models\EventMedia(['url' => 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80', 'type' => 'image', 'content' => 'Nội dung sự kiện mẫu đoạn 1. Khai mạc chương trình và giới thiệu đại biểu.']),
-            new \App\Models\EventMedia(['url' => 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=800&q=80', 'type' => 'image', 'content' => 'Nội dung sự kiện mẫu đoạn 2. Thảo luận các chủ đề chính.']),
+            new \App\Models\EventMedia([
+                'url' => 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80', 
+                'type' => 'image', 
+                'content' => "Nội dung sự kiện mẫu đoạn 1. Khai mạc chương trình và giới thiệu đại biểu.\nĐây là một đoạn nội dung rất dài để kiểm tra tính năng cuộn văn bản (lướt chữ dọc). Nếu đoạn chữ này vượt quá chiều cao tối đa cho phép, thanh cuộn sẽ tự động hiện ra.\n\nNhư vậy, người xem có thể đọc toàn bộ nội dung mà không làm hỏng bố cục của ảnh.\n\nHãy thử tính năng cuộn ngay bây giờ!", 
+                'action_url' => '#'
+            ]),
+            new \App\Models\EventMedia(['url' => 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=800&q=80', 'type' => 'image', 'content' => 'Nội dung sự kiện mẫu đoạn 2. Thảo luận các chủ đề chính.', 'action_url' => '#']),
             new \App\Models\EventMedia(['url' => 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80', 'type' => 'image', 'content' => 'Nội dung sự kiện mẫu đoạn 3. Giao lưu khán giả.']),
             new \App\Models\EventMedia(['url' => 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800&q=80', 'type' => 'image', 'content' => 'Nội dung sự kiện mẫu đoạn 4. Bế mạc chương trình.']),
         ]);
@@ -269,7 +274,10 @@ class EventController extends Controller
             $viewName = "events.show-template{$templateId}";
         }
         
-        return view($viewName, compact('event'));
+        $previousEvent = new \App\Models\Event(['title' => 'Sự kiện trước (Mẫu)', 'slug' => '#']);
+        $nextEvent = new \App\Models\Event(['title' => 'Sự kiện tiếp theo (Mẫu)', 'slug' => '#']);
+        
+        return view($viewName, compact('event', 'previousEvent', 'nextEvent'));
     }
 
     public function design(Event $event)
@@ -821,3 +829,4 @@ class EventController extends Controller
         }
     }
 }
+

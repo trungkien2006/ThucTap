@@ -66,6 +66,7 @@
         .fp-content { flex: 1; padding: 24px; display: flex; justify-content: center; }
         .fp-iframe-wrap { width: 100%; max-width: 1280px; height: 100%; background: white; border-radius: 12px; overflow: hidden; }
         .fp-iframe { width: 100%; height: 100%; border: none; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="font-sans antialiased text-slate-800">
@@ -289,8 +290,11 @@
                 </div>
             </div>
             <div class="tp-preview-content">
-                <div class="tp-iframe-wrap desktop" id="previewWrapper">
-                    <iframe id="miniPreviewFrame" src="{{ route('admin.events.template_preview', $event->page_template ?? 1) }}" class="tp-iframe"></iframe>
+                <div class="tp-iframe-wrap desktop" id="previewWrapper" style="position: relative;">
+                    <div id="iframeLoader" style="position: absolute; inset: 0; background: rgba(255,255,255,0.7); display: none; align-items: center; justify-content: center; z-index: 10;">
+                        <span class="material-symbols-outlined" style="animation: spin 1s linear infinite; font-size: 32px; color: #94a3b8;">sync</span>
+                    </div>
+                    <iframe id="miniPreviewFrame" onload="document.getElementById('iframeLoader').style.display='none'" src="{{ route('admin.events.template_preview', $event->page_template ?? 1) }}" class="tp-iframe"></iframe>
                 </div>
             </div>
             <div class="p-4 border-t border-slate-200 bg-white">
@@ -395,6 +399,7 @@
         function selectTemplate(id) {
             document.querySelectorAll('.tp-card').forEach(card => card.classList.remove('active'));
             document.getElementById('card-' + id).classList.add('active');
+            document.getElementById('iframeLoader').style.display = 'flex';
             document.getElementById('miniPreviewFrame').src = "{{ url('/admin/template-preview') }}/" + id;
             document.getElementById('formCurrentTemplateId').value = id;
         }

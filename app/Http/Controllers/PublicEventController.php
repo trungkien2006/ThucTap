@@ -116,11 +116,7 @@ class PublicEventController extends Controller
             $viewName = "events.show-template{$event->page_template}";
         }
 
-<<<<<<< HEAD
-        return $this->renderView($viewName, compact('event', 'newestEvents', 'prominentEvents', 'previousEvent', 'nextEvent'));
-=======
-        return view($viewName, compact('event', 'newestEvents', 'prominentEvents', 'previousEvent', 'nextEvent', 'recapImages'));
->>>>>>> 2b68430 (Update layout and logic)
+        return $this->renderView($viewName, compact('event', 'newestEvents', 'prominentEvents', 'previousEvent', 'nextEvent', 'recapImages'));
     }
 
     public function like($event_id)

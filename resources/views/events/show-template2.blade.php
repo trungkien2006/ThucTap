@@ -103,6 +103,20 @@
         }
         .gw-scrolly-img.active { opacity: 1; z-index: 2; }
         
+        .gw-scrollable-text {
+            max-height: 150px;
+            overflow-y: auto;
+            padding-right: 8px;
+            word-break: break-word;
+        }
+        .gw-scrollable-text::-webkit-scrollbar { width: 5px; }
+        .gw-scrollable-text::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 4px; }
+        .gw-scrollable-text::-webkit-scrollbar-thumb { background: #b0b0b0; border-radius: 4px; }
+
+        .gw-hero {
+            min-height: 100vh;
+        }
+
         .gw-text-block {
             min-height: 70vh;
             display: flex;
@@ -375,7 +389,7 @@
                 <div class="gw-text-block gw-fade-in" data-media-index="{{ $i + 1 }}">
                     @if(!empty($block->content))
                     @php $isJ=false; $cd=@json_decode($block->content,true); if(json_last_error()===JSON_ERROR_NONE && is_array($cd))$isJ=true; @endphp
-                    @if(!$isJ)<div class="gw-story-body" style="margin-bottom:24px;">{!! $block->content !!}</div>@endif
+                    @if(!$isJ)<div class="gw-story-body gw-scrollable-text" style="margin-bottom:24px;">{!! $block->content !!}</div>@endif
                     @endif
 
                     @if($block->action_url)

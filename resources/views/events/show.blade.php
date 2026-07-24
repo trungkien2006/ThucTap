@@ -11,6 +11,15 @@
     .tp1-hero-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(15,23,42,0.2), rgba(15,23,42,0.8)); }
     .tp1-hero-content { position: relative; z-index: 10; text-align: center; color: white; padding: 0 20px; max-width: 800px; }
     .tp1-badge { background: #f97316; color: white; padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; text-transform: uppercase; margin-bottom: 16px; display: inline-block; }
+    .tp1-scrollable-text {
+        max-height: 180px;
+        overflow-y: auto;
+        padding-right: 8px;
+        word-break: break-word;
+    }
+    .tp1-scrollable-text::-webkit-scrollbar { width: 5px; }
+    .tp1-scrollable-text::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 4px; }
+    .tp1-scrollable-text::-webkit-scrollbar-thumb { background: #b0b0b0; border-radius: 4px; }
     .tp1-title { font-size: 48px; font-weight: 800; line-height: 1.2; margin-bottom: 16px; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
     .tp1-meta { display: flex; gap: 24px; justify-content: center; font-size: 15px; opacity: 0.9; }
     .tp1-meta-item { display: flex; align-items: center; gap: 8px; }
@@ -130,7 +139,7 @@
                             <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">{{ $block->caption }}</h3>
                         @endif
                         @if(!empty($block->content))
-                            <div class="tp1-text">{!! $block->content !!}</div>
+                            <div class="tp1-text tp1-scrollable-text">{!! $block->content !!}</div>
                         @endif
                         <div class="flex flex-wrap gap-2 mt-4">
                             @if($block->action_url)
@@ -146,7 +155,7 @@
                             <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">{{ $block->caption }}</h3>
                         @endif
                         @if(!empty($block->content))
-                            <div class="tp1-text">{!! $block->content !!}</div>
+                            <div class="tp1-text tp1-scrollable-text">{!! $block->content !!}</div>
                         @endif
                         <div class="flex flex-wrap gap-2 mt-4">
                             @if($block->action_url)

@@ -284,6 +284,16 @@
     margin-top: 4px;
 }
 
+.t3-scrollable-text {
+    max-height: 180px;
+    overflow-y: auto;
+    padding-right: 8px;
+    word-break: break-word;
+}
+.t3-scrollable-text::-webkit-scrollbar { width: 5px; }
+.t3-scrollable-text::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 4px; }
+.t3-scrollable-text::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 4px; }
+
 /* CONTENT */
 .t3-content {
     max-width: 1000px;
@@ -732,7 +742,7 @@
                                     <h3 style="font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; margin-bottom: 8px; color: var(--navy);">{{ $block->caption }}</h3>
                                 @endif
                                 @if(!empty($block->content))
-                                    <div style="color: var(--soft); font-size: 13.5px; line-height: 1.7;">{!! $block->content !!}</div>
+                                    <div class="t3-scrollable-text" style="color: var(--soft); font-size: 13.5px; line-height: 1.7;">{!! $block->content !!}</div>
                                 @endif
                                 <div class="flex flex-wrap gap-2 mt-4">
 
@@ -765,7 +775,7 @@
                                     <h3 style="font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; margin-bottom: 8px; color: var(--navy);">{{ $block->caption }}</h3>
                                 @endif
                                 @if(!empty($block->content))
-                                    <div style="color: var(--soft); font-size: 13.5px; line-height: 1.7;">{!! $block->content !!}</div>
+                                    <div class="t3-scrollable-text" style="color: var(--soft); font-size: 13.5px; line-height: 1.7;">{!! $block->content !!}</div>
                                 @endif
                                 <div class="flex flex-wrap gap-2 mt-4">
 

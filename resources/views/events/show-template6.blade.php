@@ -46,8 +46,7 @@ body { background-color: #EFECE5; }
 .t7-hero {
     position: relative;
     width: 100%;
-    height: 100vh;
-    min-height: 600px;
+    min-height: 70vh;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
@@ -203,35 +202,38 @@ body { background-color: #EFECE5; }
 .t7-gal-item {
     display: flex;
     flex-direction: column;
-    margin-bottom: 50px;
+    margin-bottom: 30px;
+    background: #fff;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.04);
+    border: 1px solid rgba(0,0,0,0.05);
 }
 .t7-gal-img-wrap {
     width: 100%;
     position: relative;
-    padding-bottom: 20px;
-}
-.t7-gal-img-wrap::before {
-    content: '';
-    position: absolute;
-    top: -15px; left: -15px;
-    width: 40%; height: 40%;
-    border-top: 1px solid var(--mag-ink);
-    border-left: 1px solid var(--mag-ink);
-    z-index: 1;
 }
 .t7-gal-img {
     width: 100%;
-    aspect-ratio: 4/5;
+    aspect-ratio: 4/3;
     object-fit: cover;
     position: relative;
     z-index: 2;
-    filter: grayscale(20%) contrast(110%);
+    border-radius: 8px;
+    border: 1px solid rgba(0,0,0,0.05);
 }
 .t7-gal-content {
-    padding: 20px 0 0 20px;
-    border-left: 1px solid var(--mag-border);
-    margin-left: 20px;
+    padding: 20px 0 0 0;
 }
+.t7-scrollable-text {
+    max-height: 180px;
+    overflow-y: auto;
+    padding-right: 8px;
+    word-break: break-word;
+}
+.t7-scrollable-text::-webkit-scrollbar { width: 5px; }
+.t7-scrollable-text::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 4px; }
+.t7-scrollable-text::-webkit-scrollbar-thumb { background: #b0b0b0; border-radius: 4px; }
 .t7-gal-caption {
     font-family: var(--font-serif);
     font-size: 24px;
@@ -253,9 +255,9 @@ body { background-color: #EFECE5; }
         align-items: center;
         gap: 40px;
     }
-    .t7-gal-img-wrap { width: 55%; padding-bottom: 0; }
-    .t7-gal-content { width: 45%; padding: 0; border: none; margin: 0; }
-    .t7-gal-img { aspect-ratio: 3/4; }
+    .t7-gal-img-wrap { width: 45%; padding-bottom: 0; }
+    .t7-gal-content { width: 55%; padding: 0; border: none; margin: 0; }
+    .t7-gal-img { aspect-ratio: 4/3; }
 }
 
 /* ── SPEAKERS / GUESTS ── */
@@ -530,7 +532,7 @@ body { background-color: #EFECE5; }
                 </div>
                 <div class="t7-gal-content">
                     @if($block->caption) <h3 class="t7-gal-caption">{{ $block->caption }}</h3> @endif
-                    @if(!empty($block->content)) <div class="t7-gal-text">{!! $block->content !!}</div> @endif
+                    @if(!empty($block->content)) <div class="t7-gal-text t7-scrollable-text">{!! $block->content !!}</div> @endif
                 </div>
             </div>
             @endforeach

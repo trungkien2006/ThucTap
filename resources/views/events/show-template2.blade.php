@@ -49,70 +49,38 @@
     .gw-story-body { font-size: 1.14rem; color: #6e7a6a; line-height: 1.9; font-weight: 300; max-width: 640px; font-family: 'DM Sans', sans-serif; }
     .gw-container-lg { max-width: 1080px; margin: 0 auto; }
     
-    /* STORY SCROLLYTELLING */
-    #gw-story { overflow: visible !important; } /* CRITICAL: sticky won't work with overflow:hidden */
-    .gw-scrolly-container { display: flex; flex-direction: column; gap: 32px; margin-bottom: 60px; }
-    .gw-scrolly-text-col { width: 100%; }
-    .gw-scrolly-media-col { width: 100%; }
-    .gw-text-block { margin-bottom: 40px; }
-    .gw-scrolly-img { width: 100%; border-radius: 4px; object-fit: cover; aspect-ratio: 4/5; margin-bottom: 16px; display: none; }
-    .gw-scrolly-img.active { display: block; }
+    /* STORY SPLIT SCROLL */
+    .gw-story-row { display: flex; flex-direction: column; gap: 32px; margin-bottom: 60px; }
+    .gw-story-left { width: 100%; }
+    .gw-story-right { width: 100%; }
+    .gw-sticky-media { width: 100%; border-radius: 4px; object-fit: cover; }
     
     @media (min-width: 769px) {
-        .gw-scrolly-container {
+        .gw-story-row {
             flex-direction: row;
-            gap: 48px;
-            align-items: flex-start;
-            position: relative;
+            justify-content: space-between;
+            margin-bottom: 0; /* Remove margin so images touch or leave a small gap */
+            padding-bottom: 80px; /* Gap between rows */
         }
-        .gw-scrolly-text-col { width: 45%; }
-        .gw-scrolly-media-col {
-            width: 50%;
-            height: calc(100vh - 140px);
-            position: relative;
-        }
-        /* States added by JS */
-        .gw-scrolly-media-col.is-fixed {
-            position: fixed;
-            top: 100px;
-            /* right position and width will be set by JS dynamically */
-        }
-        .gw-scrolly-media-col.is-bottom {
-            position: absolute;
-            bottom: 0;
-            top: auto;
-            right: 0; /* Align right within the relative container row */
-        }
-        .gw-scrolly-media-stack {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-        .gw-scrolly-img {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: block;
-            opacity: 0;
-            transition: opacity 0.6s ease;
-            margin-bottom: 0;
-        }
-        .gw-scrolly-img.active { opacity: 1; z-index: 2; }
-        
-        .gw-text-block {
-            min-height: 70vh;
+        .gw-story-left {
+            width: 45%;
+            padding: 15vh 0; /* Creates scrollable height for the sticky effect */
             display: flex;
             flex-direction: column;
             justify-content: center;
-            margin-bottom: 0;
-            padding: 20px 0;
         }
-        .gw-text-block:last-child {
-            min-height: 50vh;
+        .gw-story-right {
+            width: 45%;
+            position: relative;
+        }
+        .gw-sticky-wrapper {
+            position: sticky;
+            top: 120px; /* Sticks under the header */
+        }
+        .gw-sticky-media {
+            height: calc(100vh - 160px);
+            max-height: 640px;
+            aspect-ratio: 4/5;
         }
     }
     /* GALLERY */
@@ -339,6 +307,28 @@
 <div><img src="{{ \App\Helpers\FileHelper::url($pb->url) }}" alt="{{ $event->title }}" class="gw-full-photo"></div>
 @endif
 
+@php
+    $hasRecap = isset($recapImages) && $recapImages->count() > 0 && $event->isEnded();
+@endphp
+
+@if($hasRecap)
+<div x-data="{ activeTab: 'info' }" class="w-full">
+    <div style="display:flex; justify-content:center; gap:30px; margin: 40px auto 20px; border-bottom:1px solid rgba(0,0,0,0.1); padding-bottom:0px; flex-wrap:wrap; max-width: 800px;">
+        <button @click="activeTab = 'info'" 
+                :style="activeTab === 'info' ? 'border-bottom: 2px solid #f97316; color: #f97316; font-weight: 600;' : 'color: #64748b; font-weight: 500;'"
+                style="padding: 10px 5px; font-size:1.1rem; transition:all 0.3s; background:none; border:none; cursor:pointer; font-family:'DM Sans', sans-serif;">
+            Giới thiệu sự kiện
+        </button>
+        <button @click="activeTab = 'images'" 
+                :style="activeTab === 'images' ? 'border-bottom: 2px solid #f97316; color: #f97316; font-weight: 600;' : 'color: #64748b; font-weight: 500;'"
+                style="padding: 10px 5px; font-size:1.1rem; transition:all 0.3s; background:none; border:none; cursor:pointer; font-family:'DM Sans', sans-serif;">
+            Hình ảnh sự kiện
+        </button>
+    </div>
+
+    <div x-show="activeTab === 'info'" class="tab-content-info">
+@endif
+
 {{-- STORY / DESCRIPTION --}}
 @if(!empty($event->description))
 <section class="gw-section" id="gw-story">
@@ -355,28 +345,38 @@
             @endphp
         </div>
 
-                <div class="gw-scrolly-container">
-            {{-- CỘT TRÁI: Tất cả text blocks xếp dọc --}}
-            <div class="gw-scrolly-text-col">
-                {{-- Block 0: Mô tả chính --}}
-                @if(!$isJsonDesc && !empty(trim(strip_tags($event->description))))
-                <div class="gw-text-block" data-media-index="0">
+        <div class="gw-story-split">
+            {{-- Main Description Row --}}
+            @if(!$isJsonDesc && !empty(trim(strip_tags($event->description))))
+            <div class="gw-story-row gw-fade-in">
+                <div class="gw-story-left" style="padding-top: 0;">
                     <div class="gw-story-body">{!! nl2br(e($event->description)) !!}</div>
                 </div>
-                @endif
+                <div class="gw-story-right">
+                    @php $firstImg = $event->galleryImages->where('type','image')->first(); @endphp
+                    @if($firstImg && $firstImg->url)
+                    <div class="gw-sticky-wrapper">
+                        <img src="{{ \App\Helpers\FileHelper::url($firstImg->url) }}" class="gw-sticky-media" loading="lazy">
+                    </div>
+                    @endif
+                </div>
+            </div>
+            @endif
 
-                {{-- Block 1..N: Từ galleryImages --}}
-                @php 
-                    $skipCount = 0;
-                    $remainingBlocks = $event->galleryImages->skip($skipCount)->take(5); 
-                @endphp
-                @foreach($remainingBlocks as $i => $block)
-                @if(!empty($block->content) || $block->url)
-                <div class="gw-text-block gw-fade-in" data-media-index="{{ $i + 1 }}">
+            {{-- Remaining blocks --}}
+            @php 
+                $skipCount = 0;
+                $remainingBlocks = $event->galleryImages->skip($skipCount)->take(5); 
+            @endphp
+            @foreach($remainingBlocks as $block)
+            @if(!empty($block->content) || $block->url)
+            <div class="gw-story-row gw-fade-in">
+                <div class="gw-story-left">
                     @if(!empty($block->content))
                     @php $isJ=false; $cd=@json_decode($block->content,true); if(json_last_error()===JSON_ERROR_NONE && is_array($cd))$isJ=true; @endphp
                     @if(!$isJ)<div class="gw-story-body" style="margin-bottom:24px;">{!! $block->content !!}</div>@endif
                     @endif
+
 
                     @if($block->action_url)
                     <div style="margin-top:16px;">
@@ -386,37 +386,22 @@
                     </div>
                     @endif
                 </div>
-                @endif
-                @endforeach
-            </div>
-
-            {{-- CỘT PHẢI: Khung ảnh sticky --}}
-            <div class="gw-scrolly-media-col">
-                <div class="gw-scrolly-media-stack">
-                    {{-- Ảnh 0: Ảnh đầu tiên cho mô tả chính --}}
-                    @if(!$isJsonDesc && !empty(trim(strip_tags($event->description))))
-                    @php $firstImg = $event->galleryImages->where('type','image')->first(); @endphp
-                    @if($firstImg && $firstImg->url)
-                    <img data-media-index="0" class="gw-scrolly-img active" src="{{ \App\Helpers\FileHelper::url($firstImg->url) }}" loading="lazy">
-                    @else
-                    <div data-media-index="0" class="gw-scrolly-img active" style="background: linear-gradient(135deg, #c8cfc6, #a8b5a6);"></div>
-                    @endif
-                    @endif
-
-                    {{-- Ảnh 1..N: Từ galleryImages --}}
-                    @foreach($remainingBlocks as $i => $block)
+                
+                <div class="gw-story-right">
                     @if($block->url)
+                    <div class="gw-sticky-wrapper">
                         @if($block->type==='video')
-                        <video data-media-index="{{ $i + 1 }}" class="gw-scrolly-img" src="{{ \App\Helpers\FileHelper::url($block->url) }}" autoplay loop muted playsinline></video>
+                        <video src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="gw-sticky-media" autoplay loop muted playsinline controls></video>
                         @else
-                        <img data-media-index="{{ $i + 1 }}" class="gw-scrolly-img" src="{{ \App\Helpers\FileHelper::url($block->url) }}" alt="{{ $block->caption ?? '' }}" loading="lazy">
+                        <img src="{{ \App\Helpers\FileHelper::url($block->url) }}" alt="{{ $block->caption ?? '' }}" class="gw-sticky-media" loading="lazy">
                         @endif
-                    @else
-                        <div data-media-index="{{ $i + 1 }}" class="gw-scrolly-img" style="background: linear-gradient(135deg, #c8cfc6, #a8b5a6);"></div>
+                        @if($block->caption)<p style="margin-top:10px;font-size:1.01rem;color:#9aa09a;font-style:italic;">{{ $block->caption }}</p>@endif
+                    </div>
                     @endif
-                    @endforeach
                 </div>
             </div>
+            @endif
+            @endforeach
         </div>
         @php
             $t2_speakers = $event->speakers()->wherePivot('role', 'speaker')->get();
@@ -446,29 +431,22 @@
 </section>
 @endif
 
-{{-- GALLERY (RECAP ALBUM) --}}
-@php
-    $recapMedia = $event->media()->where('is_recap', true)->where('type', 'image')->get();
-@endphp
-@if($recapMedia->count() > 0)
-<section class="gw-gallery-section" id="gw-gallery">
-    <div style="padding:0 32px 20px;max-width:860px;margin:0 auto;">
-        <h2 class="gw-section-title gw-fade-in">Album Sự kiện</h2>
+@if($hasRecap)
     </div>
-    <div style="overflow:hidden;">
-        <div class="gw-gallery-track" id="gw-gallery-track">
-            @foreach($recapMedia as $img)
-            <div class="gw-gallery-slide">
-                <img src="{{ \App\Helpers\FileHelper::url($img->url) }}" alt="{{ $img->caption ?? $event->title }}">
+
+    {{-- Tab 2: Hình ảnh sự kiện --}}
+    <div x-show="activeTab === 'images'" class="tab-content-images" style="display: none; width: 100%; margin-top: 2rem;">
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-4 max-w-[1140px] mx-auto mb-8">
+            @foreach($recapImages as $img)
+            <div class="aspect-square relative rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all group cursor-pointer bg-slate-100">
+                <img src="{{ \App\Helpers\FileHelper::url($img->url) }}" 
+                     alt="{{ $img->caption ?? 'Hình ảnh sự kiện' }}" 
+                     class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
             </div>
             @endforeach
         </div>
     </div>
-    <div class="gw-gallery-controls">
-        <button class="gw-gallery-btn" id="gw-prev">&#8592;</button>
-        <button class="gw-gallery-btn" id="gw-next">&#8594;</button>
-    </div>
-</section>
+</div>
 @endif
 
 {{-- REACTIONS --}}
@@ -546,78 +524,7 @@
         fetch('/events/'+eid+'/like',{method:'POST',headers:{'Content-Type':'application/json','X-CSRF-TOKEN':document.querySelector('meta[name=csrf-token]').getAttribute('content')}})
         .then(function(r){ return r.json(); }).then(function(d){ if(d.success){ cs.innerText=d.likes_count; lb.classList.add('liked'); } }).catch(console.error);
     }); }
-    // Scrollytelling
-    var storySection = document.getElementById('gw-story');
-    var scrollyContainer = storySection ? storySection.querySelector('.gw-scrolly-container') : null;
-    var textBlocks = document.querySelectorAll('.gw-text-block');
-    var mediaCol = document.querySelector('.gw-scrolly-media-col');
-    var mediaItems = document.querySelectorAll('.gw-scrolly-img');
-    
-    if (window.innerWidth >= 769 && textBlocks.length > 0 && storySection && mediaCol && scrollyContainer) {
-        var offsetTop = 100; // distance from viewport top when fixed
-        
-        // Save the media column's initial top position relative to the document
-        var mediaColInitialTop = mediaCol.getBoundingClientRect().top + window.pageYOffset;
-        
-        // Calculate when to stop fixing (bottom of scrolly container minus media height)
-        function getStopPoint() {
-            var containerRect = scrollyContainer.getBoundingClientRect();
-            var containerBottom = containerRect.bottom + window.pageYOffset;
-            var mediaHeight = mediaCol.offsetHeight;
-            return containerBottom - mediaHeight - offsetTop;
-        }
-        
-        window.addEventListener('scroll', function() {
-            var scrollY = window.pageYOffset;
-            var stopPoint = getStopPoint();
-            var windowHeight = window.innerHeight;
-            
-            // Point where media col's top would naturally reach the fixed offset
-            var fixStart = mediaColInitialTop - offsetTop;
-            
-            if (scrollY >= fixStart && scrollY < stopPoint) {
-                // Media column has reached the top — fix it
-                mediaCol.classList.add('is-fixed');
-                mediaCol.classList.remove('is-bottom');
-                // Maintain correct width and horizontal position
-                var parentRect = scrollyContainer.getBoundingClientRect();
-                mediaCol.style.width = (parentRect.width * 0.5) + 'px';
-                mediaCol.style.right = (window.innerWidth - parentRect.right) + 'px';
-            } else if (scrollY >= stopPoint) {
-                // Scrolled past — park at bottom of container
-                mediaCol.classList.remove('is-fixed');
-                mediaCol.classList.add('is-bottom');
-                mediaCol.style.width = '50%';
-                mediaCol.style.right = '0';
-            } else {
-                // Haven't reached the section yet — natural flow
-                mediaCol.classList.remove('is-fixed');
-                mediaCol.classList.remove('is-bottom');
-                mediaCol.style.width = '50%';
-                mediaCol.style.right = 'auto';
-            }
-            
-            // Fade Effect: which text block is currently in focus
-            var focusIndex = '0';
-            textBlocks.forEach(function(block) {
-                var blockRect = block.getBoundingClientRect();
-                if (blockRect.top < windowHeight * 0.5) {
-                    focusIndex = block.getAttribute('data-media-index');
-                }
-            });
-            
-            mediaItems.forEach(function(item) {
-                if (item.getAttribute('data-media-index') === focusIndex) {
-                    item.classList.add('active');
-                } else {
-                    item.classList.remove('active');
-                }
-            });
-        });
-        
-        // Trigger once on load
-        window.dispatchEvent(new Event('scroll'));
-    }
+    /* PARALLAX HERO - REMOVED */
 })();
 
 </script>

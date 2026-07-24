@@ -398,7 +398,7 @@
 
             <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
                 <p class="text-white/40 text-sm">
-                    &copy; 2026 UniEvent. Bản quyền thuộc về CLB Tin học - Đoàn Thanh niên.
+                    
                 </p>
                 <div class="flex items-center gap-6">
                     <a href="#" class="text-white/40 hover:text-white text-sm transition-colors">Điều khoản</a>
@@ -450,5 +450,28 @@
 </style>
 @endif
 
+    <!-- Back to top button -->
+    <button id="backToTopBtn" class="fixed bottom-6 right-6 bg-[#F27024] text-white p-3 rounded-full shadow-lg z-50 opacity-0 invisible transition-all duration-300 hover:bg-[#E8C84A] hover:scale-110 flex items-center justify-center" aria-label="Lên đầu trang">
+        <i data-lucide="arrow-up" class="w-6 h-6"></i>
+    </button>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const backToTopBtn = document.getElementById('backToTopBtn');
+            if (backToTopBtn) {
+                window.addEventListener('scroll', () => {
+                    if (window.scrollY > 300) {
+                        backToTopBtn.classList.remove('opacity-0', 'invisible');
+                        backToTopBtn.classList.add('opacity-100', 'visible');
+                    } else {
+                        backToTopBtn.classList.add('opacity-0', 'invisible');
+                        backToTopBtn.classList.remove('opacity-100', 'visible');
+                    }
+                });
+                backToTopBtn.addEventListener('click', () => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            }
+        });
+    </script>
 </body>
 </html>

@@ -1,19 +1,9 @@
-@extends('layouts.frontend-mobile')
-
-@if(!empty($slides) && isset($slides[0]))
+<?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!empty($slides) && isset($slides[0])): ?>
     <!-- Decorative Preloads commented out for local dev performance -->
-    {{-- @push('styles')
-        <link rel="preload" as="image" href="{{ $slides[0]['image'] }}" fetchpriority="high">
-        @if(isset($slides[1]))
-            <link rel="preload" as="image" href="{{ $slides[1]['image'] }}">
-        @endif
-        @if(isset($slides[2]))
-            <link rel="preload" as="image" href="{{ $slides[2]['image'] }}">
-        @endif
-    @endpush --}}
-@endif
+    
+<?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-@push('styles')
+<?php $__env->startPush('styles'); ?>
     <style>
         .hide-scrollbar::-webkit-scrollbar {
             display: none;
@@ -93,41 +83,38 @@
             }
         }
     </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 
-{{-- ======================================================================
-     HERO SLIDER
-     Overlay ấm — jasmine tint thay vì lạnh xanh
-====================================================================== --}}
+
 <section id="top" class="relative min-h-screen w-full overflow-hidden" style="background:#1C1410;">
 
     
     <div class="slider-wrapper" id="slider">
         <div class="bg-layers" id="bgLayers">
-            @foreach($slides as $i => $slide)
-            <div class="bg-layer {{ $i === 0 ? 'active' : 'idle' }}" data-index="{{ $i }}"
-                 @if($i === 0) style="background-image:url('{{ $slide['image'] }}')" @endif></div>
-            @endforeach
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $slides; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $slide): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+            <div class="bg-layer <?php echo e($i === 0 ? 'active' : 'idle'); ?>" data-index="<?php echo e($i); ?>"
+                 <?php if($i === 0): ?> style="background-image:url('<?php echo e($slide['image']); ?>')" <?php endif; ?>></div>
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
         </div>
-        {{-- Overlay --}}
+        
         <div class="slider-overlay" style="background: rgba(0,0,0,0.2);"></div>
         <div class="slider-content">
             <div class="slide-info is-active" id="slideInfo">
-                <div class="slide-eyebrow" id="slideEyebrow">{{ $slides[0]['eyebrow'] }}</div>
-                <h1 class="slide-title" id="slideTitle">{{ $slides[0]['title'] }}</h1>
-                <p class="slide-desc" id="slideDesc">{{ $slides[0]['description'] }}</p>
+                <div class="slide-eyebrow" id="slideEyebrow"><?php echo e($slides[0]['eyebrow']); ?></div>
+                <h1 class="slide-title" id="slideTitle"><?php echo e($slides[0]['title']); ?></h1>
+                <p class="slide-desc" id="slideDesc"><?php echo e($slides[0]['description']); ?></p>
                 <div class="slide-actions">
                     <button class="btn-play" aria-label="Xem video">
                         <svg viewBox="0 0 16 16"><polygon points="3,1 13,8 3,15"/></svg>
                     </button>
-                    <a href="{{ $slides[0]['cta_url'] }}" class="btn-cta" id="slideCta">{{ $slides[0]['cta_label'] }}</a>
+                    <a href="<?php echo e($slides[0]['cta_url']); ?>" class="btn-cta" id="slideCta"><?php echo e($slides[0]['cta_label']); ?></a>
                 </div>
             </div>
             <div class="card-strip" id="cardStrip">
                 <div class="card-track" id="cardTrack">
-                    {{-- Rendered by JS --}}
+                    
                 </div>
             </div>
         </div>
@@ -135,7 +122,7 @@
     </div>
     <script>
     (function(){
-        const slides = @json($slides), total = slides.length;
+        const slides = <?php echo json_encode($slides, 15, 512) ?>, total = slides.length;
         if (!total) return;
 
         /* ─── State ─── */
@@ -462,7 +449,7 @@
     </script>
 </section>
 
-{{-- FEATURED EVENTS + UPCOMING — Nền kem Jasmine nhạt --}}
+
     <div id="events-sticky-wrapper" class="relative z-30" style="background: #FFFBEA;">
         <section id="events" class="relative z-20"
             style="background:#FFFBEA;">
@@ -480,7 +467,7 @@
                     </div>
                 </div>
 
-                @php
+                <?php
                     $totalCount = 0;
                     foreach ($categories as $c)
                         $totalCount += $c['event_count'] ?? 0;
@@ -514,20 +501,20 @@
                             'image' => $catImages[$cat['slug']] ?? null
                         ];
                     }
-                @endphp
+                ?>
 
                 <div class="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-6 md:grid md:grid-cols-2 lg:grid-cols-3 lg:gap-6 max-w-[1200px] mx-auto hide-scrollbar px-4 md:px-0">
-                    @foreach($gridItems as $idx => $item)
-                        <a href="{{ $item['slug'] ? route('events.index', ['category' => $item['slug']]) : '#events' }}"
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $gridItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $idx => $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                        <a href="<?php echo e($item['slug'] ? route('events.index', ['category' => $item['slug']]) : '#events'); ?>"
                             style="aspect-ratio: 16/9; min-height: 160px; opacity: 0;"
-                            class="event-category-card snap-start shrink-0 w-[85%] md:w-auto group relative block rounded-2xl overflow-hidden {{ $item['image'] ? 'bg-gray-900' : 'bg-gray-200' }} shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                            class="event-category-card snap-start shrink-0 w-[85%] md:w-auto group relative block rounded-2xl overflow-hidden <?php echo e($item['image'] ? 'bg-gray-900' : 'bg-gray-200'); ?> shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
 
-                            @if($item['image'])
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($item['image']): ?>
                                 <!-- Background Image -->
-                                <img src="{{ asset($item['image']) }}" alt="{{ $item['name'] }}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-[1.15] opacity-60 group-hover:opacity-80">
-                            @else
+                                <img src="<?php echo e(asset($item['image'])); ?>" alt="<?php echo e($item['name']); ?>" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-[1.15] opacity-60 group-hover:opacity-80">
+                            <?php else: ?>
                                 <div class="absolute inset-0 w-full h-full bg-gradient-to-br from-gray-800 to-gray-700 opacity-80 group-hover:opacity-100 transition-opacity"></div>
-                            @endif
+                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
                             <!-- Glassmorphism Gradient Overlay -->
                             <div class="absolute inset-0 transition-opacity duration-500 opacity-40 group-hover:opacity-20"
@@ -535,25 +522,26 @@
 
                             <!-- Icon (Absolutely centered in the collapsed shape) -->
                             <div class="absolute top-0 left-0 flex items-center justify-center z-10 cat-icon-container pointer-events-none">
-                                <i data-lucide="{{ $item['icon'] }}" class="w-8 h-8 lg:w-10 lg:h-10 text-white drop-shadow-md transition-transform duration-500 group-hover:scale-110"></i>
+                                <i data-lucide="<?php echo e($item['icon']); ?>" class="w-8 h-8 lg:w-10 lg:h-10 text-white drop-shadow-md transition-transform duration-500 group-hover:scale-110"></i>
                             </div>
 
                             <!-- Expanding Text Content -->
                             <div class="absolute top-0 flex flex-col justify-center cat-text-container z-10 opacity-0 group-hover:opacity-100 transition-all duration-500 delay-75 transform -translate-x-4 group-hover:translate-x-0 pointer-events-none">
                                 <h3 class="text-white text-xl lg:text-2xl font-black tracking-tight drop-shadow-lg leading-tight mb-1 whitespace-normal pr-2">
-                                    {{ $item['name'] }}
+                                    <?php echo e($item['name']); ?>
+
                                 </h3>
                                 
                                 <div class="inline-flex items-center gap-1.5 text-[#FFE381] text-xs lg:text-sm font-bold uppercase tracking-wider drop-shadow-md mt-1">
                                     <i data-lucide="calendar" class="w-4 h-4"></i>
-                                    <span>{{ $item['count'] }} sự kiện</span>
+                                    <span><?php echo e($item['count']); ?> sự kiện</span>
                                 </div>
                             </div>
                         </a>
-                    @endforeach
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
 
                     <!-- Inline View All Button -->
-                    <a href="{{ route('events.index') }}"
+                    <a href="<?php echo e(route('events.index')); ?>"
                         style="opacity: 0;"
                         class="event-category-card group relative block bg-[#07A0C3] hover:bg-[#068ba9] shadow-md hover:shadow-2xl hover:z-50 cat-parallelogram-sm"
                         title="Xem tất cả danh mục">
@@ -576,7 +564,7 @@
                 <div class="mt-10 flex items-center justify-center gap-4 pointer-events-none select-none">
                     <div class="h-px flex-1 max-w-[120px]" style="background: linear-gradient(to right, transparent, rgba(7,160,195,0.2));"></div>
                     <span class="text-[10px] font-bold uppercase tracking-[0.3em]" style="color: rgba(122,106,82,0.3);">
-                        {{ $totalCount }} sự kiện đa dạng
+                        <?php echo e($totalCount); ?> sự kiện đa dạng
                     </span>
                     <div class="h-px flex-1 max-w-[120px]" style="background: linear-gradient(to left, transparent, rgba(7,160,195,0.2));"></div>
                 </div>
@@ -622,7 +610,7 @@
         style="display: grid; grid-template-columns: 1fr; width: 100%; overflow-x: hidden; position: relative; z-index: 30;">
 
         <div style="grid-area: 1 / 1; width: 100%; height: 100%; z-index: 30;">
-            @include('frontend.upcoming-mobile', ['upcoming' => $upcoming])
+            <?php echo $__env->make('frontend.upcoming-mobile', ['upcoming' => $upcoming], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
         </div>
 
         <!-- FEATURED EVENTS WRAPPER -->
@@ -653,12 +641,33 @@
                         <div id="featured-cards-container"
                             class="flex gap-6 flex-nowrap absolute top-0 left-0 h-full items-center"
                             style="width: max-content; padding-right: 2rem;">
-                            @foreach(array_slice($featuredEvents, 0, 4) as $i => $ev)
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = array_slice($featuredEvents, 0, 4); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $ev): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
                                 <div class="shrink-0 featured-card-item rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
                                     style="width: 350px; height: 480px; max-width: 85vw;">
-                                    <x-event-card :event="$ev" mode="grid" />
+                                    <?php if (isset($component)) { $__componentOriginal07bdbe031a4c57e4cd3488994f94e999 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal07bdbe031a4c57e4cd3488994f94e999 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.event-card','data' => ['event' => $ev,'mode' => 'grid']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('event-card'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['event' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($ev),'mode' => 'grid']); ?>
+<?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::processComponentKey($component); ?>
+
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal07bdbe031a4c57e4cd3488994f94e999)): ?>
+<?php $attributes = $__attributesOriginal07bdbe031a4c57e4cd3488994f94e999; ?>
+<?php unset($__attributesOriginal07bdbe031a4c57e4cd3488994f94e999); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal07bdbe031a4c57e4cd3488994f94e999)): ?>
+<?php $component = $__componentOriginal07bdbe031a4c57e4cd3488994f94e999; ?>
+<?php unset($__componentOriginal07bdbe031a4c57e4cd3488994f94e999); ?>
+<?php endif; ?>
                                 </div>
-                            @endforeach
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -668,9 +677,9 @@
         <!-- MOBILE FEATURED EVENTS VIEW (Scrollable Container + Pagination) -->
         <div class="block lg:hidden px-4 pb-10 pt-6" style="background:#FFFBEA;"
              x-data="{
-                items: {{ json_encode(collect($featuredEvents)->map(function($ev) {
+                items: <?php echo e(json_encode(collect($featuredEvents)->map(function($ev) {
                     return ['title' => $ev['title'], 'slug' => $ev['slug'], 'date' => $ev['date'], 'category' => $ev['category'] ?? 'Sự kiện', 'img' => $ev['img'] ?? 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80'];
-                })->values()) }},
+                })->values())); ?>,
                 perPage: 10,
                 page: 0,
                 get totalPages() { return Math.ceil(this.items.length / this.perPage); },
@@ -777,19 +786,16 @@
 
 
 
-    {{-- ═════════════════════════════════════════════════════════════════════
-    ARCHIVE — Nền ấm tối hơn (không lạnh navy)
-    Jasmine accent chủ đạo, xanh chỉ là detail
-    ══════════════════════════════════════════════════════════════════════════════════════════  --}}
+    
     <div id="archive-delay-spacer"></div>
     <div id="archive-sticky-wrapper" style="background: #2D1F0A; position: relative; z-index: 50;">
-    @php $archiveJson = json_encode($archive); @endphp
+    <?php $archiveJson = json_encode($archive); ?>
 <section id="archive" class="relative overflow-hidden py-12 lg:py-16"
          style="background:linear-gradient(160deg,#2D1F0A 0%,#3D2A0E 50%,#1C2A10 100%); z-index: 50;"
          x-data="{ 
             yearIdx: 0, 
             eventIdx: 0,
-            archive: {{ $archiveJson }}, 
+            archive: <?php echo e($archiveJson); ?>, 
             dir: 1, 
             get currentYear() { return this.archive[this.yearIdx]; }, 
             get currentEvent() { return this.currentYear.events[this.eventIdx]; },
@@ -870,7 +876,7 @@
                      x-transition:enter-end="opacity-100 translate-y-0"></div>
 
                 <div class="mt-6 pl-6 hidden lg:block">
-                    <a :href="'{{ route('archive') }}?year=' + currentYear.year" class="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold transition-all hover:scale-105"
+                    <a :href="'<?php echo e(route('archive')); ?>?year=' + currentYear.year" class="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold transition-all hover:scale-105"
                        style="background:#FFE381; color:#1C1410;">
                         Xem chi tiết năm <span x-text="currentYear.year"></span> <i data-lucide="arrow-right" class="h-4 w-4"></i>
                     </a>
@@ -986,7 +992,7 @@
 
                         <!-- Action Bar cho Mobile -->
                         <div class="mt-6 flex items-center justify-between lg:hidden border-t border-[#FFE381]/10 pt-4">
-                            <a :href="'{{ route('archive') }}?year=' + currentYear.year" class="inline-flex items-center gap-2 rounded-full px-5 py-2 text-xs font-bold transition-all"
+                            <a :href="'<?php echo e(route('archive')); ?>?year=' + currentYear.year" class="inline-flex items-center gap-2 rounded-full px-5 py-2 text-xs font-bold transition-all"
                                style="background:#FFE381; color:#1C1410;">
                                 Xem thêm <i data-lucide="arrow-right" class="h-3 w-3"></i>
                             </a>
@@ -1014,13 +1020,11 @@
     <div class="absolute inset-x-0 bottom-0 h-1" style="background: linear-gradient(to right, transparent, rgba(255,227,129,0.4), transparent);"></div>
 </section>
 
-{{-- ——————————————————————————————————————————————————————
-     MEDIA — Nền Jasmine ấm, thoáng sáng
-—————————————————————————————————————————————————————————— --}}
+
 <div id="media-sticky-wrapper" style="background: #FFF3C4; position: relative; z-index: 60;">
-@php $mediaJson = json_encode($media); @endphp
+<?php $mediaJson = json_encode($media); ?>
 <section id="media" class="relative overflow-hidden py-8 lg:py-10" style="background:#FFF3C4; z-index: 60;"
-         x-data="mediaPlayer({{ $mediaJson }})" x-init="initPlayer()">
+         x-data="mediaPlayer(<?php echo e($mediaJson); ?>)" x-init="initPlayer()">
     <!-- Top Jasmine border -->
     <div class="absolute inset-x-0 top-0 h-1.5" style="background:#FFE381;"></div>
     <!-- Subtle accent blobs -->
@@ -1113,7 +1117,7 @@
                                       x-text="'+' + (items.length - 8)"></span>
                             </div>
                             <!-- Link xem thêm -->
-                            <a href="{{ route('events.index') }}" class="text-xs font-bold uppercase tracking-widest transition-colors"
+                            <a href="<?php echo e(route('events.index')); ?>" class="text-xs font-bold uppercase tracking-widest transition-colors"
                                style="color:rgba(7,160,195,0.7);"
                                onmouseover="this.style.color='#04F06A'" onmouseout="this.style.color='rgba(7,160,195,0.7)'">
                                 Xem tất cả &rarr;
@@ -1247,5 +1251,7 @@
 
 
 
-@endsection
+<?php $__env->stopSection(); ?>
 
+
+<?php echo $__env->make('layouts.frontend-mobile', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\anima\Downloads\ThucTap-main\resources\views/frontend/home-mobile.blade.php ENDPATH**/ ?>

@@ -1,19 +1,9 @@
-@extends('layouts.frontend-mobile')
-
-@if(!empty($slides) && isset($slides[0]))
+<?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!empty($slides) && isset($slides[0])): ?>
     <!-- Decorative Preloads commented out for local dev performance -->
-    {{-- @push('styles')
-        <link rel="preload" as="image" href="{{ $slides[0]['image'] }}" fetchpriority="high">
-        @if(isset($slides[1]))
-            <link rel="preload" as="image" href="{{ $slides[1]['image'] }}">
-        @endif
-        @if(isset($slides[2]))
-            <link rel="preload" as="image" href="{{ $slides[2]['image'] }}">
-        @endif
-    @endpush --}}
-@endif
+    
+<?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-@push('styles')
+<?php $__env->startPush('styles'); ?>
     <style>
         .hide-scrollbar::-webkit-scrollbar {
             display: none;
@@ -93,41 +83,38 @@
             }
         }
     </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 
-{{-- ======================================================================
-     HERO SLIDER
-     Overlay ấm — jasmine tint thay vì lạnh xanh
-====================================================================== --}}
+
 <section id="top" class="relative min-h-screen w-full overflow-hidden" style="background:#1C1410;">
 
     
     <div class="slider-wrapper" id="slider">
         <div class="bg-layers" id="bgLayers">
-            @foreach($slides as $i => $slide)
-            <div class="bg-layer {{ $i === 0 ? 'active' : 'idle' }}" data-index="{{ $i }}"
-                 @if($i === 0) style="background-image:url('{{ $slide['image'] }}')" @endif></div>
-            @endforeach
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $slides; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $slide): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+            <div class="bg-layer <?php echo e($i === 0 ? 'active' : 'idle'); ?>" data-index="<?php echo e($i); ?>"
+                 <?php if($i === 0): ?> style="background-image:url('<?php echo e($slide['image']); ?>')" <?php endif; ?>></div>
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
         </div>
-        {{-- Overlay --}}
+        
         <div class="slider-overlay" style="background: rgba(0,0,0,0.2);"></div>
         <div class="slider-content">
             <div class="slide-info is-active" id="slideInfo">
-                <div class="slide-eyebrow" id="slideEyebrow">{{ $slides[0]['eyebrow'] }}</div>
-                <h1 class="slide-title" id="slideTitle">{{ $slides[0]['title'] }}</h1>
-                <p class="slide-desc" id="slideDesc">{{ $slides[0]['description'] }}</p>
+                <div class="slide-eyebrow" id="slideEyebrow"><?php echo e($slides[0]['eyebrow']); ?></div>
+                <h1 class="slide-title" id="slideTitle"><?php echo e($slides[0]['title']); ?></h1>
+                <p class="slide-desc" id="slideDesc"><?php echo e($slides[0]['description']); ?></p>
                 <div class="slide-actions">
                     <button class="btn-play" aria-label="Xem video">
                         <svg viewBox="0 0 16 16"><polygon points="3,1 13,8 3,15"/></svg>
                     </button>
-                    <a href="{{ $slides[0]['cta_url'] }}" class="btn-cta" id="slideCta">{{ $slides[0]['cta_label'] }}</a>
+                    <a href="<?php echo e($slides[0]['cta_url']); ?>" class="btn-cta" id="slideCta"><?php echo e($slides[0]['cta_label']); ?></a>
                 </div>
             </div>
             <div class="card-strip" id="cardStrip">
                 <div class="card-track" id="cardTrack">
-                    {{-- Rendered by JS --}}
+                    
                 </div>
             </div>
         </div>
@@ -135,13 +122,13 @@
     </div>
     <script>
     (function(){
-        const slides = @json($slides), total = slides.length;
+        const slides = <?php echo json_encode($slides, 15, 512) ?>, total = slides.length;
         if (!total) return;
 
         /* ─── State ─── */
         let current  = 0;
         let isAnim   = false;
-        const INTERVAL = 2000; // 2 seconds
+        const INTERVAL = 5000; // 5 seconds
 
         /* ─── Constants ─── */
         const MAX_CARDS = 4;
@@ -462,25 +449,37 @@
     </script>
 </section>
 
-{{-- FEATURED EVENTS + UPCOMING — Nền kem Jasmine nhạt --}}
+
     <div id="events-sticky-wrapper" class="relative z-30" style="background: #FFFBEA;">
         <section id="events" class="relative z-20"
             style="background:#FFFBEA;">
 
             <div id="categories-section" class="relative z-[15] pt-2 pb-8 lg:pt-4 lg:pb-10" style="background:#FFFBEA;">
-                <div class="mx-auto w-full max-w-[1400px] px-6 lg:px-10">
+                <!-- Subtle Ambient Orbs -->
+                <div class="pointer-events-none absolute inset-0 overflow-hidden select-none">
+                    <div class="absolute -top-32 -left-32 w-[500px] h-[500px] rounded-full" style="background:radial-gradient(circle, rgba(7,160,195,0.07) 0%, transparent 70%);"></div>
+                    <div class="absolute -bottom-32 -right-32 w-[500px] h-[500px] rounded-full" style="background:radial-gradient(circle, rgba(255,193,7,0.07) 0%, transparent 70%);"></div>
+                </div>
 
-                <div class="mb-8 text-center event-category-title" style="opacity: 0;">
-                    <h2
-                        class="font-barlow-condensed text-4xl font-black uppercase tracking-tight text-[#1C1410] lg:text-5xl">
-                        Danh mục sự kiện
+                <div class="relative z-10 mx-auto w-full max-w-[1400px] px-6 lg:px-10">
+
+                <div class="mb-10 text-center event-category-title" style="opacity: 0;">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#07A0C3]/10 text-[#07A0C3] text-xs font-extrabold uppercase tracking-widest mb-3">
+                        <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>
+                        <span>Danh mục sự kiện</span>
+                    </div>
+                    <h2 class="font-barlow-condensed text-4xl font-black uppercase tracking-tight text-[#1C1410] lg:text-5xl">
+                        Khám phá theo chủ đề
                     </h2>
-                    <div class="mt-3 flex justify-center">
-                        <div class="h-1.5 w-12 rounded-full" style="background:#07A0C3;"></div>
+                    <p class="mt-2 text-sm text-gray-500 max-w-xl mx-auto font-medium">
+                        Lựa chọn các sự kiện, hội thảo và hoạt động ngoại khóa phù hợp với định hướng của bạn
+                    </p>
+                    <div class="mt-4 flex justify-center">
+                        <div class="h-1.5 w-14 rounded-full bg-gradient-to-r from-[#07A0C3] to-cyan-400"></div>
                     </div>
                 </div>
 
-                @php
+                <?php
                     $totalCount = 0;
                     foreach ($categories as $c)
                         $totalCount += $c['event_count'] ?? 0;
@@ -508,67 +507,79 @@
                     foreach ($categories as $cat) {
                         $gridItems[] = [
                             'name' => $cat['name'],
+                            'desc' => $cat['desc'] ?? $cat['name'],
                             'slug' => $cat['slug'],
                             'count' => $cat['event_count'] ?? 0,
                             'icon' => $catIcons[$cat['slug']] ?? 'folder',
                             'image' => $catImages[$cat['slug']] ?? null
                         ];
                     }
-                @endphp
+                ?>
 
-                <div class="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-6 md:grid md:grid-cols-2 lg:grid-cols-3 lg:gap-6 max-w-[1200px] mx-auto hide-scrollbar px-4 md:px-0">
-                    @foreach($gridItems as $idx => $item)
-                        <a href="{{ $item['slug'] ? route('events.index', ['category' => $item['slug']]) : '#events' }}"
-                            style="aspect-ratio: 16/9; min-height: 160px; opacity: 0;"
-                            class="event-category-card snap-start shrink-0 w-[85%] md:w-auto group relative block rounded-2xl overflow-hidden {{ $item['image'] ? 'bg-gray-900' : 'bg-gray-200' }} shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-
-                            @if($item['image'])
-                                <!-- Background Image -->
-                                <img src="{{ asset($item['image']) }}" alt="{{ $item['name'] }}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-[1.15] opacity-60 group-hover:opacity-80">
-                            @else
-                                <div class="absolute inset-0 w-full h-full bg-gradient-to-br from-gray-800 to-gray-700 opacity-80 group-hover:opacity-100 transition-opacity"></div>
-                            @endif
-
-                            <!-- Glassmorphism Gradient Overlay -->
-                            <div class="absolute inset-0 transition-opacity duration-500 opacity-40 group-hover:opacity-20"
-                                 style="background: linear-gradient(to right, rgba(28,20,16,0.9) 0%, rgba(28,20,16,0.4) 100%);"></div>
-
-                            <!-- Icon (Absolutely centered in the collapsed shape) -->
-                            <div class="absolute top-0 left-0 flex items-center justify-center z-10 cat-icon-container pointer-events-none">
-                                <i data-lucide="{{ $item['icon'] }}" class="w-8 h-8 lg:w-10 lg:h-10 text-white drop-shadow-md transition-transform duration-500 group-hover:scale-110"></i>
-                            </div>
-
-                            <!-- Expanding Text Content -->
-                            <div class="absolute top-0 flex flex-col justify-center cat-text-container z-10 opacity-0 group-hover:opacity-100 transition-all duration-500 delay-75 transform -translate-x-4 group-hover:translate-x-0 pointer-events-none">
-                                <h3 class="text-white text-xl lg:text-2xl font-black tracking-tight drop-shadow-lg leading-tight mb-1 whitespace-normal pr-2">
-                                    {{ $item['name'] }}
-                                </h3>
+                <!-- Modern Category Grid View -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-[1250px] mx-auto px-4">
+                    <?php
+                        $displayItems = array_slice($gridItems, 0, 7);
+                    ?>
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $displayItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $idx => $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                        <a href="<?php echo e($item['slug'] ? route('events.index', ['category' => $item['slug']]) : '#events'); ?>"
+                            class="event-category-card group flex flex-col bg-white rounded-2xl shadow-sm hover:shadow-2xl hover:shadow-[#07A0C3]/20 hover:-translate-y-2 border border-gray-100/80 hover:border-[#07A0C3]/40 overflow-hidden relative"
+                            style="opacity: 0; transform: translateY(30px); transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.45s ease;">
+                            
+                            <!-- Card Image Header -->
+                            <div class="relative h-44 w-full overflow-hidden bg-gray-100">
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($item['image']): ?>
+                                    <img src="<?php echo e(asset($item['image'])); ?>" alt="<?php echo e($item['name']); ?>" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110">
+                                <?php else: ?>
+                                    <div class="absolute inset-0 w-full h-full bg-gradient-to-br from-[#07A0C3]/20 via-cyan-500/10 to-[#07A0C3]/5"></div>
+                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 
-                                <div class="inline-flex items-center gap-1.5 text-[#FFE381] text-xs lg:text-sm font-bold uppercase tracking-wider drop-shadow-md mt-1">
-                                    <i data-lucide="calendar" class="w-4 h-4"></i>
-                                    <span>{{ $item['count'] }} sự kiện</span>
+                                <!-- Gradient Overlays for optimal contrast -->
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent group-hover:from-black/75 transition-colors duration-500"></div>
+
+                                <!-- Floating Icon Badge (Top Left) -->
+                                <div class="absolute top-3.5 left-3.5 bg-white/95 backdrop-blur shadow-md p-2.5 rounded-xl border border-white/60 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-500 cubic-bezier(0.34, 1.56, 0.64, 1)">
+                                    <i data-lucide="<?php echo e($item['icon']); ?>" class="w-5 h-5 text-[#07A0C3]"></i>
+                                </div>
+
+                                <!-- Event Count Pill Badge (Top Right) -->
+                                <div class="absolute top-3.5 right-3.5 bg-black/40 backdrop-blur-md border border-white/20 text-white text-xs font-semibold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
+                                    <i data-lucide="sparkles" class="w-3 h-3 text-amber-300"></i>
+                                    <span><?php echo e($item['count']); ?> sự kiện</span>
+                                </div>
+
+                                <!-- Category Name Overlay on Image -->
+                                <div class="absolute bottom-3 left-4 right-4">
+                                    <span class="text-[11px] font-semibold text-white/80 uppercase tracking-wider block mb-0.5"><?php echo e($item['name']); ?></span>
+                                    <h3 class="text-base font-bold text-white leading-tight drop-shadow-sm group-hover:text-cyan-200 transition-colors duration-300">
+                                        <?php echo e($item['desc']); ?>
+
+                                    </h3>
+                                </div>
+                            </div>
+                            
+                            <!-- Card Footer Action Bar -->
+                            <div class="p-4 bg-white flex items-center justify-between border-t border-gray-50 text-xs font-semibold text-gray-500 group-hover:text-[#07A0C3] transition-colors duration-300">
+                                <span class="flex items-center gap-1.5">
+                                    <i data-lucide="compass" class="w-3.5 h-3.5 text-gray-400 group-hover:text-[#07A0C3] transition-colors duration-300"></i>
+                                    Khám phá danh mục
+                                </span>
+                                <div class="w-7 h-7 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-[#07A0C3] group-hover:text-white transition-all duration-300 transform group-hover:translate-x-1">
+                                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
                                 </div>
                             </div>
                         </a>
-                    @endforeach
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
 
-                    <!-- Inline View All Button -->
-                    <a href="{{ route('events.index') }}"
-                        style="opacity: 0;"
-                        class="event-category-card group relative block bg-[#07A0C3] hover:bg-[#068ba9] shadow-md hover:shadow-2xl hover:z-50 cat-parallelogram-sm"
-                        title="Xem tất cả danh mục">
-                        
-                        <!-- Icon -->
-                        <div class="absolute top-0 left-0 flex items-center justify-center z-10 cat-sm-icon-container pointer-events-none">
-                            <i data-lucide="plus" class="w-10 h-10 lg:w-12 lg:h-12 text-white drop-shadow-md transition-transform duration-500 group-hover:rotate-90"></i>
+                    <!-- View All Card -->
+                    <a href="<?php echo e(route('events.index')); ?>"
+                        class="event-category-card group flex flex-col items-center justify-center bg-gradient-to-br from-[#07A0C3]/10 via-[#07A0C3]/5 to-amber-500/5 hover:from-[#07A0C3] hover:to-[#057f9b] hover:-translate-y-2 rounded-2xl border-2 border-dashed border-[#07A0C3]/30 hover:border-transparent transition-all duration-500 p-6 min-h-[220px] shadow-sm hover:shadow-xl hover:shadow-[#07A0C3]/25"
+                        style="opacity: 0; transform: translateY(30px); transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1);">
+                        <div class="w-14 h-14 rounded-2xl bg-white shadow-md flex items-center justify-center text-[#07A0C3] group-hover:bg-white/20 group-hover:text-white mb-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+                            <i data-lucide="arrow-right" class="w-7 h-7"></i>
                         </div>
-
-                        <!-- Expanding Text Content -->
-                        <div class="absolute top-0 flex flex-col justify-center cat-sm-text-container z-10 opacity-0 group-hover:opacity-100 transition-all duration-500 delay-75 transform -translate-x-4 group-hover:translate-x-0 pointer-events-none">
-                            <h3 class="text-white text-2xl lg:text-3xl font-black tracking-tight drop-shadow-lg leading-tight uppercase whitespace-nowrap">
-                                Xem thêm
-                            </h3>
-                        </div>
+                        <h3 class="text-xl font-extrabold text-gray-800 group-hover:text-white transition-colors duration-300">Xem tất cả</h3>
+                        <p class="text-xs font-medium text-gray-500 group-hover:text-white/80 mt-1 text-center">Khám phá toàn bộ danh mục sự kiện</p>
                     </a>
                 </div>
 
@@ -576,7 +587,7 @@
                 <div class="mt-10 flex items-center justify-center gap-4 pointer-events-none select-none">
                     <div class="h-px flex-1 max-w-[120px]" style="background: linear-gradient(to right, transparent, rgba(7,160,195,0.2));"></div>
                     <span class="text-[10px] font-bold uppercase tracking-[0.3em]" style="color: rgba(122,106,82,0.3);">
-                        {{ $totalCount }} sự kiện đa dạng
+                        <?php echo e($totalCount); ?> sự kiện đa dạng
                     </span>
                     <div class="h-px flex-1 max-w-[120px]" style="background: linear-gradient(to left, transparent, rgba(7,160,195,0.2));"></div>
                 </div>
@@ -590,23 +601,33 @@
                     
                     const tl = gsap.timeline({
                         scrollTrigger: {
-                            trigger: "#events",
-                            start: "top 80%", 
-                            // Chỉ chạy 1 lần khi cuộn xuống, cuộn lên sẽ không bị ẩn đi gây rối mắt
+                            trigger: "#categories-section",
+                            start: "top 85%",
                             toggleActions: "play none none none", 
                         }
                     });
                     
-                    // Title fades in and slides up
+                    // Title fades in and slides up with smooth exponential curve
                     tl.fromTo('.event-category-title', 
-                        { opacity: 0, y: 30 }, 
-                        { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }
+                        { opacity: 0, y: 25 }, 
+                        { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }
                     )
-                    // Cards slide up smoothly instead of bouncing
+                    // Cards slide up with ultra-smooth cascading wave effect
                     .fromTo('.event-category-card', 
-                        { opacity: 0, y: 50, scale: 0.95 }, 
-                        { opacity: 1, y: 0, scale: 1, duration: 0.8, stagger: 0.15, ease: "power3.out" }, 
-                        "-=0.4"
+                        { opacity: 0, y: 35, scale: 0.96 }, 
+                        { 
+                            opacity: 1, 
+                            y: 0, 
+                            scale: 1, 
+                            duration: 0.85, 
+                            stagger: { amount: 0.35, from: "start" }, 
+                            ease: "power4.out",
+                            onComplete: () => {
+                                // Xóa thuộc tính transform của GSAP sau khi xuất hiện để trả lại hiệu ứng hover CSS mượt 100%
+                                gsap.set('.event-category-card', { clearProps: "transform" });
+                            }
+                        }, 
+                        "-=0.3"
                     );
                 }
             });
@@ -622,7 +643,7 @@
         style="display: grid; grid-template-columns: 1fr; width: 100%; overflow-x: hidden; position: relative; z-index: 30;">
 
         <div style="grid-area: 1 / 1; width: 100%; height: 100%; z-index: 30;">
-            @include('frontend.upcoming-mobile', ['upcoming' => $upcoming])
+            <?php echo $__env->make('frontend.upcoming', ['upcoming' => $upcoming], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
         </div>
 
         <!-- FEATURED EVENTS WRAPPER -->
@@ -641,7 +662,7 @@
                                 class="font-barlow-condensed text-5xl font-black uppercase tracking-tight text-[#1C1410] lg:text-6xl">
                                 Sự kiện nổi bật</h2>
                         </div>
-                        <a href="#" class="hidden items-center gap-2 text-sm font-semibold lg:inline-flex transition-colors"
+                        <a href="<?php echo e(route('events.index')); ?>" class="hidden items-center gap-2 text-sm font-semibold lg:inline-flex transition-colors"
                             style="color:#07A0C3;" onmouseover="this.style.color='#04F06A'"
                             onmouseout="this.style.color='#07A0C3'">
                             Xem tất cả <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
@@ -653,12 +674,33 @@
                         <div id="featured-cards-container"
                             class="flex gap-6 flex-nowrap absolute top-0 left-0 h-full items-center"
                             style="width: max-content; padding-right: 2rem;">
-                            @foreach(array_slice($featuredEvents, 0, 4) as $i => $ev)
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = array_slice($featuredEvents, 0, 4); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $ev): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
                                 <div class="shrink-0 featured-card-item rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
                                     style="width: 350px; height: 480px; max-width: 85vw;">
-                                    <x-event-card :event="$ev" mode="grid" />
+                                    <?php if (isset($component)) { $__componentOriginal07bdbe031a4c57e4cd3488994f94e999 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal07bdbe031a4c57e4cd3488994f94e999 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.event-card','data' => ['event' => $ev,'mode' => 'grid']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('event-card'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['event' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($ev),'mode' => 'grid']); ?>
+<?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::processComponentKey($component); ?>
+
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal07bdbe031a4c57e4cd3488994f94e999)): ?>
+<?php $attributes = $__attributesOriginal07bdbe031a4c57e4cd3488994f94e999; ?>
+<?php unset($__attributesOriginal07bdbe031a4c57e4cd3488994f94e999); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal07bdbe031a4c57e4cd3488994f94e999)): ?>
+<?php $component = $__componentOriginal07bdbe031a4c57e4cd3488994f94e999; ?>
+<?php unset($__componentOriginal07bdbe031a4c57e4cd3488994f94e999); ?>
+<?php endif; ?>
                                 </div>
-                            @endforeach
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -668,9 +710,9 @@
         <!-- MOBILE FEATURED EVENTS VIEW (Scrollable Container + Pagination) -->
         <div class="block lg:hidden px-4 pb-10 pt-6" style="background:#FFFBEA;"
              x-data="{
-                items: {{ json_encode(collect($featuredEvents)->map(function($ev) {
+                items: <?php echo e(json_encode(collect($featuredEvents)->map(function($ev) {
                     return ['title' => $ev['title'], 'slug' => $ev['slug'], 'date' => $ev['date'], 'category' => $ev['category'] ?? 'Sự kiện', 'img' => $ev['img'] ?? 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80'];
-                })->values()) }},
+                })->values())); ?>,
                 perPage: 10,
                 page: 0,
                 get totalPages() { return Math.ceil(this.items.length / this.perPage); },
@@ -777,19 +819,16 @@
 
 
 
-    {{-- ═════════════════════════════════════════════════════════════════════
-    ARCHIVE — Nền ấm tối hơn (không lạnh navy)
-    Jasmine accent chủ đạo, xanh chỉ là detail
-    ══════════════════════════════════════════════════════════════════════════════════════════  --}}
+    
     <div id="archive-delay-spacer"></div>
     <div id="archive-sticky-wrapper" style="background: #2D1F0A; position: relative; z-index: 50;">
-    @php $archiveJson = json_encode($archive); @endphp
+    <?php $archiveJson = json_encode($archive); ?>
 <section id="archive" class="relative overflow-hidden py-12 lg:py-16"
-         style="background:linear-gradient(160deg,#2D1F0A 0%,#3D2A0E 50%,#1C2A10 100%); z-index: 50;"
+         style="position: -webkit-sticky; position: sticky; top: 72px; background:linear-gradient(160deg,#2D1F0A 0%,#3D2A0E 50%,#1C2A10 100%); z-index: 50;"
          x-data="{ 
             yearIdx: 0, 
             eventIdx: 0,
-            archive: {{ $archiveJson }}, 
+            archive: <?php echo e($archiveJson); ?>, 
             dir: 1, 
             get currentYear() { return this.archive[this.yearIdx]; }, 
             get currentEvent() { return this.currentYear.events[this.eventIdx]; },
@@ -851,17 +890,7 @@
         <div class="relative mt-14 grid grid-cols-1 gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
             <!-- Chữ số năm — Jasmine gradient & Buttons -->
             <div class="relative flex flex-col items-start z-10">
-                <!-- Mobile Clean Header -->
-                <div class="flex items-center gap-4 lg:hidden pl-4 pr-4 w-full">
-                     <h3 class="font-barlow-condensed text-4xl font-black"
-                         style="-webkit-text-fill-color:transparent;-webkit-background-clip:text;background-clip:text;
-                                background-image:linear-gradient(160deg,#FFE381 30%,#E8C84A 70%,#07A0C3 100%);"
-                         x-text="'NĂM ' + currentYear.year"></h3>
-                     <div class="h-px flex-1" style="background:rgba(255,227,129,0.2);"></div>
-                </div>
-
-                <!-- Desktop Huge Text -->
-                <div class="hidden lg:block font-barlow-condensed font-black leading-[0.85] tracking-tighter text-[18vw] pl-6 pr-4"
+                <div class="font-barlow-condensed text-[28vw] font-black leading-[0.85] tracking-tighter lg:text-[18vw] pl-4 lg:pl-6 pr-4"
                      style="-webkit-text-fill-color:transparent;-webkit-background-clip:text;background-clip:text;
                             background-image:linear-gradient(160deg,#FFE381 30%,#E8C84A 70%,#07A0C3 100%);"
                      x-text="currentYear.year"
@@ -869,18 +898,18 @@
                      x-transition:enter-start="opacity-0 translate-y-10"
                      x-transition:enter-end="opacity-100 translate-y-0"></div>
 
-                <div class="mt-6 pl-6 hidden lg:block">
-                    <a :href="'{{ route('archive') }}?year=' + currentYear.year" class="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold transition-all hover:scale-105"
+                <div class="mt-6 pl-4 lg:pl-6">
+                    <a :href="'<?php echo e(route('archive')); ?>?year=' + currentYear.year" class="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold transition-all hover:scale-105"
                        style="background:#FFE381; color:#1C1410;">
                         Xem chi tiết năm <span x-text="currentYear.year"></span> <i data-lucide="arrow-right" class="h-4 w-4"></i>
                     </a>
                 </div>
 
                 <!-- Year tabs -->
-                <div class="mt-5 lg:mt-7 flex overflow-x-auto hide-scrollbar items-center gap-2 pl-4 pr-4 lg:pl-6 pb-2 w-full max-w-[100vw]">
+                <div class="mt-7 flex flex-wrap items-center gap-2 pl-4 lg:pl-6">
                     <template x-for="(a,i) in archive" :key="a.year">
                         <button @click="setYear(i)"
-                            class="rounded-full px-4 py-1.5 text-sm font-bold font-mono transition-all shrink-0"
+                            class="rounded-full px-4 py-1.5 text-sm font-bold font-mono transition-all"
                             :style="i===yearIdx
                                 ? 'background:#FFE381;color:#1C1410;box-shadow:0 4px 12px rgba(255,227,129,0.4);'
                                 : 'background:rgba(255,227,129,0.08);color:rgba(255,227,129,0.45);'">
@@ -910,99 +939,69 @@
             </div>
 
             <div>
-                <div class="rounded-2xl lg:rounded-none overflow-hidden lg:overflow-visible mx-4 lg:mx-0" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 227, 129, 0.05);">
-                    <a :href="currentEvent.featured_url" class="group relative block h-[220px] lg:rounded-2xl lg:h-[360px]"
-                         style="box-shadow:0 20px 60px rgba(255,227,129,0.15);">
-                        <img :src="currentEvent.img" :alt="currentEvent.featured_title" loading="lazy"
-                             class="h-full w-full object-cover transition-transform duration-[1500ms] group-hover:scale-105" />
-                        <div class="absolute inset-0"
-                             style="background:linear-gradient(to top,rgba(45,31,10,0.92) 0%,rgba(45,31,10,0.25) 60%,transparent 100%);"></div>
-                        <!-- Jasmine accent bar -->
-                        <div class="absolute bottom-0 left-0 right-0 h-1.5" style="background:#FFE381;"></div>
-                        <!-- Tiêu đề trên PC -->
-                        <div class="absolute bottom-6 left-5 right-5 z-20 hidden lg:block">
-                            <div class="block w-fit">
-                                <h3 class="font-barlow-condensed text-2xl font-black uppercase tracking-wide text-white lg:text-4xl transition-colors group-hover:text-[#FFE381]"
-                                    x-text="currentEvent.featured_title"></h3>
-                            </div>
-                        </div>
-                    </a>
-
-                    <!-- Card Body cho Mobile & PC -->
-                    <div class="p-5 lg:p-0 lg:mt-5">
-                        <!-- Tiêu đề trên Mobile -->
-                        <h3 class="font-barlow-condensed text-2xl font-black uppercase tracking-wide text-white transition-colors lg:hidden"
-                            x-text="currentEvent.featured_title"></h3>
-                            
-                        <p class="mt-3 lg:mt-0 text-sm leading-relaxed lg:text-lg" style="color:rgba(255,227,129,0.7);" x-text="currentEvent.desc"></p>
-
-                        <!-- Thống kê tinh gọn cho Mobile -->
-                        <div class="mt-4 flex flex-wrap items-center gap-4 lg:hidden">
-                            <!-- Stat: Số sự kiện -->
-                            <div class="flex items-center gap-2">
-                                <i data-lucide="calendar-check" class="h-4 w-4" style="color:#FFE381;"></i>
-                                <span class="text-xs font-bold text-white" x-text="currentYear.achievements[0]"></span>
-                            </div>
-                            <!-- Separator -->
-                            <div class="h-3 w-px bg-white/20"></div>
-                            <!-- Stat: Năm hoạt động -->
-                            <div class="flex items-center gap-2">
-                                <i data-lucide="history" class="h-4 w-4" style="color:#07A0C3;"></i>
-                                <span class="text-xs font-bold text-white" x-text="currentYear.year"></span>
-                            </div>
-                        </div>
-
-                        <!-- Thống kê gốc cho PC -->
-                        <div class="mt-5 hidden lg:flex flex-wrap gap-4">
-                            <div class="flex items-center gap-2">
-                                <div class="h-8 w-8 rounded-full flex items-center justify-center flex-shrink-0" style="background:rgba(255,227,129,0.12); border:1px solid rgba(255,227,129,0.25);">
-                                    <i data-lucide="calendar-check" class="h-4 w-4" style="color:#FFE381;"></i>
-                                </div>
-                                <div>
-                                    <div class="text-xs font-bold uppercase tracking-widest" style="color:rgba(255,227,129,0.5);">Tổ chức</div>
-                                    <div class="text-sm font-bold text-white" x-text="currentYear.achievements[0]"></div>
-                                </div>
-                            </div>
-                            <div class="h-auto w-px self-stretch" style="background:rgba(255,227,129,0.15);"></div>
-                            <div class="flex items-center gap-2">
-                                <div class="h-8 w-8 rounded-full flex items-center justify-center flex-shrink-0" style="background:rgba(7,160,195,0.12); border:1px solid rgba(7,160,195,0.25);">
-                                    <i data-lucide="history" class="h-4 w-4" style="color:#07A0C3;"></i>
-                                </div>
-                                <div>
-                                    <div class="text-xs font-bold uppercase tracking-widest" style="color:rgba(7,160,195,0.5);">Năm hoạt động</div>
-                                    <div class="text-sm font-bold text-white" x-text="currentYear.year"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Tags (chỉ PC) -->
-                        <div class="mt-5 hidden lg:grid grid-cols-1 gap-3 sm:grid-cols-3">
-                            <template x-for="achieve in currentYear.achievements" :key="achieve">
-                                <div class="rounded-xl px-4 py-3 text-sm font-medium text-white"
-                                     style="background:rgba(255,227,129,0.10); border:1px solid rgba(255,227,129,0.25);"
-                                     x-text="achieve"></div>
-                            </template>
-                        </div>
-
-                        <!-- Action Bar cho Mobile -->
-                        <div class="mt-6 flex items-center justify-between lg:hidden border-t border-[#FFE381]/10 pt-4">
-                            <a :href="'{{ route('archive') }}?year=' + currentYear.year" class="inline-flex items-center gap-2 rounded-full px-5 py-2 text-xs font-bold transition-all"
-                               style="background:#FFE381; color:#1C1410;">
-                                Xem thêm <i data-lucide="arrow-right" class="h-3 w-3"></i>
-                            </a>
-                            
-                            <div class="flex gap-2">
-                                <button @click="go(-1)" :disabled="eventIdx === 0"
-                                    class="grid h-9 w-9 place-items-center rounded-full border border-[#FFE381]/30 disabled:opacity-30">
-                                    <i data-lucide="chevron-left" class="h-4 w-4 text-white"></i>
-                                </button>
-                                <button @click="go(1)" :disabled="eventIdx === currentYear.events.length - 1"
-                                    class="grid h-9 w-9 place-items-center rounded-full border border-[#FFE381]/30 disabled:opacity-30">
-                                    <i data-lucide="chevron-right" class="h-4 w-4 text-white"></i>
-                                </button>
-                            </div>
+                <a :href="currentEvent.featured_url" class="group relative block h-[280px] overflow-hidden rounded-2xl lg:h-[360px]"
+                     style="box-shadow:0 20px 60px rgba(255,227,129,0.15);">
+                    <img :src="currentEvent.img" :alt="currentEvent.featured_title" loading="lazy"
+                         class="h-full w-full object-cover transition-transform duration-[1500ms] group-hover:scale-105" />
+                    <div class="absolute inset-0"
+                         style="background:linear-gradient(to top,rgba(45,31,10,0.92) 0%,rgba(45,31,10,0.25) 60%,transparent 100%);"></div>
+                    <!-- Jasmine accent bar -->
+                    <div class="absolute bottom-0 left-0 right-0 h-1.5" style="background:#FFE381;"></div>
+                    <div class="absolute bottom-6 left-5 right-5 z-20">
+                        <div class="block w-fit">
+                            <h3 class="font-barlow-condensed text-3xl font-black uppercase tracking-wide text-white lg:text-4xl transition-colors group-hover:text-[#FFE381]"
+                                x-text="currentEvent.featured_title"></h3>
                         </div>
                     </div>
+                </a>
+
+                <p class="mt-5 text-base leading-relaxed lg:text-lg" style="color:rgba(255,227,129,0.7);" x-text="currentEvent.desc"></p>
+
+                <!-- Thêm thông tin chi tiết trên achievements -->
+                <div class="mt-5 flex flex-wrap gap-4">
+                    <!-- Stat: Số sự kiện -->
+                    <div class="flex items-center gap-2">
+                        <div class="h-8 w-8 rounded-full flex items-center justify-center flex-shrink-0"
+                             style="background:rgba(255,227,129,0.12); border:1px solid rgba(255,227,129,0.25);">
+                            <i data-lucide="calendar-check" class="h-4 w-4" style="color:#FFE381;"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold uppercase tracking-widest" style="color:rgba(255,227,129,0.5);">Tổ chức</div>
+                            <div class="text-sm font-bold text-white" x-text="currentYear.achievements[0]"></div>
+                        </div>
+                    </div>
+                    <!-- Separator -->
+                    <div class="h-auto w-px self-stretch" style="background:rgba(255,227,129,0.15);"></div>
+                    <!-- Stat: Năm hoạt động -->
+                    <div class="flex items-center gap-2">
+                        <div class="h-8 w-8 rounded-full flex items-center justify-center flex-shrink-0"
+                             style="background:rgba(7,160,195,0.12); border:1px solid rgba(7,160,195,0.25);">
+                            <i data-lucide="history" class="h-4 w-4" style="color:#07A0C3;"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold uppercase tracking-widest" style="color:rgba(7,160,195,0.5);">Năm hoạt động</div>
+                            <div class="text-sm font-bold text-white" x-text="currentYear.year"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
+                    <template x-for="achieve in currentYear.achievements" :key="achieve">
+                        <div class="rounded-xl px-4 py-3 text-sm font-medium text-white"
+                             style="background:rgba(255,227,129,0.10); border:1px solid rgba(255,227,129,0.25);"
+                             x-text="achieve"></div>
+                    </template>
+                </div>
+
+                <div class="mt-6 flex gap-3 lg:hidden">
+                    <button @click="go(-1)" :disabled="eventIdx === 0"
+                        class="grid h-11 w-11 place-items-center rounded-full border border-[#FFE381]/30 disabled:opacity-30">
+                        <i data-lucide="chevron-left" class="h-5 w-5 text-white"></i>
+                    </button>
+                    <button @click="go(1)" :disabled="eventIdx === currentYear.events.length - 1"
+                        class="grid h-11 w-11 place-items-center rounded-full border border-[#FFE381]/30 disabled:opacity-30">
+                        <i data-lucide="chevron-right" class="h-5 w-5 text-white"></i>
+                    </button>
                 </div>
             </div>
         </div>
@@ -1014,33 +1013,31 @@
     <div class="absolute inset-x-0 bottom-0 h-1" style="background: linear-gradient(to right, transparent, rgba(255,227,129,0.4), transparent);"></div>
 </section>
 
-{{-- ——————————————————————————————————————————————————————
-     MEDIA — Nền Jasmine ấm, thoáng sáng
-—————————————————————————————————————————————————————————— --}}
-<div id="media-sticky-wrapper" style="background: #FFF3C4; position: relative; z-index: 60;">
-@php $mediaJson = json_encode($media); @endphp
-<section id="media" class="relative overflow-hidden py-8 lg:py-10" style="background:#FFF3C4; z-index: 60;"
-         x-data="mediaPlayer({{ $mediaJson }})" x-init="initPlayer()">
-    <!-- Top Jasmine border -->
-    <div class="absolute inset-x-0 top-0 h-1.5" style="background:#FFE381;"></div>
-    <!-- Subtle accent blobs -->
-    <div class="pointer-events-none absolute inset-0 overflow-hidden">
-        <div class="absolute right-0 top-0 h-80 w-80 rounded-full blur-[120px] opacity-30" style="background:#07A0C3;"></div>
-        <div class="absolute -left-20 bottom-0 h-64 w-64 rounded-full blur-[100px] opacity-20" style="background:#04F06A;"></div>
-        <!-- Blob trang trí phụ — lấp khoảng trống giữa -->
-        <div class="absolute left-1/3 top-1/2 h-[180px] w-[180px] rounded-full blur-[100px] opacity-15" style="background:#FFE381;"></div>
+
+<div id="media-sticky-wrapper" style="background: #FFF8E7; position: relative; z-index: 60;">
+<?php $mediaJson = json_encode($media); ?>
+<section id="media" class="relative overflow-hidden py-10 lg:py-14" style="position: -webkit-sticky; position: sticky; top: 72px; background:#FFF8E7; z-index: 60;"
+         x-data="mediaPlayer(<?php echo e($mediaJson); ?>)" x-init="initPlayer()">
+    <!-- Top accent border - mảnh nhẹ hòa hợp với tổng thể -->
+    <div class="absolute inset-x-0 top-0 h-1" style="background: linear-gradient(to right, transparent, #07A0C3, transparent);"></div>
+    
+    <!-- Subtle warm ambient blobs -->
+    <div class="pointer-events-none absolute inset-0 overflow-hidden select-none">
+        <div class="absolute right-0 top-0 w-[400px] h-[400px] rounded-full" style="background: radial-gradient(circle, rgba(7,160,195,0.08) 0%, transparent 70%);"></div>
+        <div class="absolute left-0 bottom-0 w-[350px] h-[350px] rounded-full" style="background: radial-gradient(circle, rgba(4,240,106,0.06) 0%, transparent 70%);"></div>
+        <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full" style="background: radial-gradient(circle, rgba(255,193,7,0.05) 0%, transparent 70%);"></div>
     </div>
 
-    <div class="relative mx-auto max-w-[1400px] px-6 lg:px-10">
+    <div class="relative z-10 mx-auto max-w-[1400px] px-6 lg:px-10">
         <div data-aos="fade-up" class="flex items-end justify-between pb-6">
             <div>
                 <div class="flex items-center gap-3 mb-2">
-                    <div class="h-7 w-1 rounded-full" style="background:#04F06A;"></div>
-                    <span class="text-xs font-bold uppercase tracking-[0.25em]" style="color:#04B050;">Media</span>
+                    <div class="h-7 w-1 rounded-full" style="background:#07A0C3;"></div>
+                    <span class="text-xs font-bold uppercase tracking-[0.25em]" style="color:#07A0C3;">Media Gallery</span>
                 </div>
                 <h2 class="font-barlow-condensed text-4xl font-black uppercase tracking-tight text-[#1C1410] lg:text-5xl">Album & Recap</h2>
             </div>
-            <a href="#" class="group inline-flex items-center gap-1.5 text-sm font-semibold text-[#07A0C3] transition-colors hover:text-[#04F06A]">
+            <a href="<?php echo e(route('events.index')); ?>" class="group inline-flex items-center gap-1.5 text-sm font-semibold text-[#07A0C3] transition-colors hover:text-[#04B050]">
                 Thư viện đầy đủ <i data-lucide="arrow-right" class="h-4 w-4 transition-transform group-hover:translate-x-1"></i>
             </a>
         </div>
@@ -1048,7 +1045,7 @@
         <template x-if="items.length > 0">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <!-- Left Side: Main Player -->
-                <div class="lg:col-span-8 bg-black rounded-2xl overflow-hidden relative" style="box-shadow:0 16px 50px rgba(7,160,195,0.15); height: 380px;">
+                <div class="lg:col-span-8 bg-black rounded-2xl overflow-hidden relative border border-white/10 shadow-2xl" style="box-shadow:0 16px 50px rgba(7,160,195,0.2); height: 380px;">
                     <template x-for="(item, index) in items" :key="index">
                         <div x-show="currentIndex === index" 
                              x-transition:enter="transition ease-out duration-700 transform"
@@ -1069,37 +1066,37 @@
                     
                     <!-- THÊM MỚI — Counter và label media, chèn trong player box, sau progress bar -->
                     <div class="absolute top-4 left-4 z-20 flex items-center gap-2">
-                        <div class="flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold shadow-md"
-                             style="background:rgba(0,0,0,0.55); color:white; backdrop-filter:blur(6px);">
+                        <div class="flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold shadow-md border border-white/20"
+                             style="background:rgba(0,0,0,0.65); color:white; backdrop-filter:blur(8px);">
                             <span x-text="currentIndex + 1"></span>
                             <span style="color:rgba(255,255,255,0.4);">/</span>
                             <span x-text="items.length"></span>
                         </div>
-                        <div class="rounded-full px-3 py-1 text-xs font-bold shadow-md"
-                             style="background:rgba(255,227,129,0.85); color:#1C1410;"
+                        <div class="rounded-full px-3 py-1 text-xs font-bold shadow-md border border-amber-300/30"
+                             style="background:rgba(255,227,129,0.9); color:#1C1410;"
                              x-text="currentItem.type === 'video' ? '▶ Video' : '🖼 Ảnh'"></div>
                     </div>
 
                     <!-- Progress Bar at the bottom of the player -->
-                    <div class="absolute bottom-0 left-0 right-0 h-1.5 bg-black/50 z-20">
-                        <div class="h-full bg-[#07A0C3] transition-all duration-100" :style="`width: ${progress}%`"></div>
+                    <div class="absolute bottom-0 left-0 right-0 h-1.5 bg-black/60 z-20">
+                        <div class="h-full bg-gradient-to-r from-[#07A0C3] to-[#04F06A] transition-all duration-100" :style="`width: ${progress}%`"></div>
                     </div>
                 </div>
 
                 <!-- Right Side: Info and Thumbnails -->
-                <div class="lg:col-span-4 flex flex-col gap-4 h-auto lg:h-[380px]">
+                <div class="lg:col-span-4 flex flex-col gap-4 h-[380px]">
                     <!-- Top Info Box (2/3) -->
-                    <div class="flex-1 rounded-2xl p-6 flex flex-col justify-center relative overflow-hidden group" style="background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); box-shadow: 0 4px 20px rgba(255,200,60,0.15); border: 1px solid rgba(255, 227, 129, 0.5);">
-                        <div class="mb-4 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.25em] text-[#1C1410]" style="background:#FFE381;" x-text="currentItem.type === 'video' ? 'Video' : 'Hình ảnh'"></div>
+                    <div class="flex-1 rounded-2xl p-6 flex flex-col justify-center relative overflow-hidden group border border-[#07A0C3]/20 shadow-lg" style="background: rgba(255,255,255,0.7); backdrop-filter: blur(12px);">
+                        <div class="mb-4 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.25em] text-[#1C1410] bg-[#FFE381]" x-text="currentItem.type === 'video' ? '▶ Video Highlight' : '🖼 Ảnh lưu niệm'"></div>
                         
-                        <h3 class="font-barlow-condensed text-2xl lg:text-3xl font-bold tracking-tight text-[#1C1410] leading-snug line-clamp-3" x-text="currentItem.title"></h3>
+                        <h3 class="font-barlow-condensed text-3xl font-black uppercase tracking-wide text-[#1C1410] leading-snug line-clamp-3" x-text="currentItem.title"></h3>
                         
                         <div class="mt-4 flex items-center gap-2">
-                            <div class="h-10 w-1 rounded-full" style="background:#04F06A;"></div>
-                            <a :href="currentItem.event_url" class="text-sm font-semibold text-[#7A6A52] hover:text-[#07A0C3] transition-colors" x-text="currentItem.event_name"></a>
+                            <div class="h-8 w-1 rounded-full" style="background:#07A0C3;"></div>
+                            <a :href="currentItem.event_url" class="text-sm font-semibold text-[#5A4A3A] hover:text-[#07A0C3] transition-colors" x-text="currentItem.event_name"></a>
                         </div>
 
-                        <!-- THÊM MỚI — Nút xem tất cả + progress dots, chèn cuối info box bên phải -->
+                        <!-- Nút xem tất cả + progress dots -->
                         <div class="mt-auto pt-3 flex items-center justify-between">
                             <!-- Dots indicator -->
                             <div class="flex gap-1.5 items-center">
@@ -1107,15 +1104,13 @@
                                     <div class="rounded-full transition-all duration-300"
                                          :style="i === currentIndex 
                                             ? 'width:1.25rem; height:0.35rem; background:#07A0C3;' 
-                                            : 'width:0.35rem; height:0.35rem; background:rgba(7,160,195,0.25);'"></div>
+                                            : 'width:0.35rem; height:0.35rem; background:rgba(7,160,195,0.2);'"></div>
                                 </template>
-                                <span x-show="items.length > 8" class="text-[10px] font-bold ml-1" style="color:rgba(122,106,82,0.5);"
+                                <span x-show="items.length > 8" class="text-[10px] font-bold ml-1 text-[#1C1410]/40"
                                       x-text="'+' + (items.length - 8)"></span>
                             </div>
                             <!-- Link xem thêm -->
-                            <a href="{{ route('events.index') }}" class="text-xs font-bold uppercase tracking-widest transition-colors"
-                               style="color:rgba(7,160,195,0.7);"
-                               onmouseover="this.style.color='#04F06A'" onmouseout="this.style.color='rgba(7,160,195,0.7)'">
+                            <a href="<?php echo e(route('events.index')); ?>" class="text-xs font-extrabold uppercase tracking-widest text-[#07A0C3] hover:text-[#04B050] transition-colors">
                                 Xem tất cả &rarr;
                             </a>
                         </div>
@@ -1247,5 +1242,7 @@
 
 
 
-@endsection
+<?php $__env->stopSection(); ?>
 
+
+<?php echo $__env->make('layouts.frontend', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\anima\Downloads\ThucTap-main\resources\views/frontend/home.blade.php ENDPATH**/ ?>

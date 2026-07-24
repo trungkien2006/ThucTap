@@ -132,6 +132,16 @@
         .floating-ribbon {
             clip-path: polygon(0 0, 100% 0, 85% 100%, 0 100%);
         }
+
+        /* Hide native browser select arrow to prevent double arrow */
+        .archive-select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+        .archive-select::-ms-expand {
+            display: none;
+        }
     </style>
 
 <!-- Diagonal Amber Ribbon -->
@@ -257,42 +267,39 @@
             <!-- Dropdown Selects Container (Span 7 cols) -->
             <div class="md:col-span-7 grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <!-- Year Select -->
-                <div class="relative flex items-center">
-                    <span class="material-symbols-outlined text-tertiary text-lg absolute left-3 pointer-events-none z-10">calendar_today</span>
+                <div class="relative flex items-center overflow-hidden rounded-xl" style="border: 1px solid rgba(113,91,62,0.2);">
+                    <span class="material-symbols-outlined text-tertiary text-lg absolute left-3.5 pointer-events-none z-10">calendar_today</span>
                     <select x-model="selectedYear" 
-                            class="w-full bg-[#fff8f5] hover:bg-white pl-9 pr-8 py-2.5 rounded-xl border border-tertiary/20 text-sm cursor-pointer transition-all focus:border-secondary focus:ring-2 focus:ring-secondary/30 outline-none text-on-surface font-medium appearance-none shadow-sm">
+                            class="bg-[#fff8f5] hover:bg-white pl-10 pr-8 py-2.5 text-sm cursor-pointer transition-all outline-none text-on-surface font-medium w-full border-none focus:ring-0">
                         <option value="">Tất cả các năm</option>
                         @foreach($archiveYears as $year)
                             <option value="{{ $year }}">Năm {{ $year }}</option>
                         @endforeach
                     </select>
-                    <span class="material-symbols-outlined text-tertiary/60 text-lg absolute right-2.5 pointer-events-none">expand_more</span>
                 </div>
 
                 <!-- Month Select -->
-                <div class="relative flex items-center">
-                    <span class="material-symbols-outlined text-tertiary text-lg absolute left-3 pointer-events-none z-10">event</span>
+                <div class="relative flex items-center overflow-hidden rounded-xl" style="border: 1px solid rgba(113,91,62,0.2);">
+                    <span class="material-symbols-outlined text-tertiary text-lg absolute left-3.5 pointer-events-none z-10">event</span>
                     <select x-model="selectedMonth" 
-                            class="w-full bg-[#fff8f5] hover:bg-white pl-9 pr-8 py-2.5 rounded-xl border border-tertiary/20 text-sm cursor-pointer transition-all focus:border-secondary focus:ring-2 focus:ring-secondary/30 outline-none text-on-surface font-medium appearance-none shadow-sm">
+                            class="bg-[#fff8f5] hover:bg-white pl-10 pr-8 py-2.5 text-sm cursor-pointer transition-all outline-none text-on-surface font-medium w-full border-none focus:ring-0">
                         <option value="">Tất cả tháng</option>
-                        <template x-for="month in 12" :key="month">
-                            <option :value="month" x-text="'Tháng ' + month"></option>
-                        </template>
+                        @for($m = 1; $m <= 12; $m++)
+                            <option value="{{ $m }}">Tháng {{ $m }}</option>
+                        @endfor
                     </select>
-                    <span class="material-symbols-outlined text-tertiary/60 text-lg absolute right-2.5 pointer-events-none">expand_more</span>
                 </div>
 
                 <!-- Category Select -->
-                <div class="relative flex items-center">
-                    <span class="material-symbols-outlined text-tertiary text-lg absolute left-3 pointer-events-none z-10">category</span>
+                <div class="relative flex items-center overflow-hidden rounded-xl" style="border: 1px solid rgba(113,91,62,0.2);">
+                    <span class="material-symbols-outlined text-tertiary text-lg absolute left-3.5 pointer-events-none z-10">category</span>
                     <select x-model="selectedCategory" 
-                            class="w-full bg-[#fff8f5] hover:bg-white pl-9 pr-8 py-2.5 rounded-xl border border-tertiary/20 text-sm cursor-pointer transition-all focus:border-secondary focus:ring-2 focus:ring-secondary/30 outline-none text-on-surface font-medium appearance-none shadow-sm">
+                            class="bg-[#fff8f5] hover:bg-white pl-10 pr-8 py-2.5 text-sm cursor-pointer transition-all outline-none text-on-surface font-medium w-full border-none focus:ring-0">
                         <option value="">Mọi danh mục</option>
                         @foreach($categories as $cat)
                             <option value="{{ $cat['name'] }}">{{ $cat['desc'] }}</option>
                         @endforeach
                     </select>
-                    <span class="material-symbols-outlined text-tertiary/60 text-lg absolute right-2.5 pointer-events-none">expand_more</span>
                 </div>
             </div>
         </div>
@@ -343,7 +350,10 @@
 <!-- PHOTO WALL GRID -->
 <section class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-24">
     <template x-for="(event, index) in filteredEvents" :key="event.id">
-        <div :class="{
+        <div x-transition:enter="transition ease-out duration-300 transform"
+             x-transition:enter-start="opacity-0 scale-95 translate-y-4"
+             x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+             :class="{
             'md:col-span-2 polaroid-card bg-white p-4 pt-4 pb-12 rotate-[1deg] relative': index % 5 === 0,
             'polaroid-card bg-white p-3 pt-3 pb-8 rotate-[-2deg] relative': index % 5 === 1,
             'polaroid-card bg-white p-3 pt-3 pb-8 rotate-[2.5deg] relative': index % 5 === 2,
@@ -369,14 +379,14 @@
             </template>
             
             <!-- Image Area -->
-            <div :class="index % 5 === 0 ? 'aspect-[16/9] w-full overflow-hidden bg-surface-container relative group cursor-pointer mb-6' : 'aspect-square w-full overflow-hidden bg-surface-container mb-4 relative group cursor-pointer'"
-                 @click="window.location.href = event.url">
-                <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" :src="event.img" :alt="event.title"/>
+            <a :href="event.url" 
+               :class="index % 5 === 0 ? 'block aspect-[16/9] w-full overflow-hidden bg-surface-container relative group cursor-pointer mb-6' : 'block aspect-square w-full overflow-hidden bg-surface-container mb-4 relative group cursor-pointer'">
+                <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" :src="event.img" :alt="event.title" loading="lazy"/>
                 <div class="absolute inset-0 p-4 flex flex-col justify-center backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center text-center" style="background-color: rgba(0,0,0,0.5);">
                     <p class="text-white text-xs md:text-sm leading-relaxed line-clamp-5 font-medium drop-shadow-md mb-3" x-text="event.desc"></p>
                     <span class="text-white font-bold border border-white px-4 py-1 text-sm rounded-full transition-colors hover:bg-white hover:text-black">Xem chi tiết →</span>
                 </div>
-            </div>
+            </a>
             
             <!-- Text Content -->
             <template x-if="index % 5 === 0">
@@ -410,25 +420,77 @@
 <!-- FOOTER CTA SECTION -->
 <section class="mb-32 text-center flex flex-col items-center">
 <h2 class="font-label-handwritten text-4xl text-tertiary mb-8">Còn rất nhiều kỷ niệm đang chờ được tạo ra...</h2>
-<div class="flex flex-col md:flex-row items-center gap-12">
+<div class="flex flex-col md:flex-row items-center gap-8 md:gap-10">
 <a href="{{ route('events.index', ['status' => 'upcoming']) }}" class="bg-secondary text-on-secondary px-8 py-4 rounded-full font-bold shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center gap-3 group">
-                    Khám phá sự kiện sắp tới
-                    <span class="material-symbols-outlined group-hover:translate-x-2 transition-transform">arrow_forward</span>
+    Khám phá sự kiện sắp tới
+    <span class="material-symbols-outlined group-hover:translate-x-2 transition-transform">arrow_forward</span>
 </a>
-<!-- Empty Tilted Polaroid -->
-<div class="polaroid-card bg-white p-3 pt-3 pb-10 w-48 h-56 rotate-[-6deg] border border-dashed border-tertiary/30 shadow-none flex flex-col justify-center items-center">
-<div class="w-full h-32 bg-surface-container-lowest border border-dashed border-tertiary/20 flex items-center justify-center mb-2">
-<span class="font-display-lg text-4xl text-tertiary/30">?</span>
-</div>
-<p class="font-label-handwritten text-tertiary/40 italic">Khoảnh khắc tiếp theo...</p>
-</div>
+
+<!-- Fan-out polaroid stack -->
+<div class="polaroid-fan-stack relative flex items-center justify-center" style="width: 220px; height: 240px;">
+
+@php
+    $fanRotations  = ['-10deg', '0deg',  '10deg'];
+    $fanTranslateX = ['-60px',  '0px',   '60px'];
+    $fanHoverRotX  = ['-18deg', '0deg',  '18deg'];
+    $fanHoverTransX= ['-80px',  '0px',   '80px'];
+@endphp
+
+@foreach($upcomingEvents as $i => $upcoming)
+<a href="{{ $upcoming['url'] }}"
+   class="polaroid-fan-card absolute bg-white p-3 pt-3 pb-10 w-44 flex flex-col transition-all duration-500 ease-out"
+   style="transform: rotate({{ $fanRotations[$i] }}) translateX({{ $fanTranslateX[$i] }}); z-index: {{ $i + 1 }};"
+   data-hover-rot="{{ $fanHoverRotX[$i] }}" data-hover-tx="{{ $fanHoverTransX[$i] }}"
+   data-base-rot="{{ $fanRotations[$i] }}" data-base-tx="{{ $fanTranslateX[$i] }}">
+    <div class="w-full h-28 overflow-hidden bg-surface-container-lowest mb-2">
+        @if($upcoming['img'])
+            <img src="{{ $upcoming['img'] }}" alt="{{ $upcoming['title'] }}" class="w-full h-full object-cover">
+        @else
+            <div class="w-full h-full flex items-center justify-center">
+                <span class="font-display-lg text-4xl text-tertiary/30">?</span>
+            </div>
+        @endif
+    </div>
+    <p class="font-label-handwritten text-on-surface text-xs leading-tight line-clamp-2">{{ $upcoming['title'] }}</p>
+    <p class="text-[10px] text-on-surface-variant/60 mt-1">{{ $upcoming['date_str'] }}</p>
+</a>
+@endforeach
+
+@if(count($upcomingEvents) < 3)
+    @for($j = count($upcomingEvents); $j < 3; $j++)
+    <div class="polaroid-fan-card absolute bg-white p-3 pt-3 pb-10 w-44 flex flex-col justify-center items-center transition-all duration-500"
+         style="transform: rotate({{ $fanRotations[$j] }}) translateX({{ $fanTranslateX[$j] }}); z-index: {{ $j + 1 }}; border: 2px dashed rgba(113,91,62,0.3);">
+        <div class="w-full h-28 bg-surface-container-lowest border border-dashed border-tertiary/20 flex items-center justify-center mb-2">
+            <span class="font-display-lg text-4xl text-tertiary/30">?</span>
+        </div>
+        <p class="font-label-handwritten text-tertiary/40 italic text-sm">Khoảnh khắc tiếp theo...</p>
+    </div>
+    @endfor
+@endif
+
+</div><!-- end polaroid-fan-stack -->
 </div>
 </section>
+
+<style>
+.polaroid-fan-stack:hover .polaroid-fan-card:nth-child(1) {
+    transform: rotate(-18deg) translateX(-90px) !important;
+    z-index: 1 !important;
+}
+.polaroid-fan-stack:hover .polaroid-fan-card:nth-child(2) {
+    transform: rotate(0deg) translateX(0px) translateY(-12px) !important;
+    z-index: 3 !important;
+}
+.polaroid-fan-stack:hover .polaroid-fan-card:nth-child(3) {
+    transform: rotate(18deg) translateX(90px) !important;
+    z-index: 1 !important;
+}
+.polaroid-fan-card {
+    box-shadow: 0 4px 15px rgba(61,43,31,0.12);
+    transition: transform 0.45s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s ease, z-index 0s;
+}
+</style>
 </main>
-<!-- Scroll to Top Button -->
-<button class="fixed bottom-8 right-8 w-14 h-14 bg-secondary text-on-secondary rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-90 transition-all z-50 group" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
-<span class="material-symbols-outlined group-hover:-translate-y-1 transition-transform">keyboard_arrow_up</span>
-</button>
 <script>
     function archiveApp() {
         return {

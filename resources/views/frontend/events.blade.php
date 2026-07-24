@@ -9,7 +9,7 @@
     <!-- Top border -->
     <div class="absolute inset-x-0 top-0 h-1.5" style="background:#FFE381;"></div>
 
-    <div class="relative mx-auto max-w-[1400px] px-6 lg:px-10">
+    <div class="relative mx-auto max-w-[1600px] px-4 lg:px-6 xl:px-8">
         
         <!-- Header -->
         <div data-aos="fade-up" class="text-center max-w-3xl mx-auto mb-16">
@@ -46,16 +46,16 @@
                 </div>
 
                 <!-- Dropdowns & Action Controls -->
-                <div class="grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-wrap items-center gap-3 w-full md:w-auto">
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:flex lg:flex-nowrap items-center gap-3 w-full lg:flex-[2.5]">
                     <!-- Year Filter Dropdown -->
-                    <div class="flex items-center justify-between gap-2 rounded-2xl px-4 h-11 border relative w-full md:w-auto" 
+                    <div class="flex items-center justify-between gap-2 rounded-2xl px-3 h-11 border relative w-full lg:flex-1" 
                          style="background: #FFFDF9; border-color: #E8E2D5;">
-                        <div class="flex items-center gap-2">
+                        <div class="flex items-center gap-1.5 shrink-0 whitespace-nowrap">
                             <i data-lucide="calendar" class="h-4 w-4 shrink-0 text-[#8A7320]"></i>
                             <span class="text-xs font-bold uppercase tracking-widest text-[#7A6A52] mr-1">Năm</span>
                         </div>
                         <select name="year" onchange="document.getElementById('events-filter-form').submit()"
-                                class="bg-transparent bg-none text-sm font-semibold focus:outline-none cursor-pointer pr-5 appearance-none text-[#1C1410] w-full">
+                                class="bg-transparent bg-none text-sm font-semibold focus:outline-none cursor-pointer pr-4 appearance-none text-[#1C1410] w-full min-w-0 text-right">
                             <option value="">Tất cả</option>
                             @if(isset($availableYears))
                                 @foreach($availableYears as $yr)
@@ -69,14 +69,14 @@
                     </div>
 
                     <!-- Month Filter Dropdown -->
-                    <div class="flex items-center justify-between gap-2 rounded-2xl px-4 h-11 border relative w-full md:w-auto" 
+                    <div class="flex items-center justify-between gap-2 rounded-2xl px-3 h-11 border relative w-full lg:flex-1" 
                          style="background: #FFFDF9; border-color: #E8E2D5;">
-                        <div class="flex items-center gap-2">
+                        <div class="flex items-center gap-1.5 shrink-0 whitespace-nowrap">
                             <i data-lucide="calendar-days" class="h-4 w-4 shrink-0 text-[#07A0C3]"></i>
                             <span class="text-xs font-bold uppercase tracking-widest text-[#7A6A52] mr-1">Tháng</span>
                         </div>
                         <select name="month" onchange="document.getElementById('events-filter-form').submit()"
-                                class="bg-transparent bg-none text-sm font-semibold focus:outline-none cursor-pointer pr-5 appearance-none text-[#1C1410] w-full">
+                                class="bg-transparent bg-none text-sm font-semibold focus:outline-none cursor-pointer pr-4 appearance-none text-[#1C1410] w-full min-w-0 text-right">
                             <option value="">Tất cả</option>
                             @for($m = 1; $m <= 12; $m++)
                                 <option value="{{ $m }}" {{ (isset($selectedMonth) && $selectedMonth == $m) ? 'selected' : '' }}>
@@ -88,30 +88,30 @@
                     </div>
 
                     <!-- Status Filter Dropdown -->
-                    <div class="flex items-center justify-between gap-2 rounded-2xl px-4 h-11 border relative w-full md:w-auto" 
+                    <div class="flex items-center justify-between gap-2 rounded-2xl px-3 h-11 border relative w-full lg:flex-1" 
                          style="background: #FFFDF9; border-color: #E8E2D5;">
-                        <div class="flex items-center gap-2">
+                        <div class="flex items-center gap-1.5 shrink-0 whitespace-nowrap">
                             <i data-lucide="activity" class="h-4 w-4 shrink-0 text-[#FF4D4D]"></i>
                             <span class="text-xs font-bold uppercase tracking-widest text-[#7A6A52] mr-1">Trạng thái</span>
                         </div>
                         <select name="status" onchange="document.getElementById('events-filter-form').submit()"
-                                class="bg-transparent bg-none text-sm font-semibold focus:outline-none cursor-pointer pr-5 appearance-none text-[#1C1410] w-full">
+                                class="bg-transparent bg-none text-sm font-semibold focus:outline-none cursor-pointer pr-4 appearance-none text-[#1C1410] w-full min-w-0 text-right">
                             <option value="">Tất cả</option>
                             <option value="upcoming" {{ (isset($selectedStatus) && $selectedStatus === 'upcoming') ? 'selected' : '' }}>Sắp diễn ra</option>
-                            <option value="completed" {{ (isset($selectedStatus) && $selectedStatus === 'completed') ? 'selected' : '' }}>Đã kết thúc</option>
+                            <option value="ongoing" {{ (isset($selectedStatus) && $selectedStatus === 'ongoing') ? 'selected' : '' }}>Đang diễn ra</option>
                         </select>
                         <i data-lucide="chevron-down" class="h-3 w-3 shrink-0 text-[#7A6A52] absolute right-3 pointer-events-none"></i>
                     </div>
 
                     <!-- Category Filter Dropdown -->
-                    <div class="flex items-center justify-between gap-2 rounded-2xl px-4 h-11 border relative w-full md:w-auto" 
+                    <div class="flex items-center justify-between gap-2 rounded-2xl px-3 h-11 border relative w-full lg:flex-1" 
                          style="background: #FFFDF9; border-color: #E8E2D5;">
-                        <div class="flex items-center gap-2">
+                        <div class="flex items-center gap-1.5 shrink-0 whitespace-nowrap">
                             <i data-lucide="tag" class="h-4 w-4 shrink-0 text-[#04B050]"></i>
                             <span class="text-xs font-bold uppercase tracking-widest text-[#7A6A52] mr-1">Loại</span>
                         </div>
                         <select name="category" onchange="document.getElementById('events-filter-form').submit()"
-                                class="bg-transparent bg-none text-sm font-semibold focus:outline-none cursor-pointer pr-5 appearance-none text-[#1C1410] w-full">
+                                class="bg-transparent bg-none text-sm font-semibold focus:outline-none cursor-pointer pr-4 appearance-none text-[#1C1410] w-full min-w-0 text-right">
                             <option value="">Tất cả</option>
                             @if(isset($categories))
                                 @foreach($categories as $cat)
@@ -124,13 +124,13 @@
                         <i data-lucide="chevron-down" class="h-3 w-3 shrink-0 text-[#7A6A52] absolute right-3 pointer-events-none"></i>
                     </div>
 
-                    <button type="submit" class="h-11 px-6 rounded-2xl text-sm font-bold transition-all shadow-sm flex items-center justify-center gap-2 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 w-full md:w-auto"
+                    <button type="submit" class="h-11 px-6 rounded-2xl text-sm font-bold transition-all shadow-sm flex items-center justify-center gap-2 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 w-full lg:w-auto shrink-0"
                             style="background: #FFE381; color: #1C1410; border: 1px solid rgba(232,200,74,0.6);">
                         <i data-lucide="filter" class="w-4 h-4"></i> Lọc
                     </button>
                     
                     @if(request()->has('category') || request()->has('search') || request()->has('year') || request()->has('month') || request()->has('status'))
-                    <a href="{{ route('events.index') }}" class="h-11 px-4 rounded-2xl text-sm font-bold transition-all flex items-center justify-center gap-2 border hover:bg-slate-50 w-full md:w-auto"
+                    <a href="{{ route('events.index') }}" class="h-11 px-4 rounded-2xl text-sm font-bold transition-all flex items-center justify-center gap-2 border hover:bg-slate-50 w-full lg:w-auto shrink-0"
                        style="background: #FFFDF9; color: #7A6A52; border-color: #E8E2D5;">
                         <i data-lucide="x" class="w-4 h-4"></i> Xóa lọc
                     </a>
@@ -156,7 +156,7 @@
 
         <!-- Events Grid -->
         @if($events->count() > 0)
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mb-16" id="events-grid">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 xl:gap-8 mb-16" id="events-grid">
             @foreach($events as $index => $event)
             <!-- GSAP animation wrapper -->
             <div class="event-grid-card-wrapper" style="opacity: 0; transform: translateY(40px);">
@@ -225,6 +225,13 @@
             </div>
             @endforeach
         </div>
+        
+        <!-- Pagination -->
+        @if($events->hasPages())
+        <div class="mt-8 mb-16 flex justify-center">
+            {{ $events->appends(request()->query())->links() }}
+        </div>
+        @endif
 
         <script>
             document.addEventListener('DOMContentLoaded', () => {

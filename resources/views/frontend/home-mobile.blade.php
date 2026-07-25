@@ -48,8 +48,8 @@
             /* Hero Slider Mobile Overrides */
             #top {
                 position: relative !important;
-                height: 350px !important;
-                min-height: 350px !important;
+                height: 440px !important;
+                min-height: 440px !important;
                 width: 100% !important;
                 overflow: hidden !important;
                 background: #1C1410 !important;
@@ -85,11 +85,11 @@
             .slider-overlay {
                 position: absolute !important;
                 inset: 0 !important;
-                background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.2) 40%, rgba(0,0,0,0.85) 100%) !important;
+                background: linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.2) 40%, rgba(0,0,0,0.9) 100%) !important;
                 pointer-events: none !important;
             }
 
-            /* Show slide-info text overlay cleanly at bottom of Section A */
+            /* Keep event introduction text of A 100% visible and styled cleanly */
             .slide-info {
                 display: block !important;
                 width: 100% !important;
@@ -113,39 +113,42 @@
                 visibility: visible !important;
             }
 
-            .slide-title {
-                font-size: clamp(18px, 5vw, 24px) !important;
-                line-height: 1.25 !important;
+            .slide-eyebrow {
+                font-size: 11px !important;
                 margin-bottom: 6px !important;
+                letter-spacing: 1px !important;
+                color: #FFE381 !important;
+                font-weight: 700 !important;
+                text-shadow: 0 1px 4px rgba(0,0,0,0.8) !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+            }
+
+            .slide-title {
+                font-size: clamp(20px, 5.5vw, 26px) !important;
+                line-height: 1.25 !important;
+                margin-bottom: 8px !important;
                 color: #FFFFFF !important;
                 font-weight: 800 !important;
                 word-wrap: break-word !important;
                 overflow-wrap: break-word !important;
                 white-space: normal !important;
+                text-shadow: 0 2px 8px rgba(0,0,0,0.8) !important;
                 opacity: 1 !important;
                 visibility: visible !important;
             }
 
             .slide-desc {
-                font-size: 12px !important;
+                font-size: 13px !important;
                 max-width: 100% !important;
-                margin-bottom: 10px !important;
-                line-height: 1.4 !important;
-                color: rgba(255, 255, 255, 0.85) !important;
+                margin-bottom: 14px !important;
+                line-height: 1.45 !important;
+                color: rgba(255, 255, 255, 0.9) !important;
                 display: -webkit-box !important;
                 -webkit-line-clamp: 2 !important;
                 -webkit-box-orient: vertical !important;
                 overflow: hidden !important;
-                opacity: 1 !important;
-                visibility: visible !important;
-            }
-
-            .slide-eyebrow {
-                font-size: 10px !important;
-                margin-bottom: 4px !important;
-                letter-spacing: 1px !important;
-                color: #FFE381 !important;
-                font-weight: 700 !important;
+                text-shadow: 0 1px 4px rgba(0,0,0,0.8) !important;
                 opacity: 1 !important;
                 visibility: visible !important;
             }
@@ -153,34 +156,37 @@
             .slide-actions {
                 display: flex !important;
                 align-items: center !important;
-                gap: 10px !important;
+                gap: 12px !important;
                 opacity: 1 !important;
                 visibility: visible !important;
             }
 
             .btn-cta {
-                padding: 7px 16px !important;
-                font-size: 10px !important;
+                padding: 8px 18px !important;
+                font-size: 11px !important;
                 letter-spacing: 1px !important;
+                background: rgba(255,255,255,0.15) !important;
+                backdrop-filter: blur(4px) !important;
+                border-color: rgba(255,255,255,0.6) !important;
             }
 
             .btn-play {
-                width: 32px !important;
-                height: 32px !important;
+                width: 36px !important;
+                height: 36px !important;
             }
 
             .btn-play svg {
-                width: 12px !important;
-                height: 12px !important;
+                width: 13px !important;
+                height: 13px !important;
             }
 
             .slider-content {
                 position: absolute !important;
-                bottom: 16px !important;
+                bottom: 20px !important;
                 top: auto !important;
                 left: 0 !important;
                 right: 0 !important;
-                padding: 0 16px !important;
+                padding: 0 20px !important;
                 display: flex !important;
                 flex-direction: column !important;
                 align-items: flex-start !important;
@@ -190,7 +196,7 @@
                 box-sizing: border-box !important;
             }
 
-            /* Hide part B (card strip) completely on mobile */
+            /* Completely hide part B (card strip) on mobile */
             .card-strip {
                 display: none !important;
             }

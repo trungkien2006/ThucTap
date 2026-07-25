@@ -23,12 +23,15 @@
 
         <!-- Top Control Bar -->
         <div class="flex flex-wrap items-center gap-6 pb-4 border-b border-border text-sm text-foreground mb-6">
-            <form action="{{ route('admin.speakers.index') }}" method="GET" class="flex flex-wrap items-center gap-6 w-full lg:w-auto flex-1">
+            <form action="{{ route('admin.speakers.index') }}" method="GET" class="flex flex-wrap items-center gap-3 w-full lg:w-auto flex-1">
                 <!-- Search Control -->
-                <label class="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors group relative w-full lg:w-96">
-                    <i data-lucide="search" class="w-4 h-4 shrink-0 pointer-events-none absolute left-0 text-muted-foreground"></i>
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Tìm kiếm diễn giả…" class="pl-6 w-full font-medium bg-transparent border-none focus:outline-none focus:ring-0 text-sm placeholder:text-muted-foreground">
+                <label class="flex items-center gap-2 cursor-text transition-colors group relative w-full lg:w-96 h-10 bg-white border border-border/60 hover:border-border rounded-lg px-3 shadow-sm focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/10">
+                    <i data-lucide="search" class="w-4 h-4 shrink-0 text-muted-foreground group-focus-within:text-primary transition-colors"></i>
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Tìm kiếm diễn giả…" class="w-full font-medium bg-transparent border-0 focus:border-0 focus:outline-none shadow-none ring-0 focus:ring-0 p-0 text-sm placeholder:text-muted-foreground/70" style="border: none !important; box-shadow: none !important; outline: none !important;">
                 </label>
+                <button type="submit" class="h-10 px-4 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors shadow-sm whitespace-nowrap">
+                    Tìm kiếm
+                </button>
             </form>
             @if(request('search'))
                 <div class="ml-auto flex items-center gap-6">
@@ -77,16 +80,6 @@
                         </span>
                         
                         <div class="flex items-center gap-1">
-                            <a href="#" class="h-6 w-6 rounded flex items-center justify-center text-muted-foreground hover:bg-accent hover:text-foreground transition-all" title="LinkedIn">
-                                <i data-lucide="linkedin" class="h-3 w-3"></i>
-                            </a>
-                            <a href="#" class="h-6 w-6 rounded flex items-center justify-center text-muted-foreground hover:bg-accent hover:text-foreground transition-all" title="Twitter">
-                                <i data-lucide="twitter" class="h-3 w-3"></i>
-                            </a>
-                            <a href="#" class="h-6 w-6 rounded flex items-center justify-center text-muted-foreground hover:bg-accent hover:text-foreground transition-all" title="Website">
-                                <i data-lucide="globe" class="h-3 w-3"></i>
-                            </a>
-                            <span class="text-muted-foreground/30 mx-1 text-xs">|</span>
                             <a href="{{ route('admin.speakers.edit', $speaker) }}" 
                                class="h-7 w-7 rounded-md flex items-center justify-center text-muted-foreground hover:bg-accent hover:text-foreground transition-all" title="Sửa">
                                 <i data-lucide="pencil" class="h-3.5 w-3.5"></i>

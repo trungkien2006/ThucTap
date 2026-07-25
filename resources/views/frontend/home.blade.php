@@ -817,7 +817,7 @@
     <div id="archive-delay-spacer"></div>
     <div id="archive-sticky-wrapper" style="background: #2D1F0A; position: relative; z-index: 50;">
     @php $archiveJson = json_encode($archive); @endphp
-<section id="archive" class="relative overflow-hidden py-12 lg:py-16"
+<section id="archive" class="relative overflow-hidden py-12 lg:py-4 lg:h-[calc(100vh-72px)] lg:flex lg:flex-col lg:justify-center"
          style="position: -webkit-sticky; position: sticky; top: 72px; background:linear-gradient(160deg,#2D1F0A 0%,#3D2A0E 50%,#1C2A10 100%); z-index: 50;"
          x-data="{ 
             yearIdx: 0, 
@@ -851,8 +851,8 @@
     <!-- Top border Jasmine -->
     <div class="absolute inset-x-0 top-0 h-1.5" style="background:#FFE381;"></div>
 
-    <div class="relative mx-auto max-w-[1400px] px-6 lg:px-10">
-        <div data-aos="fade-up" class="flex items-end justify-between">
+    <div class="relative mx-auto max-w-[1400px] w-full px-6 lg:px-10 lg:flex lg:flex-col lg:h-full lg:min-h-0 lg:py-4">
+        <div data-aos="fade-up" class="flex items-end justify-between lg:flex-none">
             <div>
                 <div class="flex items-center gap-3 mb-2">
                     <div class="h-7 w-1 rounded-full" style="background:#FFE381;"></div>
@@ -881,10 +881,10 @@
             </div>
         </div>
 
-        <div class="relative mt-14 grid grid-cols-1 gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
+        <div class="relative mt-14 grid grid-cols-1 gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-12 lg:flex-1 lg:min-h-0 lg:mt-[3vh]">
             <!-- Chữ số năm — Jasmine gradient & Buttons -->
-            <div class="relative flex flex-col items-start z-10">
-                <div class="font-barlow-condensed text-[28vw] font-black leading-[0.85] tracking-tighter lg:text-[18vw] pl-4 lg:pl-6 pr-4"
+            <div class="relative flex flex-col items-start z-10 lg:h-full lg:justify-center lg:pb-[4vh]">
+                <div class="font-barlow-condensed text-[28vw] lg:text-[min(15vw,25vh)] font-black leading-[0.85] tracking-tighter pl-4 lg:pl-6 pr-4"
                      style="-webkit-text-fill-color:transparent;-webkit-background-clip:text;background-clip:text;
                             background-image:linear-gradient(160deg,#FFE381 30%,#E8C84A 70%,#07A0C3 100%);"
                      x-text="currentYear.year"
@@ -932,9 +932,9 @@
                 </div>
             </div>
 
-            <div>
-                <a :href="currentEvent.featured_url" class="group relative block h-[280px] overflow-hidden rounded-2xl lg:h-[360px]"
-                     style="box-shadow:0 20px 60px rgba(255,227,129,0.15);">
+            <div class="lg:flex lg:flex-col lg:min-h-0 lg:justify-center">
+                <a :href="currentEvent.featured_url" class="group relative block h-[280px] overflow-hidden rounded-2xl lg:h-auto lg:flex-1 lg:min-h-0"
+                     style="box-shadow:0 20px 60px rgba(255,227,129,0.15); max-height: clamp(180px, 45vh, 400px);">
                     <img :src="currentEvent.img" :alt="currentEvent.featured_title" loading="lazy"
                          class="h-full w-full object-cover transition-transform duration-[1500ms] group-hover:scale-105" />
                     <div class="absolute inset-0"

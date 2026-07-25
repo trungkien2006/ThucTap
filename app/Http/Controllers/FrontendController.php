@@ -54,20 +54,11 @@ class FrontendController extends Controller
                 ->whereNotIn('name', ['Other', 'Khác'])
                 ->get();
 
-            $vietnameseNames = [
-                'Conference' => 'Hội nghị',
-                'Workshop' => 'Hội thảo thực hành',
-                'Seminar' => 'Hội thảo chuyên đề',
-                'Cultural' => 'Văn hóa nghệ thuật',
-                'Sports' => 'Thể thao',
-                'Orientation' => 'Định hướng'
-            ];
-
-            $categories = $dbCategories->map(function ($c) use ($vietnameseNames) {
+            $categories = $dbCategories->map(function ($c) {
                 return [
                     'name' => $c->name,
                     'slug' => $c->slug,
-                    'desc' => $vietnameseNames[$c->name] ?? $c->name,
+                    'desc' => $c->name,
                     'image' => 'images/categories/' . $c->slug . '.jpg',
                     'event_count' => \App\Models\Event::published()->where('category_id', $c->id)->count()
                 ];
@@ -302,15 +293,24 @@ class FrontendController extends Controller
             $query->whereMonth('event_date', $selectedMonth);
         }
 
+        // Base query: Exclude completed events (only show upcoming and ongoing)
+        $query->where(function($q) {
+            $q->where('end_date', '>=', now())
+              ->orWhere(function($subQ) {
+                  $subQ->whereNull('end_date')
+                       ->where('event_date', '>=', now()->startOfDay());
+              });
+        });
+
         if ($selectedStatus) {
             if ($selectedStatus === 'upcoming') {
-                $query->where('event_date', '>=', now());
-            } elseif ($selectedStatus === 'completed') {
-                $query->where('event_date', '<', now());
+                $query->where('event_date', '>', now());
+            } elseif ($selectedStatus === 'ongoing') {
+                $query->where('event_date', '<=', now());
             }
         }
 
-        $events = $query->paginate(16);
+        $events = $query->paginate(15);
 
         // Get unique years for filter
         $driver = \Illuminate\Support\Facades\DB::connection()->getDriverName();
@@ -327,19 +327,11 @@ class FrontendController extends Controller
         $dbCategories = \App\Models\Category::where('type', 'event_type')
             ->whereNotIn('name', ['Other', 'Khác'])
             ->get();
-        $vietnameseNames = [
-            'Conference' => 'Hội nghị',
-            'Workshop' => 'Hội thảo thực hành',
-            'Seminar' => 'Hội thảo chuyên đề',
-            'Cultural' => 'Văn hóa nghệ thuật',
-            'Sports' => 'Thể thao',
-            'Orientation' => 'Định hướng'
-        ];
-        $categories = $dbCategories->map(function ($c) use ($vietnameseNames) {
+        $categories = $dbCategories->map(function ($c) {
             return [
                 'name' => $c->name,
                 'slug' => $c->slug,
-                'desc' => $vietnameseNames[$c->name] ?? 'Sự kiện'
+                'desc' => $c->name
             ];
         })->toArray();
 
@@ -382,21 +374,6 @@ class FrontendController extends Controller
                 'desc' => Str::limit(strip_tags($event->description), 100),
                 'url' => route('events.show', $event->slug),
                 'img' => $event->bannerImage ? \App\Helpers\FileHelper::url($event->bannerImage->url, true) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80',
-                'achievements' => [],
-                'images' => $event->galleryImages->where('type', 'image')->map(function($media) {
-                    return ['url' => \App\Helpers\FileHelper::url($media->url, true), 'caption' => $media->caption];
-                })->values()->toArray(),
-                'videos' => $event->galleryImages->where('type', 'video')->map(function($media) {
-                    return ['url' => \App\Helpers\FileHelper::url($media->url, true), 'caption' => $media->caption];
-                })->values()->toArray(),
-                'documents' => [],
-                'speakers' => $event->speakers->map(function($speaker) {
-                    return [
-                        'name' => $speaker->name,
-                        'role' => $speaker->role,
-                        'avatar' => $speaker->avatar ? \App\Helpers\FileHelper::url($speaker->avatar) : null,
-                    ];
-                })->values()->toArray(),
             ];
         })->toArray();
 
@@ -404,26 +381,43 @@ class FrontendController extends Controller
         $dbCategories = \App\Models\Category::where('type', 'event_type')
             ->whereNotIn('name', ['Other', 'Khác'])
             ->get();
-        $vietnameseNames = [
-            'Conference' => 'Hội nghị',
-            'Workshop' => 'Hội thảo thực hành',
-            'Seminar' => 'Hội thảo chuyên đề',
-            'Cultural' => 'Văn hóa nghệ thuật',
-            'Sports' => 'Thể thao',
-            'Orientation' => 'Định hướng'
-        ];
-        $categories = $dbCategories->map(function ($c) use ($vietnameseNames) {
+        $categories = $dbCategories->map(function ($c) {
             return [
                 'name' => $c->name,
                 'slug' => $c->slug,
-                'desc' => $vietnameseNames[$c->name] ?? 'Sự kiện'
+                'desc' => $c->name
             ];
         })->toArray();
 
-        $totalArchivedEvents = \App\Models\Event::published()->count();
+        $totalArchivedEvents = \App\Models\Event::where(function($q) {
+                $q->where('status', 'archived')
+                  ->orWhere(function($q2) {
+                      $q2->where('is_published', true)
+                         ->where(function($q3) {
+                             $q3->where('event_date', '<', now())
+                                ->orWhere('end_date', '<', now());
+                         });
+                  });
+            })->count();
         $totalImages = \App\Models\EventMedia::where('type', 'image')->count();
         $totalVideos = \App\Models\EventMedia::where('type', 'video')->count();
 
-        return $this->renderView('frontend.archive', compact('archive', 'categories', 'selectedYear', 'totalArchivedEvents', 'totalImages', 'totalVideos'));
+        // 3 nearest upcoming events for the CTA polaroid cards
+        $upcomingEvents = \App\Models\Event::with('bannerImage')
+            ->published()
+            ->where('event_date', '>', now())
+            ->orderBy('event_date', 'asc')
+            ->limit(3)
+            ->get()
+            ->map(function($event) {
+                return [
+                    'title' => $event->title,
+                    'date_str' => \Carbon\Carbon::parse($event->event_date)->format('d/m/Y'),
+                    'url' => route('events.show', $event->slug),
+                    'img' => $event->bannerImage ? \App\Helpers\FileHelper::url($event->bannerImage->url, true) : null,
+                ];
+            })->toArray();
+
+        return $this->renderView('frontend.archive', compact('archive', 'categories', 'selectedYear', 'totalArchivedEvents', 'totalImages', 'totalVideos', 'upcomingEvents'));
     }
 }

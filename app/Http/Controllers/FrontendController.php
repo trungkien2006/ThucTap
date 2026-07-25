@@ -310,7 +310,7 @@ class FrontendController extends Controller
             }
         }
 
-        $events = $query->paginate(15);
+        $events = $query->paginate(7);
 
         // Get unique years for filter
         $driver = \Illuminate\Support\Facades\DB::connection()->getDriverName();
@@ -345,7 +345,7 @@ class FrontendController extends Controller
     {
         $selectedYear = $request->input('year');
 
-        $query = Event::with(['bannerImage', 'category', 'galleryImages', 'speakers'])
+        $query = Event::with(['bannerImage', 'category'])
             ->where(function($q) {
                 $q->where('status', 'archived')
                   ->orWhere(function($q2) {
@@ -389,18 +389,10 @@ class FrontendController extends Controller
             ];
         })->toArray();
 
-        $totalArchivedEvents = \App\Models\Event::where(function($q) {
-                $q->where('status', 'archived')
-                  ->orWhere(function($q2) {
-                      $q2->where('is_published', true)
-                         ->where(function($q3) {
-                             $q3->where('event_date', '<', now())
-                                ->orWhere('end_date', '<', now());
-                         });
-                  });
-            })->count();
-        $totalImages = \App\Models\EventMedia::where('type', 'image')->count();
-        $totalVideos = \App\Models\EventMedia::where('type', 'video')->count();
+        $totalArchivedEvents = $events->count();
+        $eventIds = $events->pluck('id')->toArray();
+        $totalImages = \App\Models\EventMedia::whereIn('event_id', $eventIds)->where('type', 'image')->count();
+        $totalVideos = \App\Models\EventMedia::whereIn('event_id', $eventIds)->where('type', 'video')->count();
 
         // 3 nearest upcoming events for the CTA polaroid cards
         $upcomingEvents = \App\Models\Event::with('bannerImage')

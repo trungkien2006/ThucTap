@@ -648,34 +648,44 @@
                     @foreach($gridItems as $idx => $item)
                         <a href="{{ $item['slug'] ? route('events.index', ['category' => $item['slug']]) : '#events' }}"
                             style="aspect-ratio: 16/9; min-height: 160px; opacity: 0;"
-                            class="event-category-card snap-start shrink-0 w-[85%] md:w-auto group relative block rounded-2xl overflow-hidden {{ $item['image'] ? 'bg-gray-900' : 'bg-gray-200' }} shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                            class="event-category-card snap-start shrink-0 w-[85%] md:w-auto group relative block rounded-2xl overflow-hidden {{ $item['image'] ? 'bg-gray-900' : 'bg-gray-200' }} shadow-sm hover:shadow-lg transition-all duration-300 border border-white/20">
 
                             @if($item['image'])
                                 <!-- Background Image -->
-                                <img src="{{ asset($item['image']) }}" alt="{{ $item['name'] }}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-[1.15] opacity-60 group-hover:opacity-80">
+                                <img src="{{ asset($item['image']) }}" alt="{{ $item['name'] }}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 opacity-80">
                             @else
-                                <div class="absolute inset-0 w-full h-full bg-gradient-to-br from-gray-800 to-gray-700 opacity-80 group-hover:opacity-100 transition-opacity"></div>
+                                @php
+                                    $bgGradients = [
+                                        'from-[#FF6B6B] to-[#FF8E53]',
+                                        'from-[#4E65FF] to-[#92EFFD]',
+                                        'from-[#11998E] to-[#38EF7D]',
+                                        'from-[#8E2DE2] to-[#4A00E0]',
+                                        'from-[#F2994A] to-[#F2C94C]',
+                                        'from-[#0F2027] via-[#203A43] to-[#2C5364]'
+                                    ];
+                                    $bgGrad = $bgGradients[$idx % count($bgGradients)];
+                                @endphp
+                                <div class="absolute inset-0 w-full h-full bg-gradient-to-br {{ $bgGrad }} opacity-90"></div>
                             @endif
 
-                            <!-- Glassmorphism Gradient Overlay -->
-                            <div class="absolute inset-0 transition-opacity duration-500 opacity-40 group-hover:opacity-20"
-                                 style="background: linear-gradient(to right, rgba(28,20,16,0.9) 0%, rgba(28,20,16,0.4) 100%);"></div>
+                            <!-- Soft Overlay for text readability -->
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
 
-                            <!-- Icon (Absolutely centered in the collapsed shape) -->
-                            <div class="absolute top-0 left-0 flex items-center justify-center z-10 cat-icon-container pointer-events-none">
-                                <i data-lucide="{{ $item['icon'] }}" class="w-8 h-8 lg:w-10 lg:h-10 text-white drop-shadow-md transition-transform duration-500 group-hover:scale-110"></i>
-                            </div>
-
-                            <!-- Expanding Text Content -->
-                            <div class="absolute top-0 flex flex-col justify-center cat-text-container z-10 opacity-0 group-hover:opacity-100 transition-all duration-500 delay-75 transform -translate-x-4 group-hover:translate-x-0 pointer-events-none">
-                                <h3 class="text-white text-xl lg:text-2xl font-black tracking-tight drop-shadow-lg leading-tight mb-1 whitespace-normal pr-2">
+                            <!-- Text Content (Always Visible on Mobile) -->
+                            <div class="absolute inset-0 p-5 flex flex-col justify-end z-10">
+                                <h3 class="text-white text-xl font-black tracking-tight drop-shadow-md leading-snug mb-1">
                                     {{ $item['name'] }}
                                 </h3>
                                 
-                                <div class="inline-flex items-center gap-1.5 text-[#FFE381] text-xs lg:text-sm font-bold uppercase tracking-wider drop-shadow-md mt-1">
-                                    <i data-lucide="calendar" class="w-4 h-4"></i>
+                                <div class="inline-flex items-center gap-1.5 text-white/90 text-sm font-medium">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-white/70"></span>
                                     <span>{{ $item['count'] }} sự kiện</span>
                                 </div>
+                            </div>
+                            
+                            <!-- Small Icon Top Right -->
+                            <div class="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                                <i data-lucide="{{ $item['icon'] }}" class="w-4 h-4 text-white drop-shadow-sm"></i>
                             </div>
                         </a>
                     @endforeach
@@ -683,20 +693,15 @@
                     <!-- Inline View All Button -->
                     <a href="{{ route('events.index') }}"
                         style="opacity: 0;"
-                        class="event-category-card group relative block bg-[#07A0C3] hover:bg-[#068ba9] shadow-md hover:shadow-2xl hover:z-50 cat-parallelogram-sm"
+                        class="event-category-card snap-start shrink-0 w-[85%] md:w-auto group relative flex flex-col items-center justify-center rounded-2xl bg-gradient-to-br from-[#07A0C3] to-[#04F06A] shadow-md hover:shadow-xl transition-all duration-300 border border-white/20"
                         title="Xem tất cả danh mục">
                         
-                        <!-- Icon -->
-                        <div class="absolute top-0 left-0 flex items-center justify-center z-10 cat-sm-icon-container pointer-events-none">
-                            <i data-lucide="plus" class="w-10 h-10 lg:w-12 lg:h-12 text-white drop-shadow-md transition-transform duration-500 group-hover:rotate-90"></i>
+                        <div class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center mb-3">
+                            <i data-lucide="arrow-right" class="w-6 h-6 text-white drop-shadow-sm"></i>
                         </div>
-
-                        <!-- Expanding Text Content -->
-                        <div class="absolute top-0 flex flex-col justify-center cat-sm-text-container z-10 opacity-0 group-hover:opacity-100 transition-all duration-500 delay-75 transform -translate-x-4 group-hover:translate-x-0 pointer-events-none">
-                            <h3 class="text-white text-2xl lg:text-3xl font-black tracking-tight drop-shadow-lg leading-tight uppercase whitespace-nowrap">
-                                Xem thêm
-                            </h3>
-                        </div>
+                        <h3 class="text-white text-lg font-bold tracking-tight drop-shadow-sm">
+                            Xem tất cả
+                        </h3>
                     </a>
                 </div>
 

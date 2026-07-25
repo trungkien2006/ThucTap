@@ -48,13 +48,14 @@
             /* Hero Slider Mobile Overrides */
             #top {
                 position: relative !important;
-                height: 100vh !important;
-                min-height: 560px !important;
+                height: 350px !important;
+                min-height: 350px !important;
                 width: 100% !important;
                 overflow: hidden !important;
                 background: #1C1410 !important;
                 padding-bottom: 0 !important;
                 cursor: pointer !important;
+                border-bottom: 2px solid rgba(255, 255, 255, 0.15) !important;
             }
 
             .slider-wrapper {
@@ -97,9 +98,9 @@
             }
 
             .slide-title {
-                font-size: clamp(22px, 6vw, 30px) !important;
+                font-size: clamp(18px, 5vw, 24px) !important;
                 line-height: 1.25 !important;
-                margin-bottom: 8px !important;
+                margin-bottom: 6px !important;
                 color: #FFFFFF !important;
                 font-weight: 800 !important;
                 word-wrap: break-word !important;
@@ -108,10 +109,10 @@
             }
 
             .slide-desc {
-                font-size: 13px !important;
+                font-size: 12px !important;
                 max-width: 100% !important;
-                margin-bottom: 16px !important;
-                line-height: 1.5 !important;
+                margin-bottom: 10px !important;
+                line-height: 1.4 !important;
                 color: rgba(255, 255, 255, 0.85) !important;
                 display: -webkit-box !important;
                 -webkit-line-clamp: 2 !important;
@@ -120,8 +121,8 @@
             }
 
             .slide-eyebrow {
-                font-size: 11px !important;
-                margin-bottom: 6px !important;
+                font-size: 10px !important;
+                margin-bottom: 4px !important;
                 letter-spacing: 1px !important;
                 color: #FFE381 !important;
                 font-weight: 700 !important;
@@ -130,32 +131,32 @@
             .slide-actions {
                 display: flex !important;
                 align-items: center !important;
-                gap: 12px !important;
+                gap: 10px !important;
             }
 
             .btn-cta {
-                padding: 9px 20px !important;
-                font-size: 11px !important;
+                padding: 7px 16px !important;
+                font-size: 10px !important;
                 letter-spacing: 1px !important;
             }
 
             .btn-play {
-                width: 36px !important;
-                height: 36px !important;
+                width: 32px !important;
+                height: 32px !important;
             }
 
             .btn-play svg {
-                width: 13px !important;
-                height: 13px !important;
+                width: 12px !important;
+                height: 12px !important;
             }
 
             .slider-content {
                 position: absolute !important;
-                bottom: 50px !important;
+                bottom: 16px !important;
                 top: auto !important;
                 left: 0 !important;
                 right: 0 !important;
-                padding: 0 20px !important;
+                padding: 0 16px !important;
                 display: flex !important;
                 flex-direction: column !important;
                 align-items: flex-start !important;

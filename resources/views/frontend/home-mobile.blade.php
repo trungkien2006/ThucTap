@@ -46,50 +46,145 @@
             }
             
             /* Hero Slider Mobile Overrides */
+<<<<<<< Updated upstream
             .slider-content {
                 padding: 0 20px !important;
                 align-items: flex-end !important;
                 justify-content: flex-start !important;
                 padding-bottom: 60px !important;
+=======
+            #top {
+                position: relative !important;
+                height: 380px !important;
+                min-height: 380px !important;
+                width: 100% !important;
+                overflow: hidden !important;
+                background: #1C1410 !important;
+                padding-bottom: 0 !important;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+>>>>>>> Stashed changes
             }
+
+            .slider-wrapper {
+                position: absolute !important;
+                inset: 0 !important;
+                height: 100% !important;
+                width: 100% !important;
+                display: block !important;
+            }
+
+            .bg-layers {
+                position: absolute !important;
+                inset: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+                border-radius: 0 !important;
+                overflow: hidden !important;
+            }
+
+            .bg-layer {
+                position: absolute !important;
+                inset: 0 !important;
+                background-size: cover !important;
+                background-position: center !important;
+            }
+
+            .slider-overlay {
+                position: absolute !important;
+                inset: 0 !important;
+                background: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 60%, rgba(0,0,0,0.7) 100%) !important;
+                pointer-events: none !important;
+            }
+
+            /* Completely hide text info and black space */
             .slide-info {
-                flex: 1 1 auto !important;
+                display: none !important;
+            }
+
+            /* Position slider content and cards B at the bottom of section A (above DANH MỤC SỰ KIỆN) */
+            .slider-content {
+                position: absolute !important;
+                top: auto !important;
+                bottom: 16px !important;
+                left: 0 !important;
+                right: 0 !important;
+                padding: 0 16px !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                justify-content: flex-end !important;
+                z-index: 20 !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
+
+            /* Card Strip Mobile Overrides - Positioned at top */
+            .card-strip {
+                display: flex !important;
+                position: relative !important;
+                right: auto !important;
+                bottom: auto !important;
+                left: auto !important;
+                top: auto !important;
                 width: 100% !important;
                 max-width: 100% !important;
-                margin-bottom: 0 !important;
+                margin: 0 !important;
+                padding: 4px 0 10px 0 !important;
+                overflow-x: auto !important;
+                overflow-y: hidden !important;
+                -webkit-overflow-scrolling: touch !important;
+                scrollbar-width: none !important;
+                box-sizing: border-box !important;
             }
-            .slide-title {
-                font-size: clamp(24px, 7vw, 36px) !important;
-                line-height: 1.1 !important;
-                margin-bottom: 12px !important;
-                word-break: keep-all !important;
-                overflow-wrap: normal !important;
+
+            .card-strip::-webkit-scrollbar {
+                display: none !important;
+            }
+
+            .card-track {
+                display: flex !important;
+                gap: 12px !important;
+                align-items: flex-start !important;
+            }
+
+            .dest-card {
+                flex: 0 0 180px !important;
+                height: 120px !important;
+                border-radius: 14px !important;
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
+                border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            }
+
+            .dest-card.active {
+                flex: 0 0 240px !important;
+                border-color: rgba(255, 227, 129, 0.6) !important;
+            }
+
+            .dest-card-info {
+                padding: 8px 10px 10px !important;
+            }
+
+            .dest-card-tag {
+                font-size: 8px !important;
+                letter-spacing: 0.5px !important;
+                margin-bottom: 2px !important;
+            }
+
+            .dest-card-name {
+                font-size: 11px !important;
+                line-height: 1.25 !important;
+                display: -webkit-box !important;
+                -webkit-line-clamp: 2 !important;
+                -webkit-box-orient: vertical !important;
+                overflow: hidden !important;
                 white-space: normal !important;
             }
-            .slide-desc {
-                font-size: 13px !important;
-                max-width: 100% !important;
-                margin-bottom: 20px !important;
-                line-height: 1.5 !important;
-            }
-            .slide-eyebrow {
-                font-size: 11px !important;
-                margin-bottom: 8px !important;
-            }
-            .btn-cta {
-                padding: 8px 18px !important;
-                font-size: 10px !important;
-            }
-            .btn-play {
-                width: 36px !important;
-                height: 36px !important;
-            }
-            .btn-play svg {
-                width: 12px !important;
-                height: 12px !important;
-            }
-            .card-strip {
-                display: none !important;
+
+            .dest-card.active::after {
+                font-size: 14px !important;
+                top: 8px !important;
+                right: 10px !important;
+>>>>>>> Stashed changes
             }
         }
     </style>

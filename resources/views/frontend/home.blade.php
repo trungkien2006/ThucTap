@@ -46,27 +46,71 @@
             }
             
             /* Hero Slider Mobile Overrides */
-            .slider-content {
-                position: absolute !important;
-                bottom: 0 !important;
-                left: 0 !important;
-                right: 0 !important;
-                top: auto !important;
-                padding: 0 16px 36px 16px !important;
-                display: flex !important;
-                flex-direction: column !important;
-                align-items: flex-start !important;
-                justify-content: flex-end !important;
-                z-index: 10 !important;
+            #top {
+                position: relative !important;
+                height: 380px !important;
+                min-height: 380px !important;
                 width: 100% !important;
-                max-width: 100% !important;
-                box-sizing: border-box !important;
+                overflow: hidden !important;
+                background: #1C1410 !important;
+                padding-bottom: 0 !important;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
             }
+
+            .slider-wrapper {
+                position: absolute !important;
+                inset: 0 !important;
+                height: 100% !important;
+                width: 100% !important;
+                display: block !important;
+            }
+
+            .bg-layers {
+                position: absolute !important;
+                inset: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+                border-radius: 0 !important;
+                overflow: hidden !important;
+            }
+
+            .bg-layer {
+                position: absolute !important;
+                inset: 0 !important;
+                background-size: cover !important;
+                background-position: center !important;
+            }
+
+            .slider-overlay {
+                position: absolute !important;
+                inset: 0 !important;
+                background: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 60%, rgba(0,0,0,0.7) 100%) !important;
+                pointer-events: none !important;
+            }
+
+            /* Completely hide text info and black space */
             .slide-info {
                 display: none !important;
             }
 
-            /* Card Strip Mobile Overrides - Horizontal Landscape Cards */
+            /* Position slider content and cards B at the bottom of section A (above DANH MỤC SỰ KIỆN) */
+            .slider-content {
+                position: absolute !important;
+                top: auto !important;
+                bottom: 16px !important;
+                left: 0 !important;
+                right: 0 !important;
+                padding: 0 16px !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                justify-content: flex-end !important;
+                z-index: 20 !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
+
+            /* Card Strip Mobile Overrides - Positioned at top */
             .card-strip {
                 display: flex !important;
                 position: relative !important;
@@ -77,40 +121,49 @@
                 width: 100% !important;
                 max-width: 100% !important;
                 margin: 0 !important;
-                padding-bottom: 4px !important;
-                padding-top: 2px !important;
+                padding: 4px 0 10px 0 !important;
                 overflow-x: auto !important;
                 overflow-y: hidden !important;
                 -webkit-overflow-scrolling: touch !important;
                 scrollbar-width: none !important;
                 box-sizing: border-box !important;
             }
+
             .card-strip::-webkit-scrollbar {
                 display: none !important;
             }
+
             .card-track {
                 display: flex !important;
                 gap: 12px !important;
-                align-items: flex-end !important;
+                align-items: flex-start !important;
             }
+
             .dest-card {
-                flex: 0 0 200px !important;
-                height: 125px !important;
+                flex: 0 0 180px !important;
+                height: 120px !important;
                 border-radius: 14px !important;
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
+                border: 1px solid rgba(255, 255, 255, 0.15) !important;
             }
+
             .dest-card.active {
-                flex: 0 0 270px !important;
+                flex: 0 0 240px !important;
+                border-color: rgba(255, 227, 129, 0.6) !important;
             }
+
             .dest-card-info {
-                padding: 10px 12px 12px !important;
+                padding: 8px 10px 10px !important;
             }
+
             .dest-card-tag {
-                font-size: 9px !important;
+                font-size: 8px !important;
                 letter-spacing: 0.5px !important;
-                margin-bottom: 3px !important;
+                margin-bottom: 2px !important;
             }
+
             .dest-card-name {
-                font-size: 12px !important;
+                font-size: 11px !important;
                 line-height: 1.25 !important;
                 display: -webkit-box !important;
                 -webkit-line-clamp: 2 !important;
@@ -118,10 +171,11 @@
                 overflow: hidden !important;
                 white-space: normal !important;
             }
+
             .dest-card.active::after {
                 font-size: 14px !important;
-                top: 10px !important;
-                right: 12px !important;
+                top: 8px !important;
+                right: 10px !important;
             }
         }
     </style>

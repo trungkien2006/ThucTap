@@ -37,6 +37,7 @@
                 height: auto !important;
             }
             #featured-events-wrapper {
+                display: block !important;
                 grid-area: auto !important;
                 position: relative !important;
                 width: 100% !important;

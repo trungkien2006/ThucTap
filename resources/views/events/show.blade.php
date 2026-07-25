@@ -24,7 +24,7 @@
     .tp1-meta { display: flex; gap: 24px; justify-content: center; font-size: 15px; opacity: 0.9; }
     .tp1-meta-item { display: flex; align-items: center; gap: 8px; }
     
-    .tp1-container { max-width: 1140px; margin: 0 auto; padding: 60px 20px; }
+    .tp1-container { max-width: 1000px; margin: 0 auto; padding: 60px 20px; }
     .tp1-card { background: white; border-radius: 16px; padding: 40px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); margin-bottom: 40px; }
     .tp1-section-title { font-size: 24px; font-weight: 700; color: #0f172a; margin-bottom: 24px; display: flex; align-items: center; gap: 12px; }
     .tp1-section-title::before { content: ''; display: block; width: 4px; height: 24px; background: #f97316; border-radius: 4px; }

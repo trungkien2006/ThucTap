@@ -21,7 +21,7 @@
     .gw-hero-location { font-size: 1.1rem; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 500; font-family: 'DM Sans', sans-serif; }
     /* SECTIONS */
     .gw-section { background: #eaecf0; padding: 80px 24px; position: relative; }
-    .gw-container { max-width: 860px; margin: 0 auto; }
+    .gw-container { max-width: 1000px; margin: 0 auto; }
     .gw-section-title { font-family: 'Cormorant Garamond', serif !important; font-size: clamp(2.6rem, 5.2vw, 3.9rem); font-weight: 400; color: #3d4438; margin-bottom: 8px; line-height: 1.2; }
     .gw-section-subtitle { font-size: 1.14rem; color: #6e7a6a; margin-bottom: 40px; font-weight: 300; }
     /* BOTANICAL */
@@ -466,7 +466,7 @@
 @endphp
 @if($recapMedia->count() > 0)
 <section class="gw-gallery-section" id="gw-gallery">
-    <div style="padding:0 32px 20px;max-width:860px;margin:0 auto;">
+    <div style="padding:0 32px 20px;max-width:1000px;margin:0 auto;">
         <h2 class="gw-section-title gw-fade-in">Album Sự kiện</h2>
     </div>
     <div style="overflow:hidden;">
@@ -511,7 +511,7 @@
         </button>
     </div>
     @if(isset($previousEvent) || isset($nextEvent))
-    <div style="max-width:860px;margin:48px auto 0;display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+    <div style="max-width:1000px;margin:48px auto 0;display:grid;grid-template-columns:1fr 1fr;gap:24px;">
         <div>
             @if(isset($previousEvent) && $previousEvent)
             <a href="{{ route('events.show', $previousEvent->slug) }}" style="display:block;color:#3d4438;text-decoration:none;">

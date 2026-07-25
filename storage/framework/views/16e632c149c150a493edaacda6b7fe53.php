@@ -147,4 +147,4 @@
         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
     </div>
 </div>
-<?php /**PATH C:\Users\anima\Downloads\ThucTap-main\resources\views/components/event-fab-menu.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\Users\admin\Downloads\ThucTap-main\ThucTap-main\resources\views/components/event-fab-menu.blade.php ENDPATH**/ ?>

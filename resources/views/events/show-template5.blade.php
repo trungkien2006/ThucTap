@@ -25,7 +25,7 @@
     --school-card: #FFFFFF;
     --school-border: #E2E8F0;
     
-    --container-w: 800px;
+    --container-w: 1000px;
 }
 
 body { background-color: #f1f5f9; }
@@ -474,11 +474,11 @@ body { background-color: #f1f5f9; }
                 <div class="w6-gallery-block {{ $index % 2 == 1 ? 'reverse' : '' }}">
                     @if($index % 2 == 0)
                         <div>
-                            @if($block->caption)
-                                <h3 style="font-family: 'Montserrat', sans-serif; font-size: 18px; font-weight: 700; margin-bottom: 8px; color: var(--school-primary);">{{ $block->caption }}</h3>
-                            @endif
                             @if(!empty($block->content))
-                                <div class="w6-scrollable-text" style="color: var(--school-muted); font-size: 14px; line-height: 1.7;">{!! $block->content !!}</div>
+                                <h3 style="font-family: 'Montserrat', sans-serif; font-size: 18px; font-weight: 700; margin-bottom: 8px; color: var(--school-primary);">{!! $block->content !!}</h3>
+                            @endif
+                            @if($block->caption)
+                                <div class="w6-scrollable-text" style="color: var(--school-muted); font-size: 14px; line-height: 1.7;">{{ $block->caption }}</div>
                             @endif
                             <div class="flex flex-wrap gap-2 mt-4">
                                 @if($block->action_url)
@@ -506,11 +506,11 @@ body { background-color: #f1f5f9; }
                             @endif
                         </div>
                         <div>
-                            @if($block->caption)
-                                <h3 style="font-family: 'Montserrat', sans-serif; font-size: 18px; font-weight: 700; margin-bottom: 8px; color: var(--school-primary);">{{ $block->caption }}</h3>
-                            @endif
                             @if(!empty($block->content))
-                                <div class="w6-scrollable-text" style="color: var(--school-muted); font-size: 14px; line-height: 1.7;">{!! $block->content !!}</div>
+                                <h3 style="font-family: 'Montserrat', sans-serif; font-size: 18px; font-weight: 700; margin-bottom: 8px; color: var(--school-primary);">{!! $block->content !!}</h3>
+                            @endif
+                            @if($block->caption)
+                                <div class="w6-scrollable-text" style="color: var(--school-muted); font-size: 14px; line-height: 1.7;">{{ $block->caption }}</div>
                             @endif
                             <div class="flex flex-wrap gap-2 mt-4">
                                 @if($block->action_url)

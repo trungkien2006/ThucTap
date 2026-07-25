@@ -1,0 +1,344 @@
+﻿        const EVENT_ID = {{ $event->id }};
+        const CSRF_TOKEN = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        const MEDIA_STORE_URL = '{{ route("admin.media.store") }}';
+        // ΓöÇΓöÇ Slot Management ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+        let activeSlotId = null;
+
+        function activateSlot(slotNum) {
+            // Deactivate previous
+            document.querySelectorAll('.media-slot').forEach(s => s.classList.remove('slot-active'));
+            activeSlotId = slotNum;
+            const slot = document.getElementById('slot' + slotNum);
+            slot.classList.add('slot-active');
+
+            // Show indicator
+            const indicator = document.getElementById('activeSlotIndicator');
+            indicator.classList.remove('hidden');
+            indicator.classList.add('flex');
+            document.getElementById('activeSlotLabel').textContent = `─Éang chß╗ìn ß║únh cho ├ö sß╗æ ${slotNum}`;
+
+            // Open drawer to media section
+            openEditor('sec-media');
+        }
+
+        function clearActiveSlot() {
+            activeSlotId = null;
+            document.querySelectorAll('.media-slot').forEach(s => s.classList.remove('slot-active'));
+            const indicator = document.getElementById('activeSlotIndicator');
+            indicator.classList.add('hidden');
+            indicator.classList.remove('flex');
+        }
+
+        function removeSlot(slotNum) {
+            const slot = document.getElementById('slot' + slotNum);
+            slot.innerHTML = `
+                <span class="material-symbols-outlined text-[22px]">add_photo_alternate</span>
+                <span class="text-[13px] font-medium">Th├¬m h├¼nh ß║únh ${slotNum}</span>
+            `;
+            slot.classList.remove('slot-filled', 'h-auto');
+            slot.classList.add('border-dashed', 'border-slate-300', 'h-32');
+            document.getElementById('removeBtn' + slotNum).classList.add('hidden');
+        }
+
+        function applyMediaToSlot(url, type, path = null) {
+            if (!activeSlotId) return false;
+            const slot = document.getElementById('slot' + activeSlotId);
+            if (type === 'video') {
+                slot.innerHTML = `<video src="${url}" data-path="${path}" class="w-full h-auto rounded-xl" autoplay loop muted></video>`;
+            } else {
+                slot.innerHTML = `<img src="${url}" data-path="${path}" class="w-full h-auto rounded-xl" alt=""/>`;
+            }
+            slot.classList.add('slot-filled', 'h-auto');
+            slot.classList.remove('border-dashed', 'border-slate-300', 'slot-active', 'h-32');
+
+            // Show remove button
+            document.getElementById('removeBtn' + activeSlotId).classList.remove('hidden');
+            document.getElementById('removeBtn' + activeSlotId).classList.add('flex');
+
+            clearActiveSlot();
+            return true;
+        }
+
+        // ΓöÇΓöÇ Library pick ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+        function applyLibraryItem(url, type = 'image', path = null, el = null) {
+            if (!activeSlotId) {
+                // Flash indicator to tell user to pick a slot
+                const indicator = document.getElementById('activeSlotIndicator');
+                indicator.classList.remove('hidden');
+                indicator.classList.add('flex');
+                document.getElementById('activeSlotLabel').textContent = 'ΓÜá H├úy nhß║Ñn v├áo mß╗Öt ├┤ ß║únh tr╞░ß╗¢c!';
+                indicator.classList.add('border-red-200', 'bg-red-50');
+                document.getElementById('activeSlotLabel').classList.add('text-red-500');
+                setTimeout(() => {
+                    indicator.classList.add('hidden');
+                    indicator.classList.remove('flex', 'border-red-200', 'bg-red-50');
+                    document.getElementById('activeSlotLabel').classList.remove('text-red-500');
+                }, 2000);
+                return;
+            }
+            // Highlight selected lib item
+            document.querySelectorAll('.lib-item').forEach(i => i.classList.remove('selected'));
+            if (el) {
+                el.classList.add('selected');
+            } else if (typeof event !== 'undefined' && event.currentTarget) {
+                event.currentTarget.classList.add('selected');
+            }
+            applyMediaToSlot(url, type, path);
+        }
+
+        // ΓöÇΓöÇ File Upload (AJAX) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+        let pendingFiles = [];
+        let newFiles = [];
+        let duplicatedFiles = [];
+
+        const existingMediaFilenames = [
+            @foreach($mediaLibrary as $media)
+                "{{ basename($media->url) }}",
+            @endforeach
+        ];
+
+        function handleFileSelect(input) {
+            if (!input.files || input.files.length === 0) return;
+            pendingFiles = Array.from(input.files);
+            newFiles = [];
+            duplicatedFiles = [];
+
+            pendingFiles.forEach(file => {
+                if (existingMediaFilenames.includes(file.name)) {
+                    duplicatedFiles.push(file);
+                } else {
+                    newFiles.push(file);
+                }
+            });
+
+            if (duplicatedFiles.length > 0) {
+                const listEl = document.getElementById('duplicateFilesList');
+                listEl.innerHTML = duplicatedFiles.map(f => `
+                    <div class="flex items-center gap-2 py-1.5 border-b border-slate-100 last:border-0 text-[13px]">
+                        <span class="material-symbols-outlined text-[16px] text-slate-400">image</span>
+                        <span class="text-primary font-medium truncate flex-1">${f.name}</span>
+                        <span class="text-slate-400 text-[11px] shrink-0">${(f.size / 1024).toFixed(1)} KB</span>
+                    </div>
+                `).join('');
+                const modal = document.getElementById('duplicateModal');
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                setTimeout(() => document.getElementById('duplicateModalContent').classList.remove('scale-95'), 50);
+            } else {
+                processUploads(pendingFiles);
+            }
+        }
+
+        function cancelUpload() {
+            document.getElementById('duplicateModal').classList.add('hidden');
+            document.getElementById('duplicateModal').classList.remove('flex');
+            document.getElementById('duplicateModalContent').classList.add('scale-95');
+            document.getElementById('inHeroBg').value = '';
+            pendingFiles = [];
+        }
+        function uploadNewOnly() {
+            document.getElementById('duplicateModal').classList.add('hidden');
+            document.getElementById('duplicateModal').classList.remove('flex');
+            document.getElementById('duplicateModalContent').classList.add('scale-95');
+            processUploads(newFiles);
+        }
+        function uploadAll() {
+            document.getElementById('duplicateModal').classList.add('hidden');
+            document.getElementById('duplicateModal').classList.remove('flex');
+            document.getElementById('duplicateModalContent').classList.add('scale-95');
+            processUploads(pendingFiles, true);
+        }
+
+        async function processUploads(filesToUpload, force = false) {
+            if (filesToUpload.length === 0) return;
+
+            // Show spinner
+            document.getElementById('uploadSpinner').classList.add('show');
+            document.getElementById('uploadProgressText').textContent = `─Éang tß║úi l├¬n ${filesToUpload.length} file...`;
+            const progressList = document.getElementById('uploadProgressList');
+            progressList.innerHTML = '';
+
+            const formData = new FormData();
+            formData.append('event_id', EVENT_ID);
+            if (force) formData.append('force_upload', 1);
+            filesToUpload.forEach(f => formData.append('files[]', f));
+
+            try {
+                const resp = await fetch(MEDIA_STORE_URL, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': CSRF_TOKEN,
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                    },
+                    body: formData,
+                });
+
+                if (!resp.ok) {
+                    const errorData = await resp.json().catch(() => null);
+                    let errMsg = 'Lß╗ùi m├íy chß╗º hoß║╖c ─æß╗ïnh dß║íng file kh├┤ng ─æ╞░ß╗úc hß╗ù trß╗ú.';
+                    if (resp.status === 422 && errorData && errorData.errors) {
+                        errMsg = Object.values(errorData.errors).flat().join(' ');
+                    } else if (errorData && errorData.message) {
+                        errMsg = errorData.message;
+                    }
+                    throw new Error(errMsg);
+                }
+
+                const data = await resp.json();
+
+                if (data.success) {
+                    // Add uploaded items to library grid
+                    let libGrid = document.getElementById('mediaLibraryGrid');
+                    if (!libGrid) {
+                        const panel = document.getElementById('tabPanelLibrary');
+                        panel.innerHTML = '<div id="mediaLibraryGrid"></div>';
+                        libGrid = document.getElementById('mediaLibraryGrid');
+                    }
+
+                    data.files.forEach(file => {
+                        if (file.type === 'image' || file.type === 'video') {
+                            const div = document.createElement('div');
+                            div.className = 'lib-item';
+                            div.title = file.caption;
+                            div.onclick = function() { applyLibraryItem(file.url, file.type, file.path, this); };
+
+                            let mediaHtml = '';
+                            if (file.type === 'video') {
+                                mediaHtml = `<video src="${file.url}"></video>
+                                             <div class="lib-overlay" style="display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3);">
+                                                 <span class="material-symbols-outlined" style="color:white;font-size:24px;">play_circle</span>
+                                             </div>`;
+                            } else {
+                                mediaHtml = `<img src="${file.url}" alt="">`;
+                            }
+
+                            div.innerHTML = mediaHtml + `<div class="lib-overlay" style="background:rgba(0,0,0,0);"></div>`;
+                            libGrid.insertAdjacentElement('afterbegin', div);
+                            existingMediaFilenames.push(file.caption);
+                        }
+
+                        // Show progress row
+                        const row = document.createElement('div');
+                        row.className = 'flex items-center gap-2 text-[12px] text-emerald-600 bg-emerald-50 rounded-lg px-2 py-1.5';
+                        row.innerHTML = `<span class="material-symbols-outlined text-[14px]">check_circle</span><span class="truncate">─É├ú th├¬m: ${file.caption}</span>`;
+                        progressList.appendChild(row);
+                    });
+
+                    // Update tab button count
+                    const currentCount = document.querySelectorAll('.lib-item').length;
+                    document.getElementById('tabLibrary').textContent = `Kho Media (${currentCount})`;
+
+                    // Switch to library tab to show results
+                    switchTab('library');
+
+                    // Auto-apply first image to active slot if any
+                    if (activeSlotId && data.files.length > 0 && (data.files[0].type === 'image' || data.files[0].type === 'video')) {
+                        applyMediaToSlot(data.files[0].url, data.files[0].type, data.files[0].path);
+                    }
+                }
+            } catch (err) {
+                console.error('Upload error:', err);
+                const row = document.createElement('div');
+                row.className = 'flex items-center gap-2 text-[12px] text-red-500 bg-red-50 border border-red-100 rounded-lg px-2 py-2 mb-2';
+                row.innerHTML = `<span class="material-symbols-outlined text-[16px] shrink-0">error</span><span class="font-medium flex-1">${err.message || 'Lß╗ùi tß║úi l├¬n. Vui l├▓ng thß╗¡ lß║íi.'}</span>`;
+                progressList.appendChild(row);
+            } finally {
+                document.getElementById('uploadSpinner').classList.remove('show');
+                document.getElementById('inHeroBg').value = '';
+            }
+        }
+
+        async function uploadSubBanner(input) {
+            if (!input.files || input.files.length === 0) return;
+            const file = input.files[0];
+            const formData = new FormData();
+            formData.append('files[]', file);
+            formData.append('event_id', EVENT_ID);
+            formData.append('force_upload', 1);
+
+            const uploadingText = document.getElementById('subBannerUploading');
+            uploadingText.classList.remove('hidden');
+
+            try {
+                const resp = await fetch(MEDIA_STORE_URL, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': CSRF_TOKEN,
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                    },
+                    body: formData,
+                });
+                
+                let data;
+                try {
+                    data = await resp.json();
+                } catch (e) {
+                    throw new Error('M├íy chß╗º trß║ú vß╗ü phß║ún hß╗ôi kh├┤ng hß╗úp lß╗ç (kh├┤ng phß║úi JSON). C├│ thß╗â do file qu├í nß║╖ng hoß║╖c lß╗ùi server.');
+                }
+
+                if (!resp.ok) {
+                    let errMsg = 'Lß╗ùi tß║úi ß║únh l├¬n.';
+                    if (resp.status === 422 && data && data.errors) {
+                        errMsg = Object.values(data.errors).flat().join(' ');
+                    } else if (data && data.message) {
+                        errMsg = data.message;
+                    }
+                    throw new Error(errMsg);
+                }
+                
+                if (data.success && data.files && data.files.length > 0) {
+                    const uploadedFile = data.files[0];
+                    document.getElementById('inSubBannerUrl').value = uploadedFile.url;
+                    document.getElementById('inSubBannerPath').value = uploadedFile.path;
+                    
+                    // Add to library for reuse if not already there
+                    let libGrid = document.getElementById('mediaLibraryGrid');
+                    if (libGrid) {
+                        const div = document.createElement('div');
+                        div.className = 'lib-item';
+                        div.title = uploadedFile.caption || file.name;
+                        div.onclick = function() { applyLibraryItem(uploadedFile.url, uploadedFile.type, uploadedFile.path, this); };
+                        div.innerHTML = `<img src="${uploadedFile.url}" alt=""><div class="lib-overlay" style="background:rgba(0,0,0,0);"></div>`;
+                        libGrid.insertAdjacentElement('afterbegin', div);
+                        document.getElementById('tabLibrary').textContent = `Kho Media (${document.querySelectorAll('.lib-item').length})`;
+                    }
+                    syncData();
+                }
+            } catch (err) {
+                console.error(err);
+                alert(err.message || 'C├│ lß╗ùi xß║úy ra khi tß║úi ß║únh l├¬n.');
+            } finally {
+                uploadingText.classList.add('hidden');
+                input.value = '';
+            }
+        }
+
+        // ΓöÇΓöÇ Drag & Drop on drop zone ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+        const dropLabel = document.getElementById('dropZoneLabel');
+        if (dropLabel) {
+            ['dragenter', 'dragover'].forEach(e => dropLabel.addEventListener(e, ev => {
+                ev.preventDefault();
+                dropLabel.classList.add('dragging');
+            }));
+            ['dragleave', 'drop'].forEach(e => dropLabel.addEventListener(e, ev => {
+                ev.preventDefault();
+                dropLabel.classList.remove('dragging');
+            }));
+            dropLabel.addEventListener('drop', ev => {
+                const files = Array.from(ev.dataTransfer.files);
+                if (files.length) {
+                    pendingFiles = files;
+                    processUploads(files);
+                }
+            });
+        }
+
+        // ΓöÇΓöÇ Date formatter ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+        function formatDisplayDate(dateString) {
+            if (!dateString) return 'Ch╞░a chß╗ìn';
+            const parts = dateString.split('-');
+            if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            return dateString;
+

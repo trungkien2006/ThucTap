@@ -1,10 +1,10 @@
-<!DOCTYPE html>
-<html lang="<?php echo e(str_replace('_', '-', app()->getLocale())); ?>">
+﻿<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
-    <title>UniEvents | Studio — <?php echo e($event->title); ?></title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>UniEvents | Studio ΓÇö {{ $event->title }}</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
-    <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
         body { background-color: #0f172a; }
@@ -103,12 +103,12 @@
 <body class="overflow-x-hidden pt-[64px] bg-slate-900">
     <div id="topErrorBanner" class="hidden fixed top-[64px] left-0 w-full z-50 bg-red-100 text-red-600 px-4 py-3 text-center font-medium text-[14px] border-b border-red-200 shadow-sm transition-all"></div>
     <div class="app-layout">
-        <!-- ─── Control Drawer (Left Panel) ─── -->
+        <!-- ΓöÇΓöÇΓöÇ Control Drawer (Left Panel) ΓöÇΓöÇΓöÇ -->
         <aside class="control-drawer overflow-y-auto p-6 shadow-drawer">
             <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-5">
                 <div class="flex items-center gap-2">
                     <span class="w-2 h-2 bg-brand-orange rounded-full"></span>
-                    <h3 class="text-[15px] font-bold text-primary font-heading">Bảng cấu hình dữ liệu</h3>
+                    <h3 class="text-[15px] font-bold text-primary font-heading">Bß║úng cß║Ñu h├¼nh dß╗» liß╗çu</h3>
                 </div>
                 <button onclick="closeEditor()" class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-slate-100 text-slate-400 hover:text-slate-800 transition-all">
                     <span class="material-symbols-outlined text-[20px]">close</span>
@@ -118,97 +118,97 @@
             <div class="space-y-5">
                 <!-- 1. General Info -->
                 <div id="sec-info" class="drawer-section space-y-3 pt-1 transition-all rounded-lg p-2 -m-2">
-                    <h4 class="uni-section-title">1. Thông tin chung</h4>
+                    <h4 class="uni-section-title">1. Th├┤ng tin chung</h4>
                     <div class="space-y-2.5">
                         <div>
-                            <label class="uni-label">Tiêu đề sự kiện</label>
-                            <input type="text" id="inTieuDe" value="<?php echo e($event->title); ?>" oninput="syncData()" class="uni-input"/>
+                            <label class="uni-label">Ti├¬u ─æß╗ü sß╗▒ kiß╗çn</label>
+                            <input type="text" id="inTieuDe" value="{{ $event->title }}" oninput="syncData()" class="uni-input"/>
                         </div>
 
                         <div>
-                            <label class="uni-label">Mô tả tóm tắt</label>
-                            <textarea id="inMoTa" rows="2" oninput="syncData()" class="uni-input"><?php echo e($event->description); ?></textarea>
+                            <label class="uni-label">M├┤ tß║ú t├│m tß║»t</label>
+                            <textarea id="inMoTa" rows="2" oninput="syncData()" class="uni-input">{{ $event->description }}</textarea>
                         </div>
                     </div>
                 </div>
 
                 <!-- 3. Media Library (Tabbed) -->
                 <div id="sec-media" class="drawer-section space-y-3 pt-2 border-slate-100 transition-all rounded-lg p-2 -m-2">
-                    <h4 class="uni-section-title">Thư viện Media</h4>
+                    <h4 class="uni-section-title">Th╞░ viß╗çn Media</h4>
 
-                    
+                    {{-- Active slot indicator --}}
                     <div id="activeSlotIndicator" class="hidden items-center gap-2 px-3 py-2 bg-orange-50 border border-orange-200 rounded-xl">
                         <span class="material-symbols-outlined text-brand-orange text-[16px]">touch_app</span>
-                        <p class="text-[12px] text-brand-orange font-medium" id="activeSlotLabel">Đang chọn ảnh cho Ô 1</p>
+                        <p class="text-[12px] text-brand-orange font-medium" id="activeSlotLabel">─Éang chß╗ìn ß║únh cho ├ö 1</p>
                         <button onclick="clearActiveSlot()" class="ml-auto text-slate-400 hover:text-slate-600">
                             <span class="material-symbols-outlined text-[16px]">close</span>
                         </button>
                     </div>
 
-                    
+                    {{-- Tabs --}}
                     <div class="flex gap-1.5 bg-slate-100 p-1 rounded-xl">
                         <button onclick="switchTab('library')" id="tabLibrary" class="tab-btn active flex-1 py-1.5 text-[12px] font-semibold rounded-lg transition-all">
-                            Kho Media (<?php echo e(count($mediaLibrary)); ?>)
+                            Kho Media ({{ count($mediaLibrary) }})
                         </button>
                         <button onclick="switchTab('upload')" id="tabUpload" class="tab-btn flex-1 py-1.5 text-[12px] font-semibold rounded-lg transition-all text-slate-500 hover:text-primary">
-                            Tải file mới
+                            Tß║úi file mß╗¢i
                         </button>
                     </div>
 
-                    
+                    {{-- Tab: Library --}}
                     <div id="tabPanelLibrary" class="flex flex-col gap-3">
-                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(count($mediaLibrary) > 0): ?>
+                        @if(count($mediaLibrary) > 0)
                         <div class="flex justify-between items-center px-1 mt-1">
-                            <span class="text-[12px] font-medium text-slate-500">Đã tải lên <?php echo e(count($mediaLibrary)); ?> file</span>
+                            <span class="text-[12px] font-medium text-slate-500">─É├ú tß║úi l├¬n {{ count($mediaLibrary) }} file</span>
                             <select id="mediaFilter" onchange="filterMedia(this.value)" class="uni-input py-1 text-[11px] w-auto bg-white border-slate-200">
-                                <option value="all">Tất cả định dạng</option>
-                                <option value="image">Chỉ Hình ảnh</option>
-                                <option value="video">Chỉ Video</option>
+                                <option value="all">Tß║Ñt cß║ú ─æß╗ïnh dß║íng</option>
+                                <option value="image">Chß╗ë H├¼nh ß║únh</option>
+                                <option value="video">Chß╗ë Video</option>
                             </select>
                         </div>
                         <div id="mediaLibraryGrid">
-                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $mediaLibrary; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $media): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                            @foreach($mediaLibrary as $media)
                             <div class="lib-item"
-                                 onclick="applyLibraryItem('<?php echo e($media->full_url); ?>', '<?php echo e($media->type); ?>', '<?php echo e($media->url); ?>', this)"
-                                 title="<?php echo e($media->caption ?? basename($media->url)); ?>">
-                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($media->type === 'video'): ?>
-                                    <video src="<?php echo e(\App\Helpers\FileHelper::url($media->url)); ?>"></video>
+                                 onclick="applyLibraryItem('{{ $media->full_url }}', '{{ $media->type }}', '{{ $media->url }}', this)"
+                                 title="{{ $media->caption ?? basename($media->url) }}">
+                                @if($media->type === 'video')
+                                    <video src="{{ \App\Helpers\FileHelper::url($media->url) }}"></video>
                                     <div class="lib-overlay" style="display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3);">
                                         <span class="material-symbols-outlined" style="color:white;font-size:24px;">play_circle</span>
                                     </div>
-                                <?php else: ?>
-                                    <img src="<?php echo e(\App\Helpers\FileHelper::url($media->url)); ?>" alt="">
-                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                @else
+                                    <img src="{{ \App\Helpers\FileHelper::url($media->url) }}" alt="">
+                                @endif
                                 <div class="lib-overlay" style="background:rgba(0,0,0,0);transition:background 0.15s;"></div>
                             </div>
-                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
+                            @endforeach
                         </div>
-                        <?php else: ?>
+                        @else
                         <div class="text-center py-6 text-slate-400">
                             <span class="material-symbols-outlined text-[36px] block mb-1 text-slate-200">photo_library</span>
-                            <p class="text-[12px]">Kho ảnh trống. Hãy tải ảnh mới lên.</p>
+                            <p class="text-[12px]">Kho ß║únh trß╗æng. H├úy tß║úi ß║únh mß╗¢i l├¬n.</p>
                         </div>
-                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                        @endif
                     </div>
 
-                    
+                    {{-- Tab: Upload --}}
                     <div id="tabPanelUpload" class="hidden">
                         <div class="relative">
                             <label class="drop-zone block border-2 border-dashed border-slate-300 hover:border-brand-orange rounded-xl p-5 text-center cursor-pointer transition-all hover:bg-slate-50/50"
                                    id="dropZoneLabel">
                                 <input type="file" id="inHeroBg" accept="image/*,video/*" multiple class="sr-only" onchange="handleFileSelect(this)"/>
                                 <span class="material-symbols-outlined text-[32px] text-brand-orange mb-1 block">cloud_upload</span>
-                                <p class="text-[13px] font-semibold text-primary">Nhấn hoặc kéo file vào đây</p>
-                                <p class="text-[11px] text-slate-400 mt-0.5">JPG, PNG, GIF, SVG, BMP, MP4, AVI, MOV, WEBM (Tối đa 50MB)</p>
+                                <p class="text-[13px] font-semibold text-primary">Nhß║Ñn hoß║╖c k├⌐o file v├áo ─æ├óy</p>
+                                <p class="text-[11px] text-slate-400 mt-0.5">JPG, PNG, GIF, SVG, BMP, MP4, AVI, MOV, WEBM (Tß╗æi ─æa 50MB)</p>
                             </label>
                             <div id="uploadSpinner">
                                 <div class="flex flex-col items-center gap-2">
                                     <div class="w-8 h-8 border-4 border-brand-orange border-t-transparent rounded-full animate-spin"></div>
-                                    <p class="text-[12px] text-slate-500" id="uploadProgressText">Đang tải lên...</p>
+                                    <p class="text-[12px] text-slate-500" id="uploadProgressText">─Éang tß║úi l├¬n...</p>
                                 </div>
                             </div>
                         </div>
-                        
+                        {{-- Upload progress list --}}
                         <div id="uploadProgressList" class="mt-2 space-y-1.5 max-h-[100px] overflow-y-auto"></div>
                     </div>
                 </div>
@@ -217,17 +217,17 @@
 
             <div class="mt-4 pt-4 border-t border-slate-100 space-y-2">
                 <button onclick="saveDesignThen(closeEditor)" class="w-full py-2.5 bg-primary hover:bg-slate-800 text-white font-semibold rounded-xl text-[13px] shadow transition-all">
-                    Hoàn tất & Đóng
+                    Ho├án tß║Ñt & ─É├│ng
                 </button>
             </div>
         </aside>
 
-        <!-- ─── Main Content (Live Preview) ─── -->
+        <!-- ΓöÇΓöÇΓöÇ Main Content (Live Preview) ΓöÇΓöÇΓöÇ -->
         <main class="main-content-canvas min-h-screen pb-16">
             <!-- Fixed Header -->
             <header class="fixed top-0 left-0 w-full h-[64px] z-40 flex items-center justify-between px-8 bg-white border-b border-slate-200/80 shadow-sm transition-all duration-500">
                 <div class="flex items-center gap-2 w-[240px]">
-                    <a href="<?php echo e(route('admin.events.index')); ?>" class="flex items-center gap-2">
+                    <a href="{{ route('admin.events.index') }}" class="flex items-center gap-2">
                         <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-indigo-500 text-white shadow-md">
                             <i data-lucide="graduation-cap" class="h-5 w-5"></i>
                         </div>
@@ -236,36 +236,36 @@
                                 UniEvents
                                 <span class="text-brand-orange font-normal text-[12px] ml-0.5">| Studio</span>
                             </span>
-                            <span class="text-[11px] text-muted-foreground leading-tight tracking-wider">Trang quản trị</span>
+                            <span class="text-[11px] text-muted-foreground leading-tight tracking-wider">Trang quß║ún trß╗ï</span>
                         </div>
                     </a>
                 </div>
                 <div class="flex-1 flex justify-start items-center mx-4">
-                    <input type="hidden" id="inEventTemplate" value="<?php echo e($event->page_template ?? 1); ?>">
-                    <a href="<?php echo e(route('admin.events.template', $event)); ?>" class="flex items-center gap-1.5 text-[12px] text-slate-500 hover:text-brand-orange font-medium bg-slate-50 hover:bg-orange-50 px-3 py-1.5 rounded-lg transition-colors border border-slate-200 hover:border-orange-200">
+                    <input type="hidden" id="inEventTemplate" value="{{ $event->page_template ?? 1 }}">
+                    <a href="{{ route('admin.events.template', $event) }}" class="flex items-center gap-1.5 text-[12px] text-slate-500 hover:text-brand-orange font-medium bg-slate-50 hover:bg-orange-50 px-3 py-1.5 rounded-lg transition-colors border border-slate-200 hover:border-orange-200">
                         <span class="material-symbols-outlined text-[16px]">arrow_back</span>
-                        Chọn mẫu khác
+                        Chß╗ìn mß║½u kh├íc
                     </a>
                 </div>
                 <div class="flex items-center gap-3">
                     <!-- Step indicator mini -->
                     <div class="hidden md:flex items-center gap-2 mr-4">
-                        <a href="<?php echo e(route('admin.events.edit', $event)); ?>" class="text-[12px] text-slate-400 hover:text-primary transition-colors">① Thông tin</a>
-                        <span class="text-slate-300">→</span>
-                        <a href="<?php echo e(route('admin.events.template', $event)); ?>" class="text-[12px] text-slate-400 hover:text-primary transition-colors">② Chọn mẫu</a>
-                        <span class="text-slate-300">→</span>
-                        <span class="text-[12px] text-primary font-semibold">③ Thiết kế</span>
-                        <span class="text-slate-300">→</span>
-                        <a href="<?php echo e(route('admin.events.preview', $event)); ?>" class="text-[12px] text-slate-400 hover:text-primary transition-colors">④ Xem trước</a>
+                        <a href="{{ route('admin.events.edit', $event) }}" class="text-[12px] text-slate-400 hover:text-primary transition-colors">Γæá Th├┤ng tin</a>
+                        <span class="text-slate-300">ΓåÆ</span>
+                        <a href="{{ route('admin.events.template', $event) }}" class="text-[12px] text-slate-400 hover:text-primary transition-colors">Γæí Chß╗ìn mß║½u</a>
+                        <span class="text-slate-300">ΓåÆ</span>
+                        <span class="text-[12px] text-primary font-semibold">Γæó Thiß║┐t kß║┐</span>
+                        <span class="text-slate-300">ΓåÆ</span>
+                        <a href="{{ route('admin.events.preview', $event) }}" class="text-[12px] text-slate-400 hover:text-primary transition-colors">Γæú Xem tr╞░ß╗¢c</a>
                     </div>
 
                     <button onclick="openEditor()" class="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-slate-800 text-white rounded-xl text-[13px] font-medium transition-all shadow-sm">
                         <span class="material-symbols-outlined text-[18px]">tune</span>
-                        Cấu hình sự kiện
+                        Cß║Ñu h├¼nh sß╗▒ kiß╗çn
                     </button>
-                    <button onclick="saveDesignThen(() => { window.location.href = '<?php echo e(route('admin.events.preview', $event)); ?>' })" class="flex items-center gap-2 px-4 py-2 bg-brand-orange hover:bg-orange-600 text-white rounded-xl text-[13px] font-medium transition-all shadow-sm">
+                    <button onclick="saveDesignThen(() => { window.location.href = '{{ route('admin.events.preview', $event) }}' })" class="flex items-center gap-2 px-4 py-2 bg-brand-orange hover:bg-orange-600 text-white rounded-xl text-[13px] font-medium transition-all shadow-sm">
                         <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
-                        Xem trước
+                        Xem tr╞░ß╗¢c
                     </button>
                 </div>
             </header>
@@ -273,18 +273,17 @@
             <!-- Hero Section -->
             <section class="relative h-[320px] w-full overflow-hidden bg-slate-900">
                 <div id="viewHeroBg" class="absolute inset-0 bg-cover bg-center transition-all duration-500 scale-105"
-                    style="background-image: url('<?php echo e($event->bannerImage ? \App\Helpers\FileHelper::url($event->bannerImage->url) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80'); ?>');">
+                    style="background-image: url('{{ $event->bannerImage ? \App\Helpers\FileHelper::url($event->bannerImage->url) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80' }}');">
                 </div>
                 <div class="absolute inset-0 hero-overlay"></div>
 
                 <div class="absolute inset-0 flex flex-col justify-end max-w-[1140px] mx-auto w-full px-6 pb-8 z-10">
                     <div class="flex gap-2 mb-3">
-                        <span id="viewNganh" onclick="openEditor('sec-info')" class="px-2.5 py-1 bg-brand-orange text-white rounded-md text-[10px] uppercase font-bold tracking-wider cursor-pointer hover:opacity-90"><?php echo e($event->category?->name ?? 'Thiết kế đồ họa'); ?></span>
+                        <span id="viewNganh" onclick="openEditor('sec-info')" class="px-2.5 py-1 bg-brand-orange text-white rounded-md text-[10px] uppercase font-bold tracking-wider cursor-pointer hover:opacity-90">{{ $event->category?->name ?? 'Thiß║┐t kß║┐ ─æß╗ô hß╗ìa' }}</span>
                         <span id="viewHocKy" onclick="openEditor('sec-info')" class="px-2.5 py-1 bg-white/20 backdrop-blur-md text-white rounded-md text-[10px] uppercase font-bold tracking-wider cursor-pointer hover:bg-white/30">Fall 2024</span>
                     </div>
                     <h1 id="viewTieuDe" onclick="openEditor('sec-info')" class="text-[28px] md:text-[36px] font-bold text-white mb-2 font-heading leading-tight cursor-pointer hover:text-slate-200">
-                        <?php echo e($event->title); ?>
-
+                        {{ $event->title }}
                     </h1>
                 </div>
             </section>
@@ -296,35 +295,34 @@
                     <!-- Intro Card -->
                     <div class="uni-card p-6" onclick="openEditor('sec-info')" style="cursor: pointer;">
                         <h3 class="text-[18px] font-bold text-primary mb-3 font-heading flex items-center gap-2">
-                            <span class="w-1 h-5 bg-primary rounded-full"></span>Giới thiệu sự kiện
+                            <span class="w-1 h-5 bg-primary rounded-full"></span>Giß╗¢i thiß╗çu sß╗▒ kiß╗çn
                         </h3>
                         <p id="viewMoTa" class="text-slate-600 text-[14px] leading-relaxed whitespace-pre-line">
-                            <?php echo e($event->description); ?>
-
+                            {{ $event->description }}
                         </p>
                     </div>
 
-                    <!-- Banner Phụ cho Mẫu 2 -->
-                    <div id="subBannerSection" class="uni-card p-6" style="<?php echo e(($event->page_template ?? 1) == 2 ? '' : 'display: none;'); ?>">
+                    <!-- Banner Phß╗Ñ cho Mß║½u 2 -->
+                    <div id="subBannerSection" class="uni-card p-6" style="{{ ($event->page_template ?? 1) == 2 ? '' : 'display: none;' }}">
                         <div class="flex items-center justify-between mb-5 border-b border-slate-100 pb-3">
                             <h3 class="text-[18px] font-bold text-brand-orange font-heading flex items-center gap-2">
-                                <span class="material-symbols-outlined">panorama</span> Banner ngang (Dành riêng Mẫu 2)
+                                <span class="material-symbols-outlined">panorama</span> Banner ngang (D├ánh ri├¬ng Mß║½u 2)
                             </h3>
-                            <span class="text-[11px] text-slate-400">Ảnh trải dài hiển thị dưới giới thiệu sự kiện</span>
+                            <span class="text-[11px] text-slate-400">ß║ónh trß║úi d├ái hiß╗ân thß╗ï d╞░ß╗¢i giß╗¢i thiß╗çu sß╗▒ kiß╗çn</span>
                         </div>
                         <div class="flex flex-col items-center justify-center gap-3 w-full">
                             <div class="w-full relative h-[200px] bg-slate-50 border-2 border-dashed border-slate-300 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-brand-orange hover:bg-orange-50 transition-all group overflow-hidden" onclick="document.getElementById('subBannerFileInput').click()">
-                                <img id="viewSubBanner" src="<?php echo e($event->subBannerImage ? \App\Helpers\FileHelper::url($event->subBannerImage->url) : ''); ?>" class="absolute inset-0 w-full h-full object-cover <?php echo e($event->subBannerImage ? '' : 'hidden'); ?>">
-                                <div class="relative z-10 flex flex-col items-center text-slate-500 group-hover:text-brand-orange <?php echo e($event->subBannerImage ? 'opacity-0 hover:opacity-100 bg-white/90 p-4 rounded-xl shadow-lg' : ''); ?> transition-all">
+                                <img id="viewSubBanner" src="{{ $event->subBannerImage ? \App\Helpers\FileHelper::url($event->subBannerImage->url) : '' }}" class="absolute inset-0 w-full h-full object-cover {{ $event->subBannerImage ? '' : 'hidden' }}">
+                                <div class="relative z-10 flex flex-col items-center text-slate-500 group-hover:text-brand-orange {{ $event->subBannerImage ? 'opacity-0 hover:opacity-100 bg-white/90 p-4 rounded-xl shadow-lg' : '' }} transition-all">
                                     <span class="material-symbols-outlined text-[32px]">add_photo_alternate</span>
-                                    <span class="text-[13px] font-medium mt-1" id="subBannerUploadText"><?php echo e($event->subBannerImage ? 'Thay đổi ảnh banner' : 'Tải ảnh banner lên'); ?></span>
+                                    <span class="text-[13px] font-medium mt-1" id="subBannerUploadText">{{ $event->subBannerImage ? 'Thay ─æß╗òi ß║únh banner' : 'Tß║úi ß║únh banner l├¬n' }}</span>
                                 </div>
                             </div>
-                            <input type="text" id="inSubBannerUrl" readonly class="hidden" value="<?php echo e($event->subBannerImage ? \App\Helpers\FileHelper::url($event->subBannerImage->url) : ''); ?>" />
-                            <input type="hidden" id="inSubBannerPath" value="<?php echo e($event->subBannerImage ? $event->subBannerImage->url : ''); ?>" />
+                            <input type="text" id="inSubBannerUrl" readonly class="hidden" value="{{ $event->subBannerImage ? \App\Helpers\FileHelper::url($event->subBannerImage->url) : '' }}" />
+                            <input type="hidden" id="inSubBannerPath" value="{{ $event->subBannerImage ? $event->subBannerImage->url : '' }}" />
                             <input type="file" id="subBannerFileInput" accept="image/*" class="hidden" onchange="uploadSubBanner(this)" />
                             <div class="text-[13px] font-bold text-brand-orange hidden flex items-center gap-1.5" id="subBannerUploading">
-                                <span class="material-symbols-outlined animate-spin align-middle text-[18px]">sync</span> Đang tải lên...
+                                <span class="material-symbols-outlined animate-spin align-middle text-[18px]">sync</span> ─Éang tß║úi l├¬n...
                             </div>
                         </div>
                     </div>
@@ -333,20 +331,20 @@
                     <div class="uni-card p-6">
                         <div class="flex items-center justify-between mb-5 border-b border-slate-100 pb-3">
                             <h3 class="text-[18px] font-bold text-primary font-heading flex items-center gap-2">
-                                <span class="w-1 h-5 bg-primary rounded-full"></span>Nội dung chính
+                                <span class="w-1 h-5 bg-primary rounded-full"></span>Nß╗Öi dung ch├¡nh
                             </h3>
-                            <span class="text-[11px] text-slate-400">Nhập nội dung sự kiện và chọn ảnh minh hoạ</span>
+                            <span class="text-[11px] text-slate-400">Nhß║¡p nß╗Öi dung sß╗▒ kiß╗çn v├á chß╗ìn ß║únh minh hoß║í</span>
                         </div>
 
                         <div id="t5WarningMsg" class="hidden mb-4 bg-blue-50 text-blue-700 p-3 rounded-lg text-[13px] border border-blue-200">
                             <span class="material-symbols-outlined align-middle mr-1 text-[18px]">info</span>
-                            <b>Mẫu 5:</b> Chỉ ô nội dung đầu tiên được dùng làm "Nội dung thiệp mời". Các ô bên dưới chỉ dùng ảnh (nội dung chữ sẽ bị ẩn để phù hợp thiệp mời).
+                            <b>Mß║½u 5:</b> Chß╗ë ├┤ nß╗Öi dung ─æß║ºu ti├¬n ─æ╞░ß╗úc d├╣ng l├ám "Nß╗Öi dung thiß╗çp mß╗¥i". C├íc ├┤ b├¬n d╞░ß╗¢i chß╗ë d├╣ng ß║únh (nß╗Öi dung chß╗» sß║╜ bß╗ï ß║⌐n ─æß╗â ph├╣ hß╗úp thiß╗çp mß╗¥i).
                         </div>
 
                         <div class="space-y-6" id="mediaSlots">
-                            <?php $galleryMedia = $event->galleryImages->take(4)->values(); ?>
-                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php for($i = 1; $i <= 4; $i++): ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
-                            <?php 
+                            @php $galleryMedia = $event->galleryImages->take(4)->values(); @endphp
+                            @for($i = 1; $i <= 4; $i++)
+                            @php 
                                 $media = $galleryMedia->get($i - 1); 
                                 $hasMedia = $media ? true : false;
                                 
@@ -370,71 +368,71 @@
                                     $textOrder = 'lg:order-1';
                                     $mediaOrder = 'lg:order-2';
                                 }
-                            ?>
-                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-slate-50/50 p-6 rounded-xl border border-slate-100 items-start media-slot-wrapper" data-slot-wrap="<?php echo e($i); ?>">
-                                
-                                <div class="flex flex-col h-full w-full <?php echo e($textOrder); ?> media-text-col">
-                                    <textarea id="content<?php echo e($i); ?>" rows="8" placeholder="<?php echo e($i == 1 ? 'Nhập nội dung sự kiện cho đoạn này...' : 'Nhập nội dung sự kiện cho đoạn này...'); ?>"
-                                           class="w-full text-[14px] px-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all resize-y h-full" style="min-height: 250px;"><?php echo e($media ? $media->content : ''); ?></textarea>
+                            @endphp
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-slate-50/50 p-6 rounded-xl border border-slate-100 items-start media-slot-wrapper" data-slot-wrap="{{ $i }}">
+                                {{-- Column: Content --}}
+                                <div class="flex flex-col h-full w-full {{ $textOrder }} media-text-col">
+                                    <textarea id="content{{ $i }}" rows="8" placeholder="{{ $i == 1 ? 'Nhß║¡p nß╗Öi dung sß╗▒ kiß╗çn cho ─æoß║ín n├áy...' : 'Nhß║¡p nß╗Öi dung sß╗▒ kiß╗çn cho ─æoß║ín n├áy...' }}"
+                                           class="w-full text-[14px] px-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all resize-y h-full" style="min-height: 250px;">{{ $media ? $media->content : '' }}</textarea>
                                 </div>
                                        
-                                
-                                <div class="flex flex-col gap-3 w-full <?php echo e($mediaOrder); ?> media-upload-col">
-                                    
+                                {{-- Column: Media --}}
+                                <div class="flex flex-col gap-3 w-full {{ $mediaOrder }} media-upload-col">
+                                    {{-- Image slot --}}
                                     <div class="relative">
-                                        <div onclick="activateSlot(<?php echo e($i); ?>)"
-                                             class="media-slot w-full <?php echo e($hasMedia ? 'h-auto' : 'h-32'); ?> bg-white hover:bg-slate-50 border-2 <?php echo e($hasMedia ? '' : 'border-dashed'); ?> border-slate-300 hover:border-brand-orange rounded-xl flex items-center justify-center gap-2 cursor-pointer text-slate-500 hover:text-brand-orange transition-all <?php echo e($hasMedia ? 'slot-filled' : ''); ?>"
-                                             data-slot="<?php echo e($i); ?>" id="slot<?php echo e($i); ?>">
-                                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($hasMedia): ?>
-                                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($media->type === 'video'): ?>
-                                                    <video src="<?php echo e(\App\Helpers\FileHelper::url($media->url)); ?>" data-path="<?php echo e($media->url); ?>" class="w-full h-auto rounded-xl" autoplay loop muted playsinline></video>
-                                                <?php else: ?>
-                                                    <img src="<?php echo e(\App\Helpers\FileHelper::url($media->url)); ?>" data-path="<?php echo e($media->url); ?>" class="w-full h-auto rounded-xl" alt=""/>
-                                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-                                            <?php else: ?>
+                                        <div onclick="activateSlot({{ $i }})"
+                                             class="media-slot w-full {{ $hasMedia ? 'h-auto' : 'h-32' }} bg-white hover:bg-slate-50 border-2 {{ $hasMedia ? '' : 'border-dashed' }} border-slate-300 hover:border-brand-orange rounded-xl flex items-center justify-center gap-2 cursor-pointer text-slate-500 hover:text-brand-orange transition-all {{ $hasMedia ? 'slot-filled' : '' }}"
+                                             data-slot="{{ $i }}" id="slot{{ $i }}">
+                                            @if($hasMedia)
+                                                @if($media->type === 'video')
+                                                    <video src="{{ \App\Helpers\FileHelper::url($media->url) }}" data-path="{{ $media->url }}" class="w-full h-auto rounded-xl" autoplay loop muted playsinline></video>
+                                                @else
+                                                    <img src="{{ \App\Helpers\FileHelper::url($media->url) }}" data-path="{{ $media->url }}" class="w-full h-auto rounded-xl" alt=""/>
+                                                @endif
+                                            @else
                                                 <span class="material-symbols-outlined text-[22px]">add_photo_alternate</span>
-                                                <span class="text-[13px] font-medium">Thêm hình ảnh <?php echo e($i); ?></span>
-                                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                                <span class="text-[13px] font-medium">Th├¬m h├¼nh ß║únh {{ $i }}</span>
+                                            @endif
                                         </div>
-                                        
-                                        <button onclick="removeSlot(<?php echo e($i); ?>)" id="removeBtn<?php echo e($i); ?>"
-                                                class="<?php echo e($hasMedia ? 'flex' : 'hidden'); ?> absolute top-2 right-2 w-7 h-7 bg-white/90 hover:bg-red-500 hover:text-white text-slate-600 rounded-lg shadow items-center justify-center transition-all z-10"
-                                                title="Gỡ ảnh">
+                                        {{-- Remove button (hidden until filled) --}}
+                                        <button onclick="removeSlot({{ $i }})" id="removeBtn{{ $i }}"
+                                                class="{{ $hasMedia ? 'flex' : 'hidden' }} absolute top-2 right-2 w-7 h-7 bg-white/90 hover:bg-red-500 hover:text-white text-slate-600 rounded-lg shadow items-center justify-center transition-all z-10"
+                                                title="Gß╗í ß║únh">
                                             <span class="material-symbols-outlined text-[16px]">delete</span>
                                         </button>
                                     </div>
-                                    
-                                    <input type="text" id="caption<?php echo e($i); ?>" placeholder="Nhập ghi chú / mô tả cho ảnh <?php echo e($i); ?>..."
+                                    {{-- Caption --}}
+                                    <input type="text" id="caption{{ $i }}" placeholder="Nhß║¡p ghi ch├║ / m├┤ tß║ú cho ß║únh {{ $i }}..."
                                            class="w-full text-[13px] px-3 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all"
-                                           value="<?php echo e($media ? $media->caption : ''); ?>" />
+                                           value="{{ $media ? $media->caption : '' }}" />
 
-                                    <input type="hidden" id="docFileUrl<?php echo e($i); ?>" value="<?php echo e($media ? $media->document_url : ''); ?>" />
-                                    <input type="hidden" id="docFileName<?php echo e($i); ?>" value="<?php echo e($media ? $media->document_name : ''); ?>" />
+                                    <input type="hidden" id="docFileUrl{{ $i }}" value="{{ $media ? $media->document_url : '' }}" />
+                                    <input type="hidden" id="docFileName{{ $i }}" value="{{ $media ? $media->document_name : '' }}" />
 
-                                    
+                                    {{-- URL li├¬n kß║┐t ngo├ái --}}
                                     <div class="bg-white border border-slate-200 rounded-xl p-3.5 space-y-1">
                                         <label class="text-[12px] font-bold text-slate-600 flex items-center gap-1">
-                                            <span class="material-symbols-outlined text-[16px] text-slate-500">link</span> Liên kết ngoài (URL)
+                                            <span class="material-symbols-outlined text-[16px] text-slate-500">link</span> Li├¬n kß║┐t ngo├ái (URL)
                                         </label>
-                                        <input type="text" id="actionUrl<?php echo e($i); ?>" placeholder="Nhập link liên kết (VD: https://poly.edu.vn)..."
+                                        <input type="text" id="actionUrl{{ $i }}" placeholder="Nhß║¡p link li├¬n kß║┐t (VD: https://poly.edu.vn)..."
                                                class="w-full text-[13px] px-3 py-1.5 bg-slate-50/50 border border-slate-200 rounded-lg focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all"
-                                               value="<?php echo e($media ? $media->action_url : ''); ?>" oninput="syncData()" />
+                                               value="{{ $media ? $media->action_url : '' }}" oninput="syncData()" />
                                     </div>
 
-                                    
+                                    {{-- Preview URL ngay d╞░ß╗¢i caption --}}
                                     <div class="mt-1 flex flex-wrap gap-2">
-                                        <div id="urlPreviewWrap<?php echo e($i); ?>" class="flex items-center gap-1.5 bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg text-[12px] font-medium border border-blue-200/50 <?php echo e($media && $media->action_url ? '' : 'hidden'); ?>">
+                                        <div id="urlPreviewWrap{{ $i }}" class="flex items-center gap-1.5 bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg text-[12px] font-medium border border-blue-200/50 {{ $media && $media->action_url ? '' : 'hidden' }}">
                                             <span class="material-symbols-outlined text-[16px]">open_in_new</span>
-                                            <span class="truncate max-w-[150px]" id="urlPreviewLink<?php echo e($i); ?>"><?php echo e($media ? $media->action_url : ''); ?></span>
+                                            <span class="truncate max-w-[150px]" id="urlPreviewLink{{ $i }}">{{ $media ? $media->action_url : '' }}</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endfor; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
+                            @endfor
                         </div>
                         <button onclick="addNewSlot()" class="mt-5 w-full py-2.5 border-2 border-dashed border-slate-300 hover:border-brand-orange text-slate-500 hover:text-brand-orange rounded-xl font-medium transition-colors flex items-center justify-center gap-2">
                             <span class="material-symbols-outlined text-[20px]">add_circle</span>
-                            Thêm khối nội dung / ảnh
+                            Th├¬m khß╗æi nß╗Öi dung / ß║únh
                         </button>
                     </div>
                 </div>
@@ -447,7 +445,7 @@
                         <!-- Speakers Section -->
                         <div class="mb-6">
                             <div class="flex justify-between items-center mb-3 border-b border-slate-100 pb-2">
-                                <span class="text-[13px] text-slate-500 font-medium">Diễn giả tham gia</span>
+                                <span class="text-[13px] text-slate-500 font-medium">Diß╗àn giß║ú tham gia</span>
                                 <button type="button" @click="openDropdown()" class="material-symbols-outlined text-slate-400 hover:text-brand-orange transition-colors text-[18px]">add_circle</button>
                             </div>
                             <div class="flex flex-wrap gap-2">
@@ -459,7 +457,7 @@
                                         <input type="hidden" name="speaker_ids[]" :value="person.id" class="speaker-id-input">
                                     </div>
                                 </template>
-                                <div x-show="selectedSpeakers.length === 0" class="text-[12px] text-slate-400 italic">Chưa chọn diễn giả</div>
+                                <div x-show="selectedSpeakers.length === 0" class="text-[12px] text-slate-400 italic">Ch╞░a chß╗ìn diß╗àn giß║ú</div>
                             </div>
                         </div>
 
@@ -469,7 +467,7 @@
                             <div class="p-3 border-b border-slate-100 flex items-center justify-between">
                                 <div class="relative flex-1">
                                     <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">search</span>
-                                    <input type="text" x-model="searchQuery" x-ref="searchInput" placeholder="Tìm tên diễn giả..." class="w-full pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-[12px] focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all">
+                                    <input type="text" x-model="searchQuery" x-ref="searchInput" placeholder="T├¼m t├¬n diß╗àn giß║ú..." class="w-full pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-[12px] focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all">
                                 </div>
                                 <button type="button" @click="closeDropdown()" class="ml-2 text-slate-400 hover:text-slate-600 flex items-center"><span class="material-symbols-outlined text-[18px]">close</span></button>
                             </div>
@@ -495,7 +493,7 @@
                     </div>
 
                     <!-- Schedule Card -->
-                    <?php
+                    @php
                         $scheduleJson = $event->scheduleItems->map(function($s) {
                             return [
                                 'id' => uniqid(),
@@ -504,10 +502,10 @@
                                 'title' => $s->title
                             ];
                         })->toJson();
-                    ?>
-                    <div class="uni-card p-5 transition-all" x-data="scheduleManager(<?php echo e($scheduleJson); ?>)">
+                    @endphp
+                    <div class="uni-card p-5 transition-all" x-data="scheduleManager({{ $scheduleJson }})">
                         <h4 class="text-[13px] font-bold text-primary mb-3 font-heading flex items-center justify-between">
-                            <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px] text-brand-orange">format_list_bulleted</span>Lịch hoạt động sự kiện</span>
+                            <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px] text-brand-orange">format_list_bulleted</span>Lß╗ïch hoß║ít ─æß╗Öng sß╗▒ kiß╗çn</span>
                         </h4>
                         
                         <div class="space-y-3 mb-3" x-show="items.length > 0" x-transition>
@@ -524,13 +522,13 @@
                                                     <span> - <span x-text="item.end_time"></span></span>
                                                 </template>
                                             </div>
-                                            <div class="text-[13px] font-medium text-slate-700 leading-snug break-words" x-text="item.title || '(Chưa có nội dung)'"></div>
+                                            <div class="text-[13px] font-medium text-slate-700 leading-snug break-words" x-text="item.title || '(Ch╞░a c├│ nß╗Öi dung)'"></div>
                                         </div>
                                         <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button type="button" @click.stop="item._saved = false" class="p-1.5 text-slate-400 hover:text-brand-orange hover:bg-orange-50 rounded-lg transition-colors" title="Sửa">
+                                            <button type="button" @click.stop="item._saved = false" class="p-1.5 text-slate-400 hover:text-brand-orange hover:bg-orange-50 rounded-lg transition-colors" title="Sß╗¡a">
                                                 <span class="material-symbols-outlined text-[16px]">edit</span>
                                             </button>
-                                            <button type="button" @click.stop="removeItem(index)" class="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Xóa">
+                                            <button type="button" @click.stop="removeItem(index)" class="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="X├│a">
                                                 <span class="material-symbols-outlined text-[16px]">delete</span>
                                             </button>
                                         </div>
@@ -538,30 +536,30 @@
 
                                     <!-- Edit Mode (Form) -->
                                     <div x-show="!item._saved" class="flex flex-col gap-2.5">
-                                        <!-- Cột thời gian và nút xoá -->
+                                        <!-- Cß╗Öt thß╗¥i gian v├á n├║t xo├í -->
                                         <div class="flex items-center gap-3">
                                             <div class="flex items-center gap-1.5 flex-1">
-                                                <span class="text-[11px] font-bold text-slate-400 shrink-0">Từ</span>
+                                                <span class="text-[11px] font-bold text-slate-400 shrink-0">Tß╗½</span>
                                                 <input type="text" x-model="item.start_time" x-init="flatpickr($el, { enableTime: true, noCalendar: true, dateFormat: 'H:i', time_24hr: true, onChange: (sd, ds) => { item.start_time = ds; syncData(); } })" placeholder="--:--" class="w-full text-[12px] py-1.5 px-2 rounded-lg border border-slate-200 focus:border-brand-orange focus:ring-1 focus:ring-brand-orange bg-white transition-all font-medium text-center">
                                             </div>
                                             <div class="flex items-center gap-1.5 flex-1">
-                                                <span class="text-[11px] font-bold text-slate-400 shrink-0">Đến</span>
+                                                <span class="text-[11px] font-bold text-slate-400 shrink-0">─Éß║┐n</span>
                                                 <input type="text" x-model="item.end_time" x-init="flatpickr($el, { enableTime: true, noCalendar: true, dateFormat: 'H:i', time_24hr: true, onChange: (sd, ds) => { item.end_time = ds; syncData(); } })" placeholder="--:--" class="w-full text-[12px] py-1.5 px-2 rounded-lg border border-slate-200 focus:border-brand-orange focus:ring-1 focus:ring-brand-orange bg-white transition-all font-medium text-slate-500 text-center">
                                             </div>
-                                            <button type="button" @click="removeItem(index)" class="shrink-0 p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Xóa">
+                                            <button type="button" @click="removeItem(index)" class="shrink-0 p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="X├│a">
                                                 <span class="material-symbols-outlined text-[18px]">delete</span>
                                             </button>
                                         </div>
-                                        <!-- Ô nhập nội dung -->
-                                        <textarea rows="2" x-model="item.title" @input="syncData()" class="w-full text-[12px] p-2.5 rounded-lg border border-slate-200 focus:border-brand-orange focus:ring-1 focus:ring-brand-orange bg-white resize-none transition-all" placeholder="Nhập nội dung mốc thời gian..."></textarea>
+                                        <!-- ├ö nhß║¡p nß╗Öi dung -->
+                                        <textarea rows="2" x-model="item.title" @input="syncData()" class="w-full text-[12px] p-2.5 rounded-lg border border-slate-200 focus:border-brand-orange focus:ring-1 focus:ring-brand-orange bg-white resize-none transition-all" placeholder="Nhß║¡p nß╗Öi dung mß╗æc thß╗¥i gian..."></textarea>
                                         
-                                        <!-- Nút xác nhận từng mục -->
+                                        <!-- N├║t x├íc nhß║¡n tß╗½ng mß╗Ñc -->
                                         <div class="flex justify-end">
                                             <button type="button" @click="item._saved = true; syncData()" 
                                                     style="background-color: #10b981;"
                                                     class="px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all flex items-center gap-1 shadow-sm text-white hover:opacity-90">
                                                 <span class="material-symbols-outlined text-[14px]">check_circle</span>
-                                                <span>Xác nhận</span>
+                                                <span>X├íc nhß║¡n</span>
                                             </button>
                                         </div>
                                     </div>
@@ -571,7 +569,7 @@
                         
                         <div class="flex flex-col gap-2">
                             <button type="button" @click="addItem()" class="w-full py-2.5 border border-dashed border-brand-orange/50 text-brand-orange rounded-xl text-[12px] font-bold hover:bg-orange-50 hover:border-brand-orange transition-all flex items-center justify-center gap-1.5 shadow-sm">
-                                <span class="material-symbols-outlined text-[16px]">add_circle</span> Thêm mốc lịch trình mới
+                                <span class="material-symbols-outlined text-[16px]">add_circle</span> Th├¬m mß╗æc lß╗ïch tr├¼nh mß╗¢i
                             </button>
                         </div>
                         
@@ -579,61 +577,61 @@
                     </div>
 
                     <!-- Promoted Events: Newest -->
-                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(isset($newestEvents) && $newestEvents->count() > 0): ?>
+                    @if(isset($newestEvents) && $newestEvents->count() > 0)
                     <div class="uni-card p-5">
                         <h4 class="text-[13px] font-bold text-primary mb-4 font-heading flex items-center gap-1.5">
                             <span class="material-symbols-outlined text-[16px] text-emerald-500">new_releases</span>
-                            Sự kiện mới nhất
+                            Sß╗▒ kiß╗çn mß╗¢i nhß║Ñt
                         </h4>
                         <div class="space-y-4">
-                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $newestEvents; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $newEv): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
-                                <a href="<?php echo e(route('events.show', $newEv->slug)); ?>" target="_blank" class="flex gap-3 items-center group">
+                            @foreach($newestEvents as $newEv)
+                                <a href="{{ route('events.show', $newEv->slug) }}" target="_blank" class="flex gap-3 items-center group">
                                     <div class="w-16 h-12 rounded-lg overflow-hidden shrink-0 bg-slate-100 border border-slate-200">
-                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($newEv->bannerImage): ?>
-                                            <img src="<?php echo e(\App\Helpers\FileHelper::url($newEv->bannerImage->url)); ?>" class="w-full h-full object-cover group-hover:scale-110 transition-transform">
-                                        <?php else: ?>
+                                        @if($newEv->bannerImage)
+                                            <img src="{{ \App\Helpers\FileHelper::url($newEv->bannerImage->url) }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform">
+                                        @else
                                             <div class="w-full h-full bg-slate-200"></div>
-                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                        @endif
                                     </div>
                                     <div>
-                                        <h5 class="text-[12px] font-bold text-primary group-hover:text-brand-orange transition-colors line-clamp-2 leading-snug"><?php echo e($newEv->title); ?></h5>
-                                        <p class="text-[10px] text-slate-400 mt-1"><?php echo e($newEv->event_date->format('d/m/Y')); ?></p>
+                                        <h5 class="text-[12px] font-bold text-primary group-hover:text-brand-orange transition-colors line-clamp-2 leading-snug">{{ $newEv->title }}</h5>
+                                        <p class="text-[10px] text-slate-400 mt-1">{{ $newEv->event_date->format('d/m/Y') }}</p>
                                     </div>
                                 </a>
-                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
+                            @endforeach
                         </div>
                     </div>
-                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                    @endif
 
                     <!-- Promoted Events: Prominent -->
-                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(isset($prominentEvents) && $prominentEvents->count() > 0): ?>
+                    @if(isset($prominentEvents) && $prominentEvents->count() > 0)
                     <div class="uni-card p-5">
                         <h4 class="text-[13px] font-bold text-primary mb-4 font-heading flex items-center gap-1.5">
                             <span class="material-symbols-outlined text-[16px] text-amber-500">local_fire_department</span>
-                            Sự kiện nổi bật
+                            Sß╗▒ kiß╗çn nß╗òi bß║¡t
                         </h4>
                         <div class="space-y-4">
-                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $prominentEvents; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $promEv): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
-                                <a href="<?php echo e(route('events.show', $promEv->slug)); ?>" target="_blank" class="flex gap-3 items-center group">
+                            @foreach($prominentEvents as $promEv)
+                                <a href="{{ route('events.show', $promEv->slug) }}" target="_blank" class="flex gap-3 items-center group">
                                     <div class="w-16 h-12 rounded-lg overflow-hidden shrink-0 bg-slate-100 border border-slate-200">
-                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($promEv->bannerImage): ?>
-                                            <img src="<?php echo e(\App\Helpers\FileHelper::url($promEv->bannerImage->url)); ?>" class="w-full h-full object-cover group-hover:scale-110 transition-transform">
-                                        <?php else: ?>
+                                        @if($promEv->bannerImage)
+                                            <img src="{{ \App\Helpers\FileHelper::url($promEv->bannerImage->url) }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform">
+                                        @else
                                             <div class="w-full h-full bg-slate-200"></div>
-                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                        @endif
                                     </div>
                                     <div>
-                                        <h5 class="text-[12px] font-bold text-primary group-hover:text-brand-orange transition-colors line-clamp-2 leading-snug"><?php echo e($promEv->title); ?></h5>
+                                        <h5 class="text-[12px] font-bold text-primary group-hover:text-brand-orange transition-colors line-clamp-2 leading-snug">{{ $promEv->title }}</h5>
                                         <div class="flex items-center gap-2 mt-1">
-                                            <span class="text-[10px] text-slate-400 flex items-center gap-0.5"><span class="material-symbols-outlined text-[12px]">visibility</span><?php echo e($promEv->views_count); ?></span>
-                                            <span class="text-[10px] text-slate-400 flex items-center gap-0.5"><span class="material-symbols-outlined text-[12px]">favorite</span><?php echo e($promEv->likes_count); ?></span>
+                                            <span class="text-[10px] text-slate-400 flex items-center gap-0.5"><span class="material-symbols-outlined text-[12px]">visibility</span>{{ $promEv->views_count }}</span>
+                                            <span class="text-[10px] text-slate-400 flex items-center gap-0.5"><span class="material-symbols-outlined text-[12px]">favorite</span>{{ $promEv->likes_count }}</span>
                                         </div>
                                     </div>
                                 </a>
-                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
+                            @endforeach
                         </div>
                     </div>
-                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                    @endif
                 </div>
             </div>
         </main>
@@ -646,26 +644,26 @@
         <div class="bg-white rounded-2xl w-[90%] max-w-[500px] p-6 shadow-2xl transform scale-95 transition-all" id="duplicateModalContent">
             <div class="flex items-center gap-3 mb-4 text-brand-orange">
                 <span class="material-symbols-outlined text-[32px]">warning</span>
-                <h3 class="text-[18px] font-bold text-primary font-heading">Đã phát hiện file tương đồng</h3>
+                <h3 class="text-[18px] font-bold text-primary font-heading">─É├ú ph├ít hiß╗çn file t╞░╞íng ─æß╗ông</h3>
             </div>
-            <p class="text-[14px] text-slate-600 mb-4">Hệ thống phát hiện một số file có tên trùng lặp với các file đã tải lên trước đó. Vẫn tiếp tục tải ảnh lên?</p>
+            <p class="text-[14px] text-slate-600 mb-4">Hß╗ç thß╗æng ph├ít hiß╗çn mß╗Öt sß╗æ file c├│ t├¬n tr├╣ng lß║╖p vß╗¢i c├íc file ─æ├ú tß║úi l├¬n tr╞░ß╗¢c ─æ├│. Vß║½n tiß║┐p tß╗Ñc tß║úi ß║únh l├¬n?</p>
 
             <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 mb-6 max-h-[150px] overflow-y-auto space-y-1" id="duplicateFilesList"></div>
 
             <div class="flex flex-col gap-2 sm:flex-row sm:justify-end">
-                <button onclick="cancelUpload()" class="px-4 py-2 text-[13px] font-semibold text-slate-500 hover:bg-slate-100 rounded-xl transition-all">Dừng tải file</button>
-                <button onclick="uploadNewOnly()" class="px-4 py-2 text-[13px] font-semibold bg-primary hover:bg-slate-800 text-white rounded-xl transition-all shadow-sm">Tải mỗi file mới</button>
-                <button onclick="uploadAll()" class="px-4 py-2 text-[13px] font-semibold bg-brand-orange hover:bg-orange-600 text-white rounded-xl transition-all shadow-sm">Tải toàn bộ</button>
+                <button onclick="cancelUpload()" class="px-4 py-2 text-[13px] font-semibold text-slate-500 hover:bg-slate-100 rounded-xl transition-all">Dß╗½ng tß║úi file</button>
+                <button onclick="uploadNewOnly()" class="px-4 py-2 text-[13px] font-semibold bg-primary hover:bg-slate-800 text-white rounded-xl transition-all shadow-sm">Tß║úi mß╗ùi file mß╗¢i</button>
+                <button onclick="uploadAll()" class="px-4 py-2 text-[13px] font-semibold bg-brand-orange hover:bg-orange-600 text-white rounded-xl transition-all shadow-sm">Tß║úi to├án bß╗Ö</button>
             </div>
         </div>
     </div>
 
     <script>
-        const EVENT_ID = <?php echo e($event->id); ?>;
+        const EVENT_ID = {{ $event->id }};
         const CSRF_TOKEN = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-        const MEDIA_STORE_URL = '<?php echo e(route("admin.media.store")); ?>';
+        const MEDIA_STORE_URL = '{{ route("admin.media.store") }}';
 
-        // ── Drawer ──────────────────────────────────────────────
+        // ΓöÇΓöÇ Drawer ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
         function openEditor(sectionId = null) {
             document.body.classList.add('drawer-open');
             const drawer = document.querySelector('.control-drawer');
@@ -694,7 +692,7 @@
             document.querySelector('.control-drawer').classList.remove('wide');
         }
 
-        // ── Tabs ─────────────────────────────────────────────────
+        // ΓöÇΓöÇ Tabs ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
         function switchTab(tab) {
             const isLib = (tab === 'library');
             document.getElementById('tabLibrary').classList.toggle('active', isLib);
@@ -705,7 +703,7 @@
             document.getElementById('tabPanelUpload').classList.toggle('hidden', isLib);
         }
 
-        // ── Slot Management ───────────────────────────────────────
+        // ΓöÇΓöÇ Slot Management ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
         let activeSlotId = null;
 
         function activateSlot(slotNum) {
@@ -719,7 +717,7 @@
             const indicator = document.getElementById('activeSlotIndicator');
             indicator.classList.remove('hidden');
             indicator.classList.add('flex');
-            document.getElementById('activeSlotLabel').textContent = `Đang chọn ảnh cho Ô số ${slotNum}`;
+            document.getElementById('activeSlotLabel').textContent = `─Éang chß╗ìn ß║únh cho ├ö sß╗æ ${slotNum}`;
 
             // Open drawer to media section
             openEditor('sec-media');
@@ -737,7 +735,7 @@
             const slot = document.getElementById('slot' + slotNum);
             slot.innerHTML = `
                 <span class="material-symbols-outlined text-[22px]">add_photo_alternate</span>
-                <span class="text-[13px] font-medium">Thêm hình ảnh ${slotNum}</span>
+                <span class="text-[13px] font-medium">Th├¬m h├¼nh ß║únh ${slotNum}</span>
             `;
             slot.classList.remove('slot-filled', 'h-auto');
             slot.classList.add('border-dashed', 'border-slate-300', 'h-32');
@@ -763,14 +761,14 @@
             return true;
         }
 
-        // ── Library pick ─────────────────────────────────────────
+        // ΓöÇΓöÇ Library pick ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
         function applyLibraryItem(url, type = 'image', path = null, el = null) {
             if (!activeSlotId) {
                 // Flash indicator to tell user to pick a slot
                 const indicator = document.getElementById('activeSlotIndicator');
                 indicator.classList.remove('hidden');
                 indicator.classList.add('flex');
-                document.getElementById('activeSlotLabel').textContent = '⚠ Hãy nhấn vào một ô ảnh trước!';
+                document.getElementById('activeSlotLabel').textContent = 'ΓÜá H├úy nhß║Ñn v├áo mß╗Öt ├┤ ß║únh tr╞░ß╗¢c!';
                 indicator.classList.add('border-red-200', 'bg-red-50');
                 document.getElementById('activeSlotLabel').classList.add('text-red-500');
                 setTimeout(() => {
@@ -790,15 +788,15 @@
             applyMediaToSlot(url, type, path);
         }
 
-        // ── File Upload (AJAX) ────────────────────────────────────
+        // ΓöÇΓöÇ File Upload (AJAX) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
         let pendingFiles = [];
         let newFiles = [];
         let duplicatedFiles = [];
 
         const existingMediaFilenames = [
-            <?php $__currentLoopData = $mediaLibrary; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $media): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                "<?php echo e(basename($media->url)); ?>",
-            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            @foreach($mediaLibrary as $media)
+                "{{ basename($media->url) }}",
+            @endforeach
         ];
 
         function handleFileSelect(input) {
@@ -858,7 +856,7 @@
 
             // Show spinner
             document.getElementById('uploadSpinner').classList.add('show');
-            document.getElementById('uploadProgressText').textContent = `Đang tải lên ${filesToUpload.length} file...`;
+            document.getElementById('uploadProgressText').textContent = `─Éang tß║úi l├¬n ${filesToUpload.length} file...`;
             const progressList = document.getElementById('uploadProgressList');
             progressList.innerHTML = '';
 
@@ -880,7 +878,7 @@
 
                 if (!resp.ok) {
                     const errorData = await resp.json().catch(() => null);
-                    let errMsg = 'Lỗi máy chủ hoặc định dạng file không được hỗ trợ.';
+                    let errMsg = 'Lß╗ùi m├íy chß╗º hoß║╖c ─æß╗ïnh dß║íng file kh├┤ng ─æ╞░ß╗úc hß╗ù trß╗ú.';
                     if (resp.status === 422 && errorData && errorData.errors) {
                         errMsg = Object.values(errorData.errors).flat().join(' ');
                     } else if (errorData && errorData.message) {
@@ -925,7 +923,7 @@
                         // Show progress row
                         const row = document.createElement('div');
                         row.className = 'flex items-center gap-2 text-[12px] text-emerald-600 bg-emerald-50 rounded-lg px-2 py-1.5';
-                        row.innerHTML = `<span class="material-symbols-outlined text-[14px]">check_circle</span><span class="truncate">Đã thêm: ${file.caption}</span>`;
+                        row.innerHTML = `<span class="material-symbols-outlined text-[14px]">check_circle</span><span class="truncate">─É├ú th├¬m: ${file.caption}</span>`;
                         progressList.appendChild(row);
                     });
 
@@ -945,7 +943,7 @@
                 console.error('Upload error:', err);
                 const row = document.createElement('div');
                 row.className = 'flex items-center gap-2 text-[12px] text-red-500 bg-red-50 border border-red-100 rounded-lg px-2 py-2 mb-2';
-                row.innerHTML = `<span class="material-symbols-outlined text-[16px] shrink-0">error</span><span class="font-medium flex-1">${err.message || 'Lỗi tải lên. Vui lòng thử lại.'}</span>`;
+                row.innerHTML = `<span class="material-symbols-outlined text-[16px] shrink-0">error</span><span class="font-medium flex-1">${err.message || 'Lß╗ùi tß║úi l├¬n. Vui l├▓ng thß╗¡ lß║íi.'}</span>`;
                 progressList.appendChild(row);
             } finally {
                 document.getElementById('uploadSpinner').classList.remove('show');
@@ -979,11 +977,11 @@
                 try {
                     data = await resp.json();
                 } catch (e) {
-                    throw new Error('Máy chủ trả về phản hồi không hợp lệ (không phải JSON). Có thể do file quá nặng hoặc lỗi server.');
+                    throw new Error('M├íy chß╗º trß║ú vß╗ü phß║ún hß╗ôi kh├┤ng hß╗úp lß╗ç (kh├┤ng phß║úi JSON). C├│ thß╗â do file qu├í nß║╖ng hoß║╖c lß╗ùi server.');
                 }
 
                 if (!resp.ok) {
-                    let errMsg = 'Lỗi tải ảnh lên.';
+                    let errMsg = 'Lß╗ùi tß║úi ß║únh l├¬n.';
                     if (resp.status === 422 && data && data.errors) {
                         errMsg = Object.values(data.errors).flat().join(' ');
                     } else if (data && data.message) {
@@ -1012,14 +1010,14 @@
                 }
             } catch (err) {
                 console.error(err);
-                alert(err.message || 'Có lỗi xảy ra khi tải ảnh lên.');
+                alert(err.message || 'C├│ lß╗ùi xß║úy ra khi tß║úi ß║únh l├¬n.');
             } finally {
                 uploadingText.classList.add('hidden');
                 input.value = '';
             }
         }
 
-        // ── Drag & Drop on drop zone ──────────────────────────────
+        // ΓöÇΓöÇ Drag & Drop on drop zone ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
         const dropLabel = document.getElementById('dropZoneLabel');
         if (dropLabel) {
             ['dragenter', 'dragover'].forEach(e => dropLabel.addEventListener(e, ev => {
@@ -1039,15 +1037,15 @@
             });
         }
 
-        // ── Date formatter ────────────────────────────────────────
+        // ΓöÇΓöÇ Date formatter ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
         function formatDisplayDate(dateString) {
-            if (!dateString) return 'Chưa chọn';
+            if (!dateString) return 'Ch╞░a chß╗ìn';
             const parts = dateString.split('-');
             if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
             return dateString;
         }
 
-        // ── Real-time sync ────────────────────────────────────────
+        // ΓöÇΓöÇ Real-time sync ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
         function syncData() {
             const titleEl = document.getElementById('viewTieuDe');
             const inTieuDe = document.getElementById('inTieuDe');
@@ -1077,7 +1075,7 @@
                         viewSubBanner.src = subUrl;
                         viewSubBanner.classList.remove('hidden');
                         const uploadText = document.getElementById('subBannerUploadText');
-                        if (uploadText) uploadText.innerText = 'Thay đổi ảnh banner';
+                        if (uploadText) uploadText.innerText = 'Thay ─æß╗òi ß║únh banner';
                         if (viewSubBanner.nextElementSibling) {
                             viewSubBanner.nextElementSibling.classList.replace('opacity-100', 'opacity-0');
                             viewSubBanner.nextElementSibling.classList.replace('bg-slate-50', 'bg-white/90');
@@ -1157,7 +1155,7 @@
 
 
         async function saveDesignThen(callback) {
-            // Hiển thị Overlay Loading
+            // Hiß╗ân thß╗ï Overlay Loading
             let loadingOverlay = document.getElementById('globalLoadingOverlay');
             if (!loadingOverlay) {
                 loadingOverlay = document.createElement('div');
@@ -1166,7 +1164,7 @@
                 loadingOverlay.innerHTML = `
                     <div class="bg-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 border border-slate-100">
                         <span class="material-symbols-outlined animate-spin text-brand-orange text-[28px]">sync</span>
-                        <span class="text-[15px] font-bold text-primary font-heading">Đang lưu cấu hình...</span>
+                        <span class="text-[15px] font-bold text-primary font-heading">─Éang l╞░u cß║Ñu h├¼nh...</span>
                     </div>
                 `;
                 document.body.appendChild(loadingOverlay);
@@ -1218,10 +1216,10 @@
             });
 
             try {
-                const resp = await fetch("<?php echo e(route('admin.events.save_design', $event)); ?>", {
+                const resp = await fetch("{{ route('admin.events.save_design', $event) }}", {
                     method: 'POST',
                     headers: {
-                        'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         'Content-Type': 'application/json',
                         'Accept': 'application/json'
                     },
@@ -1232,7 +1230,7 @@
                     if (callback) callback();
                 } else {
                     const errorData = await resp.json().catch(() => null);
-                    let errMsg = 'Lỗi lưu cấu hình!';
+                    let errMsg = 'Lß╗ùi l╞░u cß║Ñu h├¼nh!';
                     if (resp.status === 422 && errorData && errorData.errors) {
                         errMsg = Object.values(errorData.errors).flat().join(' ');
                     } else if (errorData && errorData.message) {
@@ -1250,9 +1248,9 @@
                 }
             } catch (e) {
                 console.error(e);
-                alert('Lỗi lưu cấu hình!');
+                alert('Lß╗ùi l╞░u cß║Ñu h├¼nh!');
             } finally {
-                // Ẩn Overlay Loading
+                // ß║¿n Overlay Loading
                 if (loadingOverlay) {
                     loadingOverlay.classList.add('hidden');
                 }
@@ -1287,11 +1285,11 @@
             }
         }
 
-        // Đóng dropdown khi click ra ngoài
+        // ─É├│ng dropdown khi click ra ngo├ái
         document.addEventListener('click', function(event) {
             const dropdown = document.getElementById('speakerDropdown');
             if (dropdown && !dropdown.classList.contains('hidden')) {
-                // Nếu click không nằm trong dropdown và không nằm trên nút mở dropdown
+                // Nß║┐u click kh├┤ng nß║▒m trong dropdown v├á kh├┤ng nß║▒m tr├¬n n├║t mß╗ƒ dropdown
                 if (!dropdown.contains(event.target) && !event.target.closest('[onclick="toggleSpeakerDropdown(event)"]')) {
                     dropdown.classList.add('hidden');
                 }
@@ -1344,7 +1342,7 @@
             const slotHtml = `
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-slate-50/50 p-6 rounded-xl border border-slate-100 mt-6 items-start media-slot-wrapper" data-slot-wrap="${newI}">
                 <div class="flex flex-col h-full w-full ${textOrder} media-text-col" ${templateId === '5' ? 'style="display:none;"' : ''}>
-                    <textarea id="content${newI}" rows="8" placeholder="Nhập nội dung sự kiện cho đoạn này..."
+                    <textarea id="content${newI}" rows="8" placeholder="Nhß║¡p nß╗Öi dung sß╗▒ kiß╗çn cho ─æoß║ín n├áy..."
                            class="w-full text-[14px] px-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all resize-y h-full" style="min-height: 250px;"></textarea>
                 </div>
                        
@@ -1354,15 +1352,15 @@
                              class="media-slot w-full h-32 bg-white hover:bg-slate-50 border-2 border-dashed border-slate-300 hover:border-brand-orange rounded-xl flex items-center justify-center gap-2 cursor-pointer text-slate-500 hover:text-brand-orange transition-all"
                              data-slot="${newI}" id="slot${newI}">
                             <span class="material-symbols-outlined text-[22px]">add_photo_alternate</span>
-                            <span class="text-[13px] font-medium">Thêm hình ảnh ${newI}</span>
+                            <span class="text-[13px] font-medium">Th├¬m h├¼nh ß║únh ${newI}</span>
                         </div>
                         <button onclick="removeSlot(${newI})" id="removeBtn${newI}"
                                 class="hidden absolute top-2 right-2 w-7 h-7 bg-white/90 hover:bg-red-500 hover:text-white text-slate-600 rounded-lg shadow items-center justify-center transition-all z-10"
-                                title="Gỡ ảnh">
+                                title="Gß╗í ß║únh">
                             <span class="material-symbols-outlined text-[16px]">delete</span>
                         </button>
                     </div>
-                    <input type="text" id="caption${newI}" placeholder="Nhập ghi chú / mô tả cho ảnh ${newI}..."
+                    <input type="text" id="caption${newI}" placeholder="Nhß║¡p ghi ch├║ / m├┤ tß║ú cho ß║únh ${newI}..."
                            class="w-full text-[13px] px-3 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all" />
 
                     <input type="hidden" id="docFileUrl${newI}" />
@@ -1370,9 +1368,9 @@
 
                     <div class="bg-white border border-slate-200 rounded-xl p-3.5 space-y-1">
                         <label class="text-[12px] font-bold text-slate-600 flex items-center gap-1">
-                            <span class="material-symbols-outlined text-[16px] text-slate-500">link</span> Liên kết ngoài (URL)
+                            <span class="material-symbols-outlined text-[16px] text-slate-500">link</span> Li├¬n kß║┐t ngo├ái (URL)
                         </label>
-                        <input type="text" id="actionUrl${newI}" placeholder="Nhập link liên kết..."
+                        <input type="text" id="actionUrl${newI}" placeholder="Nhß║¡p link li├¬n kß║┐t..."
                                class="w-full text-[13px] px-3 py-1.5 bg-slate-50/50 border border-slate-200 rounded-lg focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all"
                                oninput="syncData()" />
                     </div>
@@ -1413,7 +1411,7 @@
         }
     </script>
 
-    <?php $__env->startPush('scripts'); ?>
+    @push('scripts')
     <script>
         tinymce.init({
             selector: 'textarea[id^="content"]',
@@ -1432,11 +1430,11 @@
 </body>
 </html>
 
-<?php
+@php
     $apData = $allSpeakers->map(fn($s) => ['id' => $s->id, 'name' => $s->name, 'bio' => Str::limit($s->bio, 30), 'photo' => $s->photo_url ? asset($s->photo_url) : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80', 'type' => $s->type ?? 'speaker'])->values()->toArray();
     $ssData = $event->speakers->where('pivot.role', 'speaker')->values()->map(fn($s) => ['id' => $s->id, 'name' => $s->name, 'photo' => $s->photo_url ? asset($s->photo_url) : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80'])->toArray();
 
-?>
+@endphp
 <script>
     document.addEventListener('alpine:init', () => {
         Alpine.data('scheduleManager', (initialItems = []) => ({
@@ -1457,8 +1455,8 @@
         }));
 
         Alpine.data('speakerManager', () => ({
-            allPersons: <?php echo json_encode($apData, 15, 512) ?>,
-            selectedSpeakers: <?php echo json_encode($ssData, 15, 512) ?>,
+            allPersons: @json($apData),
+            selectedSpeakers: @json($ssData),
             dropdownOpen: false,
             searchQuery: '',
 
@@ -1495,4 +1493,4 @@
             }
         }))
     });
-</script><?php /**PATH C:\Users\anima\Downloads\ThucTap-main\resources\views/admin/events/design.blade.php ENDPATH**/ ?>
+</script>

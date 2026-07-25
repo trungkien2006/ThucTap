@@ -40,4 +40,4 @@
         animation: marquee-scroll 4s linear infinite alternate 0.2s;
     }
 </style>
-<?php /**PATH C:\Users\anima\Downloads\ThucTap-main\resources\views/components/fab-event-card.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\Users\admin\Downloads\ThucTap-main\ThucTap-main\resources\views/components/fab-event-card.blade.php ENDPATH**/ ?>

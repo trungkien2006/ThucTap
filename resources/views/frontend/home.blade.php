@@ -17,10 +17,18 @@
     <style>
         .btn-play {
             background: #FFE381 !important;
-            border-color: #FFE381 !important;
+            border: none !important;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3) !important;
+            transition: background 0.2s ease !important;
+            transform: none !important;
+        }
+        .btn-play:hover {
+            background: #F6B21B !important;
+            transform: none !important;
         }
         .btn-play svg {
             fill: #1C1410 !important;
+            margin: auto !important; /* center it */
         }
         .hide-scrollbar::-webkit-scrollbar {
             display: none;

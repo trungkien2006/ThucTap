@@ -46,23 +46,15 @@
             }
             
             /* Hero Slider Mobile Overrides */
-<<<<<<< Updated upstream
-            .slider-content {
-                padding: 0 20px !important;
-                align-items: flex-end !important;
-                justify-content: flex-start !important;
-                padding-bottom: 60px !important;
-=======
             #top {
                 position: relative !important;
-                height: 380px !important;
-                min-height: 380px !important;
+                height: 100vh !important;
+                min-height: 560px !important;
                 width: 100% !important;
                 overflow: hidden !important;
                 background: #1C1410 !important;
                 padding-bottom: 0 !important;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
->>>>>>> Stashed changes
+                cursor: pointer !important;
             }
 
             .slider-wrapper {
@@ -92,23 +84,78 @@
             .slider-overlay {
                 position: absolute !important;
                 inset: 0 !important;
-                background: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 60%, rgba(0,0,0,0.7) 100%) !important;
+                background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.2) 40%, rgba(0,0,0,0.85) 100%) !important;
                 pointer-events: none !important;
             }
 
-            /* Completely hide text info and black space */
+            /* Show slide-info text overlay cleanly at bottom of Section A */
             .slide-info {
-                display: none !important;
+                display: block !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                margin-bottom: 0 !important;
             }
 
-            /* Position slider content and cards B at the bottom of section A (above DANH MỤC SỰ KIỆN) */
+            .slide-title {
+                font-size: clamp(22px, 6vw, 30px) !important;
+                line-height: 1.25 !important;
+                margin-bottom: 8px !important;
+                color: #FFFFFF !important;
+                font-weight: 800 !important;
+                word-wrap: break-word !important;
+                overflow-wrap: break-word !important;
+                white-space: normal !important;
+            }
+
+            .slide-desc {
+                font-size: 13px !important;
+                max-width: 100% !important;
+                margin-bottom: 16px !important;
+                line-height: 1.5 !important;
+                color: rgba(255, 255, 255, 0.85) !important;
+                display: -webkit-box !important;
+                -webkit-line-clamp: 2 !important;
+                -webkit-box-orient: vertical !important;
+                overflow: hidden !important;
+            }
+
+            .slide-eyebrow {
+                font-size: 11px !important;
+                margin-bottom: 6px !important;
+                letter-spacing: 1px !important;
+                color: #FFE381 !important;
+                font-weight: 700 !important;
+            }
+
+            .slide-actions {
+                display: flex !important;
+                align-items: center !important;
+                gap: 12px !important;
+            }
+
+            .btn-cta {
+                padding: 9px 20px !important;
+                font-size: 11px !important;
+                letter-spacing: 1px !important;
+            }
+
+            .btn-play {
+                width: 36px !important;
+                height: 36px !important;
+            }
+
+            .btn-play svg {
+                width: 13px !important;
+                height: 13px !important;
+            }
+
             .slider-content {
                 position: absolute !important;
+                bottom: 50px !important;
                 top: auto !important;
-                bottom: 16px !important;
                 left: 0 !important;
                 right: 0 !important;
-                padding: 0 16px !important;
+                padding: 0 20px !important;
                 display: flex !important;
                 flex-direction: column !important;
                 align-items: flex-start !important;
@@ -118,73 +165,9 @@
                 box-sizing: border-box !important;
             }
 
-            /* Card Strip Mobile Overrides - Positioned at top */
+            /* Hide part B (card strip) completely on mobile */
             .card-strip {
-                display: flex !important;
-                position: relative !important;
-                right: auto !important;
-                bottom: auto !important;
-                left: auto !important;
-                top: auto !important;
-                width: 100% !important;
-                max-width: 100% !important;
-                margin: 0 !important;
-                padding: 4px 0 10px 0 !important;
-                overflow-x: auto !important;
-                overflow-y: hidden !important;
-                -webkit-overflow-scrolling: touch !important;
-                scrollbar-width: none !important;
-                box-sizing: border-box !important;
-            }
-
-            .card-strip::-webkit-scrollbar {
                 display: none !important;
-            }
-
-            .card-track {
-                display: flex !important;
-                gap: 12px !important;
-                align-items: flex-start !important;
-            }
-
-            .dest-card {
-                flex: 0 0 180px !important;
-                height: 120px !important;
-                border-radius: 14px !important;
-                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
-                border: 1px solid rgba(255, 255, 255, 0.15) !important;
-            }
-
-            .dest-card.active {
-                flex: 0 0 240px !important;
-                border-color: rgba(255, 227, 129, 0.6) !important;
-            }
-
-            .dest-card-info {
-                padding: 8px 10px 10px !important;
-            }
-
-            .dest-card-tag {
-                font-size: 8px !important;
-                letter-spacing: 0.5px !important;
-                margin-bottom: 2px !important;
-            }
-
-            .dest-card-name {
-                font-size: 11px !important;
-                line-height: 1.25 !important;
-                display: -webkit-box !important;
-                -webkit-line-clamp: 2 !important;
-                -webkit-box-orient: vertical !important;
-                overflow: hidden !important;
-                white-space: normal !important;
-            }
-
-            .dest-card.active::after {
-                font-size: 14px !important;
-                top: 8px !important;
-                right: 10px !important;
->>>>>>> Stashed changes
             }
         }
     </style>
@@ -549,6 +532,15 @@
         /* ─── Pause on hover ─── */
         sliderEl?.addEventListener('mouseenter', () => isHovering = true);
         sliderEl?.addEventListener('mouseleave', () => isHovering = false);
+
+        /* ─── Mobile Tap on Section A to open Event Details ─── */
+        sliderEl?.addEventListener('click', (e) => {
+            if (window.innerWidth < 1024) {
+                if (e.target.closest('.btn-play')) return;
+                const url = slides[current]?.cta_url;
+                if (url) window.location.href = url;
+            }
+        });
 
         /* ─── Init ─── */
         initStrip();

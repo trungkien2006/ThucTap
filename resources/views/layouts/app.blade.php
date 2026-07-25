@@ -351,21 +351,7 @@
             </div>
         </div>
 
-        <!-- Global Search Bar -->
-        @if(!isset($hideTopMenu) || !$hideTopMenu)
-        <div class="flex-1 max-w-2xl px-4 hidden md:flex items-center justify-center">
-            <form action="{{ route('admin.events.index') }}" method="GET" class="flex items-center w-full max-w-md gap-2">
-                <div class="relative flex-1 group">
-                    <i data-lucide="search" class="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4 group-focus-within:text-primary transition-colors"></i>
-                    <input type="text" name="search" placeholder="Tìm kiếm sự kiện, danh mục..." value="{{ request('search') }}"
-                        class="h-10 w-full pl-10 pr-4 rounded-xl border border-border bg-white focus:bg-white text-sm transition-all focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary shadow-sm placeholder:text-muted-foreground">
-                </div>
-                <button type="submit" class="h-10 px-4 bg-primary text-primary-foreground text-sm font-medium rounded-xl hover:bg-primary/90 transition-colors shadow-sm whitespace-nowrap">
-                    Tìm kiếm
-                </button>
-            </form>
-        </div>
-        @endif
+
 
         @php
             $nowTime = now();

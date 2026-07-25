@@ -16,7 +16,17 @@
 
         <!-- Top Control Bar -->
         <div class="flex flex-wrap items-center gap-6 pb-4 border-b border-border text-sm text-foreground">
-            <form action="{{ route('admin.media.index') }}" method="GET" class="flex flex-wrap items-center gap-6 w-full lg:w-auto flex-1">
+            <form action="{{ route('admin.media.index') }}" method="GET" class="flex flex-wrap items-center gap-4 w-full lg:w-auto flex-1">
+                <!-- Search Control -->
+                <div class="flex items-center gap-2 w-full lg:w-auto">
+                    <label class="flex items-center gap-2 cursor-text transition-colors group relative w-full lg:w-64 h-10 bg-white border border-border/60 hover:border-border rounded-lg px-3 shadow-sm focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/10">
+                        <i data-lucide="search" class="w-4 h-4 shrink-0 text-muted-foreground group-focus-within:text-primary transition-colors"></i>
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Tìm kiếm album…" class="w-full font-medium bg-transparent border-0 focus:border-0 focus:outline-none shadow-none ring-0 focus:ring-0 p-0 text-sm placeholder:text-muted-foreground/70" style="border: none !important; box-shadow: none !important; outline: none !important;">
+                    </label>
+                    <button type="submit" class="h-10 px-4 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors shadow-sm whitespace-nowrap">
+                        Tìm kiếm
+                    </button>
+                </div>
                 <!-- Sort Control -->
                 <label class="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors group">
                     <i data-lucide="align-left" class="w-4 h-4 shrink-0 pointer-events-none"></i>
@@ -123,11 +133,6 @@
                                         <i data-lucide="message-circle" class="w-3 h-3"></i>
                                         <span>0</span>
                                     </div>
-                                </div>
-                                <div class="relative z-20">
-                                    <button type="button" class="text-white hover:text-white/80 hover:bg-white/20 p-1 rounded transition-colors">
-                                        <i data-lucide="more-horizontal" class="w-4 h-4"></i>
-                                    </button>
                                 </div>
                             </div>
                         </div>

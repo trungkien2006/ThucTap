@@ -353,14 +353,37 @@
         /* ─── Shift title animation ─── */
         function shiftTitle(text) {
             slideTitle.innerHTML = '';
-            const chars = text.split('');
-            chars.forEach((char, i) => {
-                const span = document.createElement('span');
-                span.className = 'shift-char';
-                span.textContent = char === ' ' ? '\u00A0' : char;
-                span.style.transitionDelay = `${i * 25}ms`;
-                slideTitle.appendChild(span);
+            const words = text.split(' ');
+            let charIndex = 0;
+            
+            words.forEach((word, wIdx) => {
+                const wordSpan = document.createElement('span');
+                wordSpan.style.display = 'inline-block';
+                wordSpan.style.whiteSpace = 'nowrap';
+                
+                const chars = word.split('');
+                chars.forEach((char) => {
+                    const span = document.createElement('span');
+                    span.className = 'shift-char';
+                    span.textContent = char;
+                    span.style.transitionDelay = `${charIndex * 25}ms`;
+                    wordSpan.appendChild(span);
+                    charIndex++;
+                });
+                
+                slideTitle.appendChild(wordSpan);
+
+                // Add space after word if it's not the last one
+                if (wIdx < words.length - 1) {
+                    const spaceSpan = document.createElement('span');
+                    spaceSpan.className = 'shift-char';
+                    spaceSpan.textContent = '\u00A0';
+                    spaceSpan.style.transitionDelay = `${charIndex * 25}ms`;
+                    slideTitle.appendChild(spaceSpan);
+                    charIndex++;
+                }
             });
+
             // Trigger the animation on next frame
             requestAnimationFrame(() => requestAnimationFrame(() => {
                 slideTitle.querySelectorAll('.shift-char').forEach(s => s.classList.add('is-visible'));

@@ -526,82 +526,104 @@
 
 @push('scripts')
 <script>
-    function addFilterTag(name, select) {
-        if (!select.value) return;
+    function addFilterTag(name, selectElement) {
+        const val = selectElement.value;
+        if (!val) return;
         const form = document.getElementById('filterForm');
-        let hiddenInput = form.querySelector(`input[name="${name}[]"][value="${select.value}"]`);
+        let hiddenInput = form.querySelector(`input[name="${name}[]"][value="${val}"]`);
         if (!hiddenInput) {
             hiddenInput = document.createElement('input');
             hiddenInput.type = 'hidden';
             hiddenInput.name = `${name}[]`;
-            hiddenInput.value = select.value;
+            hiddenInput.value = val;
+            hiddenInput.className = `filter-input-${name}`;
             form.appendChild(hiddenInput);
         }
         form.submit();
     }
 
-    function removeFilterTag(name, val) {
-        const form = document.getElementById('filterForm');
-        const hiddenInput = form.querySelector(`input[name="${name}[]"][value="${val}"]`);
-        if (hiddenInput) {
-            hiddenInput.remove();
-            form.submit();
-        }
+    function removeFilterTag(name, value) {
+        const inputs = document.querySelectorAll(`.filter-input-${name}`);
+        inputs.forEach(input => {
+            if (input.value == value) {
+                input.remove();
+            }
+        });
+        document.getElementById('filterForm').submit();
     }
 
-    function showConfirmModal(e, title, message, type = 'warning') {
-        e.preventDefault();
-        const form = e.target.closest('form');
+    let pendingForm = null;
+
+    function showConfirmModal(event, title, message, type = 'warning') {
+        event.preventDefault();
+        pendingForm = event.target.closest('form') || event.target;
+        
         const modal = document.getElementById('confirmModal');
         const container = document.getElementById('confirmModalContainer');
-        const titleEl = document.getElementById('modalTitle');
-        const messageEl = document.getElementById('modalMessage');
-        const iconContainer = document.getElementById('modalIconContainer');
-        const confirmBtn = document.getElementById('modalConfirmBtn');
-        const cancelBtn = document.getElementById('modalCancelBtn');
-
+        const titleEl = document.getElementById('confirmTitle');
+        const messageEl = document.getElementById('confirmMessage');
+        const iconBg = document.getElementById('confirmIconBg');
+        const icon = document.getElementById('confirmIcon');
+        const okBtn = document.getElementById('confirmOkBtn');
+        const cancelBtn = document.getElementById('confirmCancelBtn');
+        
         titleEl.textContent = title;
         messageEl.textContent = message;
-
-        // Reset classes
-        iconContainer.className = 'flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center';
-        confirmBtn.className = 'px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-offset-2';
         
         if (type === 'danger') {
-            iconContainer.classList.add('bg-red-100', 'text-red-600');
-            iconContainer.innerHTML = '<i data-lucide="alert-triangle" class="h-5 w-5"></i>';
-            confirmBtn.classList.add('bg-red-500', 'text-white', 'hover:bg-red-600', 'focus:ring-red-500');
-            confirmBtn.textContent = 'Xóa sự kiện';
+            iconBg.className = 'h-10 w-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center shrink-0';
+            icon.setAttribute('data-lucide', 'trash-2');
+            okBtn.className = 'h-9 px-4 rounded-lg text-xs font-medium text-white transition-all shadow-sm';
+            okBtn.style.backgroundColor = '#ef4444'; 
+            okBtn.onmouseover = () => okBtn.style.backgroundColor = '#dc2626'; 
+            okBtn.onmouseout = () => okBtn.style.backgroundColor = '#ef4444';
         } else {
-            iconContainer.classList.add('bg-amber-100', 'text-amber-600');
-            iconContainer.innerHTML = '<i data-lucide="alert-circle" class="h-5 w-5"></i>';
-            confirmBtn.classList.add('bg-primary', 'text-primary-foreground', 'hover:bg-primary/90', 'focus:ring-primary');
-            confirmBtn.textContent = 'Xác nhận';
+            iconBg.className = 'h-10 w-10 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center shrink-0';
+            icon.setAttribute('data-lucide', 'archive');
+            okBtn.className = 'h-9 px-4 rounded-lg text-xs font-medium text-white transition-all shadow-sm';
+            okBtn.style.backgroundColor = '#f59e0b'; 
+            okBtn.onmouseover = () => okBtn.style.backgroundColor = '#d97706'; 
+            okBtn.onmouseout = () => okBtn.style.backgroundColor = '#f59e0b';
+        }
+        
+        if (window.lucide) {
+            window.lucide.createIcons();
         }
 
-        lucide.createIcons();
-
-        confirmBtn.onclick = function() {
-            form.submit();
+        okBtn.onclick = function() {
+            if (pendingForm) {
+                pendingForm.submit();
+            }
+            hideModal();
         };
 
+        cancelBtn.onclick = function() {
+            hideModal();
+        };
+
+        modal.onclick = function(e) {
+            if (e.target === modal) {
+                hideModal();
+            }
+        };
+        
         modal.classList.remove('hidden');
-        // trigger reflow
         void modal.offsetWidth;
         modal.classList.remove('opacity-0');
         container.classList.remove('scale-95');
     }
 
-    function closeModal() {
+    function hideModal() {
         const modal = document.getElementById('confirmModal');
         const container = document.getElementById('confirmModalContainer');
         modal.classList.add('opacity-0');
         container.classList.add('scale-95');
         setTimeout(() => {
             modal.classList.add('hidden');
+            pendingForm = null;
         }, 300);
     }
-    
+
     function openDriveModal(eventId, eventTitle, currentLink = '') {
         const modal = document.getElementById('driveModal');
         const container = document.getElementById('driveModalContainer');
@@ -629,113 +651,5 @@
             modal.classList.add('hidden');
         }, 300);
     }
-</script>
-@endpush
-
-@push('scripts')
-<script>
-    function addFilterTag(name, selectElement) {
-        const val = selectElement.value;
-        if (!val) return;
-
-        const form = document.getElementById('filterForm');
-
-        // Add new hidden input
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = `${name}[]`;
-        input.value = val;
-        input.className = `filter-input-${name}`;
-        form.appendChild(input);
-
-        // Submit form
-        form.submit();
-    }
-
-    function removeFilterTag(name, value) {
-        const inputs = document.querySelectorAll(`.filter-input-${name}`);
-        inputs.forEach(input => {
-            if (input.value == value) {
-                input.remove();
-            }
-        });
-
-        // Submit form
-        document.getElementById('filterForm').submit();
-    }
-
-    let pendingForm = null;
-
-    function showConfirmModal(event, title, message, type = 'warning') {
-        event.preventDefault();
-        pendingForm = event.target;
-        
-        const modal = document.getElementById('confirmModal');
-        const container = document.getElementById('confirmModalContainer');
-        const titleEl = document.getElementById('confirmTitle');
-        const messageEl = document.getElementById('confirmMessage');
-        const iconBg = document.getElementById('confirmIconBg');
-        const icon = document.getElementById('confirmIcon');
-        const okBtn = document.getElementById('confirmOkBtn');
-        
-        titleEl.textContent = title;
-        messageEl.textContent = message;
-        
-        if (type === 'danger') {
-            iconBg.className = 'h-10 w-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center shrink-0';
-            icon.setAttribute('data-lucide', 'trash-2');
-            okBtn.className = 'h-9 px-4 rounded-lg text-xs font-medium text-white transition-all shadow-sm';
-            okBtn.style.backgroundColor = '#ef4444'; // Tailwind red-500
-            okBtn.onmouseover = () => okBtn.style.backgroundColor = '#dc2626'; // Tailwind red-600
-            okBtn.onmouseout = () => okBtn.style.backgroundColor = '#ef4444';
-        } else {
-            iconBg.className = 'h-10 w-10 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center shrink-0';
-            icon.setAttribute('data-lucide', 'archive');
-            okBtn.className = 'h-9 px-4 rounded-lg text-xs font-medium text-white transition-all shadow-sm';
-            okBtn.style.backgroundColor = '#f59e0b'; // Tailwind amber-500
-            okBtn.onmouseover = () => okBtn.style.backgroundColor = '#d97706'; // Tailwind amber-600
-            okBtn.onmouseout = () => okBtn.style.backgroundColor = '#f59e0b';
-        }
-        
-        if (window.lucide) {
-            window.lucide.createIcons();
-        }
-        
-        modal.classList.remove('hidden');
-        void modal.offsetWidth;
-        modal.classList.remove('opacity-0');
-        container.classList.remove('scale-95');
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        const modal = document.getElementById('confirmModal');
-        const container = document.getElementById('confirmModalContainer');
-        const cancelBtn = document.getElementById('confirmCancelBtn');
-        const okBtn = document.getElementById('confirmOkBtn');
-        
-        function hideModal() {
-            modal.classList.add('opacity-0');
-            container.classList.add('scale-95');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                pendingForm = null;
-            }, 300);
-        }
-        
-        cancelBtn.addEventListener('click', hideModal);
-        
-        okBtn.addEventListener('click', function() {
-            if (pendingForm) {
-                pendingForm.submit();
-            }
-            hideModal();
-        });
-        
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal) {
-                hideModal();
-            }
-        });
-    });
 </script>
 @endpush

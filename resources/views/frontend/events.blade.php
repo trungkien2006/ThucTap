@@ -48,15 +48,14 @@
                 <!-- Dropdowns & Action Controls -->
                 <div class="grid grid-cols-2 sm:grid-cols-3 lg:flex lg:flex-nowrap items-center gap-3 w-full lg:flex-[2.5]">
                     <!-- Year Filter Dropdown -->
-                    <div class="flex items-center justify-between gap-2 rounded-2xl px-3 h-11 border relative w-full lg:flex-1" 
+                    <div class="flex items-center gap-2 rounded-2xl px-3 h-11 border relative w-full lg:flex-1" 
                          style="background: #FFFDF9; border-color: #E8E2D5;">
-                        <div class="flex items-center gap-1.5 shrink-0 whitespace-nowrap">
+                        <div class="flex items-center shrink-0">
                             <i data-lucide="calendar" class="h-4 w-4 shrink-0 text-[#8A7320]"></i>
-                            <span class="text-xs font-bold uppercase tracking-widest text-[#7A6A52] mr-1">Năm</span>
                         </div>
                         <select name="year" onchange="document.getElementById('events-filter-form').submit()"
-                                class="bg-transparent bg-none text-sm font-semibold focus:outline-none cursor-pointer pr-4 appearance-none text-[#1C1410] w-full min-w-0 text-right">
-                            <option value="">Tất cả</option>
+                                class="bg-transparent bg-none text-sm font-semibold focus:outline-none cursor-pointer pr-6 appearance-none text-[#1C1410] w-full min-w-0 text-left">
+                            <option value="">Năm</option>
                             @if(isset($availableYears))
                                 @foreach($availableYears as $yr)
                                     <option value="{{ $yr }}" {{ (isset($selectedYear) && $selectedYear == $yr) ? 'selected' : '' }}>
@@ -69,15 +68,14 @@
                     </div>
 
                     <!-- Month Filter Dropdown -->
-                    <div class="flex items-center justify-between gap-2 rounded-2xl px-3 h-11 border relative w-full lg:flex-1" 
+                    <div class="flex items-center gap-2 rounded-2xl px-3 h-11 border relative w-full lg:flex-1" 
                          style="background: #FFFDF9; border-color: #E8E2D5;">
-                        <div class="flex items-center gap-1.5 shrink-0 whitespace-nowrap">
+                        <div class="flex items-center shrink-0">
                             <i data-lucide="calendar-days" class="h-4 w-4 shrink-0 text-[#07A0C3]"></i>
-                            <span class="text-xs font-bold uppercase tracking-widest text-[#7A6A52] mr-1">Tháng</span>
                         </div>
                         <select name="month" onchange="document.getElementById('events-filter-form').submit()"
-                                class="bg-transparent bg-none text-sm font-semibold focus:outline-none cursor-pointer pr-4 appearance-none text-[#1C1410] w-full min-w-0 text-right">
-                            <option value="">Tất cả</option>
+                                class="bg-transparent bg-none text-sm font-semibold focus:outline-none cursor-pointer pr-6 appearance-none text-[#1C1410] w-full min-w-0 text-left">
+                            <option value="">Tháng</option>
                             @for($m = 1; $m <= 12; $m++)
                                 <option value="{{ $m }}" {{ (isset($selectedMonth) && $selectedMonth == $m) ? 'selected' : '' }}>
                                     Tháng {{ $m }}
@@ -88,15 +86,14 @@
                     </div>
 
                     <!-- Status Filter Dropdown -->
-                    <div class="flex items-center justify-between gap-2 rounded-2xl px-3 h-11 border relative w-full lg:flex-1" 
+                    <div class="flex items-center gap-2 rounded-2xl px-3 h-11 border relative w-full lg:flex-1" 
                          style="background: #FFFDF9; border-color: #E8E2D5;">
-                        <div class="flex items-center gap-1.5 shrink-0 whitespace-nowrap">
+                        <div class="flex items-center shrink-0">
                             <i data-lucide="activity" class="h-4 w-4 shrink-0 text-[#FF4D4D]"></i>
-                            <span class="text-xs font-bold uppercase tracking-widest text-[#7A6A52] mr-1">Trạng thái</span>
                         </div>
                         <select name="status" onchange="document.getElementById('events-filter-form').submit()"
-                                class="bg-transparent bg-none text-sm font-semibold focus:outline-none cursor-pointer pr-4 appearance-none text-[#1C1410] w-full min-w-0 text-right">
-                            <option value="">Tất cả</option>
+                                class="bg-transparent bg-none text-sm font-semibold focus:outline-none cursor-pointer pr-6 appearance-none text-[#1C1410] w-full min-w-0 text-left">
+                            <option value="">Trạng thái</option>
                             <option value="upcoming" {{ (isset($selectedStatus) && $selectedStatus === 'upcoming') ? 'selected' : '' }}>Sắp diễn ra</option>
                             <option value="ongoing" {{ (isset($selectedStatus) && $selectedStatus === 'ongoing') ? 'selected' : '' }}>Đang diễn ra</option>
                         </select>
@@ -104,15 +101,14 @@
                     </div>
 
                     <!-- Category Filter Dropdown -->
-                    <div class="flex items-center justify-between gap-2 rounded-2xl px-3 h-11 border relative w-full lg:flex-1" 
+                    <div class="flex items-center gap-2 rounded-2xl px-3 h-11 border relative w-full lg:flex-1" 
                          style="background: #FFFDF9; border-color: #E8E2D5;">
-                        <div class="flex items-center gap-1.5 shrink-0 whitespace-nowrap">
+                        <div class="flex items-center shrink-0">
                             <i data-lucide="tag" class="h-4 w-4 shrink-0 text-[#04B050]"></i>
-                            <span class="text-xs font-bold uppercase tracking-widest text-[#7A6A52] mr-1">Loại</span>
                         </div>
                         <select name="category" onchange="document.getElementById('events-filter-form').submit()"
-                                class="bg-transparent bg-none text-sm font-semibold focus:outline-none cursor-pointer pr-4 appearance-none text-[#1C1410] w-full min-w-0 text-right">
-                            <option value="">Tất cả</option>
+                                class="bg-transparent bg-none text-sm font-semibold focus:outline-none cursor-pointer pr-6 appearance-none text-[#1C1410] w-full min-w-0 text-left">
+                            <option value="">Loại</option>
                             @if(isset($categories))
                                 @foreach($categories as $cat)
                                     <option value="{{ $cat['slug'] }}" {{ (isset($selectedCategory) && $selectedCategory == $cat['slug']) ? 'selected' : '' }}>
@@ -162,9 +158,10 @@
             <div class="event-grid-card-wrapper" style="opacity: 0; transform: translateY(40px);">
                 <div class="group h-full flex flex-col rounded-3xl bg-white shadow-sm border border-[#E8E2D5] overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
                     <!-- Image -->
-                    <div class="relative h-64 overflow-hidden bg-slate-100">
+                    <a href="{{ route('events.show', $event->slug) }}" class="relative block h-64 overflow-hidden bg-slate-100">
                     <img src="{{ $event->bannerImage ? \App\Helpers\FileHelper::url($event->bannerImage->url, true) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80' }}" 
                          alt="{{ $event->title }}" 
+                         loading="lazy"
                          class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105">
                     
                     <!-- Hover Description Overlay -->
@@ -191,7 +188,7 @@
                             Tháng {{ \Carbon\Carbon::parse($event->event_date)->format('m') }}
                         </div>
                     </div>
-                </div>
+                </a>
 
                 <!-- Content -->
                 <div class="flex flex-1 flex-col p-6 lg:p-8">
@@ -226,12 +223,6 @@
             @endforeach
         </div>
         
-        <!-- Pagination -->
-        @if($events->hasPages())
-        <div class="mt-8 mb-16 flex justify-center">
-            {{ $events->appends(request()->query())->links() }}
-        </div>
-        @endif
 
         <script>
             document.addEventListener('DOMContentLoaded', () => {

@@ -420,8 +420,8 @@
 <!-- FOOTER CTA SECTION -->
 <section class="mb-32 text-center flex flex-col items-center">
 <h2 class="font-label-handwritten text-4xl text-tertiary mb-8">Còn rất nhiều kỷ niệm đang chờ được tạo ra...</h2>
-<div class="flex flex-col md:flex-row items-center gap-8 md:gap-10">
-<a href="{{ route('events.index', ['status' => 'upcoming']) }}" class="bg-secondary text-on-secondary px-8 py-4 rounded-full font-bold shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center gap-3 group">
+<div class="flex flex-col md:flex-row items-center gap-12 md:gap-24">
+<a href="{{ route('events.index', ['status' => 'upcoming']) }}" class="relative z-10 bg-secondary text-on-secondary px-8 py-4 rounded-full font-bold shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center gap-3 group">
     Khám phá sự kiện sắp tới
     <span class="material-symbols-outlined group-hover:translate-x-2 transition-transform">arrow_forward</span>
 </a>
@@ -485,9 +485,14 @@
     transform: rotate(18deg) translateX(90px) !important;
     z-index: 1 !important;
 }
+.polaroid-fan-stack:hover .polaroid-fan-card:hover {
+    z-index: 10 !important;
+    scale: 1.05;
+    box-shadow: 0 15px 30px rgba(61,43,31,0.15);
+}
 .polaroid-fan-card {
     box-shadow: 0 4px 15px rgba(61,43,31,0.12);
-    transition: transform 0.45s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s ease, z-index 0s;
+    transition: transform 0.45s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s ease, z-index 0s, scale 0.3s ease;
 }
 </style>
 </main>

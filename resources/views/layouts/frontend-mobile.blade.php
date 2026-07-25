@@ -42,10 +42,10 @@
         [x-cloak] { display: none !important; }
     </style>
     <!-- AOS CSS for scroll animations -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.css" rel="stylesheet">
     
     <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -61,7 +61,7 @@
     @vite(['resources/css/app.css', 'resources/css/frontend.css', 'resources/js/app.js'])
     
     <!-- SPA Pre-loaded CDN Scripts -->
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js" data-navigate-track></script>
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.js" data-navigate-track></script>
 
     @stack('styles')
     <style>

@@ -173,11 +173,7 @@ class EventController extends Controller
         if ($request->hasFile('banner_image')) {
             $categorySlug = $event->category ? $event->category->slug : 'uncategorized';
             $folderPath = "{$categorySlug}/{$event->slug}/banners";
-            try {
-                $path = $request->file('banner_image')->store($folderPath, 'google');
-            } catch (\Exception $e) {
-                $path = $request->file('banner_image')->store($folderPath, 'public');
-            }
+            $path = $request->file('banner_image')->store($folderPath, 'google');
             $event->media()->create([
                 'type' => 'image',
                 'url' => $path,
@@ -186,6 +182,10 @@ class EventController extends Controller
         }
 
         ActivityLogger::log("đã tạo sự kiện mới: {$event->title}", route('admin.events.index'));
+
+        if ($request->input('redirect_to') === 'index') {
+            return redirect()->route('admin.events.index')->with('success', 'Sự kiện đã được lưu dưới dạng Bản nháp.');
+        }
 
         // Redirect to template selection step (Step 2)
         return redirect()->route('admin.events.template', $event)->with('success', 'Sự kiện đã được tạo. Hãy chọn mẫu thiết kế!');
@@ -594,7 +594,9 @@ class EventController extends Controller
 
             $categorySlug = $event->category ? $event->category->slug : 'uncategorized';
             $folderPath = "{$categorySlug}/{$event->slug}/banners";
+            
             $path = $request->file('banner_image')->store($folderPath, 'google');
+            
             $event->media()->create([
                 'type' => 'image',
                 'url' => $path,
@@ -619,11 +621,7 @@ class EventController extends Controller
             $folderPath = "{$categorySlug}/{$event->slug}/media";
             
             foreach ($request->file('recap_images') as $file) {
-                try {
-                    $path = $file->store($folderPath, 'google');
-                } catch (\Exception $e) {
-                    $path = $file->store($folderPath, 'public');
-                }
+                $path = $file->store($folderPath, 'google');
                 
                 $ext = strtolower($file->getClientOriginalExtension());
                 $type = in_array($ext, ['mp4', 'avi', 'mov', 'wmv', 'mkv', 'webm']) ? 'video' : 'image';

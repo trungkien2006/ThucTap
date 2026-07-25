@@ -31,7 +31,8 @@ class PublicEventController extends Controller
             $query->where('semester', $request->semester);
         }
 
-        $events = $query->paginate(12);
+        $perPage = $this->isMobile() ? 7 : 12;
+        $events = $query->paginate($perPage);
         $categories = Category::eventTypes()->get();
 
         return $this->renderView('welcome', compact('events', 'categories'));

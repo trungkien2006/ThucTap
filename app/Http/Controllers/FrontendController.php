@@ -310,7 +310,8 @@ class FrontendController extends Controller
             }
         }
 
-        $events = $query->paginate(7);
+        $perPage = $this->isMobile() ? 7 : 10;
+        $events = $query->paginate($perPage);
 
         // Get unique years for filter
         $driver = \Illuminate\Support\Facades\DB::connection()->getDriverName();

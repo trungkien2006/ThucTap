@@ -182,10 +182,12 @@
 
             .slider-content {
                 position: absolute !important;
-                bottom: 20px !important;
+                inset: auto 0 24px 0 !important;
                 top: auto !important;
+                bottom: 24px !important;
                 left: 0 !important;
                 right: 0 !important;
+                height: auto !important;
                 padding: 0 20px !important;
                 display: flex !important;
                 flex-direction: column !important;
@@ -194,6 +196,7 @@
                 z-index: 20 !important;
                 width: 100% !important;
                 box-sizing: border-box !important;
+                margin-top: auto !important;
             }
 
             /* Completely hide part B (card strip) on mobile */

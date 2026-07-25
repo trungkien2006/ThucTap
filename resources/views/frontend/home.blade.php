@@ -15,6 +15,13 @@
 
 @push('styles')
     <style>
+        .btn-play {
+            background: #FFE381 !important;
+            border-color: #FFE381 !important;
+        }
+        .btn-play svg {
+            fill: #1C1410 !important;
+        }
         .hide-scrollbar::-webkit-scrollbar {
             display: none;
         }
@@ -288,8 +295,8 @@
                 <h1 class="slide-title" id="slideTitle">{{ $slides[0]['title'] }}</h1>
                 <p class="slide-desc" id="slideDesc">{{ $slides[0]['description'] }}</p>
                 <div class="slide-actions">
-                    <button class="btn-play" aria-label="Xem video">
-                        <svg viewBox="0 0 16 16"><polygon points="3,1 13,8 3,15"/></svg>
+                    <button class="btn-play" id="sliderPlayPauseBtn" aria-label="Pause/Play slider">
+                        <svg viewBox="0 0 16 16"><rect x="4" y="2" width="3" height="12"/><rect x="9" y="2" width="3" height="12"/></svg>
                     </button>
                     <a href="{{ $slides[0]['cta_url'] }}" class="btn-cta" id="slideCta">{{ $slides[0]['cta_label'] }}</a>
                 </div>
@@ -569,6 +576,7 @@
 
         /* ─── Timer (Game Loop Pattern) ─── */
         let isHovering = false;
+        let isPausedByButton = false;
         let timerRAF = null;
         let lastTime = 0;
         let accumulated = 0;
@@ -587,8 +595,8 @@
             // Cap delta to 100ms to prevent massive skips if tab was in background
             if (delta > 100) delta = 100;
 
-            // Progress the timer if not animating a slide
-            if (!isAnim) {
+            // Progress the timer if not animating a slide and not paused by button
+            if (!isAnim && !isPausedByButton) {
                 // Slower progression (x3 slower) when user is hovering over the slider
                 const effectiveDelta = isHovering ? delta / 3 : delta;
                 accumulated += effectiveDelta;
@@ -623,6 +631,20 @@
             timerRAF = null;
             lastTime = 0;
             // DO NOT reset accumulated here, so segments stay lit visually during the slide transition
+        }
+
+        /* ─── Play/Pause Button Logic ─── */
+        const playPauseBtn = document.getElementById('sliderPlayPauseBtn');
+        if (playPauseBtn) {
+            playPauseBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                isPausedByButton = !isPausedByButton;
+                if (isPausedByButton) {
+                    playPauseBtn.innerHTML = '<svg viewBox="0 0 16 16"><polygon points="3,1 13,8 3,15"/></svg>';
+                } else {
+                    playPauseBtn.innerHTML = '<svg viewBox="0 0 16 16"><rect x="4" y="2" width="3" height="12"/><rect x="9" y="2" width="3" height="12"/></svg>';
+                }
+            });
         }
 
         /* ─── Pause on hover ─── */

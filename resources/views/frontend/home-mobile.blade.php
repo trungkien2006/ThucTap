@@ -89,12 +89,34 @@
                 pointer-events: none !important;
             }
 
-            /* Keep event introduction text of A 100% visible and styled cleanly */
+            /* Keep event introduction text of A 100% visible and anchored to bottom of section A */
+            .slider-content {
+                position: absolute !important;
+                inset: auto 0 16px 0 !important;
+                top: auto !important;
+                bottom: 16px !important;
+                left: 0 !important;
+                right: 0 !important;
+                height: auto !important;
+                padding: 0 16px !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                justify-content: flex-end !important;
+                z-index: 20 !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+                margin: 0 !important;
+            }
+
             .slide-info {
-                display: block !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                justify-content: flex-end !important;
                 width: 100% !important;
                 max-width: 100% !important;
-                margin-bottom: 0 !important;
+                margin: 0 !important;
                 opacity: 1 !important;
                 visibility: visible !important;
             }
@@ -114,8 +136,9 @@
             }
 
             .slide-eyebrow {
-                font-size: 11px !important;
-                margin-bottom: 6px !important;
+                order: 1 !important;
+                font-size: 10px !important;
+                margin-bottom: 4px !important;
                 letter-spacing: 1px !important;
                 color: #FFE381 !important;
                 font-weight: 700 !important;
@@ -125,9 +148,10 @@
             }
 
             .slide-title {
-                font-size: clamp(20px, 5.5vw, 26px) !important;
+                order: 2 !important;
+                font-size: clamp(16px, 4.5vw, 22px) !important;
                 line-height: 1.25 !important;
-                margin-bottom: 8px !important;
+                margin-bottom: 6px !important;
                 color: #FFFFFF !important;
                 font-weight: 800 !important;
                 word-wrap: break-word !important;
@@ -139,10 +163,11 @@
             }
 
             .slide-desc {
-                font-size: 13px !important;
+                order: 3 !important;
+                font-size: 12px !important;
                 max-width: 100% !important;
-                margin-bottom: 14px !important;
-                line-height: 1.45 !important;
+                margin-bottom: 10px !important;
+                line-height: 1.4 !important;
                 color: rgba(255, 255, 255, 0.9) !important;
                 display: -webkit-box !important;
                 -webkit-line-clamp: 2 !important;
@@ -154,16 +179,17 @@
             }
 
             .slide-actions {
+                order: 4 !important;
                 display: flex !important;
                 align-items: center !important;
-                gap: 12px !important;
+                gap: 10px !important;
                 opacity: 1 !important;
                 visibility: visible !important;
             }
 
             .btn-cta {
-                padding: 8px 18px !important;
-                font-size: 11px !important;
+                padding: 7px 16px !important;
+                font-size: 10px !important;
                 letter-spacing: 1px !important;
                 background: rgba(255,255,255,0.15) !important;
                 backdrop-filter: blur(4px) !important;
@@ -171,32 +197,13 @@
             }
 
             .btn-play {
-                width: 36px !important;
-                height: 36px !important;
+                width: 32px !important;
+                height: 32px !important;
             }
 
             .btn-play svg {
-                width: 13px !important;
-                height: 13px !important;
-            }
-
-            .slider-content {
-                position: absolute !important;
-                inset: auto 0 24px 0 !important;
-                top: auto !important;
-                bottom: 24px !important;
-                left: 0 !important;
-                right: 0 !important;
-                height: auto !important;
-                padding: 0 20px !important;
-                display: flex !important;
-                flex-direction: column !important;
-                align-items: flex-start !important;
-                justify-content: flex-end !important;
-                z-index: 20 !important;
-                width: 100% !important;
-                box-sizing: border-box !important;
-                margin-top: auto !important;
+                width: 12px !important;
+                height: 12px !important;
             }
 
             /* Completely hide part B (card strip) on mobile */

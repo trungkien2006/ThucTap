@@ -1,6 +1,4 @@
-@extends('layouts.frontend')
-
-@push('styles')
+<?php $__env->startPush('styles'); ?>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* Removed hide navbar rule to comply with layout rule */
@@ -270,9 +268,9 @@
 }
 
 </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@php
+<?php
     $titleStyles = [];
     if (!empty($event->title_font_family)) $titleStyles[] = "font-family: '{$event->title_font_family}', sans-serif;";
     if (!empty($event->title_font_size))   $titleStyles[] = "font-size: {$event->title_font_size}px;";
@@ -284,36 +282,36 @@
     if (!empty($event->desc_font_size))   $descStyles[] = "font-size: {$event->desc_font_size}px;";
     if (!empty($event->desc_color))       $descStyles[] = "color: {$event->desc_color} !important;";
     $descStyleStr = implode(' ', $descStyles);
-@endphp
+?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="t4-body">
     <div class="t4-container">
         
-        {{-- SECTION 1: HERO / TOP --}}
+        
         <div class="t4-hero">
-            @if($event->bannerImage)
-                <img src="{{ \App\Helpers\FileHelper::url($event->bannerImage->url) }}" class="t4-hero-img" alt="{{ $event->title }}">
-            @else
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($event->bannerImage): ?>
+                <img src="<?php echo e(\App\Helpers\FileHelper::url($event->bannerImage->url)); ?>" class="t4-hero-img" alt="<?php echo e($event->title); ?>">
+            <?php else: ?>
                 <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=800&q=80" class="t4-hero-img" alt="Default banner">
-            @endif
+            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
             <div class="t4-hero-overlay"></div>
             <div class="t4-hero-content">
                 <div class="t4-hero-quote">"Vượt núi băng ngàn, tìm đến bình minh. Khởi đầu nơi đây, mở ra muôn ngả chân trời."</div>
-                <h1 class="t4-hero-title" style="{{ $titleStyleStr }}">{!! nl2br(e($event->title)) !!}</h1>
-                <div class="t4-hero-subtitle">{{ $event->category ? $event->category->name : 'SỰ KIỆN NỔI BẬT' }}</div>
+                <h1 class="t4-hero-title" style="<?php echo e($titleStyleStr); ?>"><?php echo nl2br(e($event->title)); ?></h1>
+                <div class="t4-hero-subtitle"><?php echo e($event->category ? $event->category->name : 'SỰ KIỆN NỔI BẬT'); ?></div>
             </div>
         </div>
 
-        {{-- SECTION 2: DATE & FAREWELL QUOTE --}}
+        
         <div class="t4-card">
-            <div class="t4-date-highlight">- {{ $event->event_date->format('Y.m.d') }} -</div>
+            <div class="t4-date-highlight">- <?php echo e($event->event_date->format('Y.m.d')); ?> -</div>
             <div class="t4-body-text" style="font-style: italic;">
                 "Rồi chúng ta cũng sẽ hòa vào biển người, mỗi người đều có phong ba và rực rỡ riêng. Chúc cho chặng đường tới, hoa nở như gấm, ngày gặp lại vẫn như xưa."
             </div>
         </div>
 
-        {{-- SECTION 3: INVITATION --}}
+        
         <div class="t4-card">
             <div class="t4-sec-title">Trân trọng kính mời</div>
             <div class="t4-body-text">
@@ -324,102 +322,104 @@
             </div>
         </div>
 
-        {{-- SECTION 4: EVENT DETAILS & COUNTDOWN --}}
+        
         <div class="t4-card">
             <div class="t4-sec-title">Thời gian & Địa điểm</div>
             <div class="t4-info-wrap">
                 <div class="t4-info-item">
                     <div class="t4-info-label">Thời gian</div>
                     <div class="t4-info-val">
-                        {{ $event->event_date->translatedFormat('H:i, l d/m/Y') }} 
-                        @if($event->end_date)
-                            — {{ $event->end_date->translatedFormat('H:i, d/m/Y') }}
-                        @endif
+                        <?php echo e($event->event_date->translatedFormat('H:i, l d/m/Y')); ?> 
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($event->end_date): ?>
+                            — <?php echo e($event->end_date->translatedFormat('H:i, d/m/Y')); ?>
+
+                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </div>
                 </div>
-                @if($event->location)
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($event->location): ?>
                 <div class="t4-info-item">
                     <div class="t4-info-label">Địa điểm</div>
-                    <div class="t4-info-val">{{ $event->location }}</div>
+                    <div class="t4-info-val"><?php echo e($event->location); ?></div>
                 </div>
-                @endif
+                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
             </div>
 
-            {{-- Countdown Timer --}}
-            @if($event->event_date > now())
-            <div class="t4-countdown" id="t4-countdown" data-date="{{ $event->event_date->format('Y-m-d\TH:i:s') }}">
+            
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($event->event_date > now()): ?>
+            <div class="t4-countdown" id="t4-countdown" data-date="<?php echo e($event->event_date->format('Y-m-d\TH:i:s')); ?>">
                 <div class="t4-cd-box"><div class="t4-cd-num" id="t4-days">00</div><div class="t4-cd-label">Ngày</div></div>
                 <div class="t4-cd-box"><div class="t4-cd-num" id="t4-hours">00</div><div class="t4-cd-label">Giờ</div></div>
                 <div class="t4-cd-box"><div class="t4-cd-num" id="t4-mins">00</div><div class="t4-cd-label">Phút</div></div>
                 <div class="t4-cd-box"><div class="t4-cd-num" id="t4-secs">00</div><div class="t4-cd-label">Giây</div></div>
             </div>
-            @endif
+            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         </div>
 
-        {{-- SECTION 5: TIMELINE --}}
-        @if($event->scheduleItems->count() > 0)
+        
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($event->scheduleItems->count() > 0): ?>
         <div class="t4-card">
             <div class="t4-sec-title">Timeline chương trình</div>
             <div class="t4-timeline">
-                @foreach($event->scheduleItems as $item)
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $event->scheduleItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
                 <div class="t4-timeline-item">
                     <div class="t4-timeline-dot"></div>
-                    <div class="t4-timeline-time">{{ \Carbon\Carbon::parse($item->start_time)->format('H:i') }}{{ $item->end_time ? ' - ' . \Carbon\Carbon::parse($item->end_time)->format('H:i') : '' }}</div>
-                    <div class="t4-timeline-title">{{ $item->title }}</div>
+                    <div class="t4-timeline-time"><?php echo e(\Carbon\Carbon::parse($item->start_time)->format('H:i')); ?><?php echo e($item->end_time ? ' - ' . \Carbon\Carbon::parse($item->end_time)->format('H:i') : ''); ?></div>
+                    <div class="t4-timeline-title"><?php echo e($item->title); ?></div>
                 </div>
-                @endforeach
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
             </div>
         </div>
-        @endif
+        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-        {{-- SECTION 6: INSPIRATIONAL / PHOTO GALLERY --}}
+        
         <div class="t4-card">
             <div class="t4-sec-title">Tương lai rực rỡ</div>
-            <div class="t4-body-text" style="{{ $descStyleStr }}">
-                {!! $event->description !!}
+            <div class="t4-body-text" style="<?php echo e($descStyleStr); ?>">
+                <?php echo $event->description; ?>
+
             </div>
-            @if($event->galleryImages->count() > 0)
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($event->galleryImages->count() > 0): ?>
             <div class="grid grid-cols-2 gap-4 mt-6">
-                @foreach($event->galleryImages->take(4) as $block)
-                    @if($block->url)
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $event->galleryImages->take(4); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $block): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($block->url): ?>
                         <div class="rounded-lg overflow-hidden border border-slate-100 shadow-sm" style="aspect-ratio: 1/1;">
-                            <img src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="w-full h-full object-cover" alt="">
+                            <img src="<?php echo e(\App\Helpers\FileHelper::url($block->url)); ?>" class="w-full h-full object-cover" alt="">
                         </div>
-                    @endif
-                @endforeach
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
             </div>
-            @endif
+            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         </div>
 
-        {{-- SECTION 7: DIỄN GIẢ --}}
-        @if($event->speakers->count() > 0)
+        
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($event->speakers->count() > 0): ?>
         <div class="t4-card">
             <div class="t4-sec-title">Diễn giả tham gia</div>
             <div class="t4-speakers">
-                @foreach($event->speakers as $speaker)
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $event->speakers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $speaker): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
                 <div class="t4-speaker">
-                    <img src="{{ $speaker->photo_url ? \App\Helpers\FileHelper::url($speaker->photo_url) : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80' }}" class="t4-speaker-img" alt="">
-                    <div class="t4-speaker-name">{{ $speaker->name }}</div>
-                    <div class="t4-speaker-role">{{ $speaker->title }}</div>
+                    <img src="<?php echo e($speaker->photo_url ? \App\Helpers\FileHelper::url($speaker->photo_url) : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80'); ?>" class="t4-speaker-img" alt="">
+                    <div class="t4-speaker-name"><?php echo e($speaker->name); ?></div>
+                    <div class="t4-speaker-role"><?php echo e($speaker->title); ?></div>
                 </div>
-                @endforeach
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
             </div>
         </div>
-        @endif
+        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-        {{-- Tương tác & Chia sẻ --}}
+        
         <div class="t4-card">
             <div class="flex flex-wrap justify-center gap-4 mt-8" x-data="{ copied: false }">
-                <button id="like-btn" data-event-id="{{ $event->id }}" class="flex items-center gap-2 px-6 py-3 rounded-full font-bold transition-all shadow-sm {{ session()->has('liked_events.' . $event->id) ? 'bg-orange-50 text-[#f97316] border border-orange-200' : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50' }}">
-                    <span class="material-symbols-outlined {{ session()->has('liked_events.' . $event->id) ? 'font-fill' : '' }}">favorite</span>
-                    <span id="likes-count">{{ $event->likes_count }}</span> Lượt thích
+                <button id="like-btn" data-event-id="<?php echo e($event->id); ?>" class="flex items-center gap-2 px-6 py-3 rounded-full font-bold transition-all shadow-sm <?php echo e(session()->has('liked_events.' . $event->id) ? 'bg-orange-50 text-[#f97316] border border-orange-200' : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'); ?>">
+                    <span class="material-symbols-outlined <?php echo e(session()->has('liked_events.' . $event->id) ? 'font-fill' : ''); ?>">favorite</span>
+                    <span id="likes-count"><?php echo e($event->likes_count); ?></span> Lượt thích
                 </button>
                 <div class="flex items-center gap-2 px-6 py-3 rounded-full bg-white text-slate-700 border border-slate-200 shadow-sm font-bold">
                     <span class="material-symbols-outlined text-[#f97316]">visibility</span>
-                    <span>{{ $event->views_count }}</span> Lượt xem
+                    <span><?php echo e($event->views_count); ?></span> Lượt xem
                 </div>
                 
-                <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}" target="_blank" 
+                <a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo e(urlencode(request()->url())); ?>" target="_blank" 
                    class="flex items-center gap-2 bg-[#1877F2] text-white px-6 py-3 rounded-full font-bold shadow-[0_4px_12px_rgba(24,119,242,0.3)] hover:scale-105 transition-transform" style="text-decoration:none;">
                     <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
                     Chia sẻ
@@ -437,7 +437,7 @@
     </div>
 </div>
 
-@include('components.event-fab-menu', ['event' => $event])
+<?php echo $__env->make('components.event-fab-menu', ['event' => $event], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
 <script>
     // Countdown Timer logic
@@ -483,7 +483,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>'
                 }
             })
             .then(res => res.json())
@@ -506,4 +506,6 @@
         });
     }
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.frontend', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\admin\Downloads\ThucTap-main\ThucTap-main\resources\views/events/show-template4.blade.php ENDPATH**/ ?>

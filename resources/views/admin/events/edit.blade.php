@@ -239,17 +239,19 @@
 
         <!-- Actions -->
         <div class="flex items-center justify-between pt-4">
-            <a href="{{ route('admin.events.show', $event) }}" class="btn-ghost">Hủy bỏ</a>
-            <div class="flex gap-3">
-                <button type="submit" name="redirect_to" value="design" class="btn-ghost border border-slate-200 flex items-center gap-1.5">
-                    <span class="material-symbols-outlined text-[16px]">palette</span>
-                    Lưu & Chọn Mẫu
-                </button>
-                <button type="submit" name="redirect_to" value="index" class="btn-primary flex items-center gap-2">
-                    <span class="material-symbols-outlined text-[18px]">check</span>
-                    Cập nhật sự kiện
+            <div class="flex items-center gap-3">
+                <a href="{{ route('admin.events.show', $event) }}" class="btn-ghost border border-slate-200">
+                    Hủy bỏ
+                </a>
+                <button type="submit" name="redirect_to" value="index" class="btn-ghost border border-slate-200 flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[16px]">save</span>
+                    Lưu/Cập nhật
                 </button>
             </div>
+            <button type="submit" name="redirect_to" value="design" class="btn-primary flex items-center gap-2">
+                Chuyển sang Bước 2
+                <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+            </button>
         </div>
     </form>
 </div>

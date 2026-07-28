@@ -26,3 +26,15 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 unievent-chronicle-main/
+
+# Temp files
+*.html
+missing_js.txt
+get_columns.php
+list_all_events.php
+seed_*.php
+temp_*.blade.php
+design_*.blade.php
+resources/views/admin/events/design.blade.php.backup
+
+/storage/framework/

@@ -42,10 +42,10 @@
         [x-cloak] { display: none !important; }
     </style>
     <!-- AOS CSS for scroll animations -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.css" rel="stylesheet">
     
     <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -61,7 +61,7 @@
     @vite(['resources/css/app.css', 'resources/css/frontend.css', 'resources/js/app.js'])
     
     <!-- SPA Pre-loaded CDN Scripts -->
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js" data-navigate-track></script>
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.1/dist/aos.js" data-navigate-track></script>
 
     @stack('styles')
     <style>
@@ -398,7 +398,7 @@
 
             <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
                 <p class="text-white/40 text-sm">
-                    &copy; 2026 UniEvent. Bản quyền thuộc về CLB Tin học - Đoàn Thanh niên.
+                    
                 </p>
                 <div class="flex items-center gap-6">
                     <a href="#" class="text-white/40 hover:text-white text-sm transition-colors">Điều khoản</a>
@@ -450,5 +450,28 @@
 </style>
 @endif
 
+    <!-- Back to top button -->
+    <button id="backToTopBtn" class="fixed bottom-6 right-6 bg-[#F27024] text-white p-3 rounded-full shadow-lg z-50 opacity-0 invisible transition-all duration-300 hover:bg-[#E8C84A] hover:scale-110 flex items-center justify-center" aria-label="Lên đầu trang">
+        <i data-lucide="arrow-up" class="w-6 h-6"></i>
+    </button>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const backToTopBtn = document.getElementById('backToTopBtn');
+            if (backToTopBtn) {
+                window.addEventListener('scroll', () => {
+                    if (window.scrollY > 300) {
+                        backToTopBtn.classList.remove('opacity-0', 'invisible');
+                        backToTopBtn.classList.add('opacity-100', 'visible');
+                    } else {
+                        backToTopBtn.classList.add('opacity-0', 'invisible');
+                        backToTopBtn.classList.remove('opacity-100', 'visible');
+                    }
+                });
+                backToTopBtn.addEventListener('click', () => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            }
+        });
+    </script>
 </body>
 </html>

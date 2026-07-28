@@ -36,22 +36,30 @@
     <!-- Top Control Bar -->
     <div class="flex flex-col gap-4 pb-4 border-b border-border text-sm text-foreground mb-6">
         <form method="GET" action="{{ route('admin.events.index') }}" id="filterForm" class="flex flex-col gap-4 w-full">
+            @php
+                $dbMinYear = \App\Models\Event::whereNotNull('event_date')->selectRaw('MIN(YEAR(event_date)) as min_year')->value('min_year') ?: 2015;
+                $dbMaxYear = \App\Models\Event::whereNotNull('event_date')->selectRaw('MAX(YEAR(event_date)) as max_year')->value('max_year') ?: date('Y');
+                
+                $minEventYear = request('year_start') ? min($dbMinYear, request('year_start')) : $dbMinYear;
+                $maxEventYear = request('year_end') ? max($dbMaxYear, request('year_end')) : $dbMaxYear;
+                
+                if ($minEventYear >= $maxEventYear) {
+                    $maxEventYear = $minEventYear + 1;
+                }
+            @endphp
             @foreach($selectedCategories as $c)
                 <input type="hidden" name="category_id[]" value="{{ $c }}" class="filter-input-category_id">
             @endforeach
             @foreach($selectedDepartments as $d)
                 <input type="hidden" name="department_id[]" value="{{ $d }}" class="filter-input-department_id">
             @endforeach
-            @foreach($selectedStatuses as $s)
-                <input type="hidden" name="status[]" value="{{ $s }}" class="filter-input-status">
-            @endforeach
 
             <!-- Primary Filters Row -->
             <div class="flex flex-wrap items-center gap-6 w-full">
                 <!-- Search Control -->
-                <label class="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors group relative flex-1 min-w-[240px]">
-                    <i data-lucide="search" class="w-4 h-4 shrink-0 pointer-events-none absolute left-0 text-muted-foreground"></i>
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Tìm kiếm theo tên, ID, địa điểm…" class="pl-6 w-full font-medium bg-transparent border-none focus:outline-none focus:ring-0 text-sm placeholder:text-muted-foreground">
+                <label class="flex items-center gap-2 cursor-text transition-colors group relative flex-1 min-w-[240px] h-10 bg-white border border-border/60 hover:border-border rounded-lg px-3 shadow-sm focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/10">
+                    <i data-lucide="search" class="w-4 h-4 shrink-0 text-muted-foreground group-focus-within:text-primary transition-colors"></i>
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Tìm kiếm theo tên, ID, địa điểm…" class="w-full font-medium bg-transparent border-0 focus:border-0 focus:outline-none shadow-none ring-0 focus:ring-0 p-0 text-sm placeholder:text-muted-foreground/70" style="border: none !important; box-shadow: none !important; outline: none !important;">
                 </label>
 
                 <!-- Semester Control -->
@@ -66,42 +74,39 @@
                 </label>
                 
                 <!-- Category Control -->
-                @if(count($selectedCategories) == 0)
                 <label class="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors group">
                     <i data-lucide="tag" class="w-4 h-4 shrink-0 pointer-events-none"></i>
                     <select onchange="addFilterTag('category_id', this)" class="font-medium bg-transparent border-none appearance-none focus:outline-none focus:ring-0 cursor-pointer hover:text-primary text-sm max-w-[150px] truncate">
-                        <option value="">+ Danh mục</option>
+                        <option value="">Danh mục</option>
                         @foreach($categories as $cat)
                             <option value="{{ $cat->id }}">{{ $cat->name }}</option>
                         @endforeach
                     </select>
                 </label>
-                @endif
 
                 <!-- Department Control -->
-                @if(count($selectedDepartments) == 0)
                 <label class="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors group">
                     <i data-lucide="building" class="w-4 h-4 shrink-0 pointer-events-none"></i>
                     <select onchange="addFilterTag('department_id', this)" class="font-medium bg-transparent border-none appearance-none focus:outline-none focus:ring-0 cursor-pointer hover:text-primary text-sm max-w-[150px] truncate">
-                        <option value="">+ Chuyên ngành</option>
+                        <option value="">Chuyên ngành</option>
                         @foreach($departments as $dept)
                             <option value="{{ $dept->id }}">{{ $dept->name }}</option>
                         @endforeach
                     </select>
                 </label>
-                @endif
 
                 <!-- Status Control -->
                 <label class="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors group">
                     <i data-lucide="activity" class="w-4 h-4 shrink-0 pointer-events-none"></i>
                     <select name="status" onchange="document.getElementById('filterForm').submit()" class="font-medium bg-transparent border-none appearance-none focus:outline-none focus:ring-0 cursor-pointer hover:text-primary text-sm">
-                        <option value="">+ Trạng thái</option>
+                        <option value="">Trạng thái</option>
                         @foreach($statusOptions as $val => $label)
                             <option value="{{ $val }}" {{ request('status') == $val || (is_array(request('status')) && in_array($val, request('status'))) ? 'selected' : '' }}>{{ $label }}</option>
                         @endforeach
                     </select>
                 </label>
                 
+
                 @if(request('search') || request('semester') || request('year_start') || request('year_end') || count($selectedCategories) > 0 || count($selectedDepartments) > 0 || count($selectedStatuses) > 0)
                     <div class="ml-auto flex items-center gap-6">
                         <a href="{{ route('admin.events.index') }}" class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5" title="Xóa tất cả bộ lọc">
@@ -111,60 +116,116 @@
                 @endif
             </div>
 
-            <!-- Secondary Filters Row (Year Slider and Active Tags) -->
-            <div class="flex flex-wrap items-center justify-between gap-4 mt-2">
-                <!-- Year Range Combobox -->
-                <div class="flex items-center gap-2 h-9 rounded-lg bg-slate-50/80 border border-border/80 px-3 group focus-within:bg-white focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/10 transition-all">
-                    <i data-lucide="calendar-range" class="w-4 h-4 shrink-0 text-muted-foreground group-focus-within:text-primary transition-colors"></i>
-                    <span class="text-xs font-medium text-muted-foreground shrink-0 group-focus-within:text-primary transition-colors">Năm:</span>
+            <!-- Secondary Filters Row (Year Range Slider) -->
+            <div class="flex items-center gap-4 mt-2">
+                <div class="flex items-center gap-4 bg-transparent rounded-md group w-[340px]">
+                    <i data-lucide="calendar-range" class="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0"></i>
+                    <span class="text-xs font-medium text-muted-foreground mr-1 shrink-0">Lọc theo khoảng năm:</span>
                     
-                    <input list="year_suggestions" type="text" name="year_start" value="{{ request('year_start') }}" placeholder="Từ năm" class="w-[75px] text-xs font-semibold bg-transparent border-none p-0 focus:ring-0 text-center text-foreground placeholder:text-muted-foreground/60 placeholder:font-normal" onchange="document.getElementById('filterForm').submit()">
-                    
-                    <span class="text-muted-foreground text-xs font-medium">-</span>
-                    
-                    <input list="year_suggestions" type="text" name="year_end" value="{{ request('year_end') }}" placeholder="Đến năm" class="w-[75px] text-xs font-semibold bg-transparent border-none p-0 focus:ring-0 text-center text-foreground placeholder:text-muted-foreground/60 placeholder:font-normal" onchange="document.getElementById('filterForm').submit()">
-
-                    <datalist id="year_suggestions">
-                        @for($y = date('Y') + 5; $y >= 2015; $y--)
-                            <option value="{{ $y }}">
-                        @endfor
-                    </datalist>
+                    <div class="flex flex-col gap-1 w-full pt-1">
+                        <div class="flex items-center justify-between text-[11px] font-bold text-muted-foreground px-1 mb-2">
+                            <span id="yearValStart">{{ request('year_start') ?? $minEventYear }}</span>
+                            <span id="yearValEnd">{{ request('year_end') ?? $maxEventYear }}</span>
+                        </div>
+                        <div class="px-2 pb-6">
+                            <div id="year-slider"></div>
+                        </div>
+                        <input type="hidden" name="year_start" id="year_start_input" value="{{ request('year_start') ?? $minEventYear }}">
+                        <input type="hidden" name="year_end" id="year_end_input" value="{{ request('year_end') ?? $maxEventYear }}">
+                    </div>
                 </div>
 
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.css">
                 <style>
-                    /* Customizing noUiSlider to look minimal */
+                    /* Customizing noUiSlider to look minimal and exactly like the design */
+                    .noUi-target {
+                        height: 4px !important;
+                        background: #e2e8f0 !important; /* light grey track */
+                        border: none !important;
+                        box-shadow: none !important;
+                    }
+                    .noUi-connect { 
+                        background: #1C1410 !important; /* thick black connection */
+                    }
                     .noUi-handle {
                         width: 14px !important;
                         height: 14px !important;
                         right: -7px !important;
                         top: -5px !important;
                         border-radius: 50%;
-                        background: #0f172a !important;
-                        border: 2px solid #fff !important;
-                        box-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
+                        background: #1C1410 !important;
+                        border: none !important;
+                        box-shadow: none !important;
                         cursor: pointer;
                     }
-                    .noUi-handle:before, .noUi-handle:after { display: none !important; }
-                    .noUi-connect { background: #0f172a !important; }
+                    /* Add the || vertical bars inside the handle */
+                    .noUi-handle:before, .noUi-handle:after {
+                        content: "" !important;
+                        display: block !important;
+                        position: absolute !important;
+                        height: 6px !important;
+                        width: 1px !important;
+                        background: #ffffff !important;
+                        top: 4px !important;
+                    }
+                    .noUi-handle:before { left: 4px !important; }
+                    .noUi-handle:after { left: 9px !important; }
+                    
+                    /* Customizing Pips (Notches) */
+                    .noUi-pips {
+                        color: #94a3b8;
+                        font-size: 9px;
+                        font-weight: 600;
+                        padding-top: 5px;
+                    }
+                    .noUi-marker {
+                        background: #cbd5e1;
+                    }
+                    .noUi-marker-horizontal.noUi-marker-large {
+                        height: 5px;
+                    }
+                    .noUi-marker-horizontal.noUi-marker {
+                        height: 3px;
+                    }
+                    .noUi-value {
+                        margin-top: -2px;
+                    }
                 </style>
 
                 <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.js"></script>
                 <script>
-                    document.addEventListener('DOMContentLoaded', function() {
+                    function initYearSlider() {
                         var yearSlider = document.getElementById('year-slider');
+                        if (!yearSlider) return;
+                        
                         var startInput = document.getElementById('year_start_input');
                         var endInput = document.getElementById('year_end_input');
                         var startVal = document.getElementById('yearValStart');
                         var endVal = document.getElementById('yearValEnd');
+
+                        if (yearSlider.noUiSlider) {
+                            yearSlider.noUiSlider.destroy();
+                        }
 
                         noUiSlider.create(yearSlider, {
                             start: [parseInt(startInput.value), parseInt(endInput.value)],
                             connect: true,
                             step: 1,
                             range: {
-                                'min': 2015,
-                                'max': {{ date('Y') + 2 }}
+                                'min': {{ $minEventYear }},
+                                'max': {{ $maxEventYear }}
+                            },
+                            pips: {
+                                mode: 'steps',
+                                density: 100,
+                                format: {
+                                    to: function (value) {
+                                        return Math.round(value);
+                                    },
+                                    from: function (value) {
+                                        return value;
+                                    }
+                                }
                             }
                         });
 
@@ -182,13 +243,20 @@
                         yearSlider.noUiSlider.on('change', function() {
                             document.getElementById('filterForm').submit();
                         });
-                    });
-                </script>
+                    }
 
-                {{-- Render Active Tags --}}
-                @if(count($selectedCategories) > 0 || count($selectedDepartments) > 0)
-                    <div class="flex flex-wrap items-center gap-1.5 ml-auto">
-                        <span class="text-[11px] font-semibold text-muted-foreground mr-1">Đang chọn:</span>
+                    if (document.readyState === 'loading') {
+                        document.addEventListener('DOMContentLoaded', initYearSlider);
+                    } else {
+                        initYearSlider();
+                    }
+                </script>
+            </div>
+
+            {{-- Render Active Tags --}}
+            @if(count($selectedCategories) > 0 || count($selectedDepartments) > 0)
+                <div class="flex flex-wrap items-center gap-1.5 mt-2">
+                    <span class="text-[11px] font-semibold text-muted-foreground mr-1">Đang chọn:</span>
                         @foreach($selectedCategories as $c)
                             @php $catModel = $categories->firstWhere('id', $c); @endphp
                             <span class="inline-flex items-center gap-1 bg-primary/10 text-primary rounded-lg px-2.5 py-1 text-xs font-medium">
@@ -458,82 +526,104 @@
 
 @push('scripts')
 <script>
-    function addFilterTag(name, select) {
-        if (!select.value) return;
+    function addFilterTag(name, selectElement) {
+        const val = selectElement.value;
+        if (!val) return;
         const form = document.getElementById('filterForm');
-        let hiddenInput = form.querySelector(`input[name="${name}[]"][value="${select.value}"]`);
+        let hiddenInput = form.querySelector(`input[name="${name}[]"][value="${val}"]`);
         if (!hiddenInput) {
             hiddenInput = document.createElement('input');
             hiddenInput.type = 'hidden';
             hiddenInput.name = `${name}[]`;
-            hiddenInput.value = select.value;
+            hiddenInput.value = val;
+            hiddenInput.className = `filter-input-${name}`;
             form.appendChild(hiddenInput);
         }
         form.submit();
     }
 
-    function removeFilterTag(name, val) {
-        const form = document.getElementById('filterForm');
-        const hiddenInput = form.querySelector(`input[name="${name}[]"][value="${val}"]`);
-        if (hiddenInput) {
-            hiddenInput.remove();
-            form.submit();
-        }
+    function removeFilterTag(name, value) {
+        const inputs = document.querySelectorAll(`.filter-input-${name}`);
+        inputs.forEach(input => {
+            if (input.value == value) {
+                input.remove();
+            }
+        });
+        document.getElementById('filterForm').submit();
     }
 
-    function showConfirmModal(e, title, message, type = 'warning') {
-        e.preventDefault();
-        const form = e.target.closest('form');
+    let pendingForm = null;
+
+    function showConfirmModal(event, title, message, type = 'warning') {
+        event.preventDefault();
+        pendingForm = event.target.closest('form') || event.target;
+        
         const modal = document.getElementById('confirmModal');
         const container = document.getElementById('confirmModalContainer');
-        const titleEl = document.getElementById('modalTitle');
-        const messageEl = document.getElementById('modalMessage');
-        const iconContainer = document.getElementById('modalIconContainer');
-        const confirmBtn = document.getElementById('modalConfirmBtn');
-        const cancelBtn = document.getElementById('modalCancelBtn');
-
+        const titleEl = document.getElementById('confirmTitle');
+        const messageEl = document.getElementById('confirmMessage');
+        const iconBg = document.getElementById('confirmIconBg');
+        const icon = document.getElementById('confirmIcon');
+        const okBtn = document.getElementById('confirmOkBtn');
+        const cancelBtn = document.getElementById('confirmCancelBtn');
+        
         titleEl.textContent = title;
         messageEl.textContent = message;
-
-        // Reset classes
-        iconContainer.className = 'flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center';
-        confirmBtn.className = 'px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-offset-2';
         
         if (type === 'danger') {
-            iconContainer.classList.add('bg-red-100', 'text-red-600');
-            iconContainer.innerHTML = '<i data-lucide="alert-triangle" class="h-5 w-5"></i>';
-            confirmBtn.classList.add('bg-red-500', 'text-white', 'hover:bg-red-600', 'focus:ring-red-500');
-            confirmBtn.textContent = 'Xóa sự kiện';
+            iconBg.className = 'h-10 w-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center shrink-0';
+            icon.setAttribute('data-lucide', 'trash-2');
+            okBtn.className = 'h-9 px-4 rounded-lg text-xs font-medium text-white transition-all shadow-sm';
+            okBtn.style.backgroundColor = '#ef4444'; 
+            okBtn.onmouseover = () => okBtn.style.backgroundColor = '#dc2626'; 
+            okBtn.onmouseout = () => okBtn.style.backgroundColor = '#ef4444';
         } else {
-            iconContainer.classList.add('bg-amber-100', 'text-amber-600');
-            iconContainer.innerHTML = '<i data-lucide="alert-circle" class="h-5 w-5"></i>';
-            confirmBtn.classList.add('bg-primary', 'text-primary-foreground', 'hover:bg-primary/90', 'focus:ring-primary');
-            confirmBtn.textContent = 'Xác nhận';
+            iconBg.className = 'h-10 w-10 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center shrink-0';
+            icon.setAttribute('data-lucide', 'archive');
+            okBtn.className = 'h-9 px-4 rounded-lg text-xs font-medium text-white transition-all shadow-sm';
+            okBtn.style.backgroundColor = '#f59e0b'; 
+            okBtn.onmouseover = () => okBtn.style.backgroundColor = '#d97706'; 
+            okBtn.onmouseout = () => okBtn.style.backgroundColor = '#f59e0b';
+        }
+        
+        if (window.lucide) {
+            window.lucide.createIcons();
         }
 
-        lucide.createIcons();
-
-        confirmBtn.onclick = function() {
-            form.submit();
+        okBtn.onclick = function() {
+            if (pendingForm) {
+                pendingForm.submit();
+            }
+            hideModal();
         };
 
+        cancelBtn.onclick = function() {
+            hideModal();
+        };
+
+        modal.onclick = function(e) {
+            if (e.target === modal) {
+                hideModal();
+            }
+        };
+        
         modal.classList.remove('hidden');
-        // trigger reflow
         void modal.offsetWidth;
         modal.classList.remove('opacity-0');
         container.classList.remove('scale-95');
     }
 
-    function closeModal() {
+    function hideModal() {
         const modal = document.getElementById('confirmModal');
         const container = document.getElementById('confirmModalContainer');
         modal.classList.add('opacity-0');
         container.classList.add('scale-95');
         setTimeout(() => {
             modal.classList.add('hidden');
+            pendingForm = null;
         }, 300);
     }
-    
+
     function openDriveModal(eventId, eventTitle, currentLink = '') {
         const modal = document.getElementById('driveModal');
         const container = document.getElementById('driveModalContainer');
@@ -561,113 +651,5 @@
             modal.classList.add('hidden');
         }, 300);
     }
-</script>
-@endpush
-
-@push('scripts')
-<script>
-    function addFilterTag(name, selectElement) {
-        const val = selectElement.value;
-        if (!val) return;
-
-        const form = document.getElementById('filterForm');
-
-        // Add new hidden input
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = `${name}[]`;
-        input.value = val;
-        input.className = `filter-input-${name}`;
-        form.appendChild(input);
-
-        // Submit form
-        form.submit();
-    }
-
-    function removeFilterTag(name, value) {
-        const inputs = document.querySelectorAll(`.filter-input-${name}`);
-        inputs.forEach(input => {
-            if (input.value == value) {
-                input.remove();
-            }
-        });
-
-        // Submit form
-        document.getElementById('filterForm').submit();
-    }
-
-    let pendingForm = null;
-
-    function showConfirmModal(event, title, message, type = 'warning') {
-        event.preventDefault();
-        pendingForm = event.target;
-        
-        const modal = document.getElementById('confirmModal');
-        const container = document.getElementById('confirmModalContainer');
-        const titleEl = document.getElementById('confirmTitle');
-        const messageEl = document.getElementById('confirmMessage');
-        const iconBg = document.getElementById('confirmIconBg');
-        const icon = document.getElementById('confirmIcon');
-        const okBtn = document.getElementById('confirmOkBtn');
-        
-        titleEl.textContent = title;
-        messageEl.textContent = message;
-        
-        if (type === 'danger') {
-            iconBg.className = 'h-10 w-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center shrink-0';
-            icon.setAttribute('data-lucide', 'trash-2');
-            okBtn.className = 'h-9 px-4 rounded-lg text-xs font-medium text-white transition-all shadow-sm';
-            okBtn.style.backgroundColor = '#ef4444'; // Tailwind red-500
-            okBtn.onmouseover = () => okBtn.style.backgroundColor = '#dc2626'; // Tailwind red-600
-            okBtn.onmouseout = () => okBtn.style.backgroundColor = '#ef4444';
-        } else {
-            iconBg.className = 'h-10 w-10 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center shrink-0';
-            icon.setAttribute('data-lucide', 'archive');
-            okBtn.className = 'h-9 px-4 rounded-lg text-xs font-medium text-white transition-all shadow-sm';
-            okBtn.style.backgroundColor = '#f59e0b'; // Tailwind amber-500
-            okBtn.onmouseover = () => okBtn.style.backgroundColor = '#d97706'; // Tailwind amber-600
-            okBtn.onmouseout = () => okBtn.style.backgroundColor = '#f59e0b';
-        }
-        
-        if (window.lucide) {
-            window.lucide.createIcons();
-        }
-        
-        modal.classList.remove('hidden');
-        void modal.offsetWidth;
-        modal.classList.remove('opacity-0');
-        container.classList.remove('scale-95');
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        const modal = document.getElementById('confirmModal');
-        const container = document.getElementById('confirmModalContainer');
-        const cancelBtn = document.getElementById('confirmCancelBtn');
-        const okBtn = document.getElementById('confirmOkBtn');
-        
-        function hideModal() {
-            modal.classList.add('opacity-0');
-            container.classList.add('scale-95');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                pendingForm = null;
-            }, 300);
-        }
-        
-        cancelBtn.addEventListener('click', hideModal);
-        
-        okBtn.addEventListener('click', function() {
-            if (pendingForm) {
-                pendingForm.submit();
-            }
-            hideModal();
-        });
-        
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal) {
-                hideModal();
-            }
-        });
-    });
 </script>
 @endpush

@@ -46,48 +46,167 @@
             }
             
             /* Hero Slider Mobile Overrides */
-            .slider-content {
-                padding: 0 20px !important;
-                align-items: flex-end !important;
-                justify-content: flex-start !important;
-                padding-bottom: 60px !important;
+            #top {
+                position: relative !important;
+                height: 440px !important;
+                min-height: 440px !important;
+                width: 100% !important;
+                overflow: hidden !important;
+                background: #1C1410 !important;
+                padding-bottom: 0 !important;
+                cursor: pointer !important;
+                border-bottom: 2px solid rgba(255, 255, 255, 0.15) !important;
             }
+
+            .slider-wrapper {
+                position: absolute !important;
+                inset: 0 !important;
+                height: 100% !important;
+                width: 100% !important;
+                display: block !important;
+            }
+
+            .bg-layers {
+                position: absolute !important;
+                inset: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+                border-radius: 0 !important;
+                overflow: hidden !important;
+            }
+
+            .bg-layer {
+                position: absolute !important;
+                inset: 0 !important;
+                background-size: cover !important;
+                background-position: center !important;
+            }
+
+            .slider-overlay {
+                position: absolute !important;
+                inset: 0 !important;
+                background: linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.2) 40%, rgba(0,0,0,0.9) 100%) !important;
+                pointer-events: none !important;
+            }
+
+            /* Keep event introduction text of A 100% visible and anchored to bottom of section A */
+            .slider-content {
+                position: absolute !important;
+                inset: auto 0 16px 0 !important;
+                top: auto !important;
+                bottom: 16px !important;
+                left: 0 !important;
+                right: 0 !important;
+                height: auto !important;
+                padding: 0 16px !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                justify-content: flex-end !important;
+                z-index: 20 !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+                margin: 0 !important;
+            }
+
             .slide-info {
-                flex: 1 1 auto !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                justify-content: flex-end !important;
                 width: 100% !important;
                 max-width: 100% !important;
-                margin-bottom: 0 !important;
+                margin: 0 !important;
+                opacity: 1 !important;
+                visibility: visible !important;
             }
+
+            .slide-info .slide-eyebrow,
+            .slide-info .slide-desc,
+            .slide-info .slide-actions {
+                opacity: 1 !important;
+                transform: none !important;
+                visibility: visible !important;
+            }
+
+            .slide-title .shift-char {
+                opacity: 1 !important;
+                transform: none !important;
+                visibility: visible !important;
+            }
+
+            .slide-eyebrow {
+                order: 1 !important;
+                font-size: 10px !important;
+                margin-bottom: 4px !important;
+                letter-spacing: 1px !important;
+                color: #FFE381 !important;
+                font-weight: 700 !important;
+                text-shadow: 0 1px 4px rgba(0,0,0,0.8) !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+            }
+
             .slide-title {
-                font-size: clamp(24px, 7vw, 36px) !important;
-                line-height: 1.1 !important;
-                margin-bottom: 12px !important;
+                order: 2 !important;
+                font-size: clamp(16px, 4.5vw, 22px) !important;
+                line-height: 1.25 !important;
+                margin-bottom: 6px !important;
+                color: #FFFFFF !important;
+                font-weight: 800 !important;
                 word-wrap: break-word !important;
                 overflow-wrap: break-word !important;
                 white-space: normal !important;
+                text-shadow: 0 2px 8px rgba(0,0,0,0.8) !important;
+                opacity: 1 !important;
+                visibility: visible !important;
             }
+
             .slide-desc {
-                font-size: 13px !important;
+                order: 3 !important;
+                font-size: 12px !important;
                 max-width: 100% !important;
-                margin-bottom: 20px !important;
-                line-height: 1.5 !important;
+                margin-bottom: 10px !important;
+                line-height: 1.4 !important;
+                color: rgba(255, 255, 255, 0.9) !important;
+                display: -webkit-box !important;
+                -webkit-line-clamp: 2 !important;
+                -webkit-box-orient: vertical !important;
+                overflow: hidden !important;
+                text-shadow: 0 1px 4px rgba(0,0,0,0.8) !important;
+                opacity: 1 !important;
+                visibility: visible !important;
             }
-            .slide-eyebrow {
-                font-size: 11px !important;
-                margin-bottom: 8px !important;
+
+            .slide-actions {
+                order: 4 !important;
+                display: flex !important;
+                align-items: center !important;
+                gap: 10px !important;
+                opacity: 1 !important;
+                visibility: visible !important;
             }
+
             .btn-cta {
-                padding: 8px 18px !important;
+                padding: 7px 16px !important;
                 font-size: 10px !important;
+                letter-spacing: 1px !important;
+                background: rgba(255,255,255,0.15) !important;
+                backdrop-filter: blur(4px) !important;
+                border-color: rgba(255,255,255,0.6) !important;
             }
+
             .btn-play {
-                width: 36px !important;
-                height: 36px !important;
+                width: 32px !important;
+                height: 32px !important;
             }
+
             .btn-play svg {
                 width: 12px !important;
                 height: 12px !important;
             }
+
+            /* Completely hide part B (card strip) on mobile */
             .card-strip {
                 display: none !important;
             }
@@ -184,13 +303,31 @@
         /* ─── Shift title animation ─── */
         function shiftTitle(text) {
             slideTitle.innerHTML = '';
-            const chars = text.split('');
-            chars.forEach((char, i) => {
-                const span = document.createElement('span');
-                span.className = 'shift-char';
-                span.textContent = char === ' ' ? '\u00A0' : char;
-                span.style.transitionDelay = `${i * 25}ms`;
-                slideTitle.appendChild(span);
+            const words = text.split(' ');
+            let charIndex = 0;
+            words.forEach((word, wIdx) => {
+                const wordSpan = document.createElement('span');
+                wordSpan.style.display = 'inline-block';
+                
+                const chars = word.split('');
+                chars.forEach((char) => {
+                    const span = document.createElement('span');
+                    span.className = 'shift-char';
+                    span.textContent = char;
+                    span.style.transitionDelay = `${charIndex * 25}ms`;
+                    wordSpan.appendChild(span);
+                    charIndex++;
+                });
+                slideTitle.appendChild(wordSpan);
+                
+                if (wIdx < words.length - 1) {
+                    const spaceSpan = document.createElement('span');
+                    spaceSpan.className = 'shift-char';
+                    spaceSpan.textContent = '\u00A0';
+                    spaceSpan.style.transitionDelay = `${charIndex * 25}ms`;
+                    slideTitle.appendChild(spaceSpan);
+                    charIndex++;
+                }
             });
             // Trigger the animation on next frame
             requestAnimationFrame(() => requestAnimationFrame(() => {
@@ -437,6 +574,15 @@
         sliderEl?.addEventListener('mouseenter', () => isHovering = true);
         sliderEl?.addEventListener('mouseleave', () => isHovering = false);
 
+        /* ─── Mobile Tap on Section A to open Event Details ─── */
+        sliderEl?.addEventListener('click', (e) => {
+            if (window.innerWidth < 1024) {
+                if (e.target.closest('.btn-play')) return;
+                const url = slides[current]?.cta_url;
+                if (url) window.location.href = url;
+            }
+        });
+
         /* ─── Init ─── */
         initStrip();
         startTimer();
@@ -498,38 +644,48 @@
                     }
                 @endphp
 
-                <div class="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-6 md:grid md:grid-cols-2 lg:grid-cols-3 lg:gap-6 max-w-[1200px] mx-auto hide-scrollbar">
+                <div class="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-6 md:grid md:grid-cols-2 lg:grid-cols-3 lg:gap-6 max-w-[1200px] mx-auto hide-scrollbar px-4 md:px-0">
                     @foreach($gridItems as $idx => $item)
                         <a href="{{ $item['slug'] ? route('events.index', ['category' => $item['slug']]) : '#events' }}"
                             style="aspect-ratio: 16/9; min-height: 160px; opacity: 0;"
-                            class="event-category-card snap-start shrink-0 w-[85%] md:w-auto group relative block rounded-2xl overflow-hidden {{ $item['image'] ? 'bg-gray-900' : 'bg-gray-200' }} shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                            class="event-category-card snap-start shrink-0 w-[85%] md:w-auto group relative block rounded-2xl overflow-hidden {{ $item['image'] ? 'bg-gray-900' : 'bg-gray-200' }} shadow-sm hover:shadow-lg transition-all duration-300 border border-white/20">
 
                             @if($item['image'])
                                 <!-- Background Image -->
-                                <img src="{{ asset($item['image']) }}" alt="{{ $item['name'] }}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-[1.15] opacity-60 group-hover:opacity-80">
+                                <img src="{{ asset($item['image']) }}" alt="{{ $item['name'] }}" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 opacity-80">
                             @else
-                                <div class="absolute inset-0 w-full h-full bg-gradient-to-br from-gray-800 to-gray-700 opacity-80 group-hover:opacity-100 transition-opacity"></div>
+                                @php
+                                    $bgGradients = [
+                                        'from-[#FF6B6B] to-[#FF8E53]',
+                                        'from-[#4E65FF] to-[#92EFFD]',
+                                        'from-[#11998E] to-[#38EF7D]',
+                                        'from-[#8E2DE2] to-[#4A00E0]',
+                                        'from-[#F2994A] to-[#F2C94C]',
+                                        'from-[#0F2027] via-[#203A43] to-[#2C5364]'
+                                    ];
+                                    $bgGrad = $bgGradients[$idx % count($bgGradients)];
+                                @endphp
+                                <div class="absolute inset-0 w-full h-full bg-gradient-to-br {{ $bgGrad }} opacity-90"></div>
                             @endif
 
-                            <!-- Glassmorphism Gradient Overlay -->
-                            <div class="absolute inset-0 transition-opacity duration-500 opacity-60 group-hover:opacity-40"
-                                 style="background: linear-gradient(to right, rgba(28,20,16,0.9) 0%, rgba(28,20,16,0.4) 100%);"></div>
+                            <!-- Soft Overlay for text readability -->
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
 
-                            <!-- Icon (Absolutely centered in the collapsed shape) -->
-                            <div class="absolute top-0 left-0 flex items-center justify-center z-10 cat-icon-container pointer-events-none">
-                                <i data-lucide="{{ $item['icon'] }}" class="w-12 h-12 lg:w-14 lg:h-14 text-white drop-shadow-md transition-transform duration-500 group-hover:scale-110"></i>
-                            </div>
-
-                            <!-- Expanding Text Content -->
-                            <div class="absolute top-0 flex flex-col justify-center cat-text-container z-10 opacity-0 group-hover:opacity-100 transition-all duration-500 delay-75 transform -translate-x-4 group-hover:translate-x-0 pointer-events-none">
-                                <h3 class="text-white text-xl lg:text-2xl font-black tracking-tight drop-shadow-lg leading-tight mb-1 whitespace-normal pr-2">
+                            <!-- Text Content (Always Visible on Mobile) -->
+                            <div class="absolute inset-0 p-5 flex flex-col justify-end z-10">
+                                <h3 class="text-white text-xl font-black tracking-tight drop-shadow-md leading-snug mb-1">
                                     {{ $item['name'] }}
                                 </h3>
                                 
-                                <div class="inline-flex items-center gap-1.5 text-[#FFE381] text-xs lg:text-sm font-bold uppercase tracking-wider drop-shadow-md mt-1">
-                                    <i data-lucide="calendar" class="w-4 h-4"></i>
+                                <div class="inline-flex items-center gap-1.5 text-white/90 text-sm font-medium">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-white/70"></span>
                                     <span>{{ $item['count'] }} sự kiện</span>
                                 </div>
+                            </div>
+                            
+                            <!-- Small Icon Top Right -->
+                            <div class="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                                <i data-lucide="{{ $item['icon'] }}" class="w-4 h-4 text-white drop-shadow-sm"></i>
                             </div>
                         </a>
                     @endforeach
@@ -537,20 +693,15 @@
                     <!-- Inline View All Button -->
                     <a href="{{ route('events.index') }}"
                         style="opacity: 0;"
-                        class="event-category-card group relative block bg-[#07A0C3] hover:bg-[#068ba9] shadow-md hover:shadow-2xl hover:z-50 cat-parallelogram-sm"
+                        class="event-category-card snap-start shrink-0 w-[85%] md:w-auto group relative flex flex-col items-center justify-center rounded-2xl bg-gradient-to-br from-[#07A0C3] to-[#04F06A] shadow-md hover:shadow-xl transition-all duration-300 border border-white/20"
                         title="Xem tất cả danh mục">
                         
-                        <!-- Icon -->
-                        <div class="absolute top-0 left-0 flex items-center justify-center z-10 cat-sm-icon-container pointer-events-none">
-                            <i data-lucide="plus" class="w-10 h-10 lg:w-12 lg:h-12 text-white drop-shadow-md transition-transform duration-500 group-hover:rotate-90"></i>
+                        <div class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center mb-3">
+                            <i data-lucide="arrow-right" class="w-6 h-6 text-white drop-shadow-sm"></i>
                         </div>
-
-                        <!-- Expanding Text Content -->
-                        <div class="absolute top-0 flex flex-col justify-center cat-sm-text-container z-10 opacity-0 group-hover:opacity-100 transition-all duration-500 delay-75 transform -translate-x-4 group-hover:translate-x-0 pointer-events-none">
-                            <h3 class="text-white text-2xl lg:text-3xl font-black tracking-tight drop-shadow-lg leading-tight uppercase whitespace-nowrap">
-                                Xem thêm
-                            </h3>
-                        </div>
+                        <h3 class="text-white text-lg font-bold tracking-tight drop-shadow-sm">
+                            Xem tất cả
+                        </h3>
                     </a>
                 </div>
 
@@ -767,7 +918,7 @@
     <div id="archive-sticky-wrapper" style="background: #2D1F0A; position: relative; z-index: 50;">
     @php $archiveJson = json_encode($archive); @endphp
 <section id="archive" class="relative overflow-hidden py-12 lg:py-16"
-         style="position: -webkit-sticky; position: sticky; top: 72px; background:linear-gradient(160deg,#2D1F0A 0%,#3D2A0E 50%,#1C2A10 100%); z-index: 50;"
+         style="background:linear-gradient(160deg,#2D1F0A 0%,#3D2A0E 50%,#1C2A10 100%); z-index: 50;"
          x-data="{ 
             yearIdx: 0, 
             eventIdx: 0,
@@ -833,7 +984,17 @@
         <div class="relative mt-14 grid grid-cols-1 gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
             <!-- Chữ số năm — Jasmine gradient & Buttons -->
             <div class="relative flex flex-col items-start z-10">
-                <div class="font-barlow-condensed text-[28vw] font-black leading-[0.85] tracking-tighter lg:text-[18vw] pl-4 lg:pl-6 pr-4"
+                <!-- Mobile Clean Header -->
+                <div class="flex items-center gap-4 lg:hidden pl-4 pr-4 w-full">
+                     <h3 class="font-barlow-condensed text-4xl font-black"
+                         style="-webkit-text-fill-color:transparent;-webkit-background-clip:text;background-clip:text;
+                                background-image:linear-gradient(160deg,#FFE381 30%,#E8C84A 70%,#07A0C3 100%);"
+                         x-text="'NĂM ' + currentYear.year"></h3>
+                     <div class="h-px flex-1" style="background:rgba(255,227,129,0.2);"></div>
+                </div>
+
+                <!-- Desktop Huge Text -->
+                <div class="hidden lg:block font-barlow-condensed font-black leading-[0.85] tracking-tighter text-[18vw] pl-6 pr-4"
                      style="-webkit-text-fill-color:transparent;-webkit-background-clip:text;background-clip:text;
                             background-image:linear-gradient(160deg,#FFE381 30%,#E8C84A 70%,#07A0C3 100%);"
                      x-text="currentYear.year"
@@ -841,7 +1002,7 @@
                      x-transition:enter-start="opacity-0 translate-y-10"
                      x-transition:enter-end="opacity-100 translate-y-0"></div>
 
-                <div class="mt-6 pl-4 lg:pl-6">
+                <div class="mt-6 pl-6 hidden lg:block">
                     <a :href="'{{ route('archive') }}?year=' + currentYear.year" class="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold transition-all hover:scale-105"
                        style="background:#FFE381; color:#1C1410;">
                         Xem chi tiết năm <span x-text="currentYear.year"></span> <i data-lucide="arrow-right" class="h-4 w-4"></i>
@@ -849,10 +1010,10 @@
                 </div>
 
                 <!-- Year tabs -->
-                <div class="mt-7 flex flex-wrap items-center gap-2 pl-4 lg:pl-6">
+                <div class="mt-5 lg:mt-7 flex overflow-x-auto hide-scrollbar items-center gap-2 pl-4 pr-4 lg:pl-6 pb-2 w-full max-w-[100vw]">
                     <template x-for="(a,i) in archive" :key="a.year">
                         <button @click="setYear(i)"
-                            class="rounded-full px-4 py-1.5 text-sm font-bold font-mono transition-all"
+                            class="rounded-full px-4 py-1.5 text-sm font-bold font-mono transition-all shrink-0"
                             :style="i===yearIdx
                                 ? 'background:#FFE381;color:#1C1410;box-shadow:0 4px 12px rgba(255,227,129,0.4);'
                                 : 'background:rgba(255,227,129,0.08);color:rgba(255,227,129,0.45);'">
@@ -882,69 +1043,99 @@
             </div>
 
             <div>
-                <a :href="currentEvent.featured_url" class="group relative block h-[280px] overflow-hidden rounded-2xl lg:h-[360px]"
-                     style="box-shadow:0 20px 60px rgba(255,227,129,0.15);">
-                    <img :src="currentEvent.img" :alt="currentEvent.featured_title" loading="lazy"
-                         class="h-full w-full object-cover transition-transform duration-[1500ms] group-hover:scale-105" />
-                    <div class="absolute inset-0"
-                         style="background:linear-gradient(to top,rgba(45,31,10,0.92) 0%,rgba(45,31,10,0.25) 60%,transparent 100%);"></div>
-                    <!-- Jasmine accent bar -->
-                    <div class="absolute bottom-0 left-0 right-0 h-1.5" style="background:#FFE381;"></div>
-                    <div class="absolute bottom-6 left-5 right-5 z-20">
-                        <div class="block w-fit">
-                            <h3 class="font-barlow-condensed text-3xl font-black uppercase tracking-wide text-white lg:text-4xl transition-colors group-hover:text-[#FFE381]"
-                                x-text="currentEvent.featured_title"></h3>
+                <div class="rounded-2xl lg:rounded-none overflow-hidden lg:overflow-visible mx-4 lg:mx-0" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 227, 129, 0.05);">
+                    <a :href="currentEvent.featured_url" class="group relative block h-[220px] lg:rounded-2xl lg:h-[360px]"
+                         style="box-shadow:0 20px 60px rgba(255,227,129,0.15);">
+                        <img :src="currentEvent.img" :alt="currentEvent.featured_title" loading="lazy"
+                             class="h-full w-full object-cover transition-transform duration-[1500ms] group-hover:scale-105" />
+                        <div class="absolute inset-0"
+                             style="background:linear-gradient(to top,rgba(45,31,10,0.92) 0%,rgba(45,31,10,0.25) 60%,transparent 100%);"></div>
+                        <!-- Jasmine accent bar -->
+                        <div class="absolute bottom-0 left-0 right-0 h-1.5" style="background:#FFE381;"></div>
+                        <!-- Tiêu đề trên PC -->
+                        <div class="absolute bottom-6 left-5 right-5 z-20 hidden lg:block">
+                            <div class="block w-fit">
+                                <h3 class="font-barlow-condensed text-2xl font-black uppercase tracking-wide text-white lg:text-4xl transition-colors group-hover:text-[#FFE381]"
+                                    x-text="currentEvent.featured_title"></h3>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- Card Body cho Mobile & PC -->
+                    <div class="p-5 lg:p-0 lg:mt-5">
+                        <!-- Tiêu đề trên Mobile -->
+                        <h3 class="font-barlow-condensed text-2xl font-black uppercase tracking-wide text-white transition-colors lg:hidden"
+                            x-text="currentEvent.featured_title"></h3>
+                            
+                        <p class="mt-3 lg:mt-0 text-sm leading-relaxed lg:text-lg" style="color:rgba(255,227,129,0.7);" x-text="currentEvent.desc"></p>
+
+                        <!-- Thống kê tinh gọn cho Mobile -->
+                        <div class="mt-4 flex flex-wrap items-center gap-4 lg:hidden">
+                            <!-- Stat: Số sự kiện -->
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="calendar-check" class="h-4 w-4" style="color:#FFE381;"></i>
+                                <span class="text-xs font-bold text-white" x-text="currentYear.achievements[0]"></span>
+                            </div>
+                            <!-- Separator -->
+                            <div class="h-3 w-px bg-white/20"></div>
+                            <!-- Stat: Năm hoạt động -->
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="history" class="h-4 w-4" style="color:#07A0C3;"></i>
+                                <span class="text-xs font-bold text-white" x-text="currentYear.year"></span>
+                            </div>
+                        </div>
+
+                        <!-- Thống kê gốc cho PC -->
+                        <div class="mt-5 hidden lg:flex flex-wrap gap-4">
+                            <div class="flex items-center gap-2">
+                                <div class="h-8 w-8 rounded-full flex items-center justify-center flex-shrink-0" style="background:rgba(255,227,129,0.12); border:1px solid rgba(255,227,129,0.25);">
+                                    <i data-lucide="calendar-check" class="h-4 w-4" style="color:#FFE381;"></i>
+                                </div>
+                                <div>
+                                    <div class="text-xs font-bold uppercase tracking-widest" style="color:rgba(255,227,129,0.5);">Tổ chức</div>
+                                    <div class="text-sm font-bold text-white" x-text="currentYear.achievements[0]"></div>
+                                </div>
+                            </div>
+                            <div class="h-auto w-px self-stretch" style="background:rgba(255,227,129,0.15);"></div>
+                            <div class="flex items-center gap-2">
+                                <div class="h-8 w-8 rounded-full flex items-center justify-center flex-shrink-0" style="background:rgba(7,160,195,0.12); border:1px solid rgba(7,160,195,0.25);">
+                                    <i data-lucide="history" class="h-4 w-4" style="color:#07A0C3;"></i>
+                                </div>
+                                <div>
+                                    <div class="text-xs font-bold uppercase tracking-widest" style="color:rgba(7,160,195,0.5);">Năm hoạt động</div>
+                                    <div class="text-sm font-bold text-white" x-text="currentYear.year"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tags (chỉ PC) -->
+                        <div class="mt-5 hidden lg:grid grid-cols-1 gap-3 sm:grid-cols-3">
+                            <template x-for="achieve in currentYear.achievements" :key="achieve">
+                                <div class="rounded-xl px-4 py-3 text-sm font-medium text-white"
+                                     style="background:rgba(255,227,129,0.10); border:1px solid rgba(255,227,129,0.25);"
+                                     x-text="achieve"></div>
+                            </template>
+                        </div>
+
+                        <!-- Action Bar cho Mobile -->
+                        <div class="mt-6 flex items-center justify-between lg:hidden border-t border-[#FFE381]/10 pt-4">
+                            <a :href="'{{ route('archive') }}?year=' + currentYear.year" class="inline-flex items-center gap-2 rounded-full px-5 py-2 text-xs font-bold transition-all"
+                               style="background:#FFE381; color:#1C1410;">
+                                Xem thêm <i data-lucide="arrow-right" class="h-3 w-3"></i>
+                            </a>
+                            
+                            <div class="flex gap-2">
+                                <button @click="go(-1)" :disabled="eventIdx === 0"
+                                    class="grid h-9 w-9 place-items-center rounded-full border border-[#FFE381]/30 disabled:opacity-30">
+                                    <i data-lucide="chevron-left" class="h-4 w-4 text-white"></i>
+                                </button>
+                                <button @click="go(1)" :disabled="eventIdx === currentYear.events.length - 1"
+                                    class="grid h-9 w-9 place-items-center rounded-full border border-[#FFE381]/30 disabled:opacity-30">
+                                    <i data-lucide="chevron-right" class="h-4 w-4 text-white"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </a>
-
-                <p class="mt-5 text-base leading-relaxed lg:text-lg" style="color:rgba(255,227,129,0.7);" x-text="currentEvent.desc"></p>
-
-                <!-- Thêm thông tin chi tiết trên achievements -->
-                <div class="mt-5 flex flex-wrap gap-4">
-                    <!-- Stat: Số sự kiện -->
-                    <div class="flex items-center gap-2">
-                        <div class="h-8 w-8 rounded-full flex items-center justify-center flex-shrink-0"
-                             style="background:rgba(255,227,129,0.12); border:1px solid rgba(255,227,129,0.25);">
-                            <i data-lucide="calendar-check" class="h-4 w-4" style="color:#FFE381;"></i>
-                        </div>
-                        <div>
-                            <div class="text-xs font-bold uppercase tracking-widest" style="color:rgba(255,227,129,0.5);">Tổ chức</div>
-                            <div class="text-sm font-bold text-white" x-text="currentYear.achievements[0]"></div>
-                        </div>
-                    </div>
-                    <!-- Separator -->
-                    <div class="h-auto w-px self-stretch" style="background:rgba(255,227,129,0.15);"></div>
-                    <!-- Stat: Năm hoạt động -->
-                    <div class="flex items-center gap-2">
-                        <div class="h-8 w-8 rounded-full flex items-center justify-center flex-shrink-0"
-                             style="background:rgba(7,160,195,0.12); border:1px solid rgba(7,160,195,0.25);">
-                            <i data-lucide="history" class="h-4 w-4" style="color:#07A0C3;"></i>
-                        </div>
-                        <div>
-                            <div class="text-xs font-bold uppercase tracking-widest" style="color:rgba(7,160,195,0.5);">Năm hoạt động</div>
-                            <div class="text-sm font-bold text-white" x-text="currentYear.year"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
-                    <template x-for="achieve in currentYear.achievements" :key="achieve">
-                        <div class="rounded-xl px-4 py-3 text-sm font-medium text-white"
-                             style="background:rgba(255,227,129,0.10); border:1px solid rgba(255,227,129,0.25);"
-                             x-text="achieve"></div>
-                    </template>
-                </div>
-
-                <div class="mt-6 flex gap-3 lg:hidden">
-                    <button @click="go(-1)" :disabled="eventIdx === 0"
-                        class="grid h-11 w-11 place-items-center rounded-full border border-[#FFE381]/30 disabled:opacity-30">
-                        <i data-lucide="chevron-left" class="h-5 w-5 text-white"></i>
-                    </button>
-                    <button @click="go(1)" :disabled="eventIdx === currentYear.events.length - 1"
-                        class="grid h-11 w-11 place-items-center rounded-full border border-[#FFE381]/30 disabled:opacity-30">
-                        <i data-lucide="chevron-right" class="h-5 w-5 text-white"></i>
-                    </button>
                 </div>
             </div>
         </div>
@@ -961,7 +1152,7 @@
 —————————————————————————————————————————————————————————— --}}
 <div id="media-sticky-wrapper" style="background: #FFF3C4; position: relative; z-index: 60;">
 @php $mediaJson = json_encode($media); @endphp
-<section id="media" class="relative overflow-hidden py-8 lg:py-10" style="position: -webkit-sticky; position: sticky; top: 72px; background:#FFF3C4; z-index: 60;"
+<section id="media" class="relative overflow-hidden py-8 lg:py-10" style="background:#FFF3C4; z-index: 60;"
          x-data="mediaPlayer({{ $mediaJson }})" x-init="initPlayer()">
     <!-- Top Jasmine border -->
     <div class="absolute inset-x-0 top-0 h-1.5" style="background:#FFE381;"></div>
@@ -1029,12 +1220,12 @@
                 </div>
 
                 <!-- Right Side: Info and Thumbnails -->
-                <div class="lg:col-span-4 flex flex-col gap-4 h-[380px]">
+                <div class="lg:col-span-4 flex flex-col gap-4 h-auto lg:h-[380px]">
                     <!-- Top Info Box (2/3) -->
                     <div class="flex-1 rounded-2xl p-6 flex flex-col justify-center relative overflow-hidden group" style="background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); box-shadow: 0 4px 20px rgba(255,200,60,0.15); border: 1px solid rgba(255, 227, 129, 0.5);">
                         <div class="mb-4 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.25em] text-[#1C1410]" style="background:#FFE381;" x-text="currentItem.type === 'video' ? 'Video' : 'Hình ảnh'"></div>
                         
-                        <h3 class="font-barlow-condensed text-3xl font-black uppercase tracking-wide text-[#1C1410] leading-snug line-clamp-4" x-text="currentItem.title"></h3>
+                        <h3 class="font-barlow-condensed text-2xl lg:text-3xl font-bold tracking-tight text-[#1C1410] leading-snug line-clamp-3" x-text="currentItem.title"></h3>
                         
                         <div class="mt-4 flex items-center gap-2">
                             <div class="h-10 w-1 rounded-full" style="background:#04F06A;"></div>

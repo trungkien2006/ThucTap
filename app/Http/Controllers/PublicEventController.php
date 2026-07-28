@@ -31,7 +31,8 @@ class PublicEventController extends Controller
             $query->where('semester', $request->semester);
         }
 
-        $events = $query->paginate(12);
+        $perPage = $this->isMobile() ? 7 : 12;
+        $events = $query->paginate($perPage);
         $categories = Category::eventTypes()->get();
 
         return $this->renderView('welcome', compact('events', 'categories'));
@@ -107,13 +108,16 @@ class PublicEventController extends Controller
             ->orderBy('event_date', 'asc')
             ->first();
 
+        // Lấy tất cả ảnh của sự kiện (gồm ảnh Drive, ảnh tạo sự kiện và ảnh banner)
+        $recapImages = $event->media()->where('type', 'image')->get();
+
         // Template routing
         $viewName = 'events.show';
         if ($event->page_template && view()->exists("events.show-template{$event->page_template}")) {
             $viewName = "events.show-template{$event->page_template}";
         }
 
-        return $this->renderView($viewName, compact('event', 'newestEvents', 'prominentEvents', 'previousEvent', 'nextEvent'));
+        return $this->renderView($viewName, compact('event', 'newestEvents', 'prominentEvents', 'previousEvent', 'nextEvent', 'recapImages'));
     }
 
     public function like($event_id)

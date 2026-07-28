@@ -248,11 +248,17 @@
 
         <!-- Form Actions -->
         <div class="flex items-center justify-between pt-4">
-            <a href="{{ route('admin.events.index') }}" class="btn-ghost">
-                Hủy bỏ
-            </a>
-            <button class="btn-primary flex items-center gap-2" type="submit">
-                Tạo sự kiện & Tiếp tục
+            <div class="flex items-center gap-3">
+                <a href="{{ route('admin.events.index') }}" class="btn-ghost border border-slate-200">
+                    Hủy bỏ
+                </a>
+                <button type="submit" name="redirect_to" value="index" class="btn-ghost border border-slate-200 flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[16px]">save</span>
+                    Lưu sự kiện
+                </button>
+            </div>
+            <button type="submit" name="redirect_to" value="design" class="btn-primary flex items-center gap-2">
+                Chuyển sang Bước 2
                 <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
             </button>
         </div>

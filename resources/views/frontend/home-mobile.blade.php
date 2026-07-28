@@ -238,8 +238,8 @@
                 <h1 class="slide-title" id="slideTitle">{{ $slides[0]['title'] }}</h1>
                 <p class="slide-desc" id="slideDesc">{{ $slides[0]['description'] }}</p>
                 <div class="slide-actions">
-                    <button class="btn-play" aria-label="Xem video">
-                        <svg viewBox="0 0 16 16"><polygon points="3,1 13,8 3,15"/></svg>
+                    <button class="btn-play" id="btnPlayPause" aria-label="Dừng slide" title="Dừng slide">
+                        <svg viewBox="0 0 16 16"><rect x="3" y="2" width="4" height="12"/><rect x="9" y="2" width="4" height="12"/></svg>
                     </button>
                     <a href="{{ $slides[0]['cta_url'] }}" class="btn-cta" id="slideCta">{{ $slides[0]['cta_label'] }}</a>
                 </div>
@@ -273,6 +273,9 @@
         for (let i = 1; i < total; i++) queue.push(i); // [1,2,3,...,7]
         queue.push(0); // slide 0 at the end (it's currently the background)
 
+        /* ─── State ─── */
+        let isUserPaused = false;
+
         /* ─── DOM ─── */
         const bgLayers     = document.querySelectorAll('.bg-layer');
         const cardTrack    = document.getElementById('cardTrack');
@@ -283,6 +286,23 @@
         const slideCta     = document.getElementById('slideCta');
         const progressBar  = document.getElementById('progressBar');
         const sliderEl     = document.getElementById('slider');
+        const btnPlayPause = document.querySelector('.btn-play');
+
+        if (btnPlayPause) {
+            btnPlayPause.addEventListener('click', (e) => {
+                e.stopPropagation();
+                isUserPaused = !isUserPaused;
+                if (isUserPaused) {
+                    btnPlayPause.innerHTML = '<svg viewBox="0 0 16 16"><polygon points="3,1 13,8 3,15"/></svg>';
+                    btnPlayPause.setAttribute('aria-label', 'Phát slide');
+                    btnPlayPause.setAttribute('title', 'Phát slide');
+                } else {
+                    btnPlayPause.innerHTML = '<svg viewBox="0 0 16 16"><rect x="3" y="2" width="4" height="12"/><rect x="9" y="2" width="4" height="12"/></svg>';
+                    btnPlayPause.setAttribute('aria-label', 'Dừng slide');
+                    btnPlayPause.setAttribute('title', 'Dừng slide');
+                }
+            });
+        }
 
         // Lazy load remaining background images when browser is idle
         const loadRemainingBg = () => {
@@ -533,7 +553,7 @@
             if (delta > 100) delta = 100;
 
             // Progress the timer if not animating a slide
-            if (!isAnim) {
+            if (!isAnim && !isUserPaused) {
                 // Slower progression (x3 slower) when user is hovering over the slider
                 const effectiveDelta = isHovering ? delta / 3 : delta;
                 accumulated += effectiveDelta;

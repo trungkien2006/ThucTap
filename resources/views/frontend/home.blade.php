@@ -949,9 +949,10 @@
             eventIdx: 0,
             archive: {{ $archiveJson }}, 
             dir: 1, 
-            get currentYear() { return this.archive[this.yearIdx]; }, 
-            get currentEvent() { return this.currentYear.events[this.eventIdx]; },
+            get currentYear() { return (this.archive && this.archive.length > 0 && this.archive[this.yearIdx]) ? this.archive[this.yearIdx] : null; }, 
+            get currentEvent() { return (this.currentYear && this.currentYear.events && this.currentYear.events.length > 0) ? (this.currentYear.events[this.eventIdx] || this.currentYear.events[0]) : null; },
             go(d) {
+                if (!this.currentYear || !this.currentYear.events) return;
                 this.dir = d;
                 let n = this.eventIdx + d;
                 if(n >= 0 && n < this.currentYear.events.length) {

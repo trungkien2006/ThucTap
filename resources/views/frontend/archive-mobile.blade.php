@@ -498,10 +498,10 @@
 
                         <!-- Tab 1: Image & Video Gallery -->
                         <div x-show="activeTab === 'images'" class="space-y-4">
-                            <div class="max-h-[200px] overflow-y-auto lg:max-h-none pr-1 custom-scrollbar">
+                            <div class="max-h-[200px] overflow-y-auto lg:max-h-none pr-1 custom-scrollbar" x-show="current && ((current.images && current.images.length > 0) || (current.videos && current.videos.length > 0))">
                                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-6">
                                     <!-- Images -->
-                                    <template x-for="(img, idxImg) in current.images" :key="'img-'+idxImg">
+                                    <template x-for="(img, idxImg) in (current ? (current.images || []) : [])" :key="'img-'+idxImg">
                                         <div class="flex flex-col gap-1.5 cursor-pointer">
                                             <div class="group relative aspect-video rounded-xl overflow-hidden border border-[#E8E2D5] bg-black/5"
                                                  @click="lightboxImg = img.url; lightboxCaption = img.caption; lightboxVideo = null;">
@@ -515,7 +515,7 @@
                                     </template>
                                     
                                     <!-- Videos -->
-                                    <template x-for="(vid, idxVid) in current.videos" :key="'vid-'+idxVid">
+                                    <template x-for="(vid, idxVid) in (current ? (current.videos || []) : [])" :key="'vid-'+idxVid">
                                         <div class="flex flex-col gap-1.5 cursor-pointer">
                                             <div class="group relative aspect-video rounded-xl overflow-hidden border border-[#E8E2D5] bg-black/10 flex items-center justify-center"
                                                  @click="lightboxVideo = vid.url; lightboxCaption = vid.caption; lightboxImg = null;">
@@ -535,23 +535,21 @@
                                     </template>
                                 </div>
                             </div>
-                            <div x-show="current && current.images.length === 0 && current.videos.length === 0" class="text-center py-10 text-[#7A6A52]/50 text-sm animate-fade-in">
+                            <div x-show="!current || ((!current.images || current.images.length === 0) && (!current.videos || current.videos.length === 0))" class="text-center py-10 text-[#7A6A52]/50 text-sm animate-fade-in">
                                 Không có ảnh hoặc video lưu trữ cho sự kiện này.
                             </div>
                         </div>
 
-
-
-                        <!-- Tab 3: Speakers -->
+                        <!-- Tab 2: Speakers -->
                         <div x-show="activeTab === 'speakers'" class="space-y-3">
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <template x-for="(speaker, idxSpk) in current.speakers" :key="idxSpk">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" x-show="current && current.speakers && current.speakers.length > 0">
+                                <template x-for="(speaker, idxSpk) in (current ? (current.speakers || []) : [])" :key="idxSpk">
                                     <div class="rounded-xl p-4 flex items-center gap-4 bg-[#1C1410]/5 border border-[#E8E2D5] transition-all hover:bg-[#1C1410]/10">
                                         <div class="w-12 h-12 rounded-full overflow-hidden shrink-0 bg-[#E8E2D5]">
-                                            <template x-if="speaker.avatar">
-                                                <img :src="speaker.avatar" class="w-full h-full object-cover" />
+                                            <template x-if="speaker.photo_url || speaker.avatar">
+                                                <img :src="speaker.photo_url || speaker.avatar" class="w-full h-full object-cover" />
                                             </template>
-                                            <template x-if="!speaker.avatar">
+                                            <template x-if="!speaker.photo_url && !speaker.avatar">
                                                 <div class="w-full h-full flex items-center justify-center text-[#7A6A52] bg-[#FFE381]/20">
                                                     <i data-lucide="user" class="h-5 w-5"></i>
                                                 </div>
@@ -559,12 +557,12 @@
                                         </div>
                                         <div class="overflow-hidden">
                                             <h4 class="text-sm font-bold text-[#1C1410] truncate w-full" x-text="speaker.name"></h4>
-                                            <p class="text-xs text-[#7A6A52] mt-0.5 truncate" x-text="speaker.role"></p>
+                                            <p class="text-xs text-[#7A6A52] mt-0.5 truncate" x-text="speaker.title || speaker.role || 'Diễn giả'"></p>
                                         </div>
                                     </div>
                                 </template>
                             </div>
-                            <div x-show="current && current.speakers && current.speakers.length === 0" class="text-center py-10 text-[#7A6A52]/50 text-sm">
+                            <div x-show="!current || !current.speakers || current.speakers.length === 0" class="text-center py-10 text-[#7A6A52]/50 text-sm">
                                 Không có thông tin diễn giả cho sự kiện này.
                             </div>
                         </div>

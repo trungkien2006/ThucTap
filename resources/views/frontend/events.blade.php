@@ -148,6 +148,12 @@
             #events-filter-form select::-ms-expand {
                 display: none !important;
             }
+            @media (max-width: 1023px) {
+                .event-grid-card-wrapper {
+                    opacity: 1 !important;
+                    transform: none !important;
+                }
+            }
         </style>
 
         <!-- Events Grid -->

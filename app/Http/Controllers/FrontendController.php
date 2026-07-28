@@ -345,7 +345,7 @@ class FrontendController extends Controller
     {
         $selectedYear = $request->input('year');
 
-        $query = Event::with(['bannerImage', 'category'])
+        $query = Event::with(['bannerImage', 'category', 'media', 'speakers'])
             ->where(function($q) {
                 $q->where('status', 'archived')
                   ->orWhere(function($q2) {
@@ -356,13 +356,33 @@ class FrontendController extends Controller
                          });
                   });
             })
-            ->whereNotNull('recap_drive_link')
-            ->where('recap_drive_link', '!=', '')
             ->orderBy('event_date', 'desc');
 
         $events = $query->get();
 
         $archive = $events->map(function ($event) {
+            $images = $event->media->where('type', 'image')->map(function($m) {
+                return [
+                    'url' => \App\Helpers\FileHelper::url($m->url, true),
+                    'caption' => $m->caption ?? '',
+                ];
+            })->values()->toArray();
+
+            $videos = $event->media->where('type', 'video')->map(function($m) {
+                return [
+                    'url' => \App\Helpers\FileHelper::url($m->url, true),
+                    'caption' => $m->caption ?? '',
+                ];
+            })->values()->toArray();
+
+            $speakers = $event->speakers->map(function($s) {
+                return [
+                    'name' => $s->name,
+                    'title' => $s->title ?? 'Diễn giả',
+                    'photo_url' => $s->photo_url ? \App\Helpers\FileHelper::url($s->photo_url, true) : null,
+                ];
+            })->values()->toArray();
+
             return [
                 'id' => $event->id,
                 'event_year' => \Carbon\Carbon::parse($event->event_date)->year,
@@ -374,6 +394,9 @@ class FrontendController extends Controller
                 'desc' => Str::limit(strip_tags($event->description), 100),
                 'url' => route('events.show', $event->slug),
                 'img' => $event->bannerImage ? \App\Helpers\FileHelper::url($event->bannerImage->url, true) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80',
+                'images' => $images,
+                'videos' => $videos,
+                'speakers' => $speakers,
             ];
         })->toArray();
 

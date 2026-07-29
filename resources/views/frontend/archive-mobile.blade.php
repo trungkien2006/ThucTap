@@ -377,20 +377,16 @@
                 },
 
                 getCardStyle(index) {
+                    const baseRotations  = [-10, 0, 10];
+                    const baseTranslateX = [-55, 0, 55];
+                    
+                    const rot = baseRotations[index] !== undefined ? baseRotations[index] : 0;
+                    const tx  = baseTranslateX[index] !== undefined ? baseTranslateX[index] : 0;
+
                     if (index === this.fanActiveIndex) {
-                        return 'transform: rotate(0deg) translateX(0px) translateY(-10px) scale(1.08); z-index: 100; box-shadow: 0 20px 40px rgba(0,0,0,0.28); opacity: 1;';
-                    }
-                    const diff = index - this.fanActiveIndex;
-                    if (diff < 0) {
-                        const tx = Math.max(-100, diff * 64);
-                        const rot = Math.max(-18, diff * 12);
-                        const z = 40 + diff * 10;
-                        return `transform: rotate(${rot}deg) translateX(${tx}px) translateY(6px); z-index: ${z}; opacity: 0.95;`;
+                        return `transform: rotate(${rot}deg) translateX(${tx}px) translateY(-12px) scale(1.06); z-index: 100; box-shadow: 0 20px 40px rgba(0,0,0,0.3); opacity: 1;`;
                     } else {
-                        const tx = Math.min(100, diff * 64);
-                        const rot = Math.min(18, diff * 12);
-                        const z = 40 - diff * 10;
-                        return `transform: rotate(${rot}deg) translateX(${tx}px) translateY(6px); z-index: ${z}; opacity: 0.95;`;
+                        return `transform: rotate(${rot}deg) translateX(${tx}px) translateY(0px); z-index: 10; opacity: 0.95;`;
                     }
                 },
 

@@ -382,11 +382,17 @@
                     
                     const rot = baseRotations[index] !== undefined ? baseRotations[index] : 0;
                     const tx  = baseTranslateX[index] !== undefined ? baseTranslateX[index] : 0;
+                    
+                    // Natural cascade: Center card (index 1) should sit on top of side cards when not active
+                    let baseZIndex = 10;
+                    if (index === 1) {
+                        baseZIndex = 20;
+                    }
 
                     if (index === this.fanActiveIndex) {
                         return `transform: rotate(${rot}deg) translateX(${tx}px) translateY(-12px) scale(1.06); z-index: 100; box-shadow: 0 20px 40px rgba(0,0,0,0.3); opacity: 1;`;
                     } else {
-                        return `transform: rotate(${rot}deg) translateX(${tx}px) translateY(0px); z-index: 10; opacity: 0.95;`;
+                        return `transform: rotate(${rot}deg) translateX(${tx}px) translateY(0px); z-index: ${baseZIndex}; opacity: 0.95;`;
                     }
                 },
 

@@ -227,44 +227,95 @@
                 <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform text-lg">arrow_forward</span>
             </a>
             
-            <!-- Fan-out polaroid stack (Clickable Links - 3 Cards Always Visible) -->
-            <div class="polaroid-fan-stack relative flex items-center justify-center my-4" style="width: 240px; height: 220px;">
-                @php
-                    $fanRotations  = ['-10deg', '0deg',  '10deg'];
-                    $fanTranslateX = ['-48px',  '0px',   '48px'];
-                    $upcomingEvents = $upcomingEvents ?? [];
-                @endphp
+            <!-- Interactive Polaroid Fan Stack (Tap card to bring to center & overlap side cards) -->
+            <div x-data="{ 
+                    activeIndex: 1, 
+                    selectCard(i, url) {
+                        if (this.activeIndex === i) {
+                            window.location.href = url;
+                        } else {
+                            this.activeIndex = i;
+                        }
+                    }
+                 }"
+                 class="polaroid-fan-stack relative flex items-center justify-center my-4 select-none" 
+                 style="width: 250px; height: 230px;">
 
-                @foreach($upcomingEvents as $i => $upcoming)
-                <a href="{{ $upcoming['url'] }}"
-                   class="polaroid-fan-card absolute bg-white p-2.5 pt-2.5 pb-8 w-36 flex flex-col transition-all duration-500 ease-out border border-black/5 rounded-xs shadow-md"
-                   style="transform: rotate({{ $fanRotations[$i] }}) translateX({{ $fanTranslateX[$i] }}); z-index: {{ ($i + 1) * 10 }};">
-                    <div class="w-full h-24 overflow-hidden bg-gray-100 mb-1.5 rounded-xs">
-                        @if(!empty($upcoming['img']))
-                            <img src="{{ $upcoming['img'] }}" alt="{{ $upcoming['title'] }}" class="w-full h-full object-cover">
+                <!-- CARD 0 (Left Item) -->
+                <div @click="selectCard(0, '{{ $upcomingEvents[0]['url'] ?? route('events.index', ['status' => 'upcoming']) }}')"
+                     class="polaroid-fan-card absolute bg-white p-2.5 pb-8 w-36 flex flex-col transition-all duration-500 ease-out border border-black/5 rounded-xs shadow-md cursor-pointer"
+                     :style="activeIndex === 0 
+                        ? 'transform: rotate(0deg) translateX(0px) translateY(-8px) scale(1.06); z-index: 30; box-shadow: 0 16px 35px rgba(0,0,0,0.18);' 
+                        : (activeIndex === 1 
+                            ? 'transform: rotate(-12deg) translateX(-54px) translateY(4px); z-index: 10;' 
+                            : 'transform: rotate(-14deg) translateX(-64px) translateY(8px); z-index: 10;')" >
+                    <div class="w-full h-24 overflow-hidden bg-gray-100 mb-1.5 rounded-xs pointer-events-none">
+                        @if(!empty($upcomingEvents[0]['img']))
+                            <img src="{{ $upcomingEvents[0]['img'] }}" alt="{{ $upcomingEvents[0]['title'] }}" class="w-full h-full object-cover">
                         @else
-                            <div class="w-full h-full flex items-center justify-center">
-                                <span class="font-display-lg text-3xl text-[#8A7320]/30">?</span>
+                            <div class="w-full h-full flex items-center justify-center bg-amber-50">
+                                <span class="font-display-lg text-3xl text-[#8A7320]/40">?</span>
                             </div>
                         @endif
                     </div>
-                    <p class="font-label-handwritten text-[#1C1410] text-xs leading-tight line-clamp-2">{{ $upcoming['title'] }}</p>
-                    <p class="text-[9px] text-[#7A6A52]/70 mt-0.5">{{ $upcoming['date_str'] }}</p>
-                </a>
-                @endforeach
+                    <p class="font-label-handwritten text-[#1C1410] text-xs leading-tight line-clamp-2 pointer-events-none font-bold">
+                        {{ $upcomingEvents[0]['title'] ?? 'Khoảnh khắc 1' }}
+                    </p>
+                    <p class="text-[9px] text-[#7A6A52]/70 mt-0.5 pointer-events-none">
+                        {{ $upcomingEvents[0]['date_str'] ?? 'Sắp diễn ra' }}
+                    </p>
+                </div>
 
-                @if(count($upcomingEvents) < 3)
-                    @for($j = count($upcomingEvents); $j < 3; $j++)
-                    <a href="{{ route('events.index', ['status' => 'upcoming']) }}"
-                       class="polaroid-fan-card absolute bg-white p-2.5 pt-2.5 pb-8 w-36 flex flex-col justify-center items-center transition-all duration-500 border border-dashed border-[#8A7320]/30 rounded-xs shadow-md"
-                       style="transform: rotate({{ $fanRotations[$j] }}) translateX({{ $fanTranslateX[$j] }}); z-index: {{ ($j + 1) * 10 }};">
-                        <div class="w-full h-24 bg-emerald-50/50 border border-dashed border-[#8A7320]/20 flex items-center justify-center mb-1.5 rounded-xs">
-                            <span class="font-display-lg text-3xl text-[#8A7320]/30">?</span>
-                        </div>
-                        <p class="font-label-handwritten text-[#8A7320]/70 italic text-xs font-bold">Khoảnh khắc tiếp theo...</p>
-                    </a>
-                    @endfor
-                @endif
+                <!-- CARD 1 (Center Item) -->
+                <div @click="selectCard(1, '{{ $upcomingEvents[1]['url'] ?? route('events.index', ['status' => 'upcoming']) }}')"
+                     class="polaroid-fan-card absolute bg-white p-2.5 pb-8 w-36 flex flex-col transition-all duration-500 ease-out border border-black/5 rounded-xs shadow-md cursor-pointer"
+                     :style="activeIndex === 1 
+                        ? 'transform: rotate(0deg) translateX(0px) translateY(-8px) scale(1.06); z-index: 30; box-shadow: 0 16px 35px rgba(0,0,0,0.18);' 
+                        : (activeIndex === 0 
+                            ? 'transform: rotate(12deg) translateX(54px) translateY(4px); z-index: 10;' 
+                            : 'transform: rotate(-12deg) translateX(-54px) translateY(4px); z-index: 10;')" >
+                    <div class="w-full h-24 overflow-hidden bg-gray-100 mb-1.5 rounded-xs pointer-events-none">
+                        @if(!empty($upcomingEvents[1]['img']))
+                            <img src="{{ $upcomingEvents[1]['img'] }}" alt="{{ $upcomingEvents[1]['title'] }}" class="w-full h-full object-cover">
+                        @else
+                            <div class="w-full h-24 bg-emerald-50/60 border border-dashed border-[#8A7320]/30 flex items-center justify-center rounded-xs">
+                                <span class="material-symbols-outlined text-3xl text-[#8A7320]/60">photo_camera</span>
+                            </div>
+                        @endif
+                    </div>
+                    <p class="font-label-handwritten text-[#1C1410] text-xs leading-tight line-clamp-2 pointer-events-none font-bold">
+                        {{ $upcomingEvents[1]['title'] ?? 'Khoảnh khắc tiếp theo...' }}
+                    </p>
+                    <p class="text-[9px] text-[#7A6A52]/70 mt-0.5 pointer-events-none">
+                        {{ $upcomingEvents[1]['date_str'] ?? 'Sắp diễn ra' }}
+                    </p>
+                </div>
+
+                <!-- CARD 2 (Right Item) -->
+                <div @click="selectCard(2, '{{ $upcomingEvents[2]['url'] ?? route('events.index', ['status' => 'upcoming']) }}')"
+                     class="polaroid-fan-card absolute bg-white p-2.5 pb-8 w-36 flex flex-col transition-all duration-500 ease-out border border-black/5 rounded-xs shadow-md cursor-pointer"
+                     :style="activeIndex === 2 
+                        ? 'transform: rotate(0deg) translateX(0px) translateY(-8px) scale(1.06); z-index: 30; box-shadow: 0 16px 35px rgba(0,0,0,0.18);' 
+                        : (activeIndex === 1 
+                            ? 'transform: rotate(12deg) translateX(54px) translateY(4px); z-index: 10;' 
+                            : 'transform: rotate(14deg) translateX(64px) translateY(8px); z-index: 10;')" >
+                    <div class="w-full h-24 overflow-hidden bg-gray-100 mb-1.5 rounded-xs pointer-events-none">
+                        @if(!empty($upcomingEvents[2]['img']))
+                            <img src="{{ $upcomingEvents[2]['img'] }}" alt="{{ $upcomingEvents[2]['title'] }}" class="w-full h-full object-cover">
+                        @else
+                            <div class="w-full h-full flex items-center justify-center bg-rose-50">
+                                <span class="font-display-lg text-3xl text-[#8A7320]/40">?</span>
+                            </div>
+                        @endif
+                    </div>
+                    <p class="font-label-handwritten text-[#1C1410] text-xs leading-tight line-clamp-2 pointer-events-none font-bold">
+                        {{ $upcomingEvents[2]['title'] ?? 'Khoảnh khắc 2' }}
+                    </p>
+                    <p class="text-[9px] text-[#7A6A52]/70 mt-0.5 pointer-events-none">
+                        {{ $upcomingEvents[2]['date_str'] ?? 'Sắp diễn ra' }}
+                    </p>
+                </div>
+
             </div>
         </div>
     </section>

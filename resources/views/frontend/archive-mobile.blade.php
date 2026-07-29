@@ -31,9 +31,9 @@
         transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
     }
     .polaroid-card:hover {
-        transform: rotate(0deg) translateY(-6px) scale(1.02) !important;
+        transform: scale(1.03) translateY(-4px);
         box-shadow: 0 16px 35px rgba(45, 31, 10, 0.15);
-        z-index: 20;
+        z-index: 30;
     }
 </style>
 
@@ -133,44 +133,45 @@
         </div>
     </section>
 
-    <!-- PHOTO WALL GRID (Scrapbook Polaroid Cards) -->
-    <section class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10">
+    <!-- PHOTO WALL GRID (Scrapbook Polaroid Cards - 5 Cards per Page, Compact & Tilted like PC) -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-10">
         <template x-for="(event, index) in pagedEvents" :key="event.id || index">
-            <div class="polaroid-card bg-white p-3.5 pb-8 relative rounded-sm border border-black/5"
+            <div class="polaroid-card bg-white p-2.5 pb-6 relative rounded-sm border border-black/5 transition-transform duration-300 max-w-[320px] sm:max-w-none w-full mx-auto"
                  :class="{
-                    'rotate-[1deg]': index % 4 === 0,
-                    'rotate-[-1.5deg]': index % 4 === 1,
-                    'rotate-[2deg]': index % 4 === 2,
-                    'rotate-[-1deg]': index % 4 === 3
+                    'rotate-[2.8deg]': index % 5 === 0,
+                    'rotate-[-3.5deg]': index % 5 === 1,
+                    'rotate-[3.2deg]': index % 5 === 2,
+                    'rotate-[-2.6deg]': index % 5 === 3,
+                    'rotate-[2.2deg]': index % 5 === 4
                  }">
                 
                 <!-- Tape Decorations -->
                 <template x-if="index % 3 === 0">
-                    <div class="absolute -top-2.5 left-6 washi-tape-sage h-5 w-20 rotate-[-8deg] z-10 opacity-70 jagged-tape"></div>
+                    <div class="absolute -top-2.5 left-5 washi-tape-sage h-4.5 w-16 rotate-[-8deg] z-10 opacity-70 jagged-tape"></div>
                 </template>
                 <template x-if="index % 3 === 1">
-                    <div class="absolute -top-2 right-6 washi-tape-amber h-5 w-18 rotate-[10deg] z-10 opacity-70 jagged-tape"></div>
+                    <div class="absolute -top-2 right-5 washi-tape-amber h-4.5 w-16 rotate-[10deg] z-10 opacity-70 jagged-tape"></div>
                 </template>
                 <template x-if="index % 3 === 2">
-                    <div class="absolute -top-2.5 left-1/2 -translate-x-1/2 washi-tape-rose h-5 w-20 rotate-[3deg] z-10 opacity-70 jagged-tape"></div>
+                    <div class="absolute -top-2.5 left-1/2 -translate-x-1/2 washi-tape-rose h-4.5 w-16 rotate-[3deg] z-10 opacity-70 jagged-tape"></div>
                 </template>
 
-                <!-- Image Area -->
-                <a :href="event.url || '#'" class="block aspect-[4/3] w-full overflow-hidden bg-gray-100 mb-3 relative group cursor-pointer rounded-xs border border-black/5">
+                <!-- Image Area (Compact Photo Frame) -->
+                <a :href="event.url || '#'" class="block aspect-[16/10] w-full overflow-hidden bg-gray-100 mb-2.5 relative group cursor-pointer rounded-xs border border-black/5">
                     <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" :src="event.img" :alt="event.title" loading="lazy"/>
-                    <div class="absolute inset-0 p-3 flex flex-col justify-center backdrop-blur-xs opacity-0 group-hover:opacity-100 transition-opacity duration-300 items-center text-center" style="background-color: rgba(0,0,0,0.6);">
-                        <p class="text-white text-xs leading-relaxed line-clamp-4 font-medium mb-2" x-text="event.desc"></p>
-                        <span class="text-white font-bold border border-white px-3 py-0.5 text-xs rounded-full">Xem chi tiết →</span>
+                    <div class="absolute inset-0 p-2.5 flex flex-col justify-center backdrop-blur-xs opacity-0 group-hover:opacity-100 transition-opacity duration-300 items-center text-center" style="background-color: rgba(0,0,0,0.65);">
+                        <p class="text-white text-[11px] leading-relaxed line-clamp-3 font-medium mb-1.5" x-text="event.desc"></p>
+                        <span class="text-white font-bold border border-white px-2.5 py-0.5 text-[10px] rounded-full">Xem chi tiết →</span>
                     </div>
                 </a>
 
                 <!-- Text Content -->
-                <div>
-                    <span class="bg-[#E2F0D9] text-[#4F6343] px-2 py-0.5 rounded-full text-[9px] font-bold mb-1 inline-block uppercase tracking-wider" x-text="event.category || 'Sự kiện'"></span>
+                <div class="px-0.5">
+                    <span class="bg-[#E2F0D9] text-[#4F6343] px-2 py-0.5 rounded-full text-[8px] font-bold mb-1 inline-block uppercase tracking-wider" x-text="event.category || 'Sự kiện'"></span>
                     <a :href="event.url || '#'" class="block">
-                        <h3 class="font-label-handwritten text-2xl text-[#1C1410] leading-snug line-clamp-2 hover:text-[#07A0C3] transition-colors" x-text="event.title"></h3>
+                        <h3 class="font-label-handwritten text-xl text-[#1C1410] leading-snug line-clamp-2 hover:text-[#07A0C3] transition-colors" x-text="event.title"></h3>
                     </a>
-                    <p class="font-display-lg italic text-xs text-[#7A6A52] opacity-75 mt-1" x-text="event.date_str"></p>
+                    <p class="font-display-lg italic text-[11px] text-[#7A6A52] opacity-75 mt-0.5" x-text="event.date_str"></p>
                 </div>
             </div>
         </template>
@@ -183,16 +184,16 @@
         </template>
     </section>
 
-    <!-- PAGINATION CONTROLS (8 sự kiện / trang) -->
+    <!-- PAGINATION CONTROLS (5 sự kiện / trang) -->
     <div x-show="totalPages > 1" class="flex items-center justify-center gap-2 mb-16">
         <button @click="goToPage(currentPage - 1)" :disabled="currentPage === 1"
-                class="px-3.5 py-1.5 rounded-full border text-xs font-bold transition-all disabled:opacity-30 disabled:cursor-not-allowed text-[#1C1410]" style="border-color: #E8E2D5; background: #FFFFFF;">
+                class="px-3 py-1.5 rounded-full border text-xs font-bold transition-all disabled:opacity-30 disabled:cursor-not-allowed text-[#1C1410]" style="border-color: #E8E2D5; background: #FFFFFF;">
             ‹ Trước
         </button>
         
         <template x-for="p in totalPages" :key="p">
             <button @click="goToPage(p)"
-                    class="w-8 h-8 rounded-full font-bold text-xs transition-all border"
+                    class="w-7 h-7 rounded-full font-bold text-xs transition-all border flex items-center justify-center"
                     :class="currentPage === p 
                         ? 'bg-[#1C1410] text-[#FFE381] border-[#1C1410] shadow-sm' 
                         : 'bg-white text-[#1C1410] border-[#E8E2D5]'">
@@ -201,7 +202,7 @@
         </template>
 
         <button @click="goToPage(currentPage + 1)" :disabled="currentPage >= totalPages"
-                class="px-3.5 py-1.5 rounded-full border text-xs font-bold transition-all disabled:opacity-30 disabled:cursor-not-allowed text-[#1C1410]" style="border-color: #E8E2D5; background: #FFFFFF;">
+                class="px-3 py-1.5 rounded-full border text-xs font-bold transition-all disabled:opacity-30 disabled:cursor-not-allowed text-[#1C1410]" style="border-color: #E8E2D5; background: #FFFFFF;">
             Sau ›
         </button>
     </div>
@@ -254,7 +255,7 @@
             selectedMonth: '',
             selectedYear: '',
             currentPage: 1,
-            perPage: 8,
+            perPage: 5,
             
             initData(data) {
                 this.events = Array.isArray(data) ? data : [];

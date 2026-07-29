@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>UniEvents | Studio — {{ $event->title }}</title>
+    <title>UniEvents | Studio — {{ $event->title }} | Mẫu 2</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,7 +16,8 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
-        body { background-color: #0f172a; }
+        body { background-color: #eaecf0; }
+        .main-content-canvas { background: #eaecf0; }
 
         /* Active slot highlight */
         .media-slot.slot-active {
@@ -302,8 +303,8 @@
                         </p>
                     </div>
 
-                    <!-- Banner Phụ cho Mẫu 2 -->
-                    <div id="subBannerSection" class="uni-card p-6" style="{{ ($event->page_template ?? 1) == 2 ? '' : 'display: none;' }}">
+                    <!-- Banner Phụ (Botanical — chỉ Mẫu 2) -->
+                    <div id="subBannerSection" class="uni-card p-6" style="border: 2px solid #5d7a5c;">
                         <div class="flex items-center justify-between mb-5 border-b border-slate-100 pb-3">
                             <h3 class="text-[18px] font-bold text-brand-orange font-heading flex items-center gap-2">
                                 <span class="material-symbols-outlined">panorama</span> Banner ngang (Dành riêng Mẫu 2)
@@ -336,9 +337,9 @@
                             <span class="text-[11px] text-slate-400">Nhập nội dung sự kiện và chọn ảnh minh hoạ</span>
                         </div>
 
-                        <div id="t5WarningMsg" class="hidden mb-4 bg-blue-50 text-blue-700 p-3 rounded-lg text-[13px] border border-blue-200">
-                            <span class="material-symbols-outlined align-middle mr-1 text-[18px]">info</span>
-                            <b>Mẫu 5:</b> Chỉ ô nội dung đầu tiên được dùng làm "Nội dung thiệp mời". Các ô bên dưới chỉ dùng ảnh (nội dung chữ sẽ bị ẩn để phù hợp thiệp mời).
+                        <div class="mb-4 bg-green-50 text-green-800 p-3 rounded-lg text-[13px] border border-green-200">
+                            <span class="material-symbols-outlined align-middle mr-1 text-[18px]">eco</span>
+                            <b>Mẫu 2 — Botanical / Garden:</b> Nội dung bên trái, ảnh bên phải. Nhớ thêm Banner Phụ bên trên để hiển thị ảnh trải dài.
                         </div>
 
                         <div class="space-y-6" id="mediaSlots">
@@ -368,8 +369,18 @@
                                     $textOrder = 'lg:order-1';
                                     $mediaOrder = 'lg:order-2';
                                 }
-                            @endphp
                             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-slate-50/50 p-6 rounded-xl border border-slate-100 items-start media-slot-wrapper" data-slot-wrap="{{ $i }}">
+                                {{-- Tiêu đề khối (Caption) --}}
+                                <div class="col-span-1 lg:col-span-2 mb-[-10px]">
+                                    <label class="text-[12px] font-bold text-slate-700 block mb-1.5 flex items-center gap-1.5">
+                                        <span class="material-symbols-outlined text-[16px] text-brand-orange">title</span> 
+                                        Tiêu đề khối nội dung (Tùy chọn hiển thị)
+                                    </label>
+                                    <input type="text" id="caption{{ $i }}" placeholder="Nhập tiêu đề cho khối này (VD: Lịch trình, Diễn giả...)"
+                                           class="w-full text-[14px] px-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all font-bold text-primary"
+                                           value="{{ $media ? $media->caption : '' }}" />
+                                </div>
+
                                 {{-- Column: Content --}}
                                 <div class="flex flex-col h-full w-full {{ $textOrder }} media-text-col">
                                     <textarea id="content{{ $i }}" rows="8" placeholder="{{ $i == 1 ? 'Nhập nội dung sự kiện cho đoạn này...' : 'Nhập nội dung sự kiện cho đoạn này...' }}"
@@ -401,10 +412,6 @@
                                             <span class="material-symbols-outlined text-[16px]">delete</span>
                                         </button>
                                     </div>
-                                    {{-- Caption --}}
-                                    <input type="text" id="caption{{ $i }}" placeholder="Nhập ghi chú / mô tả cho ảnh {{ $i }}..."
-                                           class="w-full text-[13px] px-3 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all"
-                                           value="{{ $media ? $media->caption : '' }}" />
 
                                     <input type="hidden" id="docFileUrl{{ $i }}" value="{{ $media ? $media->document_url : '' }}" />
                                     <input type="hidden" id="docFileName{{ $i }}" value="{{ $media ? $media->document_name : '' }}" />
@@ -1328,19 +1335,20 @@
             });
             const newI = maxI + 1;
 
-            const templateId = document.getElementById('inEventTemplate') ? document.getElementById('inEventTemplate').value : '1';
+            // Template 2: Always Text Left, Image Right
             let textOrder = 'lg:order-1';
             let mediaOrder = 'lg:order-2';
-            
-            if (templateId == '1') {
-                if (newI % 2 !== 0) {
-                    textOrder = 'lg:order-2';
-                    mediaOrder = 'lg:order-1';
-                }
-            }
 
             const slotHtml = `
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-slate-50/50 p-6 rounded-xl border border-slate-100 mt-6 items-start media-slot-wrapper" data-slot-wrap="${newI}">
+                <div class="col-span-1 lg:col-span-2 mb-[-10px]">
+                    <label class="text-[12px] font-bold text-slate-700 block mb-1.5 flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-[16px] text-brand-orange">title</span> 
+                        Tiêu đề khối nội dung (Tùy chọn hiển thị)
+                    </label>
+                    <input type="text" id="caption${newI}" placeholder="Nhập tiêu đề cho khối này (VD: Lịch trình, Diễn giả...)"
+                           class="w-full text-[14px] px-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all font-bold text-primary" />
+                </div>
                 <div class="flex flex-col h-full w-full ${textOrder} media-text-col" ${templateId === '5' ? 'style="display:none;"' : ''}>
                     <textarea id="content${newI}" rows="8" placeholder="Nhập nội dung sự kiện cho đoạn này..."
                            class="w-full text-[14px] px-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all resize-y h-full" style="min-height: 250px;"></textarea>
@@ -1360,8 +1368,6 @@
                             <span class="material-symbols-outlined text-[16px]">delete</span>
                         </button>
                     </div>
-                    <input type="text" id="caption${newI}" placeholder="Nhập ghi chú / mô tả cho ảnh ${newI}..."
-                           class="w-full text-[13px] px-3 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all" />
 
                     <input type="hidden" id="docFileUrl${newI}" />
                     <input type="hidden" id="docFileName${newI}" />

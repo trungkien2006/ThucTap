@@ -292,6 +292,14 @@ class EventController extends Controller
             ->orderBy('created_at', 'desc')
             ->take(3)
             ->get();
+
+        // Rule 5: Mỗi mẫu sự kiện có trang thiết kế riêng
+        $templateId = $event->page_template ?? 1;
+        $designViews = [1, 2, 3, 4];
+        if (in_array($templateId, $designViews)) {
+            return view("admin.events.design.template{$templateId}", compact('event', 'mediaLibrary', 'allSpeakers', 'featuredEvents'));
+        }
+
         return view('admin.events.design', compact('event', 'mediaLibrary', 'allSpeakers', 'featuredEvents'));
     }
 

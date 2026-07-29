@@ -12,3 +12,4 @@ These rules must NEVER be violated under any circumstances:
    - Sự kiện nổi bật nhất (Tính điểm: lượt yêu thích 3 điểm, lượt xem 1 điểm; xét trong 3 tháng được tạo ra, bao gồm cả sự kiện chưa bắt đầu).
    - Giới thiệu kho lưu trữ.
    - Album media.
+5. **Trang thiết kế mẫu sự kiện**: Mỗi mẫu sự kiện sẽ có trang thiết kế riêng để phù hợp với layout từng mẫu khi thiết kế.

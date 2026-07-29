@@ -1258,18 +1258,18 @@
                 <!-- Right Side: Info and Thumbnails -->
                 <div class="lg:col-span-4 flex flex-col gap-4 h-[380px]">
                     <!-- Top Info Box (2/3) -->
-                    <div class="flex-1 rounded-2xl p-6 flex flex-col justify-center relative overflow-hidden group" style="background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); box-shadow: 0 4px 20px rgba(255,200,60,0.15); border: 1px solid rgba(255, 227, 129, 0.5);">
-                        <div class="mb-4 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.25em] text-[#1C1410]" style="background:#FFE381;" x-text="currentItem.type === 'video' ? 'Video' : 'Hình ảnh'"></div>
-                        
-                        <h3 class="font-barlow-condensed text-3xl font-black uppercase tracking-wide text-[#1C1410] leading-snug line-clamp-4" x-text="currentItem.title"></h3>
-                        
-                        <div class="mt-4 flex items-center gap-2">
-                            <div class="h-10 w-1 rounded-full" style="background:#04F06A;"></div>
-                            <a :href="currentItem.event_url" class="text-sm font-semibold text-[#7A6A52] hover:text-[#07A0C3] transition-colors" x-text="currentItem.event_name"></a>
+                    <div class="flex-1 rounded-2xl p-5 lg:p-6 flex flex-col justify-between relative overflow-hidden group" style="background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px); box-shadow: 0 4px 20px rgba(255,200,60,0.15); border: 1px solid rgba(255, 227, 129, 0.5);">
+                        <div>
+                            <div class="mb-3 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.25em] text-[#1C1410]" style="background:#FFE381;" x-text="currentItem.type === 'video' ? 'Video sự kiện' : 'Hình ảnh sự kiện'"></div>
+                            
+                            <!-- Chỉ hiển thị Tên sự kiện (Bỏ tên ảnh/caption) -->
+                            <a :href="currentItem.event_url" class="group/title block">
+                                <h3 class="font-barlow-condensed text-2xl lg:text-3xl font-bold uppercase tracking-wide text-[#1C1410] leading-snug line-clamp-3 transition-colors group-hover/title:text-[#07A0C3]" x-text="currentItem.event_name || currentItem.title"></h3>
+                            </a>
                         </div>
 
-                        <!-- THÊM MỚI — Nút xem tất cả + progress dots, chèn cuối info box bên phải -->
-                        <div class="mt-auto pt-3 flex items-center justify-between">
+                        <!-- Progress dots + Link xem chi tiết sự kiện -->
+                        <div class="mt-4 pt-3 flex items-center justify-between border-t border-[#FFE381]/30">
                             <!-- Dots indicator -->
                             <div class="flex gap-1.5 items-center">
                                 <template x-for="(item, i) in items.slice(0, Math.min(items.length, 8))" :key="i">
@@ -1281,11 +1281,11 @@
                                 <span x-show="items.length > 8" class="text-[10px] font-bold ml-1" style="color:rgba(122,106,82,0.5);"
                                       x-text="'+' + (items.length - 8)"></span>
                             </div>
-                            <!-- Link xem thêm -->
-                            <a href="{{ route('events.index') }}" class="text-xs font-bold uppercase tracking-widest transition-colors"
-                               style="color:rgba(7,160,195,0.7);"
-                               onmouseover="this.style.color='#04F06A'" onmouseout="this.style.color='rgba(7,160,195,0.7)'">
-                                Xem tất cả &rarr;
+                            <!-- Link xem chi tiết -->
+                            <a :href="currentItem.event_url" class="text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-1"
+                               style="color:rgba(7,160,195,0.85);"
+                               onmouseover="this.style.color='#04B050'" onmouseout="this.style.color='rgba(7,160,195,0.85)'">
+                                Xem sự kiện &rarr;
                             </a>
                         </div>
                     </div>

@@ -274,18 +274,18 @@
                         class="material-symbols-outlined group-hover:translate-x-1 transition-transform text-lg">arrow_forward</span>
                 </a>
 
-                <!-- Interactive Polaroid Fan Stack (Tap card to bring to center & overlap side cards) -->
+                <!-- Interactive Polaroid Fan Stack (Active card 100% full picture visible on top, z-index 100) -->
                 <div class="polaroid-fan-stack relative flex items-center justify-center my-4 select-none" 
-                     style="width: 250px; height: 230px;">
+                     style="width: 260px; height: 230px;">
 
                     <!-- CARD 0 (Left Item) -->
                     <div @click="selectFanCard(0, '{{ $upcomingEvents[0]['url'] ?? route('events.index', ['status' => 'upcoming']) }}')"
                         class="polaroid-fan-card absolute bg-white p-2.5 pb-8 w-36 flex flex-col transition-all duration-500 ease-out border border-black/5 rounded-xs shadow-md cursor-pointer"
                         :style="fanActiveIndex === 0 
-                            ? 'transform: rotate(0deg) translateX(0px) translateY(-10px) scale(1.08); z-index: 50; box-shadow: 0 20px 40px rgba(0,0,0,0.22);' 
+                            ? 'transform: rotate(0deg) translateX(0px) translateY(-10px) scale(1.08); z-index: 100; box-shadow: 0 20px 40px rgba(0,0,0,0.25); opacity: 1;' 
                             : (fanActiveIndex === 1 
-                                ? 'transform: rotate(-12deg) translateX(-54px) translateY(4px); z-index: 10;' 
-                                : 'transform: rotate(-16deg) translateX(-68px) translateY(8px); z-index: 5;')">
+                                ? 'transform: rotate(-14deg) translateX(-62px) translateY(6px); z-index: 10; opacity: 0.9;' 
+                                : 'transform: rotate(-18deg) translateX(-76px) translateY(10px); z-index: 5; opacity: 0.8;')">
                         <div class="w-full h-24 overflow-hidden bg-gray-100 mb-1.5 rounded-xs pointer-events-none">
                             @if(!empty($upcomingEvents[0]['img']))
                                 <img src="{{ $upcomingEvents[0]['img'] }}" alt="{{ $upcomingEvents[0]['title'] }}"
@@ -309,10 +309,10 @@
                     <div @click="selectFanCard(1, '{{ $upcomingEvents[1]['url'] ?? route('events.index', ['status' => 'upcoming']) }}')"
                         class="polaroid-fan-card absolute bg-white p-2.5 pb-8 w-36 flex flex-col transition-all duration-500 ease-out border border-black/5 rounded-xs shadow-md cursor-pointer"
                         :style="fanActiveIndex === 1 
-                            ? 'transform: rotate(0deg) translateX(0px) translateY(-10px) scale(1.08); z-index: 50; box-shadow: 0 20px 40px rgba(0,0,0,0.22);' 
+                            ? 'transform: rotate(0deg) translateX(0px) translateY(-10px) scale(1.08); z-index: 100; box-shadow: 0 20px 40px rgba(0,0,0,0.25); opacity: 1;' 
                             : (fanActiveIndex === 0 
-                                ? 'transform: rotate(12deg) translateX(54px) translateY(4px); z-index: 10;' 
-                                : 'transform: rotate(-12deg) translateX(-54px) translateY(4px); z-index: 10;')">
+                                ? 'transform: rotate(14deg) translateX(62px) translateY(6px); z-index: 10; opacity: 0.9;' 
+                                : 'transform: rotate(-14deg) translateX(-62px) translateY(6px); z-index: 10; opacity: 0.9;')">
                         <div class="w-full h-24 overflow-hidden bg-gray-100 mb-1.5 rounded-xs pointer-events-none">
                             @if(!empty($upcomingEvents[1]['img']))
                                 <img src="{{ $upcomingEvents[1]['img'] }}" alt="{{ $upcomingEvents[1]['title'] }}"
@@ -337,10 +337,10 @@
                     <div @click="selectFanCard(2, '{{ $upcomingEvents[2]['url'] ?? route('events.index', ['status' => 'upcoming']) }}')"
                         class="polaroid-fan-card absolute bg-white p-2.5 pb-8 w-36 flex flex-col transition-all duration-500 ease-out border border-black/5 rounded-xs shadow-md cursor-pointer"
                         :style="fanActiveIndex === 2 
-                            ? 'transform: rotate(0deg) translateX(0px) translateY(-10px) scale(1.08); z-index: 50; box-shadow: 0 20px 40px rgba(0,0,0,0.22);' 
+                            ? 'transform: rotate(0deg) translateX(0px) translateY(-10px) scale(1.08); z-index: 100; box-shadow: 0 20px 40px rgba(0,0,0,0.25); opacity: 1;' 
                             : (fanActiveIndex === 1 
-                                ? 'transform: rotate(12deg) translateX(54px) translateY(4px); z-index: 10;' 
-                                : 'transform: rotate(16deg) translateX(68px) translateY(8px); z-index: 5;')">
+                                ? 'transform: rotate(14deg) translateX(62px) translateY(6px); z-index: 10; opacity: 0.9;' 
+                                : 'transform: rotate(18deg) translateX(76px) translateY(10px); z-index: 5; opacity: 0.8;')">
                         <div class="w-full h-24 overflow-hidden bg-gray-100 mb-1.5 rounded-xs pointer-events-none">
                             @if(!empty($upcomingEvents[2]['img']))
                                 <img src="{{ $upcomingEvents[2]['img'] }}" alt="{{ $upcomingEvents[2]['title'] }}"

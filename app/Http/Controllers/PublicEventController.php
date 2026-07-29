@@ -98,15 +98,30 @@ class PublicEventController extends Controller
             ->filter(fn($e) => is_array($e) && isset($e['id']) && $e['id'] !== $event->id)
             ->take(3);
 
-        $previousEvent = Event::where('is_published', true)
-            ->where('event_date', '<', $event->event_date)
-            ->orderBy('event_date', 'desc')
-            ->first();
+        $previousEvent = null;
+        $nextEvent = null;
+        $relatedEvents = null;
 
-        $nextEvent = Event::where('is_published', true)
-            ->where('event_date', '>', $event->event_date)
-            ->orderBy('event_date', 'asc')
-            ->first();
+        if ($event->status === 'archived') {
+            $previousEvent = Event::where('is_published', true)
+                ->where('event_date', '<', $event->event_date)
+                ->orderBy('event_date', 'desc')
+                ->first();
+
+            $nextEvent = Event::where('is_published', true)
+                ->where('event_date', '>', $event->event_date)
+                ->orderBy('event_date', 'asc')
+                ->first();
+        } else {
+            $relatedEvents = Event::with('bannerImage')
+                ->where('is_published', true)
+                ->where('status', '!=', 'archived')
+                ->where('category_id', $event->category_id)
+                ->where('id', '!=', $event->id)
+                ->orderBy('event_date', 'desc')
+                ->take(3)
+                ->get();
+        }
 
         // Lấy tất cả ảnh của sự kiện (gồm ảnh Drive, ảnh tạo sự kiện và ảnh banner)
         $recapImages = $event->media()->where('type', 'image')->get();
@@ -117,7 +132,7 @@ class PublicEventController extends Controller
             $viewName = "events.show-template{$event->page_template}";
         }
 
-        return $this->renderView($viewName, compact('event', 'newestEvents', 'prominentEvents', 'previousEvent', 'nextEvent', 'recapImages'));
+        return $this->renderView($viewName, compact('event', 'newestEvents', 'prominentEvents', 'previousEvent', 'nextEvent', 'relatedEvents', 'recapImages'));
     }
 
     public function like($event_id)

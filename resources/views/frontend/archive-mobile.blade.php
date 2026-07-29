@@ -27,17 +27,17 @@
                  }, 300);
              },
              get years() {
-                 const ys = [...new Set(this.archive.map(e => e.event_year))].sort((a,b)=>b-a);
+                 const ys = [...new Set(this.archive.map(e => e.year || e.event_year))].filter(Boolean).sort((a,b)=>b-a);
                  return ys;
              },
              get categories() {
-                 const cats = [...new Set(this.archive.map(e => e.category || 'Sự kiện khác'))].sort();
+                 const cats = [...new Set(this.archive.map(e => e.category || 'Sự kiện khác'))].filter(Boolean).sort();
                  return cats;
              },
              get filteredArchive() {
                  const searchLower = this.filterSearch.toLowerCase().trim();
                  return this.archive.filter(e => {
-                     const yOk = this.filterYear === '' || e.event_year == this.filterYear;
+                     const yOk = this.filterYear === '' || e.year == this.filterYear || e.event_year == this.filterYear;
                      const mOk = this.filterMonth === '' || e.month == this.filterMonth;
                      const cOk = this.filterCategory === '' || (e.category || 'Sự kiện khác') === this.filterCategory;
                      const sOk = searchLower === '' || 
@@ -314,19 +314,19 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-12">
              <!-- Left Column: Scrollable Event List -->
-             <div data-aos="fade-right" class="lg:col-span-4 relative" x-data="{ archiveReady: false }" x-init="setTimeout(() => archiveReady = true, 500)">
+             <div data-aos="fade-right" class="lg:col-span-4 relative" x-data="{ archiveReady: true }">
                  <style>
                      @keyframes archiveShimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
                      .archive-skeleton { background: linear-gradient(90deg, rgba(232,226,213,0.5) 25%, rgba(255,253,249,0.8) 50%, rgba(232,226,213,0.5) 75%); background-size: 200% 100%; animation: archiveShimmer 1.5s infinite; }
                  </style>
-                 <div x-show="!archiveReady" class="space-y-4 absolute inset-0 z-10 w-full" style="background:transparent;">
+                 <div x-show="!archiveReady" class="space-y-4 absolute inset-0 z-10 w-full" style="background:transparent; display: none;">
                      <template x-for="i in 3">
                          <div class="w-full rounded-2xl h-[98px] archive-skeleton border border-[#E8E2D5]/50 bg-white"></div>
                      </template>
                  </div>
                  
                  <!-- Desktop View: Scrollable List -->
-                 <div x-show="archiveReady" style="display: none;" class="hidden lg:block space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar" x-transition:enter="transition-opacity ease-out duration-300">
+                 <div x-show="archiveReady" class="hidden lg:block space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar" x-transition:enter="transition-opacity ease-out duration-300">
                      <template x-for="(ev, i) in filteredArchive" :key="ev.id || i">
                          <button @click="idx = i; activeTab = 'images'"
                                  class="w-full text-left rounded-2xl p-4 flex gap-4 transition-all duration-300 border focus:outline-none"
@@ -343,7 +343,7 @@
                                  <div>
                                      <div class="text-[10px] font-bold font-mono uppercase tracking-wider flex items-center gap-2"
                                           :style="idx === i ? 'color:#7A6A52;' : 'color:#8A7320;'">
-                                         <span x-text="'T' + ev.month + '/' + ev.event_year"></span>
+                                         <span x-text="'T' + ev.month + '/' + (ev.event_year || ev.year)"></span>
                                          <span x-show="ev.year && ev.year !== String(ev.event_year)"
                                                class="text-[8px] px-1.5 py-0.5 rounded-full"
                                                :style="idx === i ? 'background:rgba(28,20,16,0.1); color:#1C1410;' : 'background:rgba(122,106,82,0.1); color:#7A6A52;'"
@@ -356,7 +356,7 @@
                                  <div class="flex gap-2 mt-2">
                                      <span class="text-[9px] font-bold px-2 py-0.5 rounded-full"
                                            :style="idx === i ? 'background:rgba(28,20,16,0.1); color:#1C1410;' : 'background:rgba(122,106,82,0.1); color:#7A6A52;'">
-                                         <span x-text="ev.images.length"></span> ảnh
+                                         <span x-text="ev.images ? ev.images.length : 0"></span> ảnh
                                      </span>
                                  </div>
                              </div>
@@ -373,9 +373,9 @@
                  </div>
 
                  <!-- Mobile View: Paginated Vertical Slider -->
-                 <div x-show="archiveReady" style="display: none;" class="block lg:hidden space-y-4" x-transition:enter="transition-opacity ease-out duration-300">
+                 <div x-show="archiveReady" class="block lg:hidden space-y-4" x-transition:enter="transition-opacity ease-out duration-300">
                      <div class="relative rounded-2xl border border-black/5 bg-white/50" style="backdrop-filter: blur(4px);">
-                         <div x-ref="mobileArchiveScrollBox" class="overflow-y-auto px-2 py-2 flex flex-col gap-2.5" style="max-height: 220px; scrollbar-width: thin;">
+                         <div x-ref="mobileArchiveScrollBox" class="overflow-y-auto px-2 py-2 flex flex-col gap-2.5" style="max-height: 280px; scrollbar-width: thin;">
                              <template x-for="(ev, i) in mobilePagedArchive" :key="mobilePage + '-' + i">
                                  <button @click="idx = (mobilePage * mobilePerPage) + i; activeTab = 'images'; $nextTick(() => { document.getElementById('detail-pane').scrollIntoView({ behavior: 'smooth' }); });"
                                          class="w-full text-left rounded-2xl p-3 flex gap-3 transition-all duration-300 border focus:outline-none"
@@ -392,7 +392,7 @@
                                          <div>
                                              <div class="text-[10px] font-bold font-mono uppercase tracking-wider flex items-center gap-2"
                                                   :style="idx === ((mobilePage * mobilePerPage) + i) ? 'color:#7A6A52;' : 'color:#8A7320;'">
-                                                 <span x-text="'T' + ev.month + '/' + ev.event_year"></span>
+                                                 <span x-text="'T' + ev.month + '/' + (ev.event_year || ev.year)"></span>
                                                  <span x-show="ev.year && ev.year !== String(ev.event_year)"
                                                        class="text-[8px] px-1.5 py-0.5 rounded-full"
                                                        :style="idx === ((mobilePage * mobilePerPage) + i) ? 'background:rgba(28,20,16,0.1); color:#1C1410;' : 'background:rgba(122,106,82,0.1); color:#7A6A52;'"
@@ -405,7 +405,7 @@
                                          <div class="flex gap-2 mt-2">
                                              <span class="text-[9px] font-bold px-2 py-0.5 rounded-full"
                                                    :style="idx === ((mobilePage * mobilePerPage) + i) ? 'background:rgba(28,20,16,0.1); color:#1C1410;' : 'background:rgba(122,106,82,0.1); color:#7A6A52;'">
-                                                 <span x-text="ev.images.length"></span> ảnh
+                                                 <span x-text="ev.images ? ev.images.length : 0"></span> ảnh
                                              </span>
                                          </div>
                                      </div>

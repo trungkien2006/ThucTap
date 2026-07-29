@@ -224,13 +224,13 @@
         <div class="flex flex-wrap items-center justify-between gap-4 border-b border-tertiary/10 pb-4">
             <div class="flex items-center gap-2">
                 <span class="material-symbols-outlined text-tertiary text-2xl">tune</span>
-                <h2 class="font-label-handwritten text-2xl text-on-surface font-bold">Bộ lọc tìm kiếm ký ức</h2>
+                <h2 class="font-label-handwritten text-2xl text-on-surface font-bold">Bộ lọc</h2>
             </div>
             
             <div class="flex items-center gap-3">
                 <div class="bg-primary/10 text-primary px-4 py-1.5 rounded-full text-sm font-semibold flex items-center gap-2">
                     <span class="material-symbols-outlined text-base">photo_library</span>
-                    <span x-text="'Hiển thị ' + filteredEvents.length + ' / ' + events.length + ' kỷ niệm'"></span>
+                    <span x-text="filteredEvents.length + ' sự kiện'"></span>
                 </div>
                 
                 <button x-show="hasActiveFilters" 
@@ -348,8 +348,8 @@
 </section>
 
 <!-- PHOTO WALL GRID -->
-<section class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-24">
-    <template x-for="(event, index) in filteredEvents" :key="event.id">
+<section class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+    <template x-for="(event, index) in pagedEvents" :key="event.id">
         <div x-transition:enter="transition ease-out duration-300 transform"
              x-transition:enter-start="opacity-0 scale-95 translate-y-4"
              x-transition:enter-end="opacity-100 scale-100 translate-y-0"
@@ -412,10 +412,33 @@
     <template x-if="filteredEvents.length === 0">
         <div class="col-span-full text-center py-24 text-on-surface-variant/50">
             <span class="material-symbols-outlined text-6xl mb-4">search_off</span>
-            <p class="text-xl">Không tìm thấy kỷ niệm nào phù hợp.</p>
+            <p class="text-xl">Không tìm thấy sự kiện nào phù hợp.</p>
         </div>
     </template>
 </section>
+
+<!-- PAGINATION CONTROLS (8 sự kiện / trang) -->
+<div x-show="totalPages > 1" class="flex items-center justify-center gap-2 mb-20">
+    <button @click="goToPage(currentPage - 1)" :disabled="currentPage === 1"
+            class="px-4 py-2 rounded-full border border-tertiary/30 text-sm font-bold transition-all disabled:opacity-30 disabled:cursor-not-allowed hover:bg-tertiary/10 text-on-surface">
+        ‹ Trước
+    </button>
+    
+    <template x-for="p in totalPages" :key="p">
+        <button @click="goToPage(p)"
+                class="w-10 h-10 rounded-full font-bold text-sm transition-all border"
+                :class="currentPage === p 
+                    ? 'bg-[#1C1410] text-[#FFE381] border-[#1C1410] shadow-md' 
+                    : 'bg-white/60 text-[#1C1410] border-tertiary/20 hover:bg-white'">
+            <span x-text="p"></span>
+        </button>
+    </template>
+
+    <button @click="goToPage(currentPage + 1)" :disabled="currentPage >= totalPages"
+            class="px-4 py-2 rounded-full border border-tertiary/30 text-sm font-bold transition-all disabled:opacity-30 disabled:cursor-not-allowed hover:bg-tertiary/10 text-on-surface">
+        Sau ›
+    </button>
+</div>
 
 <!-- FOOTER CTA SECTION -->
 <section class="mb-32 text-center flex flex-col items-center">
@@ -504,6 +527,8 @@
             selectedCategory: '',
             selectedMonth: '',
             selectedYear: '',
+            currentPage: 1,
+            perPage: 8,
             
             initData(data) {
                 this.events = data;
@@ -514,6 +539,7 @@
                 this.selectedCategory = '';
                 this.selectedMonth = '';
                 this.selectedYear = '';
+                this.currentPage = 1;
             },
 
             get hasActiveFilters() {
@@ -524,16 +550,33 @@
             },
             
             get filteredEvents() {
+                const search = this.searchQuery.toLowerCase().trim();
                 return this.events.filter(event => {
-                    const matchesSearch = this.searchQuery === '' || 
-                        event.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-                        event.desc.toLowerCase().includes(this.searchQuery.toLowerCase());
+                    const matchesSearch = search === '' || 
+                        (event.title && event.title.toLowerCase().includes(search)) ||
+                        (event.desc && event.desc.toLowerCase().includes(search));
                     const matchesCategory = this.selectedCategory === '' || event.category === this.selectedCategory;
                     const matchesMonth = this.selectedMonth === '' || event.month == this.selectedMonth;
-                    const matchesYear = this.selectedYear === '' || event.year == this.selectedYear;
+                    const matchesYear = this.selectedYear === '' || event.year == this.selectedYear || event.event_year == this.selectedYear;
                     
                     return matchesSearch && matchesCategory && matchesMonth && matchesYear;
                 });
+            },
+
+            get totalPages() {
+                return Math.ceil(this.filteredEvents.length / this.perPage) || 1;
+            },
+
+            get pagedEvents() {
+                const start = (this.currentPage - 1) * this.perPage;
+                return this.filteredEvents.slice(start, start + this.perPage);
+            },
+
+            goToPage(p) {
+                if (p >= 1 && p <= this.totalPages) {
+                    this.currentPage = p;
+                    window.scrollTo({ top: 400, behavior: 'smooth' });
+                }
             }
         }
     }

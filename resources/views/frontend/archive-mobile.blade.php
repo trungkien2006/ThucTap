@@ -30,10 +30,17 @@
         box-shadow: 0 8px 25px rgba(45, 31, 10, 0.08);
         transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
     }
-    .polaroid-card:hover {
-        transform: scale(1.03) translateY(-4px);
-        box-shadow: 0 16px 35px rgba(45, 31, 10, 0.15);
-        z-index: 30;
+    .polaroid-fan-stack:hover .polaroid-fan-card:nth-child(1) {
+        transform: rotate(-18deg) translateX(-85px) translateY(8px) !important;
+        z-index: 10 !important;
+    }
+    .polaroid-fan-stack:hover .polaroid-fan-card:nth-child(2) {
+        transform: rotate(0deg) translateX(0px) translateY(-14px) scale(1.04) !important;
+        z-index: 30 !important;
+    }
+    .polaroid-fan-stack:hover .polaroid-fan-card:nth-child(3) {
+        transform: rotate(18deg) translateX(85px) translateY(8px) !important;
+        z-index: 20 !important;
     }
 </style>
 
@@ -216,25 +223,33 @@
                 <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform text-lg">arrow_forward</span>
             </a>
             
-            <!-- Polaroid Fan Stack (3-card fan stack decoration) -->
-            <div class="polaroid-fan-stack relative flex items-center justify-center" style="width: 200px; height: 210px;">
-                <div class="polaroid-card bg-white p-2 pb-6 absolute -rotate-12 shadow-md w-32 top-0 left-0 border border-black/5">
-                    <div class="bg-amber-100 aspect-square mb-1.5 flex items-center justify-center overflow-hidden">
+            <!-- Polaroid Fan Stack (3-card fan stack decoration - Clean Spread Out) -->
+            <div class="polaroid-fan-stack relative flex items-center justify-center my-3" style="width: 270px; height: 210px;">
+                <!-- Left Card (Khoảnh khắc 1) -->
+                <div class="polaroid-fan-card bg-white p-2 pb-5 absolute shadow-md w-30 rounded-xs border border-black/5 transition-all duration-500 ease-out"
+                     style="transform: rotate(-14deg) translateX(-65px) translateY(6px); z-index: 10;">
+                    <div class="bg-amber-100 aspect-[4/3] mb-1 flex items-center justify-center overflow-hidden rounded-xs">
                         <img src="https://images.unsplash.com/photo-1511578314322-379afb476865?w=300&q=80" class="w-full h-full object-cover" />
                     </div>
-                    <p class="font-label-handwritten text-[10px] text-center text-[#1C1410] font-semibold">Khoảnh khắc 1</p>
+                    <p class="font-label-handwritten text-[11px] text-center text-[#1C1410] font-bold">Khoảnh khắc 1</p>
                 </div>
-                <div class="polaroid-card bg-white p-2 pb-6 absolute rotate-6 shadow-md w-32 top-2 right-0 border border-black/5">
-                    <div class="bg-rose-100 aspect-square mb-1.5 flex items-center justify-center overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=300&q=80" class="w-full h-full object-cover" />
-                    </div>
-                    <p class="font-label-handwritten text-[10px] text-center text-[#1C1410] font-semibold">Khoảnh khắc 2</p>
-                </div>
-                <div class="polaroid-card bg-white p-2 pb-6 absolute rotate-2 shadow-xl w-36 top-4 z-10 border border-black/5">
-                    <div class="bg-emerald-100 aspect-square mb-1.5 flex items-center justify-center text-[#8A7320]/50 overflow-hidden">
+
+                <!-- Center Card (Khoảnh khắc tiếp theo...) FRONT CARD -->
+                <div class="polaroid-fan-card bg-white p-2.5 pb-6 absolute shadow-xl w-34 rounded-xs border border-black/5 transition-all duration-500 ease-out"
+                     style="transform: rotate(0deg) translateX(0px) translateY(-8px); z-index: 30;">
+                    <div class="bg-emerald-50 aspect-[4/3] mb-1.5 flex items-center justify-center text-[#8A7320]/60 overflow-hidden border border-dashed border-[#8A7320]/30 rounded-xs">
                         <span class="material-symbols-outlined text-3xl">photo_camera</span>
                     </div>
                     <p class="font-label-handwritten text-xs text-center text-[#1C1410] font-bold">Khoảnh khắc tiếp theo...</p>
+                </div>
+
+                <!-- Right Card (Khoảnh khắc 2) -->
+                <div class="polaroid-fan-card bg-white p-2 pb-5 absolute shadow-md w-30 rounded-xs border border-black/5 transition-all duration-500 ease-out"
+                     style="transform: rotate(14deg) translateX(65px) translateY(6px); z-index: 20;">
+                    <div class="bg-rose-100 aspect-[4/3] mb-1 flex items-center justify-center overflow-hidden rounded-xs">
+                        <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=300&q=80" class="w-full h-full object-cover" />
+                    </div>
+                    <p class="font-label-handwritten text-[11px] text-center text-[#1C1410] font-bold">Khoảnh khắc 2</p>
                 </div>
             </div>
         </div>

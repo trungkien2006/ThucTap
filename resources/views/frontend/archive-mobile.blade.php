@@ -274,18 +274,14 @@
                         class="material-symbols-outlined group-hover:translate-x-1 transition-transform text-lg">arrow_forward</span>
                 </a>
 
-                <!-- Interactive Polaroid Fan Stack (Tap any card to bring it to exact CENTER & TOP Z-INDEX 100) -->
+                <!-- Interactive Polaroid Fan Stack (Tap ANY card to bring it to center straight with top z-index 100) -->
                 <div class="polaroid-fan-stack relative flex items-center justify-center my-4 select-none" 
                      style="width: 260px; height: 230px;">
 
                     <!-- CARD 0 (Left Item) -->
                     <div @click="selectFanCard(0, '{{ $upcomingEvents[0]['url'] ?? route('events.index', ['status' => 'upcoming']) }}')"
                         class="polaroid-fan-card absolute bg-white p-2.5 pb-8 w-36 flex flex-col transition-all duration-500 ease-out border border-black/5 rounded-xs shadow-md cursor-pointer"
-                        :style="fanActiveIndex === 0 
-                            ? 'transform: rotate(0deg) translateX(0px) translateY(-10px) scale(1.08); z-index: 100; box-shadow: 0 20px 40px rgba(0,0,0,0.28); opacity: 1;' 
-                            : (fanActiveIndex === 1 
-                                ? 'transform: rotate(-12deg) translateX(-64px) translateY(6px); z-index: 10; opacity: 0.95;' 
-                                : 'transform: rotate(-18deg) translateX(-82px) translateY(10px); z-index: 5; opacity: 0.9;')">
+                        :style="getCardStyle(0)">
                         <div class="w-full h-24 overflow-hidden bg-gray-100 mb-1.5 rounded-xs pointer-events-none">
                             @if(!empty($upcomingEvents[0]['img']))
                                 <img src="{{ $upcomingEvents[0]['img'] }}" alt="{{ $upcomingEvents[0]['title'] }}"
@@ -308,11 +304,7 @@
                     <!-- CARD 1 (Center Item) -->
                     <div @click="selectFanCard(1, '{{ $upcomingEvents[1]['url'] ?? route('events.index', ['status' => 'upcoming']) }}')"
                         class="polaroid-fan-card absolute bg-white p-2.5 pb-8 w-36 flex flex-col transition-all duration-500 ease-out border border-black/5 rounded-xs shadow-md cursor-pointer"
-                        :style="fanActiveIndex === 1 
-                            ? 'transform: rotate(0deg) translateX(0px) translateY(-10px) scale(1.08); z-index: 100; box-shadow: 0 20px 40px rgba(0,0,0,0.28); opacity: 1;' 
-                            : (fanActiveIndex === 0 
-                                ? 'transform: rotate(12deg) translateX(64px) translateY(6px); z-index: 10; opacity: 0.95;' 
-                                : 'transform: rotate(-12deg) translateX(-64px) translateY(6px); z-index: 10; opacity: 0.95;')">
+                        :style="getCardStyle(1)">
                         <div class="w-full h-24 overflow-hidden bg-gray-100 mb-1.5 rounded-xs pointer-events-none">
                             @if(!empty($upcomingEvents[1]['img']))
                                 <img src="{{ $upcomingEvents[1]['img'] }}" alt="{{ $upcomingEvents[1]['title'] }}"
@@ -336,11 +328,7 @@
                     <!-- CARD 2 (Right Item) -->
                     <div @click="selectFanCard(2, '{{ $upcomingEvents[2]['url'] ?? route('events.index', ['status' => 'upcoming']) }}')"
                         class="polaroid-fan-card absolute bg-white p-2.5 pb-8 w-36 flex flex-col transition-all duration-500 ease-out border border-black/5 rounded-xs shadow-md cursor-pointer"
-                        :style="fanActiveIndex === 2 
-                            ? 'transform: rotate(0deg) translateX(0px) translateY(-10px) scale(1.08); z-index: 100; box-shadow: 0 20px 40px rgba(0,0,0,0.28); opacity: 1;' 
-                            : (fanActiveIndex === 1 
-                                ? 'transform: rotate(12deg) translateX(64px) translateY(6px); z-index: 10; opacity: 0.95;' 
-                                : 'transform: rotate(18deg) translateX(82px) translateY(10px); z-index: 5; opacity: 0.9;')">
+                        :style="getCardStyle(2)">
                         <div class="w-full h-24 overflow-hidden bg-gray-100 mb-1.5 rounded-xs pointer-events-none">
                             @if(!empty($upcomingEvents[2]['img']))
                                 <img src="{{ $upcomingEvents[2]['img'] }}" alt="{{ $upcomingEvents[2]['title'] }}"
@@ -385,6 +373,24 @@
                         }
                     } else {
                         this.fanActiveIndex = i;
+                    }
+                },
+
+                getCardStyle(index) {
+                    if (index === this.fanActiveIndex) {
+                        return 'transform: rotate(0deg) translateX(0px) translateY(-10px) scale(1.08); z-index: 100; box-shadow: 0 20px 40px rgba(0,0,0,0.28); opacity: 1;';
+                    }
+                    const diff = index - this.fanActiveIndex;
+                    if (diff < 0) {
+                        const tx = Math.max(-100, diff * 64);
+                        const rot = Math.max(-18, diff * 12);
+                        const z = 40 + diff * 10;
+                        return `transform: rotate(${rot}deg) translateX(${tx}px) translateY(6px); z-index: ${z}; opacity: 0.95;`;
+                    } else {
+                        const tx = Math.min(100, diff * 64);
+                        const rot = Math.min(18, diff * 12);
+                        const z = 40 - diff * 10;
+                        return `transform: rotate(${rot}deg) translateX(${tx}px) translateY(6px); z-index: ${z}; opacity: 0.95;`;
                     }
                 },
 

@@ -31,15 +31,15 @@
         transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
     }
     .polaroid-fan-stack:hover .polaroid-fan-card:nth-child(1) {
-        transform: rotate(-18deg) translateX(-90px) !important;
+        transform: rotate(-16deg) translateX(-54px) !important;
         z-index: 1 !important;
     }
     .polaroid-fan-stack:hover .polaroid-fan-card:nth-child(2) {
-        transform: rotate(0deg) translateX(0px) translateY(-12px) !important;
+        transform: rotate(0deg) translateX(0px) translateY(-10px) !important;
         z-index: 3 !important;
     }
     .polaroid-fan-stack:hover .polaroid-fan-card:nth-child(3) {
-        transform: rotate(18deg) translateX(90px) !important;
+        transform: rotate(16deg) translateX(54px) !important;
         z-index: 1 !important;
     }
     .polaroid-fan-stack:hover .polaroid-fan-card:hover {
@@ -232,42 +232,40 @@
                 <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform text-lg">arrow_forward</span>
             </a>
             
-            <!-- Fan-out polaroid stack (Exact PC Match) -->
-            <div class="polaroid-fan-stack relative flex items-center justify-center my-4" style="width: 220px; height: 240px;">
+            <!-- Fan-out polaroid stack (Mobile-Optimized Fan Stack) -->
+            <div class="polaroid-fan-stack relative flex items-center justify-center my-4" style="width: 220px; height: 210px;">
                 @php
                     $fanRotations  = ['-10deg', '0deg',  '10deg'];
-                    $fanTranslateX = ['-60px',  '0px',   '60px'];
-                    $fanHoverRotX  = ['-18deg', '0deg',  '18deg'];
-                    $fanHoverTransX= ['-80px',  '0px',   '80px'];
+                    $fanTranslateX = ['-42px',  '0px',   '42px'];
                     $upcomingEvents = $upcomingEvents ?? [];
                 @endphp
 
                 @foreach($upcomingEvents as $i => $upcoming)
                 <a href="{{ $upcoming['url'] }}"
-                   class="polaroid-fan-card absolute bg-white p-3 pt-3 pb-10 w-44 flex flex-col transition-all duration-500 ease-out border border-black/5"
+                   class="polaroid-fan-card absolute bg-white p-2.5 pt-2.5 pb-8 w-34 flex flex-col transition-all duration-500 ease-out border border-black/5"
                    style="transform: rotate({{ $fanRotations[$i] }}) translateX({{ $fanTranslateX[$i] }}); z-index: {{ $i + 1 }};">
-                    <div class="w-full h-28 overflow-hidden bg-gray-100 mb-2">
+                    <div class="w-full h-24 overflow-hidden bg-gray-100 mb-1.5">
                         @if(!empty($upcoming['img']))
                             <img src="{{ $upcoming['img'] }}" alt="{{ $upcoming['title'] }}" class="w-full h-full object-cover">
                         @else
                             <div class="w-full h-full flex items-center justify-center">
-                                <span class="font-display-lg text-4xl text-[#8A7320]/30">?</span>
+                                <span class="font-display-lg text-3xl text-[#8A7320]/30">?</span>
                             </div>
                         @endif
                     </div>
                     <p class="font-label-handwritten text-[#1C1410] text-xs leading-tight line-clamp-2">{{ $upcoming['title'] }}</p>
-                    <p class="text-[10px] text-[#7A6A52]/70 mt-1">{{ $upcoming['date_str'] }}</p>
+                    <p class="text-[9px] text-[#7A6A52]/70 mt-0.5">{{ $upcoming['date_str'] }}</p>
                 </a>
                 @endforeach
 
                 @if(count($upcomingEvents) < 3)
                     @for($j = count($upcomingEvents); $j < 3; $j++)
-                    <div class="polaroid-fan-card absolute bg-white p-3 pt-3 pb-10 w-44 flex flex-col justify-center items-center transition-all duration-500 border border-dashed border-[#8A7320]/30"
+                    <div class="polaroid-fan-card absolute bg-white p-2.5 pt-2.5 pb-8 w-34 flex flex-col justify-center items-center transition-all duration-500 border border-dashed border-[#8A7320]/30"
                          style="transform: rotate({{ $fanRotations[$j] }}) translateX({{ $fanTranslateX[$j] }}); z-index: {{ $j + 1 }};">
-                        <div class="w-full h-28 bg-emerald-50/50 border border-dashed border-[#8A7320]/20 flex items-center justify-center mb-2">
-                            <span class="font-display-lg text-4xl text-[#8A7320]/30">?</span>
+                        <div class="w-full h-24 bg-emerald-50/50 border border-dashed border-[#8A7320]/20 flex items-center justify-center mb-1.5">
+                            <span class="font-display-lg text-3xl text-[#8A7320]/30">?</span>
                         </div>
-                        <p class="font-label-handwritten text-[#8A7320]/60 italic text-sm">Khoảnh khắc tiếp theo...</p>
+                        <p class="font-label-handwritten text-[#8A7320]/60 italic text-xs">Khoảnh khắc tiếp theo...</p>
                     </div>
                     @endfor
                 @endif

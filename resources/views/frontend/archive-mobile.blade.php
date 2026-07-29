@@ -31,25 +31,20 @@
         transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
     }
     .polaroid-fan-stack:hover .polaroid-fan-card:nth-child(1) {
-        transform: rotate(-16deg) translateX(-54px) !important;
-        z-index: 1 !important;
+        transform: rotate(-14deg) translateX(-55px) !important;
+        z-index: 10 !important;
     }
     .polaroid-fan-stack:hover .polaroid-fan-card:nth-child(2) {
-        transform: rotate(0deg) translateX(0px) translateY(-10px) !important;
-        z-index: 3 !important;
+        transform: rotate(0deg) translateX(0px) translateY(-8px) !important;
+        z-index: 20 !important;
     }
     .polaroid-fan-stack:hover .polaroid-fan-card:nth-child(3) {
-        transform: rotate(16deg) translateX(54px) !important;
-        z-index: 1 !important;
-    }
-    .polaroid-fan-stack:hover .polaroid-fan-card:hover {
-        z-index: 10 !important;
-        transform: scale(1.05) !important;
-        box-shadow: 0 15px 30px rgba(61,43,31,0.15);
+        transform: rotate(14deg) translateX(55px) !important;
+        z-index: 30 !important;
     }
     .polaroid-fan-card {
         box-shadow: 0 4px 15px rgba(61,43,31,0.12);
-        transition: transform 0.45s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s ease, z-index 0s, scale 0.3s ease;
+        transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s ease;
     }
 </style>
 
@@ -232,19 +227,19 @@
                 <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform text-lg">arrow_forward</span>
             </a>
             
-            <!-- Fan-out polaroid stack (Mobile-Optimized Fan Stack) -->
-            <div class="polaroid-fan-stack relative flex items-center justify-center my-4" style="width: 220px; height: 210px;">
+            <!-- Fan-out polaroid stack (Clickable Links - 3 Cards Always Visible) -->
+            <div class="polaroid-fan-stack relative flex items-center justify-center my-4" style="width: 240px; height: 220px;">
                 @php
                     $fanRotations  = ['-10deg', '0deg',  '10deg'];
-                    $fanTranslateX = ['-42px',  '0px',   '42px'];
+                    $fanTranslateX = ['-48px',  '0px',   '48px'];
                     $upcomingEvents = $upcomingEvents ?? [];
                 @endphp
 
                 @foreach($upcomingEvents as $i => $upcoming)
                 <a href="{{ $upcoming['url'] }}"
-                   class="polaroid-fan-card absolute bg-white p-2.5 pt-2.5 pb-8 w-34 flex flex-col transition-all duration-500 ease-out border border-black/5"
-                   style="transform: rotate({{ $fanRotations[$i] }}) translateX({{ $fanTranslateX[$i] }}); z-index: {{ $i + 1 }};">
-                    <div class="w-full h-24 overflow-hidden bg-gray-100 mb-1.5">
+                   class="polaroid-fan-card absolute bg-white p-2.5 pt-2.5 pb-8 w-36 flex flex-col transition-all duration-500 ease-out border border-black/5 rounded-xs shadow-md"
+                   style="transform: rotate({{ $fanRotations[$i] }}) translateX({{ $fanTranslateX[$i] }}); z-index: {{ ($i + 1) * 10 }};">
+                    <div class="w-full h-24 overflow-hidden bg-gray-100 mb-1.5 rounded-xs">
                         @if(!empty($upcoming['img']))
                             <img src="{{ $upcoming['img'] }}" alt="{{ $upcoming['title'] }}" class="w-full h-full object-cover">
                         @else
@@ -260,13 +255,14 @@
 
                 @if(count($upcomingEvents) < 3)
                     @for($j = count($upcomingEvents); $j < 3; $j++)
-                    <div class="polaroid-fan-card absolute bg-white p-2.5 pt-2.5 pb-8 w-34 flex flex-col justify-center items-center transition-all duration-500 border border-dashed border-[#8A7320]/30"
-                         style="transform: rotate({{ $fanRotations[$j] }}) translateX({{ $fanTranslateX[$j] }}); z-index: {{ $j + 1 }};">
-                        <div class="w-full h-24 bg-emerald-50/50 border border-dashed border-[#8A7320]/20 flex items-center justify-center mb-1.5">
+                    <a href="{{ route('events.index', ['status' => 'upcoming']) }}"
+                       class="polaroid-fan-card absolute bg-white p-2.5 pt-2.5 pb-8 w-36 flex flex-col justify-center items-center transition-all duration-500 border border-dashed border-[#8A7320]/30 rounded-xs shadow-md"
+                       style="transform: rotate({{ $fanRotations[$j] }}) translateX({{ $fanTranslateX[$j] }}); z-index: {{ ($j + 1) * 10 }};">
+                        <div class="w-full h-24 bg-emerald-50/50 border border-dashed border-[#8A7320]/20 flex items-center justify-center mb-1.5 rounded-xs">
                             <span class="font-display-lg text-3xl text-[#8A7320]/30">?</span>
                         </div>
-                        <p class="font-label-handwritten text-[#8A7320]/60 italic text-xs">Khoảnh khắc tiếp theo...</p>
-                    </div>
+                        <p class="font-label-handwritten text-[#8A7320]/70 italic text-xs font-bold">Khoảnh khắc tiếp theo...</p>
+                    </a>
                     @endfor
                 @endif
             </div>

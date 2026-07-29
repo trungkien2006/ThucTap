@@ -147,6 +147,7 @@ class FrontendController extends Controller
                         'featured_url' => route('events.show', $ev->slug),
                         'img' => $ev->bannerImage ? \App\Helpers\FileHelper::url($ev->bannerImage->url, true) : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80',
                         'desc' => 'Kho lưu trữ chứa sự kiện đã diễn ra trong năm. Từ hội thảo, hội nghị đến các hoạt động ngoại khóa.',
+                        'date' => \Carbon\Carbon::parse($ev->event_date)->format('d/m/Y'),
                     ];
                 })->toArray();
 

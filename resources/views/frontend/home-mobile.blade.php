@@ -15,6 +15,18 @@
 
 @push('styles')
     <style>
+        .rotate-y-90 {
+            transform: rotateY(90deg);
+        }
+        .rotate-y-0 {
+            transform: rotateY(0deg);
+        }
+        .archive-card-perspective {
+            perspective: 1000px;
+        }
+        .archive-card-flip {
+            transform-style: preserve-3d;
+        }
         .hide-scrollbar::-webkit-scrollbar {
             display: none;
         }
@@ -926,20 +938,30 @@
             eventIdx: 0,
             archive: {{ $archiveJson }}, 
             dir: 1, 
+            flipping: false,
             get currentYear() { return (this.archive && this.archive.length > 0 && this.archive[this.yearIdx]) ? this.archive[this.yearIdx] : null; }, 
             get currentEvent() { return (this.currentYear && this.currentYear.events && this.currentYear.events.length > 0) ? (this.currentYear.events[this.eventIdx] || this.currentYear.events[0]) : null; },
             go(d) {
-                if (!this.currentYear || !this.currentYear.events) return;
-                this.dir = d;
+                if (!this.currentYear || !this.currentYear.events || this.flipping) return;
                 let n = this.eventIdx + d;
                 if(n >= 0 && n < this.currentYear.events.length) {
-                    this.eventIdx = n;
+                    this.flipping = true;
+                    this.dir = d;
+                    setTimeout(() => {
+                        this.eventIdx = n;
+                        setTimeout(() => { this.flipping = false; }, 60);
+                    }, 240);
                 }
             },
             setYear(i) {
+                if (this.flipping || i === this.yearIdx) return;
+                this.flipping = true;
                 this.dir = i > this.yearIdx ? 1 : -1;
-                this.yearIdx = i;
-                this.eventIdx = 0;
+                setTimeout(() => {
+                    this.yearIdx = i;
+                    this.eventIdx = 0;
+                    setTimeout(() => { this.flipping = false; }, 60);
+                }, 240);
             }
          }">
 
@@ -974,7 +996,7 @@
                     onmouseout="this.style.borderColor='rgba(255,227,129,0.3)';this.style.color='rgba(255,255,255,0.7)'">
                     <i data-lucide="chevron-left" class="h-5 w-5"></i>
                 </button>
-                <button @click="go(1)" :disabled="eventIdx === currentYear.events.length - 1"
+                <button @click="go(1)" :disabled="!currentYear || !currentYear.events || eventIdx === currentYear.events.length - 1"
                     class="grid h-12 w-12 place-items-center rounded-full border-2 text-white/70 transition-all disabled:opacity-30"
                     style="border-color:rgba(255,227,129,0.3); background:rgba(255,227,129,0.05);"
                     onmouseover="this.style.borderColor='#FFE381';this.style.color='#FFE381'"
@@ -984,15 +1006,15 @@
             </div>
         </div>
 
-        <div class="relative mt-14 grid grid-cols-1 gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
+        <div class="relative mt-5 lg:mt-8 grid grid-cols-1 gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:gap-14">
             <!-- Chữ số năm — Jasmine gradient & Buttons -->
             <div class="relative flex flex-col items-start z-10">
                 <!-- Mobile Clean Header -->
                 <div class="flex items-center gap-4 lg:hidden pl-4 pr-4 w-full">
-                     <h3 class="font-barlow-condensed text-4xl font-black"
+                     <h3 class="font-barlow-condensed text-3xl font-black"
                          style="-webkit-text-fill-color:transparent;-webkit-background-clip:text;background-clip:text;
                                 background-image:linear-gradient(160deg,#FFE381 30%,#E8C84A 70%,#07A0C3 100%);"
-                         x-text="'NĂM ' + currentYear.year"></h3>
+                         x-text="currentYear ? ('NĂM ' + currentYear.year) : ''"></h3>
                      <div class="h-px flex-1" style="background:rgba(255,227,129,0.2);"></div>
                 </div>
 
@@ -1000,20 +1022,20 @@
                 <div class="hidden lg:block font-barlow-condensed font-black leading-[0.85] tracking-tighter text-[18vw] pl-6 pr-4"
                      style="-webkit-text-fill-color:transparent;-webkit-background-clip:text;background-clip:text;
                             background-image:linear-gradient(160deg,#FFE381 30%,#E8C84A 70%,#07A0C3 100%);"
-                     x-text="currentYear.year"
+                     x-text="currentYear ? currentYear.year : ''"
                      x-transition:enter="transition ease-out duration-500"
                      x-transition:enter-start="opacity-0 translate-y-10"
                      x-transition:enter-end="opacity-100 translate-y-0"></div>
 
-                <div class="mt-6 pl-6 hidden lg:block">
-                    <a :href="'{{ route('archive') }}?year=' + currentYear.year" class="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold transition-all hover:scale-105"
+                <div class="mt-4 pl-6 hidden lg:block">
+                    <a :href="'{{ route('archive') }}?year=' + (currentYear ? currentYear.year : '')" class="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold transition-all hover:scale-105"
                        style="background:#FFE381; color:#1C1410;">
-                        Xem chi tiết năm <span x-text="currentYear.year"></span> <i data-lucide="arrow-right" class="h-4 w-4"></i>
+                        Xem chi tiết năm <span x-text="currentYear ? currentYear.year : ''"></span> <i data-lucide="arrow-right" class="h-4 w-4"></i>
                     </a>
                 </div>
 
                 <!-- Year tabs -->
-                <div class="mt-5 lg:mt-7 flex overflow-x-auto hide-scrollbar items-center gap-2 pl-4 pr-4 lg:pl-6 pb-2 w-full max-w-[100vw]">
+                <div class="mt-3 lg:mt-5 flex overflow-x-auto hide-scrollbar items-center gap-2 pl-4 pr-4 lg:pl-6 pb-2 w-full max-w-[100vw]">
                     <template x-for="(a,i) in archive" :key="a.year">
                         <button @click="setYear(i)"
                             class="rounded-full px-4 py-1.5 text-sm font-bold font-mono transition-all shrink-0"
@@ -1026,7 +1048,7 @@
                 </div>
 
                 <!-- Timeline mini strip -->
-                <div class="mt-10 pl-4 lg:pl-6 pr-4 hidden lg:block">
+                <div class="mt-8 pl-4 lg:pl-6 pr-4 hidden lg:block">
                     <div class="relative border-l-2 space-y-4" style="border-color: rgba(255,227,129,0.2);">
                         <template x-for="(a, i) in archive" :key="a.year">
                             <div class="relative pl-5 cursor-pointer" @click="setYear(i)">
@@ -1045,98 +1067,84 @@
                 </div>
             </div>
 
-            <div>
-                <div class="rounded-2xl lg:rounded-none overflow-hidden lg:overflow-visible mx-4 lg:mx-0" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 227, 129, 0.05);">
-                    <a :href="currentEvent.featured_url" class="group relative block h-[220px] lg:rounded-2xl lg:h-[360px]"
-                         style="box-shadow:0 20px 60px rgba(255,227,129,0.15);">
-                        <img :src="currentEvent.img" :alt="currentEvent.featured_title" loading="lazy"
-                             class="h-full w-full object-cover transition-transform duration-[1500ms] group-hover:scale-105" />
+            <div class="archive-card-perspective lg:-mt-28" style="perspective: 1000px;">
+                <div class="archive-card-flip transition-all duration-500 transform-gpu"
+                     :class="flipping ? 'rotate-y-90 scale-95 opacity-30' : 'rotate-y-0 scale-100 opacity-100'"
+                     style="transform-style: preserve-3d;">
+                    
+                    <!-- Event Banner Image Container (Compact height so text below image fits on screen) -->
+                    <a :href="currentEvent ? currentEvent.featured_url : '#'" class="group relative block h-[180px] sm:h-[200px] lg:h-[220px] overflow-hidden rounded-2xl shadow-2xl border border-[#FFE381]/20">
+                        <img :src="currentEvent ? currentEvent.img : ''" :alt="currentEvent ? currentEvent.featured_title : ''" loading="lazy"
+                             class="h-full w-full object-cover transition-transform duration-[1200ms] group-hover:scale-105" />
                         <div class="absolute inset-0"
-                             style="background:linear-gradient(to top,rgba(45,31,10,0.92) 0%,rgba(45,31,10,0.25) 60%,transparent 100%);"></div>
+                             style="background:linear-gradient(to top,rgba(45,31,10,0.3) 0%,transparent 60%);"></div>
                         <!-- Jasmine accent bar -->
                         <div class="absolute bottom-0 left-0 right-0 h-1.5" style="background:#FFE381;"></div>
-                        <!-- Tiêu đề trên PC -->
-                        <div class="absolute bottom-6 left-5 right-5 z-20 hidden lg:block">
-                            <div class="block w-fit">
-                                <h3 class="font-barlow-condensed text-2xl font-black uppercase tracking-wide text-white lg:text-4xl transition-colors group-hover:text-[#FFE381]"
-                                    x-text="currentEvent.featured_title"></h3>
-                            </div>
-                        </div>
                     </a>
 
-                    <!-- Card Body cho Mobile & PC -->
-                    <div class="p-5 lg:p-0 lg:mt-5">
-                        <!-- Tiêu đề trên Mobile -->
-                        <h3 class="font-barlow-condensed text-2xl font-black uppercase tracking-wide text-white transition-colors lg:hidden"
-                            x-text="currentEvent.featured_title"></h3>
-                            
-                        <p class="mt-3 lg:mt-0 text-sm leading-relaxed lg:text-lg" style="color:rgba(255,227,129,0.7);" x-text="currentEvent.desc"></p>
+                    <!-- Details Below Image: Title + Date + Description -->
+                    <div class="p-4 lg:p-4 mt-3 rounded-2xl border border-[#FFE381]/15 lg:border-none" style="background: rgba(255, 255, 255, 0.04); backdrop-filter: blur(8px);">
+                        <!-- Event Title Below Image -->
+                        <a :href="currentEvent ? currentEvent.featured_url : '#'" class="group block">
+                            <h3 class="font-barlow-condensed text-xl lg:text-2xl font-bold uppercase tracking-wide text-white transition-colors group-hover:text-[#FFE381] line-clamp-2 leading-snug"
+                                x-text="currentEvent ? currentEvent.featured_title : ''"></h3>
+                        </a>
+
+                        <!-- Event Date & Category Row Below Image -->
+                        <div class="mt-2.5 flex flex-wrap items-center gap-2">
+                            <div class="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full"
+                                 style="background:rgba(255,227,129,0.15); color:#FFE381; border:1px solid rgba(255,227,129,0.3);">
+                                <svg class="w-3.5 h-3.5 text-[#FFE381]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-width="2"/>
+                                    <line x1="16" y1="2" x2="16" y2="6" stroke-width="2"/>
+                                    <line x1="8" y1="2" x2="8" y2="6" stroke-width="2"/>
+                                    <line x1="3" y1="10" x2="21" y2="10" stroke-width="2"/>
+                                </svg>
+                                <span>Ngày tổ chức: <strong x-text="currentEvent && currentEvent.date ? currentEvent.date : 'Đang cập nhật'"></strong></span>
+                            </div>
+
+                            <div class="inline-flex items-center gap-1.5 text-xs font-semibold text-white/70 px-3 py-1 rounded-full"
+                                 style="background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15);">
+                                <i data-lucide="folder" class="w-3.5 h-3.5 text-[#07A0C3]"></i>
+                                <span x-text="currentYear ? ('Năm ' + currentYear.year) : ''"></span>
+                            </div>
+                        </div>
+
+                        <!-- Event Description -->
+                        <p class="mt-2 text-xs lg:text-sm leading-relaxed line-clamp-2" style="color:rgba(255,227,129,0.75);" x-text="currentEvent ? currentEvent.desc : ''"></p>
 
                         <!-- Thống kê tinh gọn cho Mobile -->
                         <div class="mt-4 flex flex-wrap items-center gap-4 lg:hidden">
                             <!-- Stat: Số sự kiện -->
                             <div class="flex items-center gap-2">
                                 <i data-lucide="calendar-check" class="h-4 w-4" style="color:#FFE381;"></i>
-                                <span class="text-xs font-bold text-white" x-text="currentYear.achievements[0]"></span>
+                                <span class="text-xs font-bold text-white" x-text="currentYear ? currentYear.achievements[0] : ''"></span>
                             </div>
                             <!-- Separator -->
                             <div class="h-3 w-px bg-white/20"></div>
                             <!-- Stat: Năm hoạt động -->
                             <div class="flex items-center gap-2">
                                 <i data-lucide="history" class="h-4 w-4" style="color:#07A0C3;"></i>
-                                <span class="text-xs font-bold text-white" x-text="currentYear.year"></span>
+                                <span class="text-xs font-bold text-white" x-text="currentYear ? currentYear.year : ''"></span>
                             </div>
-                        </div>
-
-                        <!-- Thống kê gốc cho PC -->
-                        <div class="mt-5 hidden lg:flex flex-wrap gap-4">
-                            <div class="flex items-center gap-2">
-                                <div class="h-8 w-8 rounded-full flex items-center justify-center flex-shrink-0" style="background:rgba(255,227,129,0.12); border:1px solid rgba(255,227,129,0.25);">
-                                    <i data-lucide="calendar-check" class="h-4 w-4" style="color:#FFE381;"></i>
-                                </div>
-                                <div>
-                                    <div class="text-xs font-bold uppercase tracking-widest" style="color:rgba(255,227,129,0.5);">Tổ chức</div>
-                                    <div class="text-sm font-bold text-white" x-text="currentYear.achievements[0]"></div>
-                                </div>
-                            </div>
-                            <div class="h-auto w-px self-stretch" style="background:rgba(255,227,129,0.15);"></div>
-                            <div class="flex items-center gap-2">
-                                <div class="h-8 w-8 rounded-full flex items-center justify-center flex-shrink-0" style="background:rgba(7,160,195,0.12); border:1px solid rgba(7,160,195,0.25);">
-                                    <i data-lucide="history" class="h-4 w-4" style="color:#07A0C3;"></i>
-                                </div>
-                                <div>
-                                    <div class="text-xs font-bold uppercase tracking-widest" style="color:rgba(7,160,195,0.5);">Năm hoạt động</div>
-                                    <div class="text-sm font-bold text-white" x-text="currentYear.year"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Tags (chỉ PC) -->
-                        <div class="mt-5 hidden lg:grid grid-cols-1 gap-3 sm:grid-cols-3">
-                            <template x-for="achieve in currentYear.achievements" :key="achieve">
-                                <div class="rounded-xl px-4 py-3 text-sm font-medium text-white"
-                                     style="background:rgba(255,227,129,0.10); border:1px solid rgba(255,227,129,0.25);"
-                                     x-text="achieve"></div>
-                            </template>
                         </div>
 
                         <!-- Action Bar cho Mobile -->
-                        <div class="mt-6 flex items-center justify-between lg:hidden border-t border-[#FFE381]/10 pt-4">
-                            <a :href="'{{ route('archive') }}?year=' + currentYear.year" class="inline-flex items-center gap-2 rounded-full px-5 py-2 text-xs font-bold transition-all"
+                        <div class="mt-5 flex items-center justify-between border-t border-[#FFE381]/10 pt-4">
+                            <a :href="'{{ route('archive') }}?year=' + (currentYear ? currentYear.year : '')" class="inline-flex items-center gap-2 rounded-full px-5 py-2 text-xs font-bold transition-all"
                                style="background:#FFE381; color:#1C1410;">
                                 Xem thêm <i data-lucide="arrow-right" class="h-3 w-3"></i>
                             </a>
                             
                             <div class="flex gap-2">
-                                <button @click="go(-1)" :disabled="eventIdx === 0"
+                                <button @click="go(-1)" :disabled="eventIdx === 0 || flipping"
                                     class="grid h-9 w-9 place-items-center rounded-full border border-[#FFE381]/30 disabled:opacity-30">
                                     <i data-lucide="chevron-left" class="h-4 w-4 text-white"></i>
                                 </button>
-                                <button @click="go(1)" :disabled="eventIdx === currentYear.events.length - 1"
+                                <button @click="go(1)" :disabled="!currentYear || !currentYear.events || eventIdx === currentYear.events.length - 1 || flipping"
                                     class="grid h-9 w-9 place-items-center rounded-full border border-[#FFE381]/30 disabled:opacity-30">
                                     <i data-lucide="chevron-right" class="h-4 w-4 text-white"></i>
                                 </button>
-                            </div>
                         </div>
                     </div>
                 </div>

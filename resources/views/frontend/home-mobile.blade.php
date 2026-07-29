@@ -35,6 +35,32 @@
             scrollbar-width: none;
         }
         @media (max-width: 1023px) {
+            /* Tắt hoàn toàn hiệu ứng xếp chồng/chồng đè các section khi vuốt trên mobile */
+            #master-wipe-container,
+            #events-sticky-wrapper,
+            #archive-sticky-wrapper,
+            #media-sticky-wrapper,
+            #events,
+            #archive,
+            #media,
+            #categories-section,
+            .upcoming-pinned-container {
+                position: relative !important;
+                top: auto !important;
+                bottom: auto !important;
+                z-index: 1 !important;
+                transform: none !important;
+                margin-top: 0 !important;
+                box-shadow: none !important;
+                height: auto !important;
+                min-height: 0 !important;
+            }
+
+            #archive-delay-spacer {
+                display: none !important;
+                height: 0 !important;
+            }
+
             #master-wipe-container {
                 display: flex !important;
                 flex-direction: column !important;
@@ -54,7 +80,7 @@
                 width: 100% !important;
                 height: auto !important;
                 transform: none !important;
-                z-index: auto !important;
+                z-index: 1 !important;
             }
             
             /* Hero Slider Mobile Overrides */

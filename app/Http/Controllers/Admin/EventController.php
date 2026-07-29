@@ -671,6 +671,10 @@ class EventController extends Controller
 
         ActivityLogger::log("đã xóa sự kiện: {$eventTitle}", route('admin.events.index'));
 
+        if (request()->headers->get('referer') && strpos(request()->headers->get('referer'), route('admin.archive.index')) !== false) {
+            return redirect()->route('admin.archive.index')->with('success', 'Đã xóa sự kiện thành công.');
+        }
+
         return redirect()->route('admin.events.index')->with('success', 'Đã xóa sự kiện thành công.');
     }
 
@@ -784,8 +788,15 @@ class EventController extends Controller
                 return back()->with('error', 'Không tìm thấy hình ảnh/video nào trong thư mục. Đảm bảo thư mục đã được chia sẻ công khai "Anyone with the link".');
             }
 
-            // Remove existing recap media if any (or keep them, but since we are automating, we probably want to replace)
-            $event->media()->where('is_recap', true)->delete();
+            // Gỡ các ảnh cũ khỏi Google Drive trước khi thêm ảnh mới
+            $oldRecapMedia = $event->media()->where('is_recap', true)->get();
+            foreach ($oldRecapMedia as $media) {
+                // Nếu ảnh được lưu trực tiếp trên Google Drive của hệ thống (không phải link ngoài)
+                if (!str_starts_with($media->url, 'http') && \Illuminate\Support\Facades\Storage::exists($media->url)) {
+                    \Illuminate\Support\Facades\Storage::delete($media->url);
+                }
+                $media->delete();
+            }
 
             foreach ($files as $file) {
                 $type = str_contains($file->getMimeType(), 'video') ? 'video' : 'image';

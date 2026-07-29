@@ -507,6 +507,89 @@
         @endif
     </div>
 
+    <!-- Global Delete Confirm Modal -->
+    <div id="globalDeleteModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-black/50 backdrop-blur-sm transition-opacity duration-300 opacity-0">
+        <div id="globalDeleteModalContainer" class="bg-white rounded-2xl shadow-xl w-[90%] max-w-md p-6 transform scale-95 transition-transform duration-300">
+            <div class="flex gap-4">
+                <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+                    <i data-lucide="alert-triangle" class="w-6 h-6 text-red-600"></i>
+                </div>
+                <div class="flex-1 mt-1">
+                    <h3 class="text-xl font-bold text-slate-900">Xác nhận xóa</h3>
+                    <p class="text-[14px] text-slate-500 mt-2 leading-relaxed" id="globalDeleteModalMessage">Bạn có chắc chắn muốn xóa mục này? Hành động này không thể hoàn tác.</p>
+                    
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Vui lòng nhập <span class="font-bold text-red-600">Đồng ý xóa</span> để xác nhận:</label>
+                        <input type="text" id="globalDeleteConfirmInput" oninput="checkGlobalDeleteInput(this)" class="w-full text-[15px] font-medium border border-slate-200 rounded-xl px-4 py-2.5 focus:border-red-500 focus:ring-1 focus:ring-red-500 shadow-sm outline-none transition-all" placeholder="Đồng ý xóa" autocomplete="off" onkeydown="if(event.key === 'Enter'){ event.preventDefault(); if(!document.getElementById('globalDeleteConfirmBtn').disabled) document.getElementById('globalDeleteConfirmBtn').click(); }">
+                    </div>
+
+                    <div class="mt-6 flex justify-end gap-3">
+                        <button type="button" onclick="closeGlobalDeleteModal()" class="px-5 py-2.5 border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 rounded-xl text-[15px] font-medium transition-colors">
+                            Hủy
+                        </button>
+                        <button type="button" id="globalDeleteConfirmBtn" onclick="executeGlobalDelete()" class="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-[15px] font-medium transition-colors shadow-sm opacity-50 cursor-not-allowed" disabled>
+                            Xác nhận xóa
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script data-spa-ignore>
+        window.confirmDelete = function(event, form, message) {
+            event.preventDefault();
+            const modal = document.getElementById('globalDeleteModal');
+            const container = document.getElementById('globalDeleteModalContainer');
+            const messageEl = document.getElementById('globalDeleteModalMessage');
+            const input = document.getElementById('globalDeleteConfirmInput');
+            const confirmBtn = document.getElementById('globalDeleteConfirmBtn');
+            
+            messageEl.textContent = message || 'Bạn có chắc chắn muốn xóa mục này? Hành động này không thể hoàn tác.';
+            input.value = '';
+            confirmBtn.disabled = true;
+            confirmBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            
+            modal.classList.remove('hidden');
+            void modal.offsetWidth;
+            modal.classList.remove('opacity-0');
+            container.classList.remove('scale-95');
+            
+            setTimeout(() => input.focus(), 100);
+            window._pendingDeleteForm = form;
+        };
+
+        window.closeGlobalDeleteModal = function() {
+            const modal = document.getElementById('globalDeleteModal');
+            const container = document.getElementById('globalDeleteModalContainer');
+            modal.classList.add('opacity-0');
+            container.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                window._pendingDeleteForm = null;
+            }, 300);
+        };
+
+        window.checkGlobalDeleteInput = function(input) {
+            const confirmBtn = document.getElementById('globalDeleteConfirmBtn');
+            const val = input.value.trim().toLowerCase();
+            if (val === 'đồng ý xóa' || val === 'đông ý xóa') {
+                confirmBtn.disabled = false;
+                confirmBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            } else {
+                confirmBtn.disabled = true;
+                confirmBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+        };
+
+        window.executeGlobalDelete = function() {
+            const confirmBtn = document.getElementById('globalDeleteConfirmBtn');
+            if (!confirmBtn.disabled && window._pendingDeleteForm) {
+                window._pendingDeleteForm.submit();
+            }
+        };
+    </script>
+
     <!-- Main Content Wrapper -->
     <main id="mainContent" class="pt-16 min-h-screen transition-all">
         <div class="p-4 md:p-6 lg:p-8 max-w-[1600px] mx-auto">

@@ -156,13 +156,9 @@
                     <div class="absolute -top-2.5 left-1/2 -translate-x-1/2 washi-tape-rose h-4.5 w-16 rotate-[3deg] z-10 opacity-70 jagged-tape"></div>
                 </template>
 
-                <!-- Image Area (Compact Photo Frame) -->
-                <a :href="event.url || '#'" class="block aspect-[16/10] w-full overflow-hidden bg-gray-100 mb-2.5 relative group cursor-pointer rounded-xs border border-black/5">
-                    <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" :src="event.img" :alt="event.title" loading="lazy"/>
-                    <div class="absolute inset-0 p-2.5 flex flex-col justify-center backdrop-blur-xs opacity-0 group-hover:opacity-100 transition-opacity duration-300 items-center text-center" style="background-color: rgba(0,0,0,0.65);">
-                        <p class="text-white text-[11px] leading-relaxed line-clamp-3 font-medium mb-1.5" x-text="event.desc"></p>
-                        <span class="text-white font-bold border border-white px-2.5 py-0.5 text-[10px] rounded-full">Xem chi tiết →</span>
-                    </div>
+                <!-- Image Area (Compact Photo Frame - Direct Link without dark overlay) -->
+                <a :href="event.url || '#'" class="block aspect-[16/10] w-full overflow-hidden bg-gray-100 mb-2.5 relative cursor-pointer rounded-xs border border-black/5">
+                    <img class="w-full h-full object-cover transition-transform duration-500 hover:scale-105" :src="event.img" :alt="event.title" loading="lazy"/>
                 </a>
 
                 <!-- Text Content -->

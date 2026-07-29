@@ -223,33 +223,71 @@
                 <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform text-lg">arrow_forward</span>
             </a>
             
-            <!-- Polaroid Fan Stack (3-card fan stack decoration - Clean Spread Out) -->
-            <div class="polaroid-fan-stack relative flex items-center justify-center my-3" style="width: 270px; height: 210px;">
-                <!-- Left Card (Khoảnh khắc 1) -->
-                <div class="polaroid-fan-card bg-white p-2 pb-5 absolute shadow-md w-30 rounded-xs border border-black/5 transition-all duration-500 ease-out"
-                     style="transform: rotate(-14deg) translateX(-65px) translateY(6px); z-index: 10;">
-                    <div class="bg-amber-100 aspect-[4/3] mb-1 flex items-center justify-center overflow-hidden rounded-xs">
+            <!-- Interactive Polaroid Fan Stack (Auto Fan-out on scroll, Tap to bring to center) -->
+            <div x-data="{ 
+                    activeCard: 1, 
+                    fanned: false,
+                    selectCard(i) {
+                        this.activeCard = i;
+                    }
+                 }" 
+                 x-init="
+                    const observer = new IntersectionObserver((entries) => {
+                        if (entries[0].isIntersecting) {
+                            fanned = true;
+                        }
+                    }, { threshold: 0.2 });
+                    observer.observe($el);
+                 "
+                 class="polaroid-fan-stack relative flex items-center justify-center my-4 select-none cursor-pointer" 
+                 style="width: 290px; height: 220px;">
+
+                <!-- CARD 0 (Left Photo: Khoảnh khắc 1) -->
+                <div @click="selectCard(0)"
+                     class="polaroid-fan-card absolute bg-white p-2 pb-5 shadow-lg w-32 rounded-xs border border-black/5 transition-all duration-500 ease-out cursor-pointer"
+                     :style="activeCard === 0 
+                        ? 'transform: rotate(0deg) translateX(0px) translateY(-10px) scale(1.05); z-index: 30; box-shadow: 0 16px 35px rgba(0,0,0,0.15);' 
+                        : (fanned 
+                            ? (activeCard === 1 
+                                ? 'transform: rotate(-16deg) translateX(-82px) translateY(8px); z-index: 10;' 
+                                : 'transform: rotate(-18deg) translateX(-92px) translateY(10px); z-index: 10;')
+                            : 'transform: rotate(-8deg) translateX(-45px) translateY(4px); z-index: 10;')" >
+                    <div class="bg-amber-100 aspect-[4/3] mb-1 flex items-center justify-center overflow-hidden rounded-xs pointer-events-none">
                         <img src="https://images.unsplash.com/photo-1511578314322-379afb476865?w=300&q=80" class="w-full h-full object-cover" />
                     </div>
-                    <p class="font-label-handwritten text-[11px] text-center text-[#1C1410] font-bold">Khoảnh khắc 1</p>
+                    <p class="font-label-handwritten text-[11px] text-center text-[#1C1410] font-bold pointer-events-none">Khoảnh khắc 1</p>
                 </div>
 
-                <!-- Center Card (Khoảnh khắc tiếp theo...) FRONT CARD -->
-                <div class="polaroid-fan-card bg-white p-2.5 pb-6 absolute shadow-xl w-34 rounded-xs border border-black/5 transition-all duration-500 ease-out"
-                     style="transform: rotate(0deg) translateX(0px) translateY(-8px); z-index: 30;">
-                    <div class="bg-emerald-50 aspect-[4/3] mb-1.5 flex items-center justify-center text-[#8A7320]/60 overflow-hidden border border-dashed border-[#8A7320]/30 rounded-xs">
+                <!-- CARD 1 (Center Card: Khoảnh khắc tiếp theo...) -->
+                <div @click="selectCard(1)"
+                     class="polaroid-fan-card absolute bg-white p-2.5 pb-6 shadow-lg w-36 rounded-xs border border-black/5 transition-all duration-500 ease-out cursor-pointer"
+                     :style="activeCard === 1 
+                        ? 'transform: rotate(0deg) translateX(0px) translateY(-10px) scale(1.05); z-index: 30; box-shadow: 0 16px 35px rgba(0,0,0,0.15);' 
+                        : (fanned 
+                            ? (activeCard === 0 
+                                ? 'transform: rotate(14deg) translateX(78px) translateY(8px); z-index: 15;' 
+                                : 'transform: rotate(-14deg) translateX(-78px) translateY(8px); z-index: 15;')
+                            : 'transform: rotate(0deg) translateX(0px) translateY(0px); z-index: 20;')" >
+                    <div class="bg-emerald-50 aspect-[4/3] mb-1.5 flex items-center justify-center text-[#8A7320]/60 overflow-hidden border border-dashed border-[#8A7320]/30 rounded-xs pointer-events-none">
                         <span class="material-symbols-outlined text-3xl">photo_camera</span>
                     </div>
-                    <p class="font-label-handwritten text-xs text-center text-[#1C1410] font-bold">Khoảnh khắc tiếp theo...</p>
+                    <p class="font-label-handwritten text-xs text-center text-[#1C1410] font-bold pointer-events-none">Khoảnh khắc tiếp theo...</p>
                 </div>
 
-                <!-- Right Card (Khoảnh khắc 2) -->
-                <div class="polaroid-fan-card bg-white p-2 pb-5 absolute shadow-md w-30 rounded-xs border border-black/5 transition-all duration-500 ease-out"
-                     style="transform: rotate(14deg) translateX(65px) translateY(6px); z-index: 20;">
-                    <div class="bg-rose-100 aspect-[4/3] mb-1 flex items-center justify-center overflow-hidden rounded-xs">
+                <!-- CARD 2 (Right Photo: Khoảnh khắc 2) -->
+                <div @click="selectCard(2)"
+                     class="polaroid-fan-card absolute bg-white p-2 pb-5 shadow-lg w-32 rounded-xs border border-black/5 transition-all duration-500 ease-out cursor-pointer"
+                     :style="activeCard === 2 
+                        ? 'transform: rotate(0deg) translateX(0px) translateY(-10px) scale(1.05); z-index: 30; box-shadow: 0 16px 35px rgba(0,0,0,0.15);' 
+                        : (fanned 
+                            ? (activeCard === 1 
+                                ? 'transform: rotate(16deg) translateX(82px) translateY(8px); z-index: 10;' 
+                                : 'transform: rotate(18deg) translateX(92px) translateY(10px); z-index: 10;')
+                            : 'transform: rotate(8deg) translateX(45px) translateY(4px); z-index: 10;')" >
+                    <div class="bg-rose-100 aspect-[4/3] mb-1 flex items-center justify-center overflow-hidden rounded-xs pointer-events-none">
                         <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=300&q=80" class="w-full h-full object-cover" />
                     </div>
-                    <p class="font-label-handwritten text-[11px] text-center text-[#1C1410] font-bold">Khoảnh khắc 2</p>
+                    <p class="font-label-handwritten text-[11px] text-center text-[#1C1410] font-bold pointer-events-none">Khoảnh khắc 2</p>
                 </div>
             </div>
         </div>

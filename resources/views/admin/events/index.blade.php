@@ -440,7 +440,7 @@
                                         <i data-lucide="archive" class="h-3.5 w-3.5"></i>
                                     </button>
                                 </form>
-                                <form action="{{ route('admin.events.destroy', $event) }}" method="POST" class="inline" onsubmit="showConfirmModal(event, 'Xóa sự kiện', 'Bạn có chắc chắn muốn xóa sự kiện &quot;{{ $event->title }}&quot;? Hành động này không thể hoàn tác.', 'danger');">
+                                <form action="{{ route('admin.events.destroy', $event) }}" method="POST" class="inline" onsubmit="return confirmDelete(event, this, 'Bạn có chắc chắn muốn xóa sự kiện &quot;{{ $event->title }}&quot;? Hành động này không thể hoàn tác.');">
                                     @csrf @method('DELETE')
                                     <button type="submit" class="h-7 w-7 rounded flex items-center justify-center text-muted-foreground hover:bg-red-50 hover:text-red-500 transition-all" title="Xóa">
                                         <i data-lucide="trash-2" class="h-3.5 w-3.5"></i>

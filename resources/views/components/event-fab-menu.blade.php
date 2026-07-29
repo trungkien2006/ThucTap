@@ -43,7 +43,7 @@
     <button @click="fabOpen = true" 
             class="flex items-center justify-center w-14 h-14 rounded-full shadow-[0_8px_20px_rgba(232,200,74,0.4)] transition-transform hover:scale-110 active:scale-95"
             style="background: #FFE381; color: #1C1410; border: 1px solid rgba(232,200,74,0.6);">
-        <i data-lucide="menu" class="w-7 h-7"></i>
+        <i data-lucide="qr-code" class="w-7 h-7"></i>
     </button>
 
     <!-- Overlay -->

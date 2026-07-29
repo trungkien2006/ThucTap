@@ -904,7 +904,39 @@
             </div>
             @endif
 
-            <!-- Điều hướng Sự kiện Trước / Sau -->
+                    <!-- Sự kiện liên quan -->
+        @if(isset($relatedEvents) && $relatedEvents->count() > 0)
+        <div class="mt-12 pt-8 border-t border-slate-200">
+            <h2 class="text-xl md:text-2xl font-bold text-slate-800 text-center mb-8 flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined text-[#f97316]">auto_awesome</span>
+                Sự kiện liên quan
+            </h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                @foreach($relatedEvents as $relEvent)
+                <a href="{{ route('events.show', $relEvent->slug) }}" class="group block rounded-2xl overflow-hidden bg-white border border-slate-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                    <div class="w-full aspect-video bg-slate-100 overflow-hidden relative">
+                        @if($relEvent->bannerImage)
+                            <img src="{{ \App\Helpers\FileHelper::url($relEvent->bannerImage->url) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        @else
+                            <div class="w-full h-full bg-slate-200 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-slate-400 text-4xl">image</span>
+                            </div>
+                        @endif
+                    </div>
+                    <div class="p-5 text-left">
+                        <h4 class="font-bold text-slate-800 group-hover:text-[#f97316] transition-colors line-clamp-2 text-[15px] leading-snug">{{ $relEvent->title }}</h4>
+                        <div class="mt-3 text-[13px] text-slate-500 flex items-center gap-1.5 font-medium">
+                            <span class="material-symbols-outlined text-[16px] text-slate-400">calendar_today</span>
+                            {{ $relEvent->event_date->format('d/m/Y') }}
+                        </div>
+                    </div>
+                </a>
+                @endforeach
+            </div>
+        </div>
+        @endif
+
+        <!-- Điều hướng Sự kiện Trước / Sau (chỉ dành cho kho lưu trữ) -->
             @if(isset($previousEvent) || isset($nextEvent))
             <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t border-slate-200">
                 <div>

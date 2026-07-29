@@ -161,7 +161,7 @@
                     </div>
                     <div class="flex gap-2 pt-3 border-t border-border mt-2">
                         <form id="preview-delete-form" action="{{ route('admin.media.destroy', $first) }}" method="POST"
-                            onsubmit="return confirm('Xóa file này?');" class="w-full">
+                            onsubmit="return confirmDelete(event, this, 'Xóa file này?');" class="w-full">
                             @csrf @method('DELETE')
                             <button type="submit"
                                 class="w-full h-11 text-sm bg-red-500 hover:bg-red-600 text-white rounded-xl flex items-center justify-center transition-all font-semibold">

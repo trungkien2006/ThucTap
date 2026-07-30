@@ -160,12 +160,11 @@
                             @else
                                 <img src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="tp1-img" alt="">
                             @endif
+                            @if($block->caption)<p style="margin-top:10px;font-size:0.95rem;color:#64748b;font-style:italic;text-align:center;">{{ $block->caption }}</p>@endif
                         @endif
                     </div>
                     <div class="text-left">
-                        @if($block->caption)
-                            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">{{ $block->caption }}</h3>
-                        @endif
+
                         @if(!empty($block->content))
                             <div class="tp1-text">{!! $block->content !!}</div>
                         @endif
@@ -179,9 +178,7 @@
                     </div>
                 @else
                     <div class="text-left">
-                        @if($block->caption)
-                            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">{{ $block->caption }}</h3>
-                        @endif
+
                         @if(!empty($block->content))
                             <div class="tp1-text">{!! $block->content !!}</div>
                         @endif
@@ -200,6 +197,7 @@
                             @else
                                 <img src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="tp1-img" alt="">
                             @endif
+                            @if($block->caption)<p style="margin-top:10px;font-size:0.95rem;color:#64748b;font-style:italic;text-align:center;">{{ $block->caption }}</p>@endif
                         @endif
                     </div>
                 @endif

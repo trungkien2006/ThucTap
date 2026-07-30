@@ -18,11 +18,19 @@ class FrontendController extends Controller
 
     public function submitContact(Request $request)
     {
-        $validated = $request->validate([
+        $rules = [
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'subject' => 'required|string|max:255',
             'message' => 'required|string',
+        ];
+
+        if (env('TURNSTILE_SITE_KEY')) {
+            $rules['cf-turnstile-response'] = ['required', new \App\Rules\Turnstile()];
+        }
+
+        $validated = $request->validate($rules, [
+            'cf-turnstile-response.required' => 'Vui lòng xác minh bạn không phải là robot.',
         ]);
 
         try {

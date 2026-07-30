@@ -331,10 +331,10 @@
                                 {{-- Tiêu đề khối (Caption) --}}
                                 <div class="w-full mb-[-10px]">
                                     <label class="text-[12px] font-bold text-slate-700 block mb-1.5 flex items-center gap-1.5">
-                                        <span class="material-symbols-outlined text-[16px] text-brand-orange">title</span> 
-                                        Tiêu đề khối nội dung (Tùy chọn hiển thị)
+                                        <span class="material-symbols-outlined text-[16px] text-brand-orange">short_text</span> 
+                                        Mô tả ảnh (Tùy chọn hiển thị)
                                     </label>
-                                    <input type="text" id="caption{{ $i }}" placeholder="Nhập tiêu đề cho khối này (VD: Lịch trình, Diễn giả...)"
+                                    <input type="text" id="caption{{ $i }}" placeholder="Nhập mô tả cho ảnh này..."
                                            class="w-full text-[14px] px-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all font-bold text-primary"
                                            value="{{ $media ? $media->caption : '' }}" />
                                 </div>
@@ -1303,10 +1303,10 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-slate-50/50 p-6 rounded-xl border border-slate-100 mt-6 items-start media-slot-wrapper" data-slot-wrap="${newI}">
                 <div class="w-full mb-[-10px] ${templateId === '3' ? 'col-span-1' : 'col-span-1 lg:col-span-2'}">
                     <label class="text-[12px] font-bold text-slate-700 block mb-1.5 flex items-center gap-1.5">
-                        <span class="material-symbols-outlined text-[16px] text-brand-orange">title</span> 
-                        Tiêu đề khối nội dung (Tùy chọn hiển thị)
+                        <span class="material-symbols-outlined text-[16px] text-brand-orange">short_text</span> 
+                        Mô tả ảnh (Tùy chọn hiển thị)
                     </label>
-                    <input type="text" id="caption${newI}" placeholder="Nhập tiêu đề cho khối này (VD: Lịch trình, Diễn giả...)"
+                    <input type="text" id="caption${newI}" placeholder="Nhập mô tả cho ảnh này..."
                            class="w-full text-[14px] px-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all font-bold text-primary" />
                 </div>
                 <div class="flex flex-col h-full w-full ${textOrder} media-text-col" ${templateId === '5' ? 'style="display:none;"' : ''}>

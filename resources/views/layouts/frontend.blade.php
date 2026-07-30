@@ -323,7 +323,7 @@
                         <img src="{{ asset('images/fpt-polytechnic.png') }}?v={{ time() }}" alt="FPT Polytechnic" class="h-10 w-auto object-contain">
                     </a>
                     <p class="text-white/60 text-sm leading-relaxed mb-6 max-w-xs">
-                        Nền tảng quản lý và trải nghiệm sự kiện học đường hàng đầu, kết nối sinh viên và kiến tạo kỷ niệm đáng nhớ.
+                        Nền tảng quản lý và trải nghiệm sự kiện học đường, kết nối sinh viên và kiến tạo kỷ niệm đáng nhớ.
                     </p>
                     <div class="flex items-center gap-4">
                         <a href="https://facebook.com/fpt.poly" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full flex items-center justify-center bg-white/5 hover:bg-[#E8C84A] hover:text-[#1C1410] text-white transition-all" title="Facebook">
@@ -400,10 +400,6 @@
                 <p class="text-white/40 text-sm">
                    
                 </p>
-                <div class="flex items-center gap-6">
-                    <a href="#" class="text-white/40 hover:text-white text-sm transition-colors">Điều khoản</a>
-                    <a href="#" class="text-white/40 hover:text-white text-sm transition-colors">Bảo mật</a>
-                </div>
             </div>
         </div>
     </footer>

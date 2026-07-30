@@ -64,7 +64,7 @@
     <div class="max-w-[1200px] mx-auto px-6 grid grid-cols-1 lg:grid-cols-5 gap-12 items-start py-20">
         
         <!-- Left Column: Form -->
-        <div class="lg:col-span-3 bg-white/80 backdrop-blur-xl border border-white/50 rounded-3xl p-8 md:p-10 shadow-sm" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="300">
+        <div class="lg:col-span-3 relative z-50 bg-white/80 backdrop-blur-xl border border-white/50 rounded-3xl p-8 md:p-10 shadow-sm" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="300">
             <div class="flex items-center gap-4 mb-8">
                 <div class="w-2 h-8 rounded-full" style="background: #E8C84A;"></div>
                 <h3 class="font-['Barlow_Condensed'] text-3xl font-bold uppercase text-[#1C1410]">Gửi tin nhắn</h3>
@@ -104,6 +104,14 @@
                     <label class="text-sm font-bold text-[#1C1410]">Nội dung <span class="text-red-500">*</span></label>
                     <textarea rows="5" name="message" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 text-sm focus:border-[#E8C84A] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#E8C84A]/10 transition-all resize-none" placeholder="Nhập nội dung chi tiết cần hỗ trợ..." required></textarea>
                 </div>
+                
+                @if(env('TURNSTILE_SITE_KEY'))
+                <div class="cf-turnstile" data-sitekey="{{ env('TURNSTILE_SITE_KEY') }}"></div>
+                @error('cf-turnstile-response')
+                    <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
+                @enderror
+                @endif
+
                 <button type="submit" class="w-full rounded-2xl py-4 text-[15px] font-bold text-[#1C1410] shadow-sm transition-all hover:shadow-lg hover:shadow-[#FFE381]/40 hover:-translate-y-1 active:translate-y-0 flex justify-center items-center gap-3" style="background: linear-gradient(135deg, #FFE381 0%, #E8C84A 100%);">
                     <span>Gửi tin nhắn</span>
                     <i data-lucide="send" class="w-4 h-4"></i>
@@ -131,4 +139,5 @@
         
     </div>
 </div>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 @endsection

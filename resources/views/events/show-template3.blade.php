@@ -783,12 +783,11 @@
                                 @else
                                     <img src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="t3-gallery-media" alt="">
                                 @endif
+                                @if($block->caption)<p style="margin-top:10px;font-size:0.95rem;color:#64748b;font-style:italic;text-align:center;">{{ $block->caption }}</p>@endif
                             @endif
                         </div>
                         <div>
-                            @if($block->caption)
-                                <h3 style="font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; margin-bottom: 12px; color: var(--navy);">{{ $block->caption }}</h3>
-                            @endif
+
                             @if(!empty($block->content))
                                 <div style="color: var(--soft); font-size: 14.5px; line-height: 1.8;">{!! $block->content !!}</div>
                             @endif

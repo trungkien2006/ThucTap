@@ -27,9 +27,27 @@ class LoginRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $rules = [
             'email' => ['required', 'string', 'email'],
             'password' => ['required', 'string'],
+        ];
+
+        if (env('TURNSTILE_SITE_KEY')) {
+            $rules['cf-turnstile-response'] = ['required', new \App\Rules\Turnstile()];
+        }
+
+        return $rules;
+    }
+
+    /**
+     * Get the error messages for the defined validation rules.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'cf-turnstile-response.required' => 'Vui lòng xác minh bạn không phải là robot (Cloudflare Turnstile).',
         ];
     }
 
@@ -45,14 +63,14 @@ class LoginRequest extends FormRequest
         $user = \App\Models\User::where('email', $this->email)->first();
 
         if (!$user) {
-            RateLimiter::hit($this->throttleKey());
+            RateLimiter::hit($this->throttleKey(), 300);
             throw ValidationException::withMessages([
                 'email' => 'Tài khoản không đúng.',
             ]);
         }
 
         if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
-            RateLimiter::hit($this->throttleKey());
+            RateLimiter::hit($this->throttleKey(), 300);
             throw ValidationException::withMessages([
                 'email' => 'Sai mật khẩu.',
             ]);
@@ -68,7 +86,7 @@ class LoginRequest extends FormRequest
      */
     public function ensureIsNotRateLimited(): void
     {
-        if (! RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
+        if (! RateLimiter::tooManyAttempts($this->throttleKey(), 3)) {
             return;
         }
 

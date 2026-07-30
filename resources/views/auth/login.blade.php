@@ -1,5 +1,8 @@
 <x-guest-layout>
-
+    @php
+        $throttleKey = 'login|'.request()->ip();
+        $lockoutSeconds = \Illuminate\Support\Facades\RateLimiter::availableIn($throttleKey);
+    @endphp
     {{-- Light Glassmorphism Card --}}
     <div class="bg-white/40 backdrop-blur-lg border border-white/60 rounded-3xl p-8 sm:p-10 shadow-2xl relative overflow-hidden">
         
@@ -46,6 +49,9 @@
                 />
                 <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none">person</span>
             </div>
+            @error('email')
+                <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
+            @enderror
 
             {{-- Password --}}
             <div class="relative">
@@ -83,6 +89,14 @@
 
             </div>
 
+            {{-- Turnstile --}}
+            @if(env('TURNSTILE_SITE_KEY'))
+            <div class="cf-turnstile mt-4" data-sitekey="{{ env('TURNSTILE_SITE_KEY') }}"></div>
+            @error('cf-turnstile-response')
+                <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
+            @enderror
+            @endif
+
             {{-- Submit --}}
             <button
                 type="submit"
@@ -112,6 +126,38 @@
                 eyeIcon.textContent = isPassword ? 'visibility' : 'visibility_off';
             });
         }
+
+        // Rate Limit JS handler
+        let lockoutSeconds = {{ $lockoutSeconds }};
+        if (lockoutSeconds > 0) {
+            setInterval(() => {
+                if (lockoutSeconds > 0) lockoutSeconds--;
+            }, 1000);
+        }
+
+        document.querySelector('form').addEventListener('submit', function(e) {
+            if (lockoutSeconds > 0) {
+                e.preventDefault();
+                showToast('Hệ thống đang khóa. Vui lòng đợi ' + lockoutSeconds + ' giây để thử lại.');
+            }
+        });
+
+        function showToast(message) {
+            const oldToast = document.getElementById('rate-limit-toast');
+            if (oldToast) oldToast.remove();
+
+            const toast = document.createElement('div');
+            toast.id = 'rate-limit-toast';
+            toast.className = 'fixed top-10 right-10 bg-red-600/90 backdrop-blur-md text-white px-6 py-4 rounded-2xl shadow-2xl z-50 font-medium flex items-center gap-3 transition-opacity duration-300';
+            toast.innerHTML = `<span class="material-symbols-outlined">timer</span> <span>${message}</span>`;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
     </script>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 
 </x-guest-layout>

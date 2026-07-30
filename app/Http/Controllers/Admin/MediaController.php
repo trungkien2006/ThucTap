@@ -102,7 +102,7 @@ class MediaController extends Controller
                 }
 
                 $ext = strtolower($file->getClientOriginalExtension());
-                $type = in_array($ext, ['mp4', 'avi', 'mov', 'wmv', 'mkv', 'webm']) ? 'video' : (in_array($ext, ['pdf', 'doc', 'docx']) ? 'document' : 'image');
+                $type = in_array($ext, ['mp4', 'avi', 'mov', 'wmv', 'mkv', 'webm']) ? 'video' : 'image';
                 
                 $event = \App\Models\Event::with('category')->find($request->event_id);
                 $categorySlug = $event && $event->category ? $event->category->slug : 'uncategorized';

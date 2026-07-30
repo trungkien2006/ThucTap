@@ -352,9 +352,9 @@
                 <div class="gw-story-left" style="padding-top: 0;">
                     <div class="gw-story-body">{!! nl2br(e($event->description)) !!}</div>
                     
-                    @if(!empty($event->qr_code_path))
+                    @if(!empty($event->registration_link))
                     <div style="margin-top: 24px; text-align: left;">
-                        <a href="{{ $event->qr_code_path }}" target="_blank" 
+                        <a href="{{ $event->registration_link }}" target="_blank" 
                            style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 32px; background: linear-gradient(to right, #f97316, #ea580c); color: white; font-weight: bold; border-radius: 8px; box-shadow: 0 4px 14px rgba(234, 88, 12, 0.3); text-decoration: none; text-transform: uppercase; font-family: 'DM Sans', sans-serif; transition: all 0.3s;"
                            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(234, 88, 12, 0.4)';"
                            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 14px rgba(234, 88, 12, 0.3)';">
@@ -390,13 +390,7 @@
                     @endif
 
 
-                    @if($block->action_url)
-                    <div style="margin-top:16px;">
-                        <a href="{{ $block->action_url }}" target="_blank" class="gw-btn">
-                            {{ $block->action_label ?? 'Truy cập liên kết' }}
-                        </a>
-                    </div>
-                    @endif
+
                 </div>
                 
                 <div class="gw-story-right">
@@ -541,3 +535,4 @@
 
 </script>
 @endpush
+

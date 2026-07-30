@@ -133,11 +133,7 @@
                             <div class="tp1-text">{!! $block->content !!}</div>
                         @endif
                         <div class="flex flex-wrap gap-2 mt-4">
-                            @if($block->action_url)
-                                <a href="{{ $block->action_url }}" target="_blank" class="inline-flex items-center gap-1 px-3 py-1.5 bg-slate-50 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-100 transition-colors border border-slate-200">
-                                    <span class="material-symbols-outlined text-[16px]">open_in_new</span> Liên kết
-                                </a>
-                            @endif
+
                         </div>
                     </div>
                 @else
@@ -149,11 +145,7 @@
                             <div class="tp1-text">{!! $block->content !!}</div>
                         @endif
                         <div class="flex flex-wrap gap-2 mt-4">
-                            @if($block->action_url)
-                                <a href="{{ $block->action_url }}" target="_blank" class="inline-flex items-center gap-1 px-3 py-1.5 bg-slate-50 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-100 transition-colors border border-slate-200">
-                                    <span class="material-symbols-outlined text-[16px]">open_in_new</span> Liên kết
-                                </a>
-                            @endif
+
                         </div>
                     </div>
                     <div class="tp1-img-col">

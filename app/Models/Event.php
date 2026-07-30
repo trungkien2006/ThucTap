@@ -137,11 +137,6 @@ class Event extends Model
 
 
 
-    public function documents()
-    {
-        return $this->hasMany(EventDocument::class);
-    }
-
     // ── Schedule & Speakers ────────────────────────────
 
     public function scheduleItems()

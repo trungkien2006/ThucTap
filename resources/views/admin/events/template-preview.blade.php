@@ -74,14 +74,7 @@
                 <div>
                     <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">Khai mạc sự kiện</h3>
                     <div class="tp1-text">Chương trình khai mạc với các tiết mục văn nghệ đặc sắc và phát biểu từ ban lãnh đạo.</div>
-                    <div class="flex flex-wrap gap-2 mt-4">
-                        <span class="inline-flex items-center gap-1 px-3 py-1.5 bg-orange-50 text-orange-600 rounded-lg text-sm font-medium border border-orange-100">
-                            <span class="material-symbols-outlined text-[16px]">download</span> Tài liệu
-                        </span>
-                        <span class="inline-flex items-center gap-1 px-3 py-1.5 bg-slate-50 text-slate-600 rounded-lg text-sm font-medium border border-slate-200">
-                            <span class="material-symbols-outlined text-[16px]">open_in_new</span> Liên kết
-                        </span>
-                    </div>
+
                 </div>
             </div>
 

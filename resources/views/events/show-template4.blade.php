@@ -756,9 +756,9 @@
             <div class="t4-body-text" style="{{ $descStyleStr }}">
                 {!! $event->description !!}
 
-                @if(!empty($event->qr_code_path))
+                @if(!empty($event->registration_link))
                 <div style="margin-top: 24px; text-align: center;">
-                    <a href="{{ $event->qr_code_path }}" target="_blank" 
+                    <a href="{{ $event->registration_link }}" target="_blank" 
                        style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 32px; background: linear-gradient(to right, #f97316, #ea580c); color: white; font-weight: bold; border-radius: 8px; box-shadow: 0 4px 14px rgba(234, 88, 12, 0.3); text-decoration: none; text-transform: uppercase; font-family: 'DM Sans', sans-serif; transition: all 0.3s;"
                        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(234, 88, 12, 0.4)';"
                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 14px rgba(234, 88, 12, 0.3)';">
@@ -794,11 +794,7 @@
                     </div>
                 @endif
 
-                @if(!empty($block->action_url))
-                    <div style="margin-top: 25px; text-align: center;">
-                        <a href="{{ $block->action_url }}" target="_blank" style="display: inline-block; padding: 10px 24px; background: var(--t4-gold); color: #fff; text-decoration: none; border-radius: 4px; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; font-size: 13px;">Chi tiết</a>
-                    </div>
-                @endif
+
             </div>
         </div>
         @endforeach
@@ -981,3 +977,4 @@
     }
 </script>
 @endsection
+

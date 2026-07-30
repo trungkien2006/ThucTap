@@ -20,10 +20,10 @@
                 </div>
             </div>
             <div class="flex items-center gap-2">
-                <button id="bulkDeleteBtn" onclick="bulkDeleteMedia()"
-                    class="hidden items-center justify-center rounded-md text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring bg-red-500 text-white shadow hover:bg-red-600 h-8 px-3 gap-1.5 w-fit hover:scale-[1.02] active:scale-[0.98] transition-all">
-                    <i data-lucide="trash-2" class="h-3.5 w-3.5"></i>
-                    Xóa (<span id="bulkDeleteCount">0</span>) mục
+                <button id="toggleBulkModeBtn" onclick="toggleBulkDeleteMode()"
+                    class="inline-flex items-center justify-center rounded-md text-xs font-medium transition-colors border border-border bg-background hover:bg-accent text-foreground h-8 px-3 gap-1.5 w-fit hover:scale-[1.02] active:scale-[0.98] transition-all">
+                    <i data-lucide="check-square" class="h-3.5 w-3.5" id="toggleBulkModeIcon"></i>
+                    <span id="toggleBulkModeText">Bắt đầu xóa hàng loạt</span>
                 </button>
                 <button onclick="document.getElementById('uploadMediaModal').classList.remove('hidden')"
                     class="inline-flex items-center justify-center rounded-md text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring bg-primary text-primary-foreground shadow hover:bg-primary/90 h-8 px-3 gap-1.5 w-fit hover:scale-[1.02] active:scale-[0.98] transition-all">
@@ -31,44 +31,47 @@
                     Tải ảnh/video lên
                 </button>
             </div>
+        </div>
 
         <div class="grid grid-cols-[1fr_260px] md:grid-cols-[1fr_320px] lg:grid-cols-[1fr_400px] xl:grid-cols-[1fr_480px] gap-4">
             {{-- Media Grid --}}
             <div class="space-y-3">
-                <form action="{{ route('admin.media.index') }}" method="GET" class="flex flex-wrap items-center gap-3 justify-between sm:justify-end mb-4 bg-background p-2 rounded-lg border border-border">
-                    <input type="hidden" name="event_id" value="{{ request('event_id') }}">
+                <div class="flex flex-wrap items-center justify-between mb-4 bg-background p-2 rounded-lg border border-border gap-3">
                     
-                    <div class="flex items-center gap-2 mr-auto sm:mr-0 pl-2">
+                    <div class="flex items-center gap-2 pl-2 hidden" id="selectAllContainer">
                         <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll(this)" class="w-4 h-4 rounded border-input text-primary focus:ring-primary cursor-pointer">
                         <label for="selectAllCheckbox" class="text-xs font-medium text-foreground cursor-pointer">Chọn tất cả</label>
                     </div>
 
-                    <div class="flex items-center gap-2">
-                        <div class="relative flex items-center shrink-0">
-                            <select name="per_page" onchange="this.form.submit()"
-                                class="h-9 pl-3 pr-8 w-32 rounded-lg border border-input text-xs bg-card appearance-none focus:outline-none focus:border-ring cursor-pointer transition-all shadow-sm">
-                                <option value="15" {{ request('per_page', '15') == '15' ? 'selected' : '' }}>15 mục/trang</option>
-                                <option value="30" {{ request('per_page') == '30' ? 'selected' : '' }}>30 mục/trang</option>
-                                <option value="60" {{ request('per_page') == '60' ? 'selected' : '' }}>60 mục/trang</option>
-                            </select>
-                            <i data-lucide="chevron-down" class="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none"></i>
+                    <form action="{{ route('admin.media.index') }}" method="GET" class="flex flex-wrap items-center gap-3 ml-auto">
+                        <input type="hidden" name="event_id" value="{{ request('event_id') }}">
+
+                        <div class="flex items-center gap-2">
+                            <div class="relative flex items-center shrink-0">
+                                <select name="per_page" onchange="this.form.submit()"
+                                    class="h-9 pl-3 pr-8 w-32 rounded-lg border border-input text-xs bg-card appearance-none focus:outline-none focus:border-ring cursor-pointer transition-all shadow-sm">
+                                    <option value="15" {{ request('per_page', '15') == '15' ? 'selected' : '' }}>15 mục/trang</option>
+                                    <option value="30" {{ request('per_page') == '30' ? 'selected' : '' }}>30 mục/trang</option>
+                                    <option value="60" {{ request('per_page') == '60' ? 'selected' : '' }}>60 mục/trang</option>
+                                </select>
+                                <i data-lucide="chevron-down" class="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none"></i>
+                            </div>
+                            
+                            <div class="relative flex items-center shrink-0">
+                                <select name="sort" onchange="this.form.submit()"
+                                    class="h-9 pl-3 pr-8 w-32 rounded-lg border border-input text-xs bg-card appearance-none focus:outline-none focus:border-ring cursor-pointer transition-all shadow-sm">
+                                    <option value="date_desc" {{ request('sort') === 'date_desc' ? 'selected' : '' }}>Mới nhất</option>
+                                    <option value="date_asc" {{ request('sort') === 'date_asc' ? 'selected' : '' }}>Cũ nhất</option>
+                                </select>
+                                <i data-lucide="chevron-down" class="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none"></i>
+                            </div>
                         </div>
-                        
-                        <div class="relative flex items-center shrink-0">
-                            <select name="sort" onchange="this.form.submit()"
-                                class="h-9 pl-3 pr-8 w-32 rounded-lg border border-input text-xs bg-card appearance-none focus:outline-none focus:border-ring cursor-pointer transition-all shadow-sm">
-                                <option value="date_desc" {{ request('sort') === 'date_desc' ? 'selected' : '' }}>Mới nhất</option>
-                            <option value="date_asc" {{ request('sort') === 'date_asc' ? 'selected' : '' }}>Cũ nhất</option>
-                        </select>
-                            </select>
-                            <i data-lucide="chevron-down" class="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none"></i>
-                        </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
 
                 <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2.5">
                     @forelse($media as $m)
-                        <div class="bg-card rounded-lg border border-border overflow-hidden shadow-sm hover:shadow-md transition-all group cursor-pointer media-item-card"
+                        <div class="bg-card rounded-lg border border-border overflow-hidden shadow-sm hover:shadow-md transition-all group cursor-pointer media-item-card relative"
                             data-url="{{ \App\Helpers\FileHelper::url($m->url) }}" data-type="{{ $m->type }}"
                             data-caption="{{ $m->caption ?? basename($m->url) }}"
                             data-created-at="{{ $m->created_at ? $m->created_at->diffForHumans() : '—' }}"
@@ -77,7 +80,7 @@
                                 class="aspect-square bg-gradient-to-br from-primary/20 via-primary/5 to-accent grid place-items-center relative overflow-hidden">
                                 
                                 <!-- Selection Checkbox -->
-                                <div class="absolute top-2 left-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-1 bg-black/30 backdrop-blur-sm rounded-md" onclick="event.stopPropagation()">
+                                <div class="media-checkbox-container hidden absolute top-2 left-2 z-20 flex items-center justify-center p-1 bg-black/40 backdrop-blur-sm rounded-md" onclick="event.stopPropagation()">
                                     <input type="checkbox" class="media-checkbox w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer shadow-sm" value="{{ $m->id }}" onchange="updateBulkDeleteUI()">
                                 </div>
                                 
@@ -85,8 +88,6 @@
                                     <img src="{{ \App\Helpers\FileHelper::url($m->url) }}" class="w-full h-full object-cover" alt="">
                                 @elseif($m->type === 'video')
                                     <i data-lucide="video" class="h-8 w-8 text-primary/60"></i>
-                                @elseif($m->type === 'document')
-                                    <i data-lucide="file-text" class="h-8 w-8 text-primary/60"></i>
                                 @endif
                             </div>
                             <div class="p-2">
@@ -258,7 +259,8 @@
             cards.forEach(card => {
                 card.addEventListener('click', function (e) {
                     // Ignore click if user clicked inside the delete button form of the card
-                    if (e.target.closest('form')) {
+                    // or if they clicked a checkbox
+                    if (e.target.closest('form') || e.target.closest('input[type="checkbox"]') || e.target.closest('.media-checkbox-container')) {
                         return;
                     }
 
@@ -329,6 +331,39 @@
         }
 
         // Bulk Delete Functions
+        let isBulkMode = false;
+
+        function toggleBulkDeleteMode() {
+            const selectedCount = document.querySelectorAll('.media-checkbox:checked').length;
+            if (isBulkMode && selectedCount > 0) {
+                // Execute delete if we're in delete state
+                bulkDeleteMedia();
+                return;
+            }
+
+            isBulkMode = !isBulkMode;
+            
+            // Toggle checkboxes visibility
+            document.querySelectorAll('.media-checkbox-container').forEach(c => {
+                if (isBulkMode) {
+                    c.classList.remove('hidden');
+                } else {
+                    c.classList.add('hidden');
+                    const cb = c.querySelector('input[type="checkbox"]');
+                    if (cb) cb.checked = false;
+                }
+            });
+
+            // Toggle select all container
+            const selectAllContainer = document.getElementById('selectAllContainer');
+            if (selectAllContainer) {
+                if (isBulkMode) selectAllContainer.classList.remove('hidden');
+                else selectAllContainer.classList.add('hidden');
+            }
+
+            updateBulkDeleteUI();
+        }
+
         function toggleSelectAll(checkbox) {
             const checkboxes = document.querySelectorAll('.media-checkbox');
             checkboxes.forEach(cb => {
@@ -346,15 +381,9 @@
             checkboxes.forEach(cb => {
                 if (cb.checked) {
                     selectedCount++;
-                    // Make checkbox container always visible when checked
-                    cb.parentElement.classList.remove('opacity-0');
-                    cb.parentElement.classList.add('opacity-100');
                     cb.closest('.media-item-card').classList.add('ring-2', 'ring-primary');
                 } else {
                     hasUnchecked = true;
-                    // Revert to hover state visibility
-                    cb.parentElement.classList.add('opacity-0');
-                    cb.parentElement.classList.remove('opacity-100');
                     cb.closest('.media-item-card').classList.remove('ring-2', 'ring-primary');
                 }
             });
@@ -368,15 +397,29 @@
                 selectAllCheckbox.checked = allChecked;
             }
 
-            const bulkBtn = document.getElementById('bulkDeleteBtn');
-            const bulkCount = document.getElementById('bulkDeleteCount');
+            const modeBtn = document.getElementById('toggleBulkModeBtn');
+            const modeText = document.getElementById('toggleBulkModeText');
+            const modeIcon = document.getElementById('toggleBulkModeIcon');
 
-            if (selectedCount > 0) {
-                bulkBtn.style.display = 'inline-flex';
-                bulkCount.textContent = selectedCount;
+            if (!isBulkMode) {
+                // Default state
+                modeBtn.className = "inline-flex items-center justify-center rounded-md text-xs font-medium transition-colors border border-border bg-background hover:bg-accent text-foreground h-8 px-3 gap-1.5 w-fit hover:scale-[1.02] active:scale-[0.98] transition-all";
+                modeText.innerText = "Bắt đầu xóa hàng loạt";
+                modeIcon.setAttribute('data-lucide', 'check-square');
             } else {
-                bulkBtn.style.display = 'none';
+                if (selectedCount > 0) {
+                    // Delete state
+                    modeBtn.className = "inline-flex items-center justify-center rounded-md text-xs font-medium transition-colors bg-red-500 text-white shadow hover:bg-red-600 h-8 px-3 gap-1.5 w-fit hover:scale-[1.02] active:scale-[0.98] transition-all";
+                    modeText.innerText = `Xóa hàng loạt (${selectedCount} ảnh)`;
+                    modeIcon.setAttribute('data-lucide', 'trash-2');
+                } else {
+                    // Cancel state
+                    modeBtn.className = "inline-flex items-center justify-center rounded-md text-xs font-medium transition-colors border border-border bg-background hover:bg-accent text-foreground h-8 px-3 gap-1.5 w-fit hover:scale-[1.02] active:scale-[0.98] transition-all";
+                    modeText.innerText = "Hủy thao tác";
+                    modeIcon.setAttribute('data-lucide', 'x');
+                }
             }
+            if (window.lucide) window.lucide.createIcons();
         }
 
         async function bulkDeleteMedia() {

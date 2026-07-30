@@ -122,7 +122,7 @@
         @endif
 
         <!-- Giới thiệu sự kiện -->
-        @if(!empty($event->description) || !empty($event->qr_code_path))
+        @if(!empty($event->description) || !empty($event->registration_link))
             <div class="tp1-card">
                 <h2 class="tp1-section-title">Giới thiệu sự kiện</h2>
                 
@@ -132,9 +132,9 @@
                 </div>
                 @endif
 
-                @if(!empty($event->qr_code_path))
+                @if(!empty($event->registration_link))
                 <div style="margin-top: 24px; text-align: left; padding-top: 16px; border-top: 1px solid #f1f5f9;">
-                    <a href="{{ $event->qr_code_path }}" target="_blank" 
+                    <a href="{{ $event->registration_link }}" target="_blank" 
                        style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 32px; background: linear-gradient(to right, #f97316, #ea580c); color: white; font-weight: bold; border-radius: 8px; box-shadow: 0 4px 14px rgba(234, 88, 12, 0.3); text-decoration: none; text-transform: uppercase; font-family: 'DM Sans', sans-serif; transition: all 0.3s;"
                        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(234, 88, 12, 0.4)';"
                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 14px rgba(234, 88, 12, 0.3)';">
@@ -169,11 +169,7 @@
                             <div class="tp1-text">{!! $block->content !!}</div>
                         @endif
                         <div class="flex flex-wrap gap-2 mt-4">
-                            @if($block->action_url)
-                                <a href="{{ $block->action_url }}" target="_blank" class="inline-flex items-center gap-1 px-3 py-1.5 bg-slate-50 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-100 transition-colors border border-slate-200">
-                                    <span class="material-symbols-outlined text-[16px]">open_in_new</span> Liên kết
-                                </a>
-                            @endif
+
                         </div>
                     </div>
                 @else
@@ -183,11 +179,7 @@
                             <div class="tp1-text">{!! $block->content !!}</div>
                         @endif
                         <div class="flex flex-wrap gap-2 mt-4">
-                            @if($block->action_url)
-                                <a href="{{ $block->action_url }}" target="_blank" class="inline-flex items-center gap-1 px-3 py-1.5 bg-slate-50 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-100 transition-colors border border-slate-200">
-                                    <span class="material-symbols-outlined text-[16px]">open_in_new</span> Liên kết
-                                </a>
-                            @endif
+
                         </div>
                     </div>
                     <div class="tp1-img-col">
@@ -482,3 +474,4 @@
 @include('components.event-fab-menu', ['event' => $event])
 
 @endsection
+

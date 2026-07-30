@@ -343,7 +343,7 @@ class EventController extends Controller
 
         if ($request->has('title') && !empty($request->title)) $event->title = $request->title;
         if ($request->has('description')) $event->description = $request->description;
-        if ($request->has('registration_link')) $event->qr_code_path = $request->registration_link;
+        if ($request->has('registration_link')) $event->registration_link = $request->registration_link;
         if ($request->has('location')) $event->location = $request->location;
         if ($request->has('academic_year')) $event->academic_year = $request->academic_year;
         if ($request->has('department_id')) $event->department_id = $request->department_id;
@@ -435,11 +435,8 @@ class EventController extends Controller
                 $raw_path = is_array($slot) ? ($slot['path'] ?? null) : null;
                 $caption = is_array($slot) ? ($slot['caption'] ?? '') : '';
                 $content = is_array($slot) ? ($slot['content'] ?? '') : '';
-                $document_url = is_array($slot) ? ($slot['document_url'] ?? '') : null;
-                $document_name = is_array($slot) ? ($slot['document_name'] ?? '') : null;
-                $action_url = is_array($slot) ? ($slot['action_url'] ?? '') : null;
 
-                if (empty($url) && empty($content) && empty($document_url) && empty($action_url)) continue;
+                if (empty($url) && empty($content)) continue;
                 
                 $path = $raw_path;
                 $type = 'text';
@@ -468,34 +465,11 @@ class EventController extends Controller
                     $type = in_array($ext, ['mp4', 'avi', 'mov', 'wmv', 'mkv', 'webm']) ? 'video' : 'image';
                 }
 
-                $doc_path = $document_url;
-                if (!empty($doc_path)) {
-                    if (strpos($doc_path, 'http://') === 0 || strpos($doc_path, 'https://') === 0) {
-                        $parsedDoc = parse_url($doc_path);
-                        if (isset($parsedDoc['query'])) {
-                            parse_str($parsedDoc['query'], $queryParams);
-                            $doc_path = $queryParams['path'] ?? null;
-                        }
-                        if (!$doc_path) {
-                            if (strpos($document_url, config('app.url')) === false && strpos($document_url, 'file/proxy') === false && strpos($document_url, Storage::url('')) === false) {
-                                $doc_path = $document_url;
-                            } else {
-                                $doc_path = str_replace(Storage::url(''), '', $parsedDoc['path'] ?? '');
-                            }
-                        }
-                    } else {
-                        $doc_path = $document_url;
-                    }
-                }
-                
                 $event->media()->create([
                     'type' => $type,
                     'url' => $path ?? '',
                     'caption' => $caption,
                     'content' => $content,
-                    'document_url' => $doc_path,
-                    'document_name' => $document_name,
-                    'action_url' => $action_url,
                     'is_banner' => false,
                 ]);
             }

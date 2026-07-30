@@ -767,9 +767,9 @@
             <div class="t3-section-body">
                 {!! $event->description !!}
 
-                @if(!empty($event->qr_code_path))
+                @if(!empty($event->registration_link))
                 <div style="margin-top: 24px; text-align: center;">
-                    <a href="{{ $event->qr_code_path }}" target="_blank" 
+                    <a href="{{ $event->registration_link }}" target="_blank" 
                        style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 32px; background: linear-gradient(to right, #f97316, #ea580c); color: white; font-weight: bold; border-radius: 8px; box-shadow: 0 4px 14px rgba(234, 88, 12, 0.3); text-decoration: none; text-transform: uppercase; font-family: 'DM Sans', sans-serif; transition: all 0.3s;"
                        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(234, 88, 12, 0.4)';"
                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 14px rgba(234, 88, 12, 0.3)';">
@@ -804,9 +804,7 @@
                                 <div style="color: var(--soft); font-size: 14.5px; line-height: 1.8;">{!! $block->content !!}</div>
                             @endif
                             <div class="flex flex-wrap gap-2 mt-4">
-                                @if($block->action_url)
-                                    <a href="{{ $block->action_url }}" target="_blank" class="t3-btn-primary" style="padding: 6px 14px; font-size: 12px; border-radius: 6px; text-decoration: none;">Liên kết</a>
-                                @endif
+
                             </div>
                         </div>
                     </div>
@@ -1046,3 +1044,4 @@
     }
 </script>
 @endpush
+

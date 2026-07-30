@@ -413,25 +413,14 @@
                                         </button>
                                     </div>
 
-                                    <input type="hidden" id="docFileUrl{{ $i }}" value="{{ $media ? $media->document_url : '' }}" />
-                                    <input type="hidden" id="docFileName{{ $i }}" value="{{ $media ? $media->document_name : '' }}" />
+                                    
+                                    
 
-                                    {{-- URL liên kết ngoài --}}
-                                    <div class="bg-white border border-slate-200 rounded-xl p-3.5 space-y-1">
-                                        <label class="text-[12px] font-bold text-slate-600 flex items-center gap-1">
-                                            <span class="material-symbols-outlined text-[16px] text-slate-500">link</span> Liên kết ngoài (URL)
-                                        </label>
-                                        <input type="text" id="actionUrl{{ $i }}" placeholder="Nhập link liên kết (VD: https://poly.edu.vn)..."
-                                               class="w-full text-[13px] px-3 py-1.5 bg-slate-50/50 border border-slate-200 rounded-lg focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all"
-                                               value="{{ $media ? $media->action_url : '' }}" oninput="syncData()" />
-                                    </div>
+
 
                                     {{-- Preview URL ngay dưới caption --}}
                                     <div class="mt-1 flex flex-wrap gap-2">
-                                        <div id="urlPreviewWrap{{ $i }}" class="flex items-center gap-1.5 bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg text-[12px] font-medium border border-blue-200/50 {{ $media && $media->action_url ? '' : 'hidden' }}">
-                                            <span class="material-symbols-outlined text-[16px]">open_in_new</span>
-                                            <span class="truncate max-w-[150px]" id="urlPreviewLink{{ $i }}">{{ $media ? $media->action_url : '' }}</span>
-                                        </div>
+                                        
                                     </div>
                                 </div>
                             </div>
@@ -1146,16 +1135,11 @@
             for (let i = 1; i <= 4; i++) {
                 const actionUrlEl = document.getElementById('actionUrl' + i);
                 if (!actionUrlEl) continue;
-                const actionUrlVal = actionUrlEl.value.trim();
+                
                 const urlPreviewWrap = document.getElementById('urlPreviewWrap' + i);
                 const urlPreviewLink = document.getElementById('urlPreviewLink' + i);
                 
-                if (actionUrlVal) {
-                    if (urlPreviewWrap) urlPreviewWrap.classList.remove('hidden');
-                    if (urlPreviewLink) urlPreviewLink.textContent = actionUrlVal;
-                } else {
-                    if (urlPreviewWrap) urlPreviewWrap.classList.add('hidden');
-                }
+                
             }
         }
 
@@ -1198,9 +1182,9 @@
                 const slot = document.getElementById('slot' + i);
                 const captionEl = document.getElementById('caption' + i);
                 const contentEl = document.getElementById('content' + i);
-                const docFileUrlVal = document.getElementById('docFileUrl' + i) ? document.getElementById('docFileUrl' + i).value : '';
-                const docFileNameVal = document.getElementById('docFileName' + i) ? document.getElementById('docFileName' + i).value : '';
-                const actionUrlVal = document.getElementById('actionUrl' + i) ? document.getElementById('actionUrl' + i).value : '';
+                
+                
+                
                 const mediaEl = slot ? slot.querySelector('img, video') : null;
                 
                 // For tinymce, get content properly if initialized
@@ -1209,15 +1193,15 @@
                     textContent = tinymce.get('content' + i).getContent();
                 }
 
-                if ((mediaEl && mediaEl.src) || (textContent && textContent.trim() !== '') || docFileUrlVal || actionUrlVal) {
+                if ((mediaEl && mediaEl.src) || (textContent && textContent.trim() !== '') ) {
                     formData.media_slots.push({
                         url: mediaEl && mediaEl.src ? mediaEl.src : '',
                         path: mediaEl ? mediaEl.getAttribute('data-path') : null,
                         caption: captionEl ? captionEl.value : '',
                         content: textContent,
-                        document_url: docFileUrlVal,
-                        document_name: docFileNameVal,
-                        action_url: actionUrlVal
+                        
+                        
+                        
                     });
                 }
             });
@@ -1369,8 +1353,8 @@
                         </button>
                     </div>
 
-                    <input type="hidden" id="docFileUrl${newI}" />
-                    <input type="hidden" id="docFileName${newI}" />
+                    
+                    
 
                     <div class="bg-white border border-slate-200 rounded-xl p-3.5 space-y-1">
                         <label class="text-[12px] font-bold text-slate-600 flex items-center gap-1">

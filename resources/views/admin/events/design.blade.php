@@ -132,7 +132,7 @@
 
                         <div>
                             <label class="uni-label">Link form đăng ký (Bỏ trống nếu không có)</label>
-                            <input type="text" id="inRegistrationLink" value="{{ $event->qr_code_path }}" oninput="syncData()" class="uni-input" placeholder="VD: https://docs.google.com/forms/..." />
+                            <input type="text" id="inRegistrationLink" value="{{ $event->registration_link }}" oninput="syncData()" class="uni-input" placeholder="VD: https://docs.google.com/forms/..." />
                         </div>
                     </div>
                 </div>
@@ -306,9 +306,9 @@
                             {{ $event->description }}
                         </p>
                         <div id="viewRegistrationBtnWrap" style="margin-top: 24px; text-align: left; padding-top: 16px; border-top: 1px solid #f1f5f9;">
-                            <span id="viewRegistrationBtn" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 32px; background: linear-gradient(to right, #f97316, #ea580c); color: white; font-weight: bold; border-radius: 8px; box-shadow: 0 4px 14px rgba(234, 88, 12, 0.3); text-decoration: none; text-transform: uppercase; font-family: 'DM Sans', sans-serif; transition: all 0.3s; cursor: default;" class="{{ empty($event->qr_code_path) ? 'opacity-50 grayscale' : '' }}">
+                            <span id="viewRegistrationBtn" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 32px; background: linear-gradient(to right, #f97316, #ea580c); color: white; font-weight: bold; border-radius: 8px; box-shadow: 0 4px 14px rgba(234, 88, 12, 0.3); text-decoration: none; text-transform: uppercase; font-family: 'DM Sans', sans-serif; transition: all 0.3s; cursor: default;" class="{{ empty($event->registration_link) ? 'opacity-50 grayscale' : '' }}">
                                 <span class="material-symbols-outlined" style="font-size: 20px;">how_to_reg</span>
-                                <span id="viewRegistrationText">{{ empty($event->qr_code_path) ? 'Chưa có link đăng ký (Nhấn để thêm)' : 'Đăng ký tham gia ngay' }}</span>
+                                <span id="viewRegistrationText">{{ empty($event->registration_link) ? 'Chưa có link đăng ký (Nhấn để thêm)' : 'Đăng ký tham gia ngay' }}</span>
                             </span>
                         </div>
                     </div>
@@ -417,8 +417,7 @@
                                            class="w-full text-[13px] px-3 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all"
                                            value="{{ $media ? $media->caption : '' }}" />
 
-                                    <input type="hidden" id="docFileUrl{{ $i }}" value="{{ $media ? $media->document_url : '' }}" />
-                                    <input type="hidden" id="docFileName{{ $i }}" value="{{ $media ? $media->document_name : '' }}" />
+
 
                                 </div>
                             </div>
@@ -1183,9 +1182,7 @@
                 const slot = document.getElementById('slot' + i);
                 const captionEl = document.getElementById('caption' + i);
                 const contentEl = document.getElementById('content' + i);
-                const docFileUrlVal = document.getElementById('docFileUrl' + i) ? document.getElementById('docFileUrl' + i).value : '';
-                const docFileNameVal = document.getElementById('docFileName' + i) ? document.getElementById('docFileName' + i).value : '';
-                const actionUrlVal = document.getElementById('actionUrl' + i) ? document.getElementById('actionUrl' + i).value : '';
+
                 const mediaEl = slot ? slot.querySelector('img, video') : null;
                 
                 // For tinymce, get content properly if initialized
@@ -1194,15 +1191,13 @@
                     textContent = tinymce.get('content' + i).getContent();
                 }
 
-                if ((mediaEl && mediaEl.src) || (textContent && textContent.trim() !== '') || docFileUrlVal || actionUrlVal) {
+                if ((mediaEl && mediaEl.src) || (textContent && textContent.trim() !== '')) {
                     formData.media_slots.push({
                         url: mediaEl && mediaEl.src ? mediaEl.src : '',
                         path: mediaEl ? mediaEl.getAttribute('data-path') : null,
                         caption: captionEl ? captionEl.value : '',
                         content: textContent,
-                        document_url: docFileUrlVal,
-                        document_name: docFileNameVal,
-                        action_url: actionUrlVal
+
                     });
                 }
             });
@@ -1355,8 +1350,7 @@
                     <input type="text" id="caption${newI}" placeholder="Nhập ghi chú / mô tả cho ảnh ${newI}..."
                            class="w-full text-[13px] px-3 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all" />
 
-                    <input type="hidden" id="docFileUrl${newI}" />
-                    <input type="hidden" id="docFileName${newI}" />
+
 
                 </div>
             </div>`;

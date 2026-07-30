@@ -88,8 +88,8 @@
                                   onsubmit="return confirmDelete(event, this, 'Bạn có chắc chắn muốn ẩn diễn giả này không?');">
                                 @csrf @method('DELETE')
                                 <button type="submit" 
-                                        class="h-7 w-7 rounded-md flex items-center justify-center text-muted-foreground hover:bg-red-50 hover:text-red-500 transition-all" title="Ẩn">
-                                    <i data-lucide="trash-2" class="h-3.5 w-3.5"></i>
+                                        class="h-7 w-7 rounded-md flex items-center justify-center text-muted-foreground hover:bg-orange-50 hover:text-orange-500 transition-all" title="Ẩn">
+                                    <i data-lucide="eye-off" class="h-3.5 w-3.5"></i>
                                 </button>
                             </form>
                         </div>

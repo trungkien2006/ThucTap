@@ -96,6 +96,15 @@
                 </div>
                 @error('location') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
             </div>
+            
+            <div class="mt-5">
+                <label class="uni-label" for="registration_link">Link đăng ký tham gia (Google Form...)</label>
+                <div class="relative">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-[18px]">link</span>
+                    <input class="uni-input pl-10" id="registration_link" name="registration_link" value="{{ old('registration_link') }}" type="url" placeholder="VD: https://docs.google.com/forms/..."/>
+                </div>
+                @error('registration_link') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
+            </div>
         </section>
 
         <!-- Section 3: Classification -->

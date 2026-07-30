@@ -129,6 +129,11 @@
                             <label class="uni-label">Mô tả tóm tắt</label>
                             <textarea id="inMoTa" rows="2" oninput="syncData()" class="uni-input">{{ $event->description }}</textarea>
                         </div>
+
+                        <div>
+                            <label class="uni-label">Link form đăng ký (Bỏ trống nếu không có)</label>
+                            <input type="text" id="inRegistrationLink" value="{{ $event->qr_code_path }}" oninput="syncData()" class="uni-input" placeholder="VD: https://docs.google.com/forms/..." />
+                        </div>
                     </div>
                 </div>
 
@@ -300,6 +305,12 @@
                         <p id="viewMoTa" class="text-slate-600 text-[14px] leading-relaxed whitespace-pre-line">
                             {{ $event->description }}
                         </p>
+                        <div id="viewRegistrationBtnWrap" style="margin-top: 24px; text-align: left; padding-top: 16px; border-top: 1px solid #f1f5f9;">
+                            <span id="viewRegistrationBtn" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 32px; background: linear-gradient(to right, #f97316, #ea580c); color: white; font-weight: bold; border-radius: 8px; box-shadow: 0 4px 14px rgba(234, 88, 12, 0.3); text-decoration: none; text-transform: uppercase; font-family: 'DM Sans', sans-serif; transition: all 0.3s; cursor: default;" class="{{ empty($event->qr_code_path) ? 'opacity-50 grayscale' : '' }}">
+                                <span class="material-symbols-outlined" style="font-size: 20px;">how_to_reg</span>
+                                <span id="viewRegistrationText">{{ empty($event->qr_code_path) ? 'Chưa có link đăng ký (Nhấn để thêm)' : 'Đăng ký tham gia ngay' }}</span>
+                            </span>
+                        </div>
                     </div>
 
                     <!-- Banner Phụ cho Mẫu 2 -->
@@ -409,23 +420,6 @@
                                     <input type="hidden" id="docFileUrl{{ $i }}" value="{{ $media ? $media->document_url : '' }}" />
                                     <input type="hidden" id="docFileName{{ $i }}" value="{{ $media ? $media->document_name : '' }}" />
 
-                                    {{-- URL liên kết ngoài --}}
-                                    <div class="bg-white border border-slate-200 rounded-xl p-3.5 space-y-1">
-                                        <label class="text-[12px] font-bold text-slate-600 flex items-center gap-1">
-                                            <span class="material-symbols-outlined text-[16px] text-slate-500">link</span> Liên kết ngoài (URL)
-                                        </label>
-                                        <input type="text" id="actionUrl{{ $i }}" placeholder="Nhập link liên kết (VD: https://poly.edu.vn)..."
-                                               class="w-full text-[13px] px-3 py-1.5 bg-slate-50/50 border border-slate-200 rounded-lg focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all"
-                                               value="{{ $media ? $media->action_url : '' }}" oninput="syncData()" />
-                                    </div>
-
-                                    {{-- Preview URL ngay dưới caption --}}
-                                    <div class="mt-1 flex flex-wrap gap-2">
-                                        <div id="urlPreviewWrap{{ $i }}" class="flex items-center gap-1.5 bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg text-[12px] font-medium border border-blue-200/50 {{ $media && $media->action_url ? '' : 'hidden' }}">
-                                            <span class="material-symbols-outlined text-[16px]">open_in_new</span>
-                                            <span class="truncate max-w-[150px]" id="urlPreviewLink{{ $i }}">{{ $media ? $media->action_url : '' }}</span>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                             @endfor
@@ -1119,6 +1113,19 @@
             const descEl = document.getElementById('viewMoTa');
             const inMoTa = document.getElementById('inMoTa');
             if (descEl && inMoTa) descEl.innerText = inMoTa.value;
+            
+            const viewRegBtn = document.getElementById('viewRegistrationBtn');
+            const viewRegText = document.getElementById('viewRegistrationText');
+            const inRegLink = document.getElementById('inRegistrationLink');
+            if (viewRegBtn && viewRegText && inRegLink) {
+                if (inRegLink.value.trim() !== '') {
+                    viewRegBtn.classList.remove('opacity-50', 'grayscale');
+                    viewRegText.innerText = 'Đăng ký tham gia ngay';
+                } else {
+                    viewRegBtn.classList.add('opacity-50', 'grayscale');
+                    viewRegText.innerText = 'Chưa có link đăng ký (Nhấn để thêm)';
+                }
+            }
 
             const viewLich = document.getElementById('viewLichHoatDong');
             const inLich = document.getElementById('inLichHoatDong');
@@ -1133,22 +1140,6 @@
                 const photoUrl = opt ? opt.getAttribute('data-photo') : null;
                 const viewAnh = document.getElementById('viewAnhDienGia');
                 if(photoUrl && viewAnh) viewAnh.src = photoUrl;
-            }
-
-            // Sync URL previews
-            for (let i = 1; i <= 4; i++) {
-                const actionUrlEl = document.getElementById('actionUrl' + i);
-                if (!actionUrlEl) continue;
-                const actionUrlVal = actionUrlEl.value.trim();
-                const urlPreviewWrap = document.getElementById('urlPreviewWrap' + i);
-                const urlPreviewLink = document.getElementById('urlPreviewLink' + i);
-                
-                if (actionUrlVal) {
-                    if (urlPreviewWrap) urlPreviewWrap.classList.remove('hidden');
-                    if (urlPreviewLink) urlPreviewLink.textContent = actionUrlVal;
-                } else {
-                    if (urlPreviewWrap) urlPreviewWrap.classList.add('hidden');
-                }
             }
         }
 
@@ -1175,6 +1166,7 @@
             const formData = {
                 title: document.getElementById('inTieuDe').value,
                 description: document.getElementById('inMoTa').value,
+                registration_link: document.getElementById('inRegistrationLink') ? document.getElementById('inRegistrationLink').value : '',
                 speaker_ids: speakerIds,
                 schedule_data: document.getElementById('inLichHoatDongData') ? document.getElementById('inLichHoatDongData').value : '[]',
                 
@@ -1366,21 +1358,6 @@
                     <input type="hidden" id="docFileUrl${newI}" />
                     <input type="hidden" id="docFileName${newI}" />
 
-                    <div class="bg-white border border-slate-200 rounded-xl p-3.5 space-y-1">
-                        <label class="text-[12px] font-bold text-slate-600 flex items-center gap-1">
-                            <span class="material-symbols-outlined text-[16px] text-slate-500">link</span> Liên kết ngoài (URL)
-                        </label>
-                        <input type="text" id="actionUrl${newI}" placeholder="Nhập link liên kết..."
-                               class="w-full text-[13px] px-3 py-1.5 bg-slate-50/50 border border-slate-200 rounded-lg focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all"
-                               oninput="syncData()" />
-                    </div>
-
-                    <div class="mt-1 flex flex-wrap gap-2">
-                        <div id="urlPreviewWrap${newI}" class="hidden flex items-center gap-1.5 bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg text-[12px] font-medium border border-blue-200/50">
-                            <span class="material-symbols-outlined text-[16px]">open_in_new</span>
-                            <span class="truncate max-w-[150px]" id="urlPreviewLink${newI}"></span>
-                        </div>
-                    </div>
                 </div>
             </div>`;
 

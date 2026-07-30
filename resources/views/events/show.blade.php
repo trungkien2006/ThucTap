@@ -122,12 +122,27 @@
         @endif
 
         <!-- Giới thiệu sự kiện -->
-        @if(!empty($event->description))
+        @if(!empty($event->description) || !empty($event->qr_code_path))
             <div class="tp1-card">
                 <h2 class="tp1-section-title">Giới thiệu sự kiện</h2>
+                
+                @if(!empty($event->description))
                 <div class="tp1-text text-left">
                     {!! nl2br(e($event->description)) !!}
                 </div>
+                @endif
+
+                @if(!empty($event->qr_code_path))
+                <div style="margin-top: 24px; text-align: left; padding-top: 16px; border-top: 1px solid #f1f5f9;">
+                    <a href="{{ $event->qr_code_path }}" target="_blank" 
+                       style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 32px; background: linear-gradient(to right, #f97316, #ea580c); color: white; font-weight: bold; border-radius: 8px; box-shadow: 0 4px 14px rgba(234, 88, 12, 0.3); text-decoration: none; text-transform: uppercase; font-family: 'DM Sans', sans-serif; transition: all 0.3s;"
+                       onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(234, 88, 12, 0.4)';"
+                       onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 14px rgba(234, 88, 12, 0.3)';">
+                        <span class="material-symbols-outlined" style="font-size: 20px;">how_to_reg</span>
+                        Đăng ký tham gia ngay
+                    </a>
+                </div>
+                @endif
             </div>
             @endif
 

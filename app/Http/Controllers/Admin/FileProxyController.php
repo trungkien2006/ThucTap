@@ -25,7 +25,7 @@ class FileProxyController extends Controller
             try {
                 $cacheKey = 'gdrive_url_' . md5($path);
                 $directUrl = \Illuminate\Support\Facades\Cache::rememberForever($cacheKey, function() use ($path) {
-                    return \Illuminate\Support\Facades\Storage::disk('google')->url($path);
+                    return \Illuminate\Support\Facades\Storage::disk('public')->url($path);
                 });
                 $fileContents = file_get_contents($directUrl);
                 $localDisk->put($path, $fileContents);
@@ -78,7 +78,7 @@ class FileProxyController extends Controller
                 try {
                     $cacheKey = 'gdrive_url_' . md5($path);
                     $directUrl = \Illuminate\Support\Facades\Cache::rememberForever($cacheKey, function() use ($path) {
-                        return \Illuminate\Support\Facades\Storage::disk('google')->url($path);
+                        return \Illuminate\Support\Facades\Storage::disk('public')->url($path);
                     });
                     $fileContents = file_get_contents($directUrl);
                 } catch (\Exception $e) {
@@ -146,7 +146,7 @@ class FileProxyController extends Controller
             try {
                 $cacheKey = 'gdrive_url_' . md5($path);
                 $directUrl = \Illuminate\Support\Facades\Cache::rememberForever($cacheKey, function() use ($path) {
-                    return \Illuminate\Support\Facades\Storage::disk('google')->url($path);
+                    return \Illuminate\Support\Facades\Storage::disk('public')->url($path);
                 });
                 $fileContents = file_get_contents($directUrl);
                 $localDisk->put($path, $fileContents);

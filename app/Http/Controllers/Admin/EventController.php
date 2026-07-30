@@ -173,7 +173,7 @@ class EventController extends Controller
         if ($request->hasFile('banner_image')) {
             $categorySlug = $event->category ? $event->category->slug : 'uncategorized';
             $folderPath = "{$categorySlug}/{$event->slug}/banners";
-            $path = $request->file('banner_image')->store($folderPath, 'google');
+            $path = $request->file('banner_image')->store($folderPath, 'public');
             $event->media()->create([
                 'type' => 'image',
                 'url' => $path,
@@ -343,6 +343,7 @@ class EventController extends Controller
 
         if ($request->has('title') && !empty($request->title)) $event->title = $request->title;
         if ($request->has('description')) $event->description = $request->description;
+        if ($request->has('registration_link')) $event->qr_code_path = $request->registration_link;
         if ($request->has('location')) $event->location = $request->location;
         if ($request->has('academic_year')) $event->academic_year = $request->academic_year;
         if ($request->has('department_id')) $event->department_id = $request->department_id;
@@ -603,7 +604,7 @@ class EventController extends Controller
             $categorySlug = $event->category ? $event->category->slug : 'uncategorized';
             $folderPath = "{$categorySlug}/{$event->slug}/banners";
             
-            $path = $request->file('banner_image')->store($folderPath, 'google');
+            $path = $request->file('banner_image')->store($folderPath, 'public');
             
             $event->media()->create([
                 'type' => 'image',
@@ -629,7 +630,7 @@ class EventController extends Controller
             $folderPath = "{$categorySlug}/{$event->slug}/media";
             
             foreach ($request->file('recap_images') as $file) {
-                $path = $file->store($folderPath, 'google');
+                $path = $file->store($folderPath, 'public');
                 
                 $ext = strtolower($file->getClientOriginalExtension());
                 $type = in_array($ext, ['mp4', 'avi', 'mov', 'wmv', 'mkv', 'webm']) ? 'video' : 'image';

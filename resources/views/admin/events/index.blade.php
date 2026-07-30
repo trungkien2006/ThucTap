@@ -37,8 +37,11 @@
     <div class="flex flex-col gap-4 pb-4 border-b border-border text-sm text-foreground mb-6">
         <form method="GET" action="{{ route('admin.events.index') }}" id="filterForm" class="flex flex-col gap-4 w-full">
             @php
-                $dbMinYear = \App\Models\Event::whereNotNull('event_date')->selectRaw('MIN(YEAR(event_date)) as min_year')->value('min_year') ?: 2015;
-                $dbMaxYear = \App\Models\Event::whereNotNull('event_date')->selectRaw('MAX(YEAR(event_date)) as max_year')->value('max_year') ?: date('Y');
+                $dbMinDate = \App\Models\Event::whereNotNull('event_date')->min('event_date');
+                $dbMaxDate = \App\Models\Event::whereNotNull('event_date')->max('event_date');
+                
+                $dbMinYear = $dbMinDate ? \Carbon\Carbon::parse($dbMinDate)->year : 2015;
+                $dbMaxYear = $dbMaxDate ? \Carbon\Carbon::parse($dbMaxDate)->year : date('Y');
                 
                 $minEventYear = request('year_start') ? min($dbMinYear, request('year_start')) : $dbMinYear;
                 $maxEventYear = request('year_end') ? max($dbMaxYear, request('year_end')) : $dbMaxYear;

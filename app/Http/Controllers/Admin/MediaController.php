@@ -147,7 +147,8 @@ class MediaController extends Controller
 
     public function destroy(EventMedia $medium)
     {
-        if (Storage::exists($medium->url)) {
+        $isUrl = str_starts_with($medium->url, 'http://') || str_starts_with($medium->url, 'https://');
+        if (!$isUrl && Storage::exists($medium->url)) {
             Storage::delete($medium->url);
         }
         $caption = $medium->caption;
@@ -167,7 +168,8 @@ class MediaController extends Controller
         $media = EventMedia::whereIn('id', $request->ids)->get();
         $count = 0;
         foreach ($media as $medium) {
-            if (Storage::exists($medium->url)) {
+            $isUrl = str_starts_with($medium->url, 'http://') || str_starts_with($medium->url, 'https://');
+            if (!$isUrl && Storage::exists($medium->url)) {
                 Storage::delete($medium->url);
             }
             $medium->delete();

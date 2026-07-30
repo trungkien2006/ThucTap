@@ -185,6 +185,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::resource('speakers', SpeakerController::class);
 
     // Media
+    Route::post('media/bulk-destroy', [MediaController::class, 'bulkDestroy'])->name('media.bulk_destroy');
     Route::resource('media', MediaController::class)->only(['index', 'store', 'destroy']);
 
     // Documents

@@ -23,7 +23,8 @@ class MediaController extends Controller
                 $query->orderBy('created_at', 'desc');
             }
 
-            $media = $query->paginate(24);
+            $perPage = $request->input('per_page', 15);
+            $media = $query->paginate($perPage)->withQueryString();
             return view('admin.media.show', compact('media', 'event'));
         }
 
@@ -56,8 +57,16 @@ class MediaController extends Controller
             $query->orderBy('created_at', 'desc');
         }
 
-        $albums = $query->paginate(24);
+        $view = $request->input('view', 'grid_5');
+        if ($view === 'grid_4') {
+            $perPage = 12;
+        } elseif ($view === 'grid_6') {
+            $perPage = 18;
+        } else {
+            $perPage = 15;
+        }
 
+        $albums = $query->paginate($perPage)->withQueryString();
         $totalAlbums = \App\Models\Event::count();
         $albumsThisMonth = \App\Models\Event::whereMonth('created_at', now()->month)
                                             ->whereYear('created_at', now()->year)
@@ -100,7 +109,7 @@ class MediaController extends Controller
                 $eventSlug = $event ? $event->slug : 'general';
                 $folderPath = "{$categorySlug}/{$eventSlug}/media";
 
-                $path = $file->store($folderPath, 'google');
+                $path = $file->store($folderPath, 'public');
 
                 $media = EventMedia::create([
                     'event_id' => $request->event_id,
@@ -147,5 +156,26 @@ class MediaController extends Controller
         ActivityLogger::log("đã xóa tệp media: {$caption}", route('admin.media.index'));
 
         return redirect()->back()->with('success', 'Đã xóa media thành công.');
+    }
+    public function bulkDestroy(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:event_medias,id'
+        ]);
+
+        $media = EventMedia::whereIn('id', $request->ids)->get();
+        $count = 0;
+        foreach ($media as $medium) {
+            if (Storage::exists($medium->url)) {
+                Storage::delete($medium->url);
+            }
+            $medium->delete();
+            $count++;
+        }
+
+        ActivityLogger::log("đã xóa hàng loạt {$count} tệp media", route('admin.media.index'));
+
+        return response()->json(['success' => true, 'message' => "Đã xóa {$count} tệp media thành công."]);
     }
 }

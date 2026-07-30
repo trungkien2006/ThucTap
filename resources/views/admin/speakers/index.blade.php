@@ -85,7 +85,7 @@
                                 <i data-lucide="pencil" class="h-3.5 w-3.5"></i>
                             </a>
                             <form action="{{ route('admin.speakers.destroy', $speaker) }}" method="POST" class="inline" 
-                                  onsubmit="return confirm('Bạn có chắc chắn muốn ẩn diễn giả này không?');">
+                                  onsubmit="return confirmDelete(event, this, 'Bạn có chắc chắn muốn ẩn diễn giả này không?');">
                                 @csrf @method('DELETE')
                                 <button type="submit" 
                                         class="h-7 w-7 rounded-md flex items-center justify-center text-muted-foreground hover:bg-red-50 hover:text-red-500 transition-all" title="Ẩn">

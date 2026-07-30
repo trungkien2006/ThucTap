@@ -86,4 +86,36 @@
         }
     });
 </script>
+<script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
+<script>
+    (function() {
+        async function compressImage(file) {
+            if (!file || !file.type.startsWith('image/')) return file;
+            const options = { maxSizeMB: 0.1, maxWidthOrHeight: 400, useWebWorker: true };
+            try {
+                return await imageCompression(file, options);
+            } catch (error) {
+                console.error(error);
+                return file;
+            }
+        }
+        function attachCompression(inputId) {
+            const input = document.getElementById(inputId);
+            if (!input || input.dataset.compressionAttached) return;
+            input.dataset.compressionAttached = 'true';
+            input.addEventListener('change', async function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const compressedFile = await compressImage(file);
+                    if (compressedFile !== file) {
+                        const dataTransfer = new DataTransfer();
+                        dataTransfer.items.add(new File([compressedFile], file.name, { type: compressedFile.type }));
+                        input.files = dataTransfer.files;
+                    }
+                }
+            });
+        }
+        attachCompression('photoInput');
+    })();
+</script>
 @endpush

@@ -56,7 +56,7 @@
                             </td>
                             <td class="p-4 text-xs text-muted-foreground">{{ $user->created_at->format('d/m/Y H:i') }}</td>
                             <td class="p-4 text-right">
-                                <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline-block" onsubmit="return confirm('Bạn có chắc chắn muốn xoá tài khoản này không? Mọi dữ liệu do họ tạo vẫn sẽ được giữ lại.');">
+                                <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline-block" onsubmit="return confirmDelete(event, this, 'Bạn có chắc chắn muốn xoá tài khoản này không? Mọi dữ liệu do họ tạo vẫn sẽ được giữ lại.');">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="inline-flex items-center justify-center rounded-md text-xs font-medium text-destructive hover:text-destructive hover:bg-destructive/10 h-8 px-3 transition-colors" title="Xoá tài khoản">

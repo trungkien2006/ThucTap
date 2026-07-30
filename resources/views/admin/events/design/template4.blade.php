@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>UniEvents | Studio — {{ $event->title }}</title>
+    <title>UniEvents | Studio — {{ $event->title }} | Mẫu 4</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,7 +16,10 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
-        body { background-color: #0f172a; }
+        body { background-color: #FCF9F2; }
+        /* Template 4 canvas: warm beige background */
+        .main-content-canvas { background: #FCF9F2; }
+        .main-content-canvas .uni-card { border-color: #EADEC9; }
 
         /* Active slot highlight */
         .media-slot.slot-active {
@@ -128,11 +131,6 @@
                         <div>
                             <label class="uni-label">Mô tả tóm tắt</label>
                             <textarea id="inMoTa" rows="2" oninput="syncData()" class="uni-input">{{ $event->description }}</textarea>
-                        </div>
-
-                        <div>
-                            <label class="uni-label">Link form đăng ký (Bỏ trống nếu không có)</label>
-                            <input type="text" id="inRegistrationLink" value="{{ $event->qr_code_path }}" oninput="syncData()" class="uni-input" placeholder="VD: https://docs.google.com/forms/..." />
                         </div>
                     </div>
                 </div>
@@ -305,38 +303,10 @@
                         <p id="viewMoTa" class="text-slate-600 text-[14px] leading-relaxed whitespace-pre-line">
                             {{ $event->description }}
                         </p>
-                        <div id="viewRegistrationBtnWrap" style="margin-top: 24px; text-align: left; padding-top: 16px; border-top: 1px solid #f1f5f9;">
-                            <span id="viewRegistrationBtn" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 32px; background: linear-gradient(to right, #f97316, #ea580c); color: white; font-weight: bold; border-radius: 8px; box-shadow: 0 4px 14px rgba(234, 88, 12, 0.3); text-decoration: none; text-transform: uppercase; font-family: 'DM Sans', sans-serif; transition: all 0.3s; cursor: default;" class="{{ empty($event->qr_code_path) ? 'opacity-50 grayscale' : '' }}">
-                                <span class="material-symbols-outlined" style="font-size: 20px;">how_to_reg</span>
-                                <span id="viewRegistrationText">{{ empty($event->qr_code_path) ? 'Chưa có link đăng ký (Nhấn để thêm)' : 'Đăng ký tham gia ngay' }}</span>
-                            </span>
-                        </div>
                     </div>
 
-                    <!-- Banner Phụ cho Mẫu 2 -->
-                    <div id="subBannerSection" class="uni-card p-6" style="{{ ($event->page_template ?? 1) == 2 ? '' : 'display: none;' }}">
-                        <div class="flex items-center justify-between mb-5 border-b border-slate-100 pb-3">
-                            <h3 class="text-[18px] font-bold text-brand-orange font-heading flex items-center gap-2">
-                                <span class="material-symbols-outlined">panorama</span> Banner ngang (Dành riêng Mẫu 2)
-                            </h3>
-                            <span class="text-[11px] text-slate-400">Ảnh trải dài hiển thị dưới giới thiệu sự kiện</span>
-                        </div>
-                        <div class="flex flex-col items-center justify-center gap-3 w-full">
-                            <div class="w-full relative h-[200px] bg-slate-50 border-2 border-dashed border-slate-300 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-brand-orange hover:bg-orange-50 transition-all group overflow-hidden" onclick="document.getElementById('subBannerFileInput').click()">
-                                <img id="viewSubBanner" src="{{ $event->subBannerImage ? \App\Helpers\FileHelper::url($event->subBannerImage->url) : '' }}" class="absolute inset-0 w-full h-full object-cover {{ $event->subBannerImage ? '' : 'hidden' }}">
-                                <div class="relative z-10 flex flex-col items-center text-slate-500 group-hover:text-brand-orange {{ $event->subBannerImage ? 'opacity-0 hover:opacity-100 bg-white/90 p-4 rounded-xl shadow-lg' : '' }} transition-all">
-                                    <span class="material-symbols-outlined text-[32px]">add_photo_alternate</span>
-                                    <span class="text-[13px] font-medium mt-1" id="subBannerUploadText">{{ $event->subBannerImage ? 'Thay đổi ảnh banner' : 'Tải ảnh banner lên' }}</span>
-                                </div>
-                            </div>
-                            <input type="text" id="inSubBannerUrl" readonly class="hidden" value="{{ $event->subBannerImage ? \App\Helpers\FileHelper::url($event->subBannerImage->url) : '' }}" />
-                            <input type="hidden" id="inSubBannerPath" value="{{ $event->subBannerImage ? $event->subBannerImage->url : '' }}" />
-                            <input type="file" id="subBannerFileInput" accept="image/*" class="hidden" onchange="uploadSubBanner(this)" />
-                            <div class="text-[13px] font-bold text-brand-orange hidden flex items-center gap-1.5" id="subBannerUploading">
-                                <span class="material-symbols-outlined animate-spin align-middle text-[18px]">sync</span> Đang tải lên...
-                            </div>
-                        </div>
-                    </div>
+                    {{-- Mẫu 1 không có Banner Phụ --}}
+                    <input type="hidden" id="inSubBannerPath" value="" />
 
                     <!-- Media Gallery -->
                     <div class="uni-card p-6">
@@ -347,43 +317,43 @@
                             <span class="text-[11px] text-slate-400">Nhập nội dung sự kiện và chọn ảnh minh hoạ</span>
                         </div>
 
-                        <div id="t5WarningMsg" class="hidden mb-4 bg-blue-50 text-blue-700 p-3 rounded-lg text-[13px] border border-blue-200">
-                            <span class="material-symbols-outlined align-middle mr-1 text-[18px]">info</span>
-                            <b>Mẫu 5:</b> Chỉ ô nội dung đầu tiên được dùng làm "Nội dung thiệp mời". Các ô bên dưới chỉ dùng ảnh (nội dung chữ sẽ bị ẩn để phù hợp thiệp mời).
+                        <div class="mb-4 bg-amber-50 text-amber-800 p-3 rounded-lg text-[13px] border border-amber-200">
+                            <span class="material-symbols-outlined align-middle mr-1 text-[18px]">history_edu</span>
+                            <b>Mẫu 4 — Vintage / Trịnh:</b> Bạn có thể thêm nhiều khối nội dung. Các ảnh và chữ sẽ hiển thị liên tiếp nhau trong phong cách thiết kế thiệp mời cổ điển.
                         </div>
 
                         <div class="space-y-6" id="mediaSlots">
-                            @php $galleryMedia = $event->galleryImages->take(4)->values(); @endphp
-                            @for($i = 1; $i <= 4; $i++)
+                            @php $galleryMedia = $event->galleryImages->values(); @endphp
+                            @if($galleryMedia->isEmpty())
+                                @php $galleryMedia = collect([null]); @endphp
+                            @endif
+
+                            @foreach($galleryMedia as $index => $media)
                             @php 
-                                $media = $galleryMedia->get($i - 1); 
+                                $i = $index + 1;
                                 $hasMedia = $media ? true : false;
-                                
-                                $templateId = $event->page_template ?? 1;
-                                $textOrder = '';
-                                $mediaOrder = '';
-                                
-                                if ($templateId == 1 || $templateId == 3) {
-                                    // Zic-Zac
-                                    if ($i % 2 != 0) {
-                                        // Odd: Image Left (order-1), Text Right (order-2)
-                                        $textOrder = 'lg:order-2';
-                                        $mediaOrder = 'lg:order-1';
-                                    } else {
-                                        // Even: Text Left (order-1), Image Right (order-2)
-                                        $textOrder = 'lg:order-1';
-                                        $mediaOrder = 'lg:order-2';
-                                    }
-                                } else {
-                                    // Template 2 (and others): Text Left, Image Right
-                                    $textOrder = 'lg:order-1';
-                                    $mediaOrder = 'lg:order-2';
+                                $textOrder = 'lg:order-1';
+                                $mediaOrder = 'lg:order-2';
+                                if ($i % 2 !== 0) {
+                                    $textOrder = 'lg:order-2';
+                                    $mediaOrder = 'lg:order-1';
                                 }
                             @endphp
-                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-slate-50/50 p-6 rounded-xl border border-slate-100 items-start media-slot-wrapper" data-slot-wrap="{{ $i }}">
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-slate-50/50 p-6 rounded-xl border border-slate-100 mt-6 items-start media-slot-wrapper" data-slot-wrap="{{ $i }}">
+                                {{-- Tiêu đề khối (Caption) --}}
+                                <div class="col-span-1 lg:col-span-2 mb-[-10px]">
+                                    <label class="text-[12px] font-bold text-slate-700 block mb-1.5 flex items-center gap-1.5">
+                                        <span class="material-symbols-outlined text-[16px] text-brand-orange">title</span> 
+                                        Tiêu đề khối nội dung (Tùy chọn hiển thị)
+                                    </label>
+                                    <input type="text" id="caption{{ $i }}" placeholder="Nhập tiêu đề cho khối này (VD: Lịch trình, Diễn giả...)"
+                                           class="w-full text-[14px] px-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all font-bold text-primary"
+                                           value="{{ $media ? $media->caption : '' }}" />
+                                </div>
+
                                 {{-- Column: Content --}}
                                 <div class="flex flex-col h-full w-full {{ $textOrder }} media-text-col">
-                                    <textarea id="content{{ $i }}" rows="8" placeholder="{{ $i == 1 ? 'Nhập nội dung sự kiện cho đoạn này...' : 'Nhập nội dung sự kiện cho đoạn này...' }}"
+                                    <textarea id="content{{ $i }}" rows="8" placeholder="Nhập nội dung sự kiện cho khối này..."
                                            class="w-full text-[14px] px-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all resize-y h-full" style="min-height: 250px;">{{ $media ? $media->content : '' }}</textarea>
                                 </div>
                                        
@@ -412,17 +382,30 @@
                                             <span class="material-symbols-outlined text-[16px]">delete</span>
                                         </button>
                                     </div>
-                                    {{-- Caption --}}
-                                    <input type="text" id="caption{{ $i }}" placeholder="Nhập ghi chú / mô tả cho ảnh {{ $i }}..."
-                                           class="w-full text-[13px] px-3 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all"
-                                           value="{{ $media ? $media->caption : '' }}" />
 
                                     <input type="hidden" id="docFileUrl{{ $i }}" value="{{ $media ? $media->document_url : '' }}" />
                                     <input type="hidden" id="docFileName{{ $i }}" value="{{ $media ? $media->document_name : '' }}" />
 
+                                    {{-- URL liên kết ngoài --}}
+                                    <div class="bg-white border border-slate-200 rounded-xl p-3.5 space-y-1">
+                                        <label class="text-[12px] font-bold text-slate-600 flex items-center gap-1">
+                                            <span class="material-symbols-outlined text-[16px] text-slate-500">link</span> Liên kết ngoài (URL)
+                                        </label>
+                                        <input type="text" id="actionUrl{{ $i }}" placeholder="Nhập link liên kết (VD: https://poly.edu.vn)..."
+                                               class="w-full text-[13px] px-3 py-1.5 bg-slate-50/50 border border-slate-200 rounded-lg focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all"
+                                               value="{{ $media ? $media->action_url : '' }}" oninput="syncData()" />
+                                    </div>
+
+                                    {{-- Preview URL ngay dưới caption --}}
+                                    <div class="mt-1 flex flex-wrap gap-2">
+                                        <div id="urlPreviewWrap{{ $i }}" class="flex items-center gap-1.5 bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg text-[12px] font-medium border border-blue-200/50 {{ $media && $media->action_url ? '' : 'hidden' }}">
+                                            <span class="material-symbols-outlined text-[16px]">open_in_new</span>
+                                            <span class="truncate max-w-[150px]" id="urlPreviewLink{{ $i }}">{{ $media ? $media->action_url : '' }}</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            @endfor
+                            @endforeach
                         </div>
                         <button onclick="addNewSlot()" class="mt-5 w-full py-2.5 border-2 border-dashed border-slate-300 hover:border-brand-orange text-slate-500 hover:text-brand-orange rounded-xl font-medium transition-colors flex items-center justify-center gap-2">
                             <span class="material-symbols-outlined text-[20px]">add_circle</span>
@@ -1113,19 +1096,6 @@
             const descEl = document.getElementById('viewMoTa');
             const inMoTa = document.getElementById('inMoTa');
             if (descEl && inMoTa) descEl.innerText = inMoTa.value;
-            
-            const viewRegBtn = document.getElementById('viewRegistrationBtn');
-            const viewRegText = document.getElementById('viewRegistrationText');
-            const inRegLink = document.getElementById('inRegistrationLink');
-            if (viewRegBtn && viewRegText && inRegLink) {
-                if (inRegLink.value.trim() !== '') {
-                    viewRegBtn.classList.remove('opacity-50', 'grayscale');
-                    viewRegText.innerText = 'Đăng ký tham gia ngay';
-                } else {
-                    viewRegBtn.classList.add('opacity-50', 'grayscale');
-                    viewRegText.innerText = 'Chưa có link đăng ký (Nhấn để thêm)';
-                }
-            }
 
             const viewLich = document.getElementById('viewLichHoatDong');
             const inLich = document.getElementById('inLichHoatDong');
@@ -1140,6 +1110,22 @@
                 const photoUrl = opt ? opt.getAttribute('data-photo') : null;
                 const viewAnh = document.getElementById('viewAnhDienGia');
                 if(photoUrl && viewAnh) viewAnh.src = photoUrl;
+            }
+
+            // Sync URL previews
+            for (let i = 1; i <= 4; i++) {
+                const actionUrlEl = document.getElementById('actionUrl' + i);
+                if (!actionUrlEl) continue;
+                const actionUrlVal = actionUrlEl.value.trim();
+                const urlPreviewWrap = document.getElementById('urlPreviewWrap' + i);
+                const urlPreviewLink = document.getElementById('urlPreviewLink' + i);
+                
+                if (actionUrlVal) {
+                    if (urlPreviewWrap) urlPreviewWrap.classList.remove('hidden');
+                    if (urlPreviewLink) urlPreviewLink.textContent = actionUrlVal;
+                } else {
+                    if (urlPreviewWrap) urlPreviewWrap.classList.add('hidden');
+                }
             }
         }
 
@@ -1166,7 +1152,6 @@
             const formData = {
                 title: document.getElementById('inTieuDe').value,
                 description: document.getElementById('inMoTa').value,
-                registration_link: document.getElementById('inRegistrationLink') ? document.getElementById('inRegistrationLink').value : '',
                 speaker_ids: speakerIds,
                 schedule_data: document.getElementById('inLichHoatDongData') ? document.getElementById('inLichHoatDongData').value : '[]',
                 
@@ -1320,19 +1305,24 @@
             });
             const newI = maxI + 1;
 
-            const templateId = document.getElementById('inEventTemplate') ? document.getElementById('inEventTemplate').value : '1';
+            // Template 1: Always Zic-Zac
             let textOrder = 'lg:order-1';
             let mediaOrder = 'lg:order-2';
-            
-            if (templateId == '1') {
-                if (newI % 2 !== 0) {
-                    textOrder = 'lg:order-2';
-                    mediaOrder = 'lg:order-1';
-                }
+            if (newI % 2 !== 0) {
+                textOrder = 'lg:order-2';
+                mediaOrder = 'lg:order-1';
             }
 
             const slotHtml = `
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-slate-50/50 p-6 rounded-xl border border-slate-100 mt-6 items-start media-slot-wrapper" data-slot-wrap="${newI}">
+                <div class="col-span-1 lg:col-span-2 mb-[-10px]">
+                    <label class="text-[12px] font-bold text-slate-700 block mb-1.5 flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-[16px] text-brand-orange">title</span> 
+                        Tiêu đề khối nội dung (Tùy chọn hiển thị)
+                    </label>
+                    <input type="text" id="caption${newI}" placeholder="Nhập tiêu đề cho khối này (VD: Lịch trình, Diễn giả...)"
+                           class="w-full text-[14px] px-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all font-bold text-primary" />
+                </div>
                 <div class="flex flex-col h-full w-full ${textOrder} media-text-col" ${templateId === '5' ? 'style="display:none;"' : ''}>
                     <textarea id="content${newI}" rows="8" placeholder="Nhập nội dung sự kiện cho đoạn này..."
                            class="w-full text-[14px] px-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all resize-y h-full" style="min-height: 250px;"></textarea>
@@ -1352,12 +1342,27 @@
                             <span class="material-symbols-outlined text-[16px]">delete</span>
                         </button>
                     </div>
-                    <input type="text" id="caption${newI}" placeholder="Nhập ghi chú / mô tả cho ảnh ${newI}..."
+                    <input type="text" id="caption${newI}" placeholder="Nhập tiêu đề (nếu có, để trống dùng mặc định)..."
                            class="w-full text-[13px] px-3 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all" />
 
                     <input type="hidden" id="docFileUrl${newI}" />
                     <input type="hidden" id="docFileName${newI}" />
 
+                    <div class="bg-white border border-slate-200 rounded-xl p-3.5 space-y-1">
+                        <label class="text-[12px] font-bold text-slate-600 flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[16px] text-slate-500">link</span> Liên kết ngoài (URL)
+                        </label>
+                        <input type="text" id="actionUrl${newI}" placeholder="Nhập link liên kết..."
+                               class="w-full text-[13px] px-3 py-1.5 bg-slate-50/50 border border-slate-200 rounded-lg focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition-all"
+                               oninput="syncData()" />
+                    </div>
+
+                    <div class="mt-1 flex flex-wrap gap-2">
+                        <div id="urlPreviewWrap${newI}" class="hidden flex items-center gap-1.5 bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg text-[12px] font-medium border border-blue-200/50">
+                            <span class="material-symbols-outlined text-[16px]">open_in_new</span>
+                            <span class="truncate max-w-[150px]" id="urlPreviewLink${newI}"></span>
+                        </div>
+                    </div>
                 </div>
             </div>`;
 

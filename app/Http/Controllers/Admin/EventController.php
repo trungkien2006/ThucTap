@@ -173,7 +173,7 @@ class EventController extends Controller
         if ($request->hasFile('banner_image')) {
             $categorySlug = $event->category ? $event->category->slug : 'uncategorized';
             $folderPath = "{$categorySlug}/{$event->slug}/banners";
-            $path = $request->file('banner_image')->store($folderPath, 'google');
+            $path = $request->file('banner_image')->store($folderPath, 'public');
             $event->media()->create([
                 'type' => 'image',
                 'url' => $path,
@@ -292,6 +292,14 @@ class EventController extends Controller
             ->orderBy('created_at', 'desc')
             ->take(3)
             ->get();
+
+        // Rule 5: Mỗi mẫu sự kiện có trang thiết kế riêng
+        $templateId = $event->page_template ?? 1;
+        $designViews = [1, 2, 3, 4];
+        if (in_array($templateId, $designViews)) {
+            return view("admin.events.design.template{$templateId}", compact('event', 'mediaLibrary', 'allSpeakers', 'featuredEvents'));
+        }
+
         return view('admin.events.design', compact('event', 'mediaLibrary', 'allSpeakers', 'featuredEvents'));
     }
 
@@ -335,6 +343,7 @@ class EventController extends Controller
 
         if ($request->has('title') && !empty($request->title)) $event->title = $request->title;
         if ($request->has('description')) $event->description = $request->description;
+        if ($request->has('registration_link')) $event->qr_code_path = $request->registration_link;
         if ($request->has('location')) $event->location = $request->location;
         if ($request->has('academic_year')) $event->academic_year = $request->academic_year;
         if ($request->has('department_id')) $event->department_id = $request->department_id;
@@ -595,7 +604,7 @@ class EventController extends Controller
             $categorySlug = $event->category ? $event->category->slug : 'uncategorized';
             $folderPath = "{$categorySlug}/{$event->slug}/banners";
             
-            $path = $request->file('banner_image')->store($folderPath, 'google');
+            $path = $request->file('banner_image')->store($folderPath, 'public');
             
             $event->media()->create([
                 'type' => 'image',
@@ -621,7 +630,7 @@ class EventController extends Controller
             $folderPath = "{$categorySlug}/{$event->slug}/media";
             
             foreach ($request->file('recap_images') as $file) {
-                $path = $file->store($folderPath, 'google');
+                $path = $file->store($folderPath, 'public');
                 
                 $ext = strtolower($file->getClientOriginalExtension());
                 $type = in_array($ext, ['mp4', 'avi', 'mov', 'wmv', 'mkv', 'webm']) ? 'video' : 'image';
@@ -670,6 +679,10 @@ class EventController extends Controller
         $event->delete();
 
         ActivityLogger::log("đã xóa sự kiện: {$eventTitle}", route('admin.events.index'));
+
+        if (request()->headers->get('referer') && strpos(request()->headers->get('referer'), route('admin.archive.index')) !== false) {
+            return redirect()->route('admin.archive.index')->with('success', 'Đã xóa sự kiện thành công.');
+        }
 
         return redirect()->route('admin.events.index')->with('success', 'Đã xóa sự kiện thành công.');
     }
@@ -784,8 +797,15 @@ class EventController extends Controller
                 return back()->with('error', 'Không tìm thấy hình ảnh/video nào trong thư mục. Đảm bảo thư mục đã được chia sẻ công khai "Anyone with the link".');
             }
 
-            // Remove existing recap media if any (or keep them, but since we are automating, we probably want to replace)
-            $event->media()->where('is_recap', true)->delete();
+            // Gỡ các ảnh cũ khỏi Google Drive trước khi thêm ảnh mới
+            $oldRecapMedia = $event->media()->where('is_recap', true)->get();
+            foreach ($oldRecapMedia as $media) {
+                // Nếu ảnh được lưu trực tiếp trên Google Drive của hệ thống (không phải link ngoài)
+                if (!str_starts_with($media->url, 'http') && \Illuminate\Support\Facades\Storage::exists($media->url)) {
+                    \Illuminate\Support\Facades\Storage::delete($media->url);
+                }
+                $media->delete();
+            }
 
             foreach ($files as $file) {
                 $type = str_contains($file->getMimeType(), 'video') ? 'video' : 'image';

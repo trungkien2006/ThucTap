@@ -148,6 +148,13 @@
                                     <a href="{{ route('admin.media.index', ['event_id' => $e->id]) }}" class="h-8 px-3 rounded-lg flex items-center justify-center bg-primary/10 hover:bg-primary/20 text-primary transition-all text-[12px] font-semibold" title="Xem thư viện media">
                                         <i data-lucide="images" class="h-4 w-4 mr-1.5"></i> Media
                                     </a>
+                                    <form action="{{ route('admin.events.destroy', $e->id) }}" method="POST" class="inline-block" onsubmit="return confirmDelete(event, this, 'Bạn có chắc chắn muốn xóa sự kiện này? Hành động này không thể hoàn tác.');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="h-8 px-3 rounded-lg flex items-center justify-center bg-red-500/10 hover:bg-red-500/20 text-red-600 transition-all text-[12px] font-semibold" title="Xóa sự kiện">
+                                            <i data-lucide="trash-2" class="h-4 w-4 mr-1.5"></i> Xóa
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                         </div>

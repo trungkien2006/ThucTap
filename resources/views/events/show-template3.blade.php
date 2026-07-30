@@ -95,61 +95,63 @@
 /* HERO */
 .t3-hero {
     background: var(--navy);
-    padding: 72px 48px 64px;
+    padding: 80px 64px 72px;
+    min-height: 480px;
     position: relative;
     overflow: hidden;
+    display: flex;
+    align-items: center;
 }
 .t3-hero::before {
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse 70% 80% at 80% 50%, rgba(29,78,216,.4) 0%, transparent 70%);
-}
-.t3-hero::after {
-    content: '';
-    position: absolute;
-    top: -80px;
-    right: -80px;
-    width: 400px;
-    height: 400px;
-    border-radius: 50%;
-    border: 1px solid rgba(255,255,255,.05);
+    background: radial-gradient(ellipse 60% 100% at 20% 50%, rgba(15,23,42,0.6) 0%, transparent 70%);
+    z-index: 1;
 }
 .t3-hero-inner {
     position: relative;
-    max-width: 800px;
+    max-width: 640px;
     z-index: 10;
 }
 .t3-hero-badge {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: rgba(29,78,216,.3);
-    border: 1px solid rgba(29,78,216,.5);
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    backdrop-filter: blur(10px);
     border-radius: 999px;
-    padding: 5px 14px;
+    padding: 6px 16px;
     font-size: 11px;
     font-weight: 700;
-    letter-spacing: .1em;
+    letter-spacing: .12em;
     text-transform: uppercase;
-    color: #93C5FD;
+    color: rgba(255,255,255,0.85);
     margin-bottom: 20px;
 }
 .t3-hero-badge span {
-    width: 6px;
-    height: 6px;
+    width: 7px;
+    height: 7px;
     background: #4ADE80;
     border-radius: 50%;
     display: block;
+    box-shadow: 0 0 6px #4ADE80;
+    animation: pulse-dot 2s infinite;
+}
+@keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(0.8); }
 }
 .t3-hero h1 {
     font-family: 'Playfair Display', serif;
-    font-size: clamp(32px, 4vw, 54px);
+    font-size: clamp(36px, 5vw, 62px);
     font-weight: 700;
     color: #fff;
-    line-height: 1.1;
+    line-height: 1.05;
     letter-spacing: -.02em;
     margin-bottom: 16px;
+    text-shadow: 0 2px 20px rgba(0,0,0,0.3);
 }
 .t3-hero h1 em {
     font-style: italic;
@@ -203,85 +205,106 @@
     background: #1e40af;
 }
 .t3-btn-outline {
-    background: rgba(255,255,255,.1);
+    background: rgba(255,255,255,.12);
     color: #fff;
-    border: 1.5px solid rgba(255,255,255,.25);
-    border-radius: 10px;
-    padding: 12px 24px;
+    border: 1.5px solid rgba(255,255,255,.3);
+    border-radius: 12px;
+    padding: 13px 28px;
     font-family: inherit;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
     text-decoration: none;
-    display: inline-block;
-    transition: all .15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all .2s;
+    backdrop-filter: blur(10px);
+    letter-spacing: 0.02em;
 }
 .t3-btn-outline:hover {
-    background: rgba(255,255,255,.18);
+    background: rgba(255,255,255,.22);
+    border-color: rgba(255,255,255,.5);
+    transform: translateY(-1px);
 }
 .t3-hero-stats {
     display: flex;
-    gap: 40px;
-    padding-top: 36px;
+    gap: 0;
+    padding-top: 32px;
     border-top: 1px solid rgba(255,255,255,.1);
     margin-top: 36px;
     flex-wrap: wrap;
 }
+.t3-hero-stats > div {
+    padding-right: 32px;
+    margin-right: 32px;
+    border-right: 1px solid rgba(255,255,255,.1);
+}
+.t3-hero-stats > div:last-child {
+    border-right: none;
+    margin-right: 0;
+    padding-right: 0;
+}
 .t3-stat-num {
     font-family: 'Playfair Display', serif;
-    font-size: 28px;
+    font-size: 30px;
     font-weight: 700;
     color: #fff;
     line-height: 1;
 }
 .t3-stat-label {
-    font-size: 11px;
-    color: rgba(255,255,255,.45);
+    font-size: 10.5px;
+    color: rgba(255,255,255,.4);
     text-transform: uppercase;
-    letter-spacing: .08em;
-    margin-top: 3px;
+    letter-spacing: .1em;
+    margin-top: 4px;
 }
 
 /* COUNTDOWN */
 .t3-countdown-bar {
-    background: var(--blue);
-    padding: 16px 48px;
+    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+    padding: 18px 48px;
     display: flex;
     align-items: center;
     gap: 32px;
     justify-content: center;
     flex-wrap: wrap;
+    border-top: 1px solid rgba(255,255,255,0.08);
 }
 .t3-cd-label {
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: .1em;
+    letter-spacing: .12em;
     color: rgba(255,255,255,.7);
 }
 .t3-cd-units {
     display: flex;
-    gap: 16px;
+    gap: 12px;
 }
 .t3-cd-unit {
     text-align: center;
 }
 .t3-cd-num {
-    background: rgba(0,0,0,.2);
+    background: rgba(255,255,255,0.15);
     color: #fff;
-    font-size: 22px;
+    font-size: 24px;
     font-weight: 800;
-    border-radius: 8px;
-    padding: 6px 14px;
+    border-radius: 10px;
+    padding: 8px 16px;
     display: block;
     line-height: 1;
+    min-width: 52px;
+    letter-spacing: -.01em;
+    border: 1px solid rgba(255,255,255,0.1);
 }
 .t3-cd-unit-label {
     font-size: 10px;
-    color: rgba(255,255,255,.6);
+    color: rgba(255,255,255,.55);
     text-transform: uppercase;
-    letter-spacing: .08em;
-    margin-top: 4px;
+    letter-spacing: .1em;
+    margin-top: 5px;
+    font-weight: 700;
 }
 
 /* CONTENT */
@@ -540,10 +563,9 @@
     color: #fff;
 }
 .t3-gallery-block {
-    display: grid;
-    grid-template-columns: 1.2fr 1fr;
-    gap: 24px;
-    align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 12px;
@@ -551,9 +573,6 @@
     backdrop-filter: blur(12px);
     box-shadow: 0 8px 32px rgba(30, 58, 138, 0.04);
     margin-top: 32px;
-}
-.t3-gallery-block.reverse {
-    grid-template-columns: 1fr 1.2fr;
 }
 .t3-gallery-media {
     width: 100%;
@@ -563,13 +582,9 @@
     border: 1px solid var(--border);
 }
 @media (max-width: 768px) {
-    .t3-gallery-block, .t3-gallery-block.reverse {
-        grid-template-columns: 1fr !important;
+    .t3-gallery-block {
         gap: 16px;
         padding: 16px;
-    }
-    .t3-gallery-media-col {
-        order: -1;
     }
 }
 </style>
@@ -621,34 +636,12 @@
         </div>
     </nav>
 
-    <div class="t3-hero" style="@if($event->bannerImage) background-image: linear-gradient(rgba(30,58,138,0.75), rgba(30,58,138,0.9)), url('{{ \App\Helpers\FileHelper::url($event->bannerImage->url) }}'); background-size: cover; background-position: center; @endif">
+    <div class="t3-hero" style="@if($event->bannerImage) background-image: linear-gradient(to right, rgba(5,15,50,0.85) 0%, rgba(20,50,130,0.55) 45%, rgba(10,30,80,0.1) 100%), url('{{ \App\Helpers\FileHelper::url($event->bannerImage->url) }}'); background-size: cover; background-position: center center; @endif">
         <div class="t3-hero-inner">
             <div class="t3-hero-badge">
                 <span></span> {{ $event->category ? $event->category->name : 'Sự kiện học đường' }}
             </div>
             <h1 style="{!! $titleStyleStr !!}">{!! nl2br(e($event->title)) !!}</h1>
-            <p class="t3-hero-sub" style="{!! $descStyleStr !!}">
-                {{ \Illuminate\Support\Str::limit(strip_tags($event->description), 200) }}
-            </p>
-            <div class="t3-hero-meta">
-                <div class="t3-hero-meta-item">
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-                    {{ $event->event_date->translatedFormat('l, d/m/Y') }}
-                </div>
-                <div class="t3-hero-meta-item">
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                    {{ $event->event_date->format('H:i') }} @if($event->end_date) — {{ $event->end_date->format('H:i') }} @endif
-                </div>
-                @if($event->location)
-                <div class="t3-hero-meta-item">
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                    {{ $event->location }}
-                </div>
-                @endif
-            </div>
-            <div class="t3-hero-actions">
-                <a href="#t3-schedule" class="t3-btn-outline">Xem chương trình</a>
-            </div>
             <div class="t3-hero-stats">
                 <div>
                     <div class="t3-stat-num">{{ $event->speakers->count() }}</div>
@@ -685,30 +678,65 @@
     <!-- Main Content Grid -->
     <div class="t3-content">
         <div class="t3-main-col">
-            <!-- Thông tin chi tiết ngang -->
-            <div style="display: flex; gap: 24px; flex-wrap: wrap; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px; margin-bottom: 40px; box-shadow: 0 8px 32px rgba(30, 58, 138, 0.04); backdrop-filter: blur(12px);">
-                <div class="t3-info-item" style="flex: 1; min-width: 200px;">
-                    <div class="t3-info-icon">📅</div>
-                    <div>
-                        <div class="t3-info-label">Thời gian</div>
-                        <div class="t3-info-value">{{ $event->event_date->format('d/m/Y') }}</div>
+            <!-- Premium Event Key Info Bar -->
+            <div style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); border: 1px solid #e2e8f0; border-radius: 20px; padding: 24px 32px; margin-bottom: 48px; box-shadow: 0 10px 30px -10px rgba(30, 58, 138, 0.06);">
+                <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 24px;">
+                    
+                    <!-- Item 1: Thời gian -->
+                    <div style="display: flex; align-items: center; gap: 16px; flex: 1; min-width: 240px;">
+                        <div style="width: 48px; height: 48px; border-radius: 14px; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: #ffffff; display: flex; justify-content: center; align-items: center; flex-shrink: 0; box-shadow: 0 6px 14px -3px rgba(59, 130, 246, 0.35);">
+                            <i data-lucide="calendar" style="width: 22px; height: 22px;"></i>
+                        </div>
+                        <div style="min-width: 0;">
+                            <span style="font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #2563eb; background: #eff6ff; padding: 2px 8px; border-radius: 5px; display: inline-block; margin-bottom: 4px;">Thời gian</span>
+                            <div style="font-size: 14.5px; font-weight: 700; color: #0f172a; line-height: 1.3;">
+                                {{ $event->event_date->translatedFormat('l, d/m/Y') }}
+                            </div>
+                            <div style="font-size: 12.5px; font-weight: 600; color: #475569; margin-top: 2px; display: flex; align-items: center; gap: 4px;">
+                                <i data-lucide="clock" style="width: 13px; height: 13px; color: #2563eb;"></i>
+                                {{ $event->event_date->format('H:i') }} @if($event->end_date) — {{ $event->end_date->format('H:i') }} @endif
+                            </div>
+                        </div>
                     </div>
-                </div>
-                @if($event->location)
-                <div class="t3-info-item" style="flex: 1; min-width: 200px;">
-                    <div class="t3-info-icon">📍</div>
-                    <div>
-                        <div class="t3-info-label">Địa điểm</div>
-                        <div class="t3-info-value">{{ $event->location }}</div>
+
+                    <div style="width: 1px; height: 40px; background: #e2e8f0;" class="hidden lg:block"></div>
+
+                    <!-- Item 2: Địa điểm -->
+                    @if($event->location)
+                    <div style="display: flex; align-items: center; gap: 16px; flex: 1; min-width: 200px;">
+                        <div style="width: 48px; height: 48px; border-radius: 14px; background: linear-gradient(135deg, #f43f5e 0%, #be123c 100%); color: #ffffff; display: flex; justify-content: center; align-items: center; flex-shrink: 0; box-shadow: 0 6px 14px -3px rgba(244, 63, 94, 0.35);">
+                            <i data-lucide="map-pin" style="width: 22px; height: 22px;"></i>
+                        </div>
+                        <div style="min-width: 0;">
+                            <span style="font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #e11d48; background: #fff1f2; padding: 2px 8px; border-radius: 5px; display: inline-block; margin-bottom: 4px;">Địa điểm</span>
+                            <div style="font-size: 14.5px; font-weight: 700; color: #0f172a; line-height: 1.3;">
+                                {{ $event->location }}
+                            </div>
+                            <div style="font-size: 12.5px; font-weight: 500; color: #64748b; margin-top: 2px;">
+                                Trực tiếp tại trường
+                            </div>
+                        </div>
                     </div>
-                </div>
-                @endif
-                <div class="t3-info-item" style="flex: 1; min-width: 200px;">
-                    <div class="t3-info-icon">🏷️</div>
-                    <div>
-                        <div class="t3-info-label">Danh mục</div>
-                        <div class="t3-info-value">{{ $event->category ? $event->category->name : 'Sự kiện trường' }}</div>
+
+                    <div style="width: 1px; height: 40px; background: #e2e8f0;" class="hidden lg:block"></div>
+                    @endif
+
+                    <!-- Item 3: Danh mục -->
+                    <div style="display: flex; align-items: center; gap: 16px; flex: 1; min-width: 200px;">
+                        <div style="width: 48px; height: 48px; border-radius: 14px; background: linear-gradient(135deg, #10b981 0%, #047857 100%); color: #ffffff; display: flex; justify-content: center; align-items: center; flex-shrink: 0; box-shadow: 0 6px 14px -3px rgba(16, 185, 129, 0.35);">
+                            <i data-lucide="layers" style="width: 22px; height: 22px;"></i>
+                        </div>
+                        <div style="min-width: 0;">
+                            <span style="font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #059669; background: #ecfdf5; padding: 2px 8px; border-radius: 5px; display: inline-block; margin-bottom: 4px;">Danh mục</span>
+                            <div style="font-size: 14.5px; font-weight: 700; color: #0f172a; line-height: 1.3;">
+                                {{ $event->category ? $event->category->name : 'Sự kiện học đường' }}
+                            </div>
+                            <div style="font-size: 12.5px; font-weight: 500; color: #64748b; margin-top: 2px;">
+                                Thể loại chính
+                            </div>
+                        </div>
                     </div>
+
                 </div>
             </div>
 
@@ -738,6 +766,18 @@
             <h2 class="t3-section-title">Về sự kiện này</h2>
             <div class="t3-section-body">
                 {!! $event->description !!}
+
+                @if(!empty($event->qr_code_path))
+                <div style="margin-top: 24px; text-align: center;">
+                    <a href="{{ $event->qr_code_path }}" target="_blank" 
+                       style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 32px; background: linear-gradient(to right, #f97316, #ea580c); color: white; font-weight: bold; border-radius: 8px; box-shadow: 0 4px 14px rgba(234, 88, 12, 0.3); text-decoration: none; text-transform: uppercase; font-family: 'DM Sans', sans-serif; transition: all 0.3s;"
+                       onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(234, 88, 12, 0.4)';"
+                       onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 14px rgba(234, 88, 12, 0.3)';">
+                        <span class="material-symbols-outlined" style="font-size: 20px;">how_to_reg</span>
+                        Đăng ký tham gia ngay
+                    </a>
+                </div>
+                @endif
             </div>
 
             <!-- Hoạt động nổi bật (Gallery Blocks) -->
@@ -747,56 +787,29 @@
                 <h2 class="t3-section-title">Nội dung chi tiết</h2>
                 <div>
                     @foreach($event->galleryImages as $index => $block)
-                    <div class="t3-gallery-block {{ $index % 2 == 1 ? 'reverse' : '' }}">
-                        @if($index % 2 == 0)
-                            <div>
-                                @if($block->caption)
-                                    <h3 style="font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; margin-bottom: 8px; color: var(--navy);">{{ $block->caption }}</h3>
+                    <div class="t3-gallery-block">
+                        <div class="t3-gallery-media-col">
+                            @if($block->url)
+                                @if($block->type === 'video')
+                                    <video src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="t3-gallery-media" autoplay loop muted playsinline controls></video>
+                                @else
+                                    <img src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="t3-gallery-media" alt="">
                                 @endif
-                                @if(!empty($block->content))
-                                    <div style="color: var(--soft); font-size: 13.5px; line-height: 1.7;">{!! $block->content !!}</div>
-                                @endif
-                                <div class="flex flex-wrap gap-2 mt-4">
-
-                                    @if($block->action_url)
-                                        <a href="{{ $block->action_url }}" target="_blank" class="t3-btn-primary" style="padding: 6px 14px; font-size: 12px; border-radius: 6px; text-decoration: none;">Liên kết</a>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="t3-gallery-media-col">
-                                @if($block->url)
-                                    @if($block->type === 'video')
-                                        <video src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="t3-gallery-media" autoplay loop muted playsinline controls></video>
-                                    @else
-                                        <img src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="t3-gallery-media" alt="">
-                                    @endif
+                            @endif
+                        </div>
+                        <div>
+                            @if($block->caption)
+                                <h3 style="font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; margin-bottom: 12px; color: var(--navy);">{{ $block->caption }}</h3>
+                            @endif
+                            @if(!empty($block->content))
+                                <div style="color: var(--soft); font-size: 14.5px; line-height: 1.8;">{!! $block->content !!}</div>
+                            @endif
+                            <div class="flex flex-wrap gap-2 mt-4">
+                                @if($block->action_url)
+                                    <a href="{{ $block->action_url }}" target="_blank" class="t3-btn-primary" style="padding: 6px 14px; font-size: 12px; border-radius: 6px; text-decoration: none;">Liên kết</a>
                                 @endif
                             </div>
-                        @else
-                            <div class="t3-gallery-media-col">
-                                @if($block->url)
-                                    @if($block->type === 'video')
-                                        <video src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="t3-gallery-media" autoplay loop muted playsinline controls></video>
-                                    @else
-                                        <img src="{{ \App\Helpers\FileHelper::url($block->url) }}" class="t3-gallery-media" alt="">
-                                    @endif
-                                @endif
-                            </div>
-                            <div>
-                                @if($block->caption)
-                                    <h3 style="font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; margin-bottom: 8px; color: var(--navy);">{{ $block->caption }}</h3>
-                                @endif
-                                @if(!empty($block->content))
-                                    <div style="color: var(--soft); font-size: 13.5px; line-height: 1.7;">{!! $block->content !!}</div>
-                                @endif
-                                <div class="flex flex-wrap gap-2 mt-4">
-
-                                    @if($block->action_url)
-                                        <a href="{{ $block->action_url }}" target="_blank" class="t3-btn-primary" style="padding: 6px 14px; font-size: 12px; border-radius: 6px; text-decoration: none;">Liên kết</a>
-                                    @endif
-                                </div>
-                            </div>
-                        @endif
+                        </div>
                     </div>
                     @endforeach
                 </div>
@@ -892,7 +905,39 @@
             </div>
             @endif
 
-            <!-- Điều hướng Sự kiện Trước / Sau -->
+                    <!-- Sự kiện liên quan -->
+        @if(isset($relatedEvents) && $relatedEvents->count() > 0)
+        <div class="mt-12 pt-8 border-t border-slate-200">
+            <h2 class="text-xl md:text-2xl font-bold text-slate-800 text-center mb-8 flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined text-[#f97316]">auto_awesome</span>
+                Sự kiện liên quan
+            </h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                @foreach($relatedEvents as $relEvent)
+                <a href="{{ route('events.show', $relEvent->slug) }}" class="group block rounded-2xl overflow-hidden bg-white border border-slate-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                    <div class="w-full aspect-video bg-slate-100 overflow-hidden relative">
+                        @if($relEvent->bannerImage)
+                            <img src="{{ \App\Helpers\FileHelper::url($relEvent->bannerImage->url) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        @else
+                            <div class="w-full h-full bg-slate-200 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-slate-400 text-4xl">image</span>
+                            </div>
+                        @endif
+                    </div>
+                    <div class="p-5 text-left">
+                        <h4 class="font-bold text-slate-800 group-hover:text-[#f97316] transition-colors line-clamp-2 text-[15px] leading-snug">{{ $relEvent->title }}</h4>
+                        <div class="mt-3 text-[13px] text-slate-500 flex items-center gap-1.5 font-medium">
+                            <span class="material-symbols-outlined text-[16px] text-slate-400">calendar_today</span>
+                            {{ $relEvent->event_date->format('d/m/Y') }}
+                        </div>
+                    </div>
+                </a>
+                @endforeach
+            </div>
+        </div>
+        @endif
+
+        <!-- Điều hướng Sự kiện Trước / Sau (chỉ dành cho kho lưu trữ) -->
             @if(isset($previousEvent) || isset($nextEvent))
             <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t border-slate-200">
                 <div>

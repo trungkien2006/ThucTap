@@ -92,14 +92,14 @@
                 <div class="h-1.5 w-8 rounded-full" style="background:#FFE381;"></div>
             </div>
             <h2 class="font-barlow-condensed text-4xl md:text-5xl lg:text-5xl font-black uppercase tracking-tight text-[#1C1410] drop-shadow-md">
-                Các sự kiện <span style="color:#07A0C3;">nổi bật</span>
+                Sự kiện <span style="color:#07A0C3;">sắp tới</span>
             </h2>
         </div>
 
         <div class="upcoming-vertical-stack">
             
             @if($hasEvents)
-                @foreach(array_slice($upcoming, 0, 5) as $idx => $u)
+                @foreach(array_slice($upcoming, 0, 3) as $idx => $u)
                     @php 
                         $img = !empty($u['images']) ? $u['images'][0] : (!empty($u['img']) ? $u['img'] : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1600&q=80');
                         $zIndex = $idx + 1;
@@ -118,16 +118,7 @@
 
 
 
-                                <!-- Dots -->
-                                <template x-if="images.length > 1">
-                                    <div class="absolute bottom-6 right-6 z-30 flex gap-2 pointer-events-auto">
-                                        <template x-for="(imgSrc, i) in images" :key="i">
-                                            <button @click.prevent.stop="active = i" 
-                                                    class="h-2 rounded-full transition-all duration-300 cursor-pointer"
-                                                    :class="active === i ? 'bg-[#FFC107] w-8' : 'bg-white/50 w-2 hover:bg-white/80'"></button>
-                                        </template>
-                                    </div>
-                                </template>
+
                                 
                                 <!-- Dark Hover Overlay -->
                                 <div class="absolute inset-0 bg-[#1C1410]/60 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-20"></div>
@@ -235,7 +226,7 @@
                 <div class="h-1 w-6 rounded-full" style="background:#FFE381;"></div>
             </div>
             <h2 class="font-barlow-condensed text-3xl font-black uppercase text-[#1C1410]">
-                Các sự kiện <span style="color:#07A0C3;">sắp diễn ra</span>
+                Sự kiện <span style="color:#07A0C3;">sắp tới</span>
             </h2>
         </div>
 

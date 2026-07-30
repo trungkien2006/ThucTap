@@ -104,7 +104,7 @@
         @endphp
 
         @if($hasRecap)
-        <div x-data="{ activeTab: 'info' }" class="w-full">
+        <div x-data="{ activeTab: 'info', lightboxOpen: false, lightboxSrc: '' }" class="w-full">
             <div style="display:flex; justify-content:center; gap:30px; margin: 30px auto; border-bottom:1px solid rgba(0,0,0,0.1); padding-bottom:0px; flex-wrap:wrap; max-width: 800px;">
                 <button @click="activeTab = 'info'" 
                         :style="activeTab === 'info' ? 'border-bottom: 2px solid #f97316; color: #f97316; font-weight: 600;' : 'color: #64748b; font-weight: 500;'"
@@ -122,12 +122,27 @@
         @endif
 
         <!-- Giới thiệu sự kiện -->
-        @if(!empty($event->description))
+        @if(!empty($event->description) || !empty($event->qr_code_path))
             <div class="tp1-card">
                 <h2 class="tp1-section-title">Giới thiệu sự kiện</h2>
+                
+                @if(!empty($event->description))
                 <div class="tp1-text text-left">
                     {!! nl2br(e($event->description)) !!}
                 </div>
+                @endif
+
+                @if(!empty($event->qr_code_path))
+                <div style="margin-top: 24px; text-align: left; padding-top: 16px; border-top: 1px solid #f1f5f9;">
+                    <a href="{{ $event->qr_code_path }}" target="_blank" 
+                       style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 32px; background: linear-gradient(to right, #f97316, #ea580c); color: white; font-weight: bold; border-radius: 8px; box-shadow: 0 4px 14px rgba(234, 88, 12, 0.3); text-decoration: none; text-transform: uppercase; font-family: 'DM Sans', sans-serif; transition: all 0.3s;"
+                       onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(234, 88, 12, 0.4)';"
+                       onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 14px rgba(234, 88, 12, 0.3)';">
+                        <span class="material-symbols-outlined" style="font-size: 20px;">how_to_reg</span>
+                        Đăng ký tham gia ngay
+                    </a>
+                </div>
+                @endif
             </div>
             @endif
 
@@ -270,6 +285,7 @@
         @endif
 
 
+
         
         @if($hasRecap)
             </div>
@@ -278,13 +294,28 @@
             <div x-show="activeTab === 'images'" class="tab-content-images" style="display: none; width: 100%; margin-top: 2rem;">
                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-4 max-w-[1140px] mx-auto mb-8">
                     @foreach($recapImages as $img)
-                    <div class="aspect-square relative rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all group cursor-pointer bg-slate-100">
+                    <div @click="lightboxSrc = '{{ \App\Helpers\FileHelper::url($img->url) }}'; lightboxOpen = true" 
+                         class="aspect-square relative rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all group cursor-pointer bg-slate-100">
                         <img src="{{ \App\Helpers\FileHelper::url($img->url) }}" 
                              alt="{{ $img->caption ?? 'Hình ảnh sự kiện' }}" 
                              class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                            <span class="material-symbols-outlined text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-md text-3xl">zoom_in</span>
+                        </div>
                     </div>
                     @endforeach
                 </div>
+            </div>
+
+            <!-- Lightbox Modal -->
+            <div x-show="lightboxOpen" 
+                 x-transition.opacity
+                 class="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-4 backdrop-blur-sm"
+                 style="display: none;">
+                <button @click="lightboxOpen = false" class="absolute top-6 right-6 text-white hover:text-gray-300 transition-colors p-2 z-[101]">
+                    <span class="material-symbols-outlined text-4xl drop-shadow-md">close</span>
+                </button>
+                <img :src="lightboxSrc" class="max-w-full max-h-full object-contain rounded-lg shadow-2xl" @click.away="lightboxOpen = false">
             </div>
         </div>
         @endif
@@ -312,7 +343,39 @@
             </button>
         </div>
         
-        <!-- Điều hướng Sự kiện Trước / Sau -->
+                <!-- Sự kiện liên quan -->
+        @if(isset($relatedEvents) && $relatedEvents->count() > 0)
+        <div class="mt-12 pt-8 border-t border-slate-200">
+            <h2 class="text-xl md:text-2xl font-bold text-slate-800 text-center mb-8 flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined text-[#f97316]">auto_awesome</span>
+                Sự kiện liên quan
+            </h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                @foreach($relatedEvents as $relEvent)
+                <a href="{{ route('events.show', $relEvent->slug) }}" class="group block rounded-2xl overflow-hidden bg-white border border-slate-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                    <div class="w-full aspect-video bg-slate-100 overflow-hidden relative">
+                        @if($relEvent->bannerImage)
+                            <img src="{{ \App\Helpers\FileHelper::url($relEvent->bannerImage->url) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        @else
+                            <div class="w-full h-full bg-slate-200 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-slate-400 text-4xl">image</span>
+                            </div>
+                        @endif
+                    </div>
+                    <div class="p-5 text-left">
+                        <h4 class="font-bold text-slate-800 group-hover:text-[#f97316] transition-colors line-clamp-2 text-[15px] leading-snug">{{ $relEvent->title }}</h4>
+                        <div class="mt-3 text-[13px] text-slate-500 flex items-center gap-1.5 font-medium">
+                            <span class="material-symbols-outlined text-[16px] text-slate-400">calendar_today</span>
+                            {{ $relEvent->event_date->format('d/m/Y') }}
+                        </div>
+                    </div>
+                </a>
+                @endforeach
+            </div>
+        </div>
+        @endif
+
+        <!-- Điều hướng Sự kiện Trước / Sau (chỉ dành cho kho lưu trữ) -->
         @if(isset($previousEvent) || isset($nextEvent))
         <div class="mt-8 grid grid-cols-2 gap-4 md:gap-8 pt-8 border-t border-slate-200">
             <div>

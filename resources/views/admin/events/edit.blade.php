@@ -53,12 +53,12 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
                     <label class="uni-label" for="event_date">Ngày & Giờ bắt đầu <span class="text-red-400">*</span></label>
-                    <input class="uni-input" id="event_date" name="event_date" value="{{ old('event_date', $event->event_date->format('Y-m-d\TH:i')) }}" required type="datetime-local"/>
+                    <input class="uni-input" id="event_date" name="event_date" value="{{ old('event_date', $event->event_date->format('Y-m-d\TH:i')) }}" required type="datetime-local" placeholder="Chọn ngày và giờ bắt đầu..."/>
                     @error('event_date') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
                 </div>
                 <div>
                     <label class="uni-label" for="end_date">Ngày & Giờ kết thúc (tùy chọn)</label>
-                    <input class="uni-input" id="end_date" name="end_date" value="{{ old('end_date', $event->end_date ? $event->end_date->format('Y-m-d\TH:i') : '') }}" type="datetime-local"/>
+                    <input class="uni-input" id="end_date" name="end_date" value="{{ old('end_date', $event->end_date ? $event->end_date->format('Y-m-d\TH:i') : '') }}" type="datetime-local" placeholder="Chọn ngày và giờ kết thúc (Tùy chọn)..."/>
                     @error('end_date') <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p> @enderror
                 </div>
             </div>
@@ -601,6 +601,75 @@
         });
     }
 
-
+    function initDatePicker() {
+        if (typeof flatpickr !== 'undefined') {
+            flatpickr("#event_date, #end_date", {
+                enableTime: true,
+                dateFormat: "Y-m-d\\TH:i",
+                altInput: true,
+                altFormat: "d/m/Y H:i",
+                time_24hr: true,
+                locale: "vn"
+            });
+        } else {
+            setTimeout(initDatePicker, 50);
+        }
+    }
+    initDatePicker();
 </script>
 @endpush
+
+@push('styles')
+<link rel="stylesheet" href="https://npmcdn.com/flatpickr/dist/themes/material_blue.css">
+<style>
+    /* Adjust flatpickr styles for better visibility */
+    .flatpickr-calendar {
+        font-family: 'Inter', sans-serif;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important;
+        border: 1px solid #e2e8f0;
+        z-index: 9999 !important; /* Ensure it stays above other elements */
+    }
+    .flatpickr-time input {
+        font-size: 14px !important;
+    }
+</style>
+@endpush
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://npmcdn.com/flatpickr/dist/l10n/vn.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
+<script>
+    (function() {
+        async function compressImage(file, maxWidthOrHeight = 400) {
+            if (!file || !file.type.startsWith('image/')) return file;
+            const options = { maxSizeMB: 0.3, maxWidthOrHeight: maxWidthOrHeight, useWebWorker: true };
+            try {
+                return await imageCompression(file, options);
+            } catch (error) {
+                console.error(error);
+                return file;
+            }
+        }
+        function attachCompression(inputId, maxWidthOrHeight) {
+            const input = document.getElementById(inputId);
+            if (!input || input.dataset.compressionAttached) return;
+            input.dataset.compressionAttached = 'true';
+            input.addEventListener('change', async function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const compressedFile = await compressImage(file, maxWidthOrHeight);
+                    if (compressedFile !== file) {
+                        const dataTransfer = new DataTransfer();
+                        dataTransfer.items.add(new File([compressedFile], file.name, { type: compressedFile.type }));
+                        input.files = dataTransfer.files;
+                    }
+                }
+            });
+        }
+        attachCompression('new_speaker_photo', 400);
+        attachCompression('banner_image', 1200);
+    })();
+</script>
+@endpush
+

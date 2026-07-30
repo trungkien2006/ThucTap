@@ -54,6 +54,14 @@
             <h2 class="tp1-section-title">Giới thiệu sự kiện</h2>
             <p class="tp1-text">Trí tuệ nhân tạo (AI) đang định hình lại mọi khía cạnh của cuộc sống và công việc. Hội thảo "Trí tuệ nhân tạo tương lai" mang đến góc nhìn sâu sắc về các xu hướng AI đột phá nhất trong thập kỷ tới. Đây là cơ hội để các nhà nghiên cứu, kỹ sư và doanh nghiệp cùng thảo luận về cách AI tạo ra các giá trị bền vững và giải quyết những thách thức toàn cầu.</p>
             <p class="tp1-text">Tham gia cùng chúng tôi để lắng nghe chia sẻ từ các chuyên gia hàng đầu, trải nghiệm các demo công nghệ trực tiếp và mở rộng mạng lưới quan hệ trong một môi trường sáng tạo và chuyên nghiệp.</p>
+            
+            <div style="margin-top: 24px; text-align: left; padding-top: 16px; border-top: 1px solid #f1f5f9;">
+                <a href="#" class="pointer-events-none" 
+                   style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 32px; background: linear-gradient(to right, #f97316, #ea580c); color: white; font-weight: bold; border-radius: 8px; box-shadow: 0 4px 14px rgba(234, 88, 12, 0.3); text-decoration: none; text-transform: uppercase; font-family: 'DM Sans', sans-serif; transition: all 0.3s;">
+                    <span class="material-symbols-outlined" style="font-size: 20px;">how_to_reg</span>
+                    Đăng ký tham gia ngay
+                </a>
+            </div>
         </div>
         
         <div class="tp1-card">
@@ -1420,6 +1428,63 @@
     font-size: 10px;
     color: #786F66;
 }
+/* ─── CALENDAR PAGE ─── */
+.t4p-full-calendar {
+    max-width: 340px;
+    margin: 24px auto 0;
+    background: #FFFFFF;
+    border-radius: 12px;
+    border: 1px solid #EADEC9;
+    padding: 16px;
+    box-shadow: 0 4px 15px rgba(44, 37, 32, 0.03);
+}
+.t4p-cal-header {
+    text-align: center;
+    font-weight: 700;
+    color: #D97706;
+    margin-bottom: 12px;
+    font-size: 14px;
+    text-transform: uppercase;
+}
+.t4p-cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    text-align: center;
+}
+.t4p-cal-day-name {
+    font-size: 11px;
+    font-weight: 700;
+    color: #786F66;
+    margin-bottom: 8px;
+}
+.t4p-cal-day {
+    aspect-ratio: 1/1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    border-radius: 50%;
+    color: #2C2520;
+}
+.t4p-cal-day.empty {
+    visibility: hidden;
+}
+.t4p-cal-day.event-day {
+    background: #D97706;
+    color: #FFF;
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(217, 119, 6, 0.3);
+}
+.t4p-cal-day.today {
+    border: 2px solid #D97706;
+    font-weight: 700;
+    color: #D97706;
+}
+.t4p-cal-day.today.event-day {
+    background: #D97706;
+    color: #FFF;
+}
 .t4p-input {
     width: 100%;
     padding: 10px 14px;
@@ -1499,24 +1564,52 @@
         </div>
 
         <div class="t4p-card">
-            <div class="t4p-date-highlight">- 2049.06.30 -</div>
-            <div class="t4p-body-text" style="font-style: italic;">
-                "Rồi chúng ta cũng sẽ hòa vào biển người, mỗi người đều có phong ba và rực rỡ riêng. Chúc cho chặng đường tới, hoa nở như gấm, ngày gặp lại vẫn như xưa."
-            </div>
-        </div>
-
-        <div class="t4p-card">
-            <div class="t4p-sec-title">Trân trọng kính mời</div>
-            <div class="t4p-body-text">
-                <strong style="color: #D97706;">Kính gửi quý thầy cô và các bạn cựu sinh viên</strong>
-                <div class="mt-2">
-                    Lễ tốt nghiệp là cột mốc khép lại hành trình rực rỡ của những năm tháng thanh xuân dưới mái trường thân yêu, đồng thời mở ra cánh cửa tương lai đầy hứa hẹn.
+            <div class="t4p-sec-title">Thời gian & Địa điểm</div>
+            
+            <div class="t4p-full-calendar">
+                <div class="t4p-cal-header">Tháng 06, 2049</div>
+                <div class="t4p-cal-grid">
+                    <div class="t4p-cal-day-name">T2</div>
+                    <div class="t4p-cal-day-name">T3</div>
+                    <div class="t4p-cal-day-name">T4</div>
+                    <div class="t4p-cal-day-name">T5</div>
+                    <div class="t4p-cal-day-name">T6</div>
+                    <div class="t4p-cal-day-name">T7</div>
+                    <div class="t4p-cal-day-name">CN</div>
+                    <div class="t4p-cal-day empty"></div>
+                    <div class="t4p-cal-day">1</div>
+                    <div class="t4p-cal-day">2</div>
+                    <div class="t4p-cal-day">3</div>
+                    <div class="t4p-cal-day">4</div>
+                    <div class="t4p-cal-day">5</div>
+                    <div class="t4p-cal-day">6</div>
+                    <div class="t4p-cal-day">7</div>
+                    <div class="t4p-cal-day">8</div>
+                    <div class="t4p-cal-day">9</div>
+                    <div class="t4p-cal-day">10</div>
+                    <div class="t4p-cal-day">11</div>
+                    <div class="t4p-cal-day today">12</div>
+                    <div class="t4p-cal-day">13</div>
+                    <div class="t4p-cal-day">14</div>
+                    <div class="t4p-cal-day">15</div>
+                    <div class="t4p-cal-day">16</div>
+                    <div class="t4p-cal-day">17</div>
+                    <div class="t4p-cal-day">18</div>
+                    <div class="t4p-cal-day">19</div>
+                    <div class="t4p-cal-day">20</div>
+                    <div class="t4p-cal-day">21</div>
+                    <div class="t4p-cal-day">22</div>
+                    <div class="t4p-cal-day">23</div>
+                    <div class="t4p-cal-day">24</div>
+                    <div class="t4p-cal-day">25</div>
+                    <div class="t4p-cal-day">26</div>
+                    <div class="t4p-cal-day">27</div>
+                    <div class="t4p-cal-day">28</div>
+                    <div class="t4p-cal-day">29</div>
+                    <div class="t4p-cal-day event-day">30</div>
                 </div>
             </div>
-        </div>
 
-        <div class="t4p-card">
-            <div class="t4p-sec-title">Thời gian & Địa điểm</div>
             <div class="t4p-info-wrap">
                 <div class="t4p-info-item">
                     <div class="t4p-info-label">Thời gian</div>
@@ -1532,6 +1625,23 @@
                 <div class="t4p-cd-box"><div class="t4p-cd-num">45</div><div class="t4p-cd-label">Ngày</div></div>
                 <div class="t4p-cd-box"><div class="t4p-cd-num">12</div><div class="t4p-cd-label">Giờ</div></div>
                 <div class="t4p-cd-box"><div class="t4p-cd-num">30</div><div class="t4p-cd-label">Phút</div></div>
+            </div>
+        </div>
+
+        <div class="t4p-card">
+            <div class="t4p-date-highlight">- 2049.06.30 -</div>
+            <div class="t4p-body-text" style="font-style: italic;">
+                "Rồi chúng ta cũng sẽ hòa vào biển người, mỗi người đều có phong ba và rực rỡ riêng. Chúc cho chặng đường tới, hoa nở như gấm, ngày gặp lại vẫn như xưa."
+            </div>
+        </div>
+
+        <div class="t4p-card">
+            <div class="t4p-sec-title">Trân trọng kính mời</div>
+            <div class="t4p-body-text">
+                <strong style="color: #D97706;">Kính gửi quý thầy cô và các bạn cựu sinh viên</strong>
+                <div class="mt-2">
+                    Lễ tốt nghiệp là cột mốc khép lại hành trình rực rỡ của những năm tháng thanh xuân dưới mái trường thân yêu, đồng thời mở ra cánh cửa tương lai đầy hứa hẹn.
+                </div>
             </div>
         </div>
 

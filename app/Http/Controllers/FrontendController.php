@@ -68,6 +68,13 @@ class FrontendController extends Controller
             $dbFeatured = Event::with(['bannerImage', 'category'])
                 ->published()
                 ->where('created_at', '>=', now()->subMonths(3))
+                ->where(function($q) {
+                    $q->where('end_date', '>=', now())
+                      ->orWhere(function($subQ) {
+                          $subQ->whereNull('end_date')
+                               ->where('event_date', '>=', now()->startOfDay());
+                      });
+                })
                 ->orderByRaw('(likes_count * 3) + views_count DESC')
                 ->take(3)
                 ->get();
@@ -116,11 +123,12 @@ class FrontendController extends Controller
             })->toArray();
 
             $archivedEvents = Event::with('bannerImage')
+                ->whereNotNull('recap_drive_link')
+                ->where('recap_drive_link', '!=', '')
                 ->where(function($q) {
-                    $q->where('status', 'archived') // Include manually archived events (which are unpublished)
+                    $q->where('status', 'archived') // Include manually archived events
                       ->orWhere(function($q2) {
                           $q2->where('is_published', true) // Only published events for natural archiving
-                             ->whereNotNull('recap_drive_link')
                              ->where(function($q3) {
                                  $q3->where('event_date', '<', now())
                                     ->orWhere('end_date', '<', now());
@@ -220,7 +228,13 @@ class FrontendController extends Controller
 
             $dbSlides = Event::with(['bannerImage', 'category'])
                 ->published()
-                ->where('event_date', '<=', now())
+                ->where(function($q) {
+                    $q->where('end_date', '>=', now())
+                      ->orWhere(function($subQ) {
+                          $subQ->whereNull('end_date')
+                               ->where('event_date', '>=', now()->startOfDay());
+                      });
+                })
                 ->latest()
                 ->take(6)
                 ->get();
@@ -311,7 +325,8 @@ class FrontendController extends Controller
             }
         }
 
-        $events = $query->paginate(7);
+        $perPage = $this->isMobile() ? 7 : 10;
+        $events = $query->paginate($perPage);
 
         // Get unique years for filter
         $driver = \Illuminate\Support\Facades\DB::connection()->getDriverName();

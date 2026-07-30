@@ -19,25 +19,50 @@
                     <p class="text-xs text-muted-foreground mt-0.5">{{ $media->total() }} tệp</p>
                 </div>
             </div>
-            <button onclick="document.getElementById('uploadMediaModal').classList.remove('hidden')"
-                class="inline-flex items-center justify-center rounded-md text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring bg-primary text-primary-foreground shadow hover:bg-primary/90 h-8 px-3 gap-1.5 w-fit hover:scale-[1.02] active:scale-[0.98] transition-all">
-                <i data-lucide="upload" class="h-3.5 w-3.5"></i>
-                Tải ảnh/video lên
-            </button>
-        </div>
+            <div class="flex items-center gap-2">
+                <button id="bulkDeleteBtn" onclick="bulkDeleteMedia()"
+                    class="hidden items-center justify-center rounded-md text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring bg-red-500 text-white shadow hover:bg-red-600 h-8 px-3 gap-1.5 w-fit hover:scale-[1.02] active:scale-[0.98] transition-all">
+                    <i data-lucide="trash-2" class="h-3.5 w-3.5"></i>
+                    Xóa (<span id="bulkDeleteCount">0</span>) mục
+                </button>
+                <button onclick="document.getElementById('uploadMediaModal').classList.remove('hidden')"
+                    class="inline-flex items-center justify-center rounded-md text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring bg-primary text-primary-foreground shadow hover:bg-primary/90 h-8 px-3 gap-1.5 w-fit hover:scale-[1.02] active:scale-[0.98] transition-all">
+                    <i data-lucide="upload" class="h-3.5 w-3.5"></i>
+                    Tải ảnh/video lên
+                </button>
+            </div>
 
         <div class="grid grid-cols-[1fr_260px] md:grid-cols-[1fr_320px] lg:grid-cols-[1fr_400px] xl:grid-cols-[1fr_480px] gap-4">
             {{-- Media Grid --}}
             <div class="space-y-3">
-                <form action="{{ route('admin.media.index') }}" method="GET" class="flex items-center gap-2 justify-end mb-4">
+                <form action="{{ route('admin.media.index') }}" method="GET" class="flex flex-wrap items-center gap-3 justify-between sm:justify-end mb-4 bg-background p-2 rounded-lg border border-border">
                     <input type="hidden" name="event_id" value="{{ request('event_id') }}">
-                    <div class="relative flex items-center shrink-0">
-                        <select name="sort" onchange="this.form.submit()"
-                            class="h-10 pl-3 pr-9 w-36 rounded-xl border border-input text-xs bg-card appearance-none focus:outline-none focus:border-ring cursor-pointer transition-all text-center shadow-sm">
-                            <option value="date_desc" {{ request('sort') === 'date_desc' ? 'selected' : '' }}>Mới nhất</option>
+                    
+                    <div class="flex items-center gap-2 mr-auto sm:mr-0 pl-2">
+                        <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll(this)" class="w-4 h-4 rounded border-input text-primary focus:ring-primary cursor-pointer">
+                        <label for="selectAllCheckbox" class="text-xs font-medium text-foreground cursor-pointer">Chọn tất cả</label>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <div class="relative flex items-center shrink-0">
+                            <select name="per_page" onchange="this.form.submit()"
+                                class="h-9 pl-3 pr-8 w-32 rounded-lg border border-input text-xs bg-card appearance-none focus:outline-none focus:border-ring cursor-pointer transition-all shadow-sm">
+                                <option value="15" {{ request('per_page', '15') == '15' ? 'selected' : '' }}>15 mục/trang</option>
+                                <option value="30" {{ request('per_page') == '30' ? 'selected' : '' }}>30 mục/trang</option>
+                                <option value="60" {{ request('per_page') == '60' ? 'selected' : '' }}>60 mục/trang</option>
+                            </select>
+                            <i data-lucide="chevron-down" class="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none"></i>
+                        </div>
+                        
+                        <div class="relative flex items-center shrink-0">
+                            <select name="sort" onchange="this.form.submit()"
+                                class="h-9 pl-3 pr-8 w-32 rounded-lg border border-input text-xs bg-card appearance-none focus:outline-none focus:border-ring cursor-pointer transition-all shadow-sm">
+                                <option value="date_desc" {{ request('sort') === 'date_desc' ? 'selected' : '' }}>Mới nhất</option>
                             <option value="date_asc" {{ request('sort') === 'date_asc' ? 'selected' : '' }}>Cũ nhất</option>
                         </select>
-                        <i data-lucide="chevron-down" class="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none"></i>
+                            </select>
+                            <i data-lucide="chevron-down" class="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none"></i>
+                        </div>
                     </div>
                 </form>
 
@@ -50,6 +75,12 @@
                             data-event="{{ $m->event->title ?? '—' }}" data-delete-url="{{ route('admin.media.destroy', $m) }}">
                             <div
                                 class="aspect-square bg-gradient-to-br from-primary/20 via-primary/5 to-accent grid place-items-center relative overflow-hidden">
+                                
+                                <!-- Selection Checkbox -->
+                                <div class="absolute top-2 left-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-1 bg-black/30 backdrop-blur-sm rounded-md" onclick="event.stopPropagation()">
+                                    <input type="checkbox" class="media-checkbox w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer shadow-sm" value="{{ $m->id }}" onchange="updateBulkDeleteUI()">
+                                </div>
+                                
                                 @if($m->type === 'image')
                                     <img src="{{ \App\Helpers\FileHelper::url($m->url) }}" class="w-full h-full object-cover" alt="">
                                 @elseif($m->type === 'video')
@@ -130,7 +161,7 @@
                     </div>
                     <div class="flex gap-2 pt-3 border-t border-border mt-2">
                         <form id="preview-delete-form" action="{{ route('admin.media.destroy', $first) }}" method="POST"
-                            onsubmit="return confirm('Xóa file này?');" class="w-full">
+                            onsubmit="return confirmDelete(event, this, 'Xóa file này?');" class="w-full">
                             @csrf @method('DELETE')
                             <button type="submit"
                                 class="w-full h-11 text-sm bg-red-500 hover:bg-red-600 text-white rounded-xl flex items-center justify-center transition-all font-semibold">
@@ -296,5 +327,117 @@
                 textEl.innerText = "Nhấn để chọn hoặc kéo thả tệp tại đây";
             }
         }
+
+        // Bulk Delete Functions
+        function toggleSelectAll(checkbox) {
+            const checkboxes = document.querySelectorAll('.media-checkbox');
+            checkboxes.forEach(cb => {
+                cb.checked = checkbox.checked;
+            });
+            updateBulkDeleteUI();
+        }
+
+        function updateBulkDeleteUI() {
+            const checkboxes = document.querySelectorAll('.media-checkbox');
+            let selectedCount = 0;
+            let allChecked = true;
+            let hasUnchecked = false;
+
+            checkboxes.forEach(cb => {
+                if (cb.checked) {
+                    selectedCount++;
+                    // Make checkbox container always visible when checked
+                    cb.parentElement.classList.remove('opacity-0');
+                    cb.parentElement.classList.add('opacity-100');
+                    cb.closest('.media-item-card').classList.add('ring-2', 'ring-primary');
+                } else {
+                    hasUnchecked = true;
+                    // Revert to hover state visibility
+                    cb.parentElement.classList.add('opacity-0');
+                    cb.parentElement.classList.remove('opacity-100');
+                    cb.closest('.media-item-card').classList.remove('ring-2', 'ring-primary');
+                }
+            });
+
+            if (selectedCount === 0 || hasUnchecked) {
+                allChecked = false;
+            }
+
+            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+            if (selectAllCheckbox && checkboxes.length > 0) {
+                selectAllCheckbox.checked = allChecked;
+            }
+
+            const bulkBtn = document.getElementById('bulkDeleteBtn');
+            const bulkCount = document.getElementById('bulkDeleteCount');
+
+            if (selectedCount > 0) {
+                bulkBtn.style.display = 'inline-flex';
+                bulkCount.textContent = selectedCount;
+            } else {
+                bulkBtn.style.display = 'none';
+            }
+        }
+
+        async function bulkDeleteMedia() {
+            const checkboxes = document.querySelectorAll('.media-checkbox:checked');
+            if (checkboxes.length === 0) return;
+
+            if (!confirm(`Bạn có chắc chắn muốn xóa ${checkboxes.length} tệp đã chọn? Hành động này không thể hoàn tác.`)) {
+                return;
+            }
+
+            const ids = Array.from(checkboxes).map(cb => cb.value);
+
+            try {
+                const response = await fetch("{{ route('admin.media.bulk_destroy') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ ids: ids })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    alert('Đã xảy ra lỗi khi xóa media.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Đã xảy ra lỗi khi thực hiện xóa.');
+            }
+        }
+
+        let lastChecked = null;
+
+        // Initialize UI state
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkboxes = document.querySelectorAll('.media-checkbox');
+            checkboxes.forEach(cb => {
+                cb.addEventListener('click', function(e) {
+                    if (!lastChecked) {
+                        lastChecked = this;
+                    } else if (e.shiftKey) {
+                        let inRange = false;
+                        checkboxes.forEach(checkbox => {
+                            if (checkbox === this || checkbox === lastChecked) {
+                                inRange = !inRange;
+                            }
+                            if (inRange) {
+                                checkbox.checked = lastChecked.checked;
+                            }
+                        });
+                        this.checked = lastChecked.checked;
+                    }
+                    lastChecked = this;
+                    updateBulkDeleteUI();
+                });
+            });
+
+            updateBulkDeleteUI();
+        });
     </script>
 @endsection

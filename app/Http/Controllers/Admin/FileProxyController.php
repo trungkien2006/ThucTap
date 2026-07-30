@@ -17,7 +17,7 @@ class FileProxyController extends Controller
         
         $localDisk = Storage::disk('public');
         if ($localDisk->exists($path)) {
-            return $this->cachedResponse($localDisk, $path);
+            return redirect()->away(asset('storage/' . $path), 301);
         }
 
         $isGoogle = config('filesystems.disks.google.clientId');
@@ -25,7 +25,7 @@ class FileProxyController extends Controller
             try {
                 $cacheKey = 'gdrive_url_' . md5($path);
                 $directUrl = \Illuminate\Support\Facades\Cache::rememberForever($cacheKey, function() use ($path) {
-                    return \Illuminate\Support\Facades\Storage::disk('google')->url($path);
+                    return \Illuminate\Support\Facades\Storage::disk('public')->url($path);
                 });
                 $fileContents = file_get_contents($directUrl);
                 $localDisk->put($path, $fileContents);
@@ -40,7 +40,7 @@ class FileProxyController extends Controller
             $localDisk->put($path, $cloudDisk->get($path));
         }
         
-        return $this->cachedResponse($localDisk, $path);
+        return redirect()->away(asset('storage/' . $path), 301);
     }
 
     private function cachedResponse($disk, $path)
@@ -78,7 +78,7 @@ class FileProxyController extends Controller
                 try {
                     $cacheKey = 'gdrive_url_' . md5($path);
                     $directUrl = \Illuminate\Support\Facades\Cache::rememberForever($cacheKey, function() use ($path) {
-                        return \Illuminate\Support\Facades\Storage::disk('google')->url($path);
+                        return \Illuminate\Support\Facades\Storage::disk('public')->url($path);
                     });
                     $fileContents = file_get_contents($directUrl);
                 } catch (\Exception $e) {
@@ -139,18 +139,18 @@ class FileProxyController extends Controller
             return redirect($path);
         }
         
-        if ($localDisk->exists($path)) return $this->cachedResponse($localDisk, $path);
+        if ($localDisk->exists($path)) return redirect()->away(asset('storage/' . $path), 301);
         
         $isGoogle = config('filesystems.disks.google.clientId');
         if ($isGoogle) {
             try {
                 $cacheKey = 'gdrive_url_' . md5($path);
                 $directUrl = \Illuminate\Support\Facades\Cache::rememberForever($cacheKey, function() use ($path) {
-                    return \Illuminate\Support\Facades\Storage::disk('google')->url($path);
+                    return \Illuminate\Support\Facades\Storage::disk('public')->url($path);
                 });
                 $fileContents = file_get_contents($directUrl);
                 $localDisk->put($path, $fileContents);
-                return $this->cachedResponse($localDisk, $path);
+                return redirect()->away(asset('storage/' . $path), 301);
             } catch (\Exception $e) {
                 // fall through to 404
             }
@@ -158,7 +158,7 @@ class FileProxyController extends Controller
             $cloudDisk = Storage::disk(config('filesystems.default'));
             if ($cloudDisk->exists($path)) {
                 $localDisk->put($path, $cloudDisk->get($path));
-                return $this->cachedResponse($localDisk, $path);
+                return redirect()->away(asset('storage/' . $path), 301);
             }
         }
         

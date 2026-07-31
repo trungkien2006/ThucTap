@@ -864,10 +864,11 @@
                                 class="font-barlow-condensed text-5xl font-black uppercase tracking-tight text-[#1C1410] lg:text-6xl">
                                 Sự kiện nổi bật</h2>
                         </div>
-                        <a href="#" class="hidden items-center gap-2 text-sm font-semibold lg:inline-flex transition-colors"
-                            style="color:#07A0C3;" onmouseover="this.style.color='#04F06A'"
-                            onmouseout="this.style.color='#07A0C3'">
-                            Xem tất cả <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
+                        <a href="{{ route('events.index') }}" class="hidden items-center gap-3 text-sm font-bold uppercase tracking-wider lg:inline-flex transition-all hover:-translate-y-1 group"
+                            style="background: #07A0C3; color: #FFFFFF; padding: 12px 24px; border-radius: 9999px; box-shadow: 0 4px 14px rgba(7,160,195,0.3);"
+                            onmouseover="this.style.background='#04F06A'; this.style.boxShadow='0 4px 14px rgba(4,240,106,0.4)';"
+                            onmouseout="this.style.background='#07A0C3'; this.style.boxShadow='0 4px 14px rgba(7,160,195,0.3)';">
+                            Xem tất cả <i data-lucide="arrow-up-right" class="h-5 w-5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1"></i>
                         </a>
                     </div>
 
@@ -878,7 +879,7 @@
                             style="width: max-content; padding-right: 2rem;">
                             @foreach(array_slice($featuredEvents, 0, 3) as $i => $ev)
                                 <div class="shrink-0 featured-card-item rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
-                                    style="width: 350px; height: 480px; max-width: 85vw;">
+                                    style="width: 45vw; max-width: 650px; height: 500px;">
                                     <x-event-card :event="$ev" mode="grid" />
                                 </div>
                             @endforeach
@@ -1065,20 +1066,7 @@
                 </p>
             </div>
             <div class="hidden gap-3 lg:flex">
-                <button @click="go(-1)" :disabled="eventIdx === 0"
-                    class="grid h-12 w-12 place-items-center rounded-full border-2 text-white/70 transition-all disabled:opacity-30"
-                    style="border-color:rgba(255,227,129,0.3); background:rgba(255,227,129,0.05);"
-                    onmouseover="this.style.borderColor='#FFE381';this.style.color='#FFE381'"
-                    onmouseout="this.style.borderColor='rgba(255,227,129,0.3)';this.style.color='rgba(255,255,255,0.7)'">
-                    <i data-lucide="chevron-left" class="h-5 w-5"></i>
-                </button>
-                <button @click="go(1)" :disabled="!currentYear || !currentYear.events || eventIdx === currentYear.events.length - 1"
-                    class="grid h-12 w-12 place-items-center rounded-full border-2 text-white/70 transition-all disabled:opacity-30"
-                    style="border-color:rgba(255,227,129,0.3); background:rgba(255,227,129,0.05);"
-                    onmouseover="this.style.borderColor='#FFE381';this.style.color='#FFE381'"
-                    onmouseout="this.style.borderColor='rgba(255,227,129,0.3)';this.style.color='rgba(255,255,255,0.7)'">
-                    <i data-lucide="chevron-right" class="h-5 w-5"></i>
-                </button>
+                <!-- Removed top redundant arrow buttons -->
             </div>
         </div>
 
@@ -1133,20 +1121,21 @@
                 </div>
             </div>
 
-            <div class="archive-card-perspective lg:-mt-28" style="perspective: 1000px;">
-                <div class="archive-card-flip transition-all duration-500 transform-gpu"
-                     :class="flipping ? 'rotate-y-90 scale-95 opacity-30' : 'rotate-y-0 scale-100 opacity-100'"
-                     style="transform-style: preserve-3d;">
+            <div class="relative">
+                <div>
                     
                     <!-- Event Banner Image Container (Compact height so text below image fits on screen) -->
-                    <a :href="currentEvent ? currentEvent.featured_url : '#'" class="group relative block h-[180px] sm:h-[200px] lg:h-[220px] overflow-hidden rounded-2xl shadow-2xl border border-[#FFE381]/20">
-                        <img :src="currentEvent ? currentEvent.img : ''" :alt="currentEvent ? currentEvent.featured_title : ''" loading="lazy"
-                             class="h-full w-full object-cover transition-transform duration-[1200ms] group-hover:scale-105" />
-                        <div class="absolute inset-0"
-                             style="background:linear-gradient(to top,rgba(45,31,10,0.3) 0%,transparent 60%);"></div>
-                        <!-- Jasmine accent bar -->
-                        <div class="absolute bottom-0 left-0 right-0 h-1.5" style="background:#FFE381;"></div>
-                    </a>
+                    <div class="transition-all duration-400 ease-in-out transform-gpu"
+                         :class="flipping ? 'opacity-0 scale-95 blur-[4px]' : 'opacity-100 scale-100 blur-0'">
+                        <a :href="currentEvent ? currentEvent.featured_url : '#'" class="group relative block h-[180px] sm:h-[200px] lg:h-[220px] overflow-hidden rounded-2xl shadow-2xl border border-[#FFE381]/20">
+                            <img :src="currentEvent ? currentEvent.img : ''" :alt="currentEvent ? currentEvent.featured_title : ''" loading="lazy"
+                                 class="h-full w-full object-cover transition-transform duration-[1200ms] group-hover:scale-105" />
+                            <div class="absolute inset-0"
+                                 style="background:linear-gradient(to top,rgba(45,31,10,0.3) 0%,transparent 60%);"></div>
+                            <!-- Jasmine accent bar -->
+                            <div class="absolute bottom-0 left-0 right-0 h-1.5" style="background:#FFE381;"></div>
+                        </a>
+                    </div>
 
                     <!-- Details Below Image: Title + Date + Description -->
                     <div class="mt-3 p-4 rounded-2xl border border-[#FFE381]/15" style="background: rgba(255, 255, 255, 0.04); backdrop-filter: blur(8px);">

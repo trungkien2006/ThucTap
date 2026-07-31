@@ -15,7 +15,7 @@
     <body class="font-sans antialiased relative" style="font-family: 'Be Vietnam Pro', sans-serif;">
         <!-- Bạn có thể thay đổi đường dẫn ảnh tại đây bằng ảnh FPT campus của bạn (ví dụ: url('/images/fpt-hanam.jpg')) -->
         <div class="min-h-screen flex items-center justify-center relative bg-cover bg-no-repeat p-4 sm:p-6" 
-             style="background-image: url('{{ asset('admin-login-bg.png') }}'); background-position: center 80%;">
+             style="background-image: url('{{ asset('images/fpt-campus.jpg') }}'); background-position: center 80%;">
             
             {{-- Lớp phủ tối nhẹ để làm nổi bật form --}}
             <div class="absolute inset-0 bg-black/25"></div>
